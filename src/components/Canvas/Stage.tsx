@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage as KonvaStage, Layer } from 'react-konva';
+import { Stage as KonvaStage } from 'react-konva';
 
 /**
  * Props for the Stage component
@@ -48,9 +48,7 @@ export const Stage: React.FC<StageProps> = ({
                 display: 'block',
             }}
         >
-            <Layer listening={true}>
-                {children}
-            </Layer>
+            {children}
         </KonvaStage>
     );
 };

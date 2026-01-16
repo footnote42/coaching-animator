@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image as KonvaImage } from 'react-konva';
+import { Layer, Image as KonvaImage } from 'react-konva';
 import { SportType } from '../../types';
 
 /**
@@ -42,16 +42,20 @@ export const Field: React.FC<FieldProps> = ({ sport, width, height }) => {
         };
     }, [sport]);
 
+    // Return an empty Layer while loading to maintain consistent stage children
     if (!image) {
-        return null;
+        return <Layer listening={false} />;
     }
 
     return (
-        <KonvaImage
-            image={image}
-            width={width}
-            height={height}
-            listening={false} // Field shouldn't block clicks to entities
-        />
+        <Layer listening={false}>
+            <KonvaImage
+                image={image}
+                width={width}
+                height={height}
+                listening={false}
+            />
+        </Layer>
     );
 };
+

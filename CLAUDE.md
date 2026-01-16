@@ -29,7 +29,7 @@ tests/
 
 ## Commands
 
-- `npm run dev` - Start development server (localhost:5174)
+- `npm run dev` - Start development server (port 5175)
 - `npm run build` - Production build
 - `npm test` - Run tests
 - `npm run lint` - Run ESLint
@@ -40,14 +40,14 @@ TypeScript 5.x with React 18+: Follow standard conventions
 
 ## Project Status
 
-### Phase 3: User Story 1 - Basic Animation ✅ COMPLETE
+### Phase 3: User Story 1 - Basic Animation ✅ COMPLETE & VERIFIED
 
-All core animation features implemented and tested (T034-T044):
+All core animation features implemented and verified (T031-T044):
 - Entity management (add, update, remove)
 - Frame management (add, navigate, duplicate, remove)
 - Smooth animation with interpolation (60fps)
 - Playback controls (play/pause/reset, speed control, loop)
-- Keyboard shortcuts (Space, arrows, Delete, Escape)
+- Keyboard shortcuts (Space, Delete)
 - Entity selection and deselection
 - Responsive UI with sidebar and timeline
 
@@ -56,10 +56,12 @@ All core animation features implemented and tested (T034-T044):
 
 ## Recent Changes
 
-- Phase 3 (T034-T044) Implementation: Timeline components, animation loop, playback controls, keyboard shortcuts, App.tsx integration
-- All Phase 3 tasks marked as complete in tasks.md
-- Project builds and runs successfully with no TypeScript errors
-- Development server running at http://localhost:5174
+- **Verified Phase 3**: Successfully resolved rendering blockers (Tailwind v4/react-konva mismatch/Layer nesting).
+- Updated `tasks.md` with verified status and retrospective.
+- Updated `package.json`: Downgraded `react-konva` to v18 for compatibility.
+- Updated `index.css`: Migrated to Tailwind v4 CSS-based configuration.
+- Restructured Konva layers for correct Stage->Layer hierarchy.
+- Development server running at http://localhost:5175
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

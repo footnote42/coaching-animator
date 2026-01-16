@@ -12,10 +12,10 @@ Build a browser-based keyframe animation tool for rugby coaches to create tactic
 **Language/Version**: TypeScript 5.x with React 18+
 **Primary Dependencies**:
 - Vite (build tooling)
-- React 18+ (UI framework)
-- React-Konva (canvas rendering)
-- Zustand (state management)
-- Tailwind CSS (styling)
+- React 18.2.0 (UI framework)
+- react-konva 18.2.14 / konva 9.3.22 (canvas rendering)
+- Zustand 5.x (state management)
+- Tailwind CSS 4.x (styling)
 - shadcn/ui (UI components)
 - Lucide React (icons)
 - MediaRecorder API (video export)
@@ -53,9 +53,9 @@ Build a browser-based keyframe animation tool for rugby coaches to create tactic
 - [x] Error prevention: Coordinates clamped to bounds, minimum 1 frame enforced
 
 ### IV. Tactical Clubhouse Aesthetic ✅
-- [x] Color Palette: Pitch Green (#1A3D1A) + Tactics White (#F8F9FA)
+- [x] Color Palette: Pitch Green (#1A3D1A) + Tactics White (#F8F9FA) (defined in index.css @theme)
 - [x] Typography: Monospace for frame counts/timecodes, bold sans-serif for headings
-- [x] Sharp corners (border-radius: 0), 1px schematic borders
+- [x] Sharp corners (border-radius: 0), 1px schematic borders (Tailwind v4 defaults)
 - [x] No drop shadows, no stock photography
 
 ### V. Offline-First Privacy ✅

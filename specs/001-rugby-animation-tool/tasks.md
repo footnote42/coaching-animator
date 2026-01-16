@@ -72,10 +72,9 @@
 ### Implementation for User Story 1
 
 - [x] T026 [P] [US1] Implement default project creation logic in src/store/projectStore.ts newProject action
-
-- [X] T027 [P] [US1] Create Field background component in src/components/Canvas/Field.tsx per component-contracts.ts FieldProps
+- [x] T027 [P] [US1] Create Field background component in src/components/Canvas/Field.tsx per component-contracts.ts FieldProps
 - [x] T028 [P] [US1] Create Stage wrapper component in src/components/Canvas/Stage.tsx per component-contracts.ts StageProps
-- [X] T029 [US1] Create PlayerToken component in src/components/Canvas/PlayerToken.tsx with drag support per component-contracts.ts PlayerTokenProps
+- [x] T029 [US1] Create PlayerToken component in src/components/Canvas/PlayerToken.tsx with drag support per component-contracts.ts PlayerTokenProps
 - [x] T030 [US1] Create EntityLayer component in src/components/Canvas/EntityLayer.tsx orchestrating entity rendering per component-contracts.ts EntityLayerProps
 - [x] T031 [US1] Implement addEntity action in src/store/projectStore.ts per store-contracts.ts with UUID generation and defaults
 - [x] T032 [US1] Implement updateEntity action in src/store/projectStore.ts with position clamping per store-contracts.ts
@@ -92,7 +91,15 @@
 - [x] T043 [US1] Implement entity selection in src/store/uiStore.ts selectEntity and deselectAll actions per store-contracts.ts
 - [x] T044 [US1] Add keyboard shortcut support (Spacebar, Delete) in src/hooks/useKeyboardShortcuts.ts per research.md
 
-**Checkpoint**: At this point, User Story 1 should be fully functional - can position players, add frames, and animate movement
+**Checkpoint**: At this point, User Story 1 should be fully functional - can position players, add frames, and animate movement.
+
+### Phase 3 Retrospective: Verification Challenges
+
+Verification of Phase 3 encountered three critical blockers that required architectural and dependency adjustments:
+
+1.  **Tailwind CSS v4 Configuration**: The project was initialized with Tailwind v4, which uses a CSS-first configuration via `@theme` in `src/index.css` instead of `tailwind.config.js`. The legacy `tailwind.config.js` was removed and all design tokens moved to `src/index.css`.
+2.  **react-konva Dependency Mismatch**: `react-konva` v19 was initially installed, which requires React 19. Since the project uses React 18 for stability, `react-konva` was downgraded to `^18.2.14` and `konva` to `^9.3.22` to fix the mounting failure.
+3.  **Nested Layer Architecture**: `react-konva` prohibits nesting `<Layer>` components. The `Stage.tsx` wrapper was updated to remove a redundant `<Layer>`, and `Field.tsx` was updated to provide its own `<Layer>`, ensuring all layers are direct children of the `<Stage>`.
 
 ---
 
