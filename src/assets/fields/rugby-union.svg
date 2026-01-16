@@ -1,0 +1,26 @@
+<svg width="2000" height="1400" viewBox="0 0 2000 1400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pitch Background -->
+  <rect width="2000" height="1400" fill="#1A3D1A" />
+  
+  <!-- Boundary Line -->
+  <rect x="50" y="50" width="1900" height="1300" fill="none" stroke="#F8F9FA" stroke-width="2" />
+  
+  <!-- Halfway Line -->
+  <line x1="1000" y1="50" x2="1000" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+  
+  <!-- 22m Lines -->
+  <line x1="440" y1="50" x2="440" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10,10" />
+  <line x1="1560" y1="50" x2="1560" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10,10" />
+  
+  <!-- 10m Lines -->
+  <line x1="800" y1="50" x2="800" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="5,5" />
+  <line x1="1200" y1="50" x2="1200" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="5,5" />
+  
+  <!-- Try Lines -->
+  <line x1="200" y1="50" x2="200" y2="1350" stroke="#A0A0A0" stroke-width="3" />
+  <line x1="1800" y1="50" x2="1800" y2="1350" stroke="#A0A0A0" stroke-width="3" />
+  
+  <!-- Dead Ball Lines -->
+  <line x1="50" y1="50" x2="50" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+  <line x1="1950" y1="50" x2="1950" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+</svg>
