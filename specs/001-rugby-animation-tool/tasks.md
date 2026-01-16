@@ -76,10 +76,10 @@
 - [X] T027 [P] [US1] Create Field background component in src/components/Canvas/Field.tsx per component-contracts.ts FieldProps
 - [x] T028 [P] [US1] Create Stage wrapper component in src/components/Canvas/Stage.tsx per component-contracts.ts StageProps
 - [X] T029 [US1] Create PlayerToken component in src/components/Canvas/PlayerToken.tsx with drag support per component-contracts.ts PlayerTokenProps
-- [ ] T030 [US1] Create EntityLayer component in src/components/Canvas/EntityLayer.tsx orchestrating entity rendering per component-contracts.ts EntityLayerProps
-- [ ] T031 [US1] Implement addEntity action in src/store/projectStore.ts per store-contracts.ts with UUID generation and defaults
-- [ ] T032 [US1] Implement updateEntity action in src/store/projectStore.ts with position clamping per store-contracts.ts
-- [ ] T033 [US1] Implement removeEntity action in src/store/projectStore.ts per store-contracts.ts
+- [x] T030 [US1] Create EntityLayer component in src/components/Canvas/EntityLayer.tsx orchestrating entity rendering per component-contracts.ts EntityLayerProps
+- [x] T031 [US1] Implement addEntity action in src/store/projectStore.ts per store-contracts.ts with UUID generation and defaults
+- [x] T032 [US1] Implement updateEntity action in src/store/projectStore.ts with position clamping per store-contracts.ts
+- [x] T033 [US1] Implement removeEntity action in src/store/projectStore.ts per store-contracts.ts
 - [ ] T034 [US1] Create EntityPalette sidebar component in src/components/Sidebar/EntityPalette.tsx per component-contracts.ts EntityPaletteProps
 - [ ] T035 [US1] Implement addFrame action in src/store/projectStore.ts per store-contracts.ts
 - [ ] T036 [US1] Implement setCurrentFrame action in src/store/projectStore.ts per store-contracts.ts
