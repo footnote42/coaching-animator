@@ -1,5 +1,4 @@
 import { VALIDATION } from "../constants/validation";
-import { Project, Frame, Entity, Annotation } from "../types";
 
 /**
  * Validation utilities for the Rugby Animation Tool.

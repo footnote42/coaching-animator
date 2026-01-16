@@ -4,8 +4,7 @@ import {
     SidebarPanel,
     ExportStatus,
     PendingAction,
-    ExportResult,
-    ExportStatus as ExportStatusType
+    ExportResult
 } from '../types';
 
 export interface UIStoreState {
@@ -55,8 +54,14 @@ export const useUIStore = create<UIStoreState>()(
                 pendingAction: null,
             },
 
-            selectEntity: () => { },
-            deselectAll: () => { },
+            selectEntity: (entityId: string | null) => set((state) => ({
+                ...state,
+                selectedEntityId: entityId,
+            })),
+            deselectAll: () => set((state) => ({
+                ...state,
+                selectedEntityId: null,
+            })),
             toggleGhosts: () => { },
             toggleGrid: () => { },
             setSidebarPanel: () => { },

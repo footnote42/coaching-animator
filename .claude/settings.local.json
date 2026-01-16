@@ -2,7 +2,31 @@
   "permissions": {
     "allow": [
       "Bash(git fetch:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(if [ -d \"checklists\" ])",
+      "Bash(then find checklists -name \"*.md\" -type f)",
+      "Bash(else echo \"NO_CHECKLISTS\")",
+      "Bash(fi)",
+      "Bash(if [ -d \"contracts\" ])",
+      "Bash(then find contracts -name \"*.ts\" -o -name \"*.md\")",
+      "Bash(else echo \"NO_CONTRACTS\")",
+      "Bash(npm run lint)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(if [ -d \"specs/001-rugby-animation-tool/checklists\" ])",
+      "Bash(then echo \"EXISTS\")",
+      "Bash(else echo \"NOT_FOUND\")",
+      "Bash(npm test)",
+      "Bash(npx tsx:*)",
+      "Bash(del manual-test-entities.ts)",
+      "Bash(./.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout /t 3)"
     ]
   }
 }

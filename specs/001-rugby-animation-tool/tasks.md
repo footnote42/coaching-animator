@@ -80,17 +80,17 @@
 - [x] T031 [US1] Implement addEntity action in src/store/projectStore.ts per store-contracts.ts with UUID generation and defaults
 - [x] T032 [US1] Implement updateEntity action in src/store/projectStore.ts with position clamping per store-contracts.ts
 - [x] T033 [US1] Implement removeEntity action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T034 [US1] Create EntityPalette sidebar component in src/components/Sidebar/EntityPalette.tsx per component-contracts.ts EntityPaletteProps
-- [ ] T035 [US1] Implement addFrame action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T036 [US1] Implement setCurrentFrame action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T037 [US1] Create FrameStrip timeline component in src/components/Timeline/FrameStrip.tsx per component-contracts.ts FrameStripProps
-- [ ] T038 [US1] Create FrameThumbnail component in src/components/Timeline/FrameThumbnail.tsx per component-contracts.ts FrameThumbnailProps
-- [ ] T039 [US1] Create useAnimationLoop custom hook in src/hooks/useAnimationLoop.ts with lerp interpolation per research.md
-- [ ] T040 [US1] Implement play, pause, reset actions in src/store/projectStore.ts per store-contracts.ts
-- [ ] T041 [US1] Create PlaybackControls component in src/components/Timeline/PlaybackControls.tsx per component-contracts.ts PlaybackControlsProps
-- [ ] T042 [US1] Integrate Canvas, Timeline, and Sidebar components in src/App.tsx
-- [ ] T043 [US1] Implement entity selection in src/store/uiStore.ts selectEntity and deselectAll actions per store-contracts.ts
-- [ ] T044 [US1] Add keyboard shortcut support (Spacebar, Delete) in src/hooks/useKeyboardShortcuts.ts per research.md
+- [x] T034 [US1] Create EntityPalette sidebar component in src/components/Sidebar/EntityPalette.tsx per component-contracts.ts EntityPaletteProps
+- [x] T035 [US1] Implement addFrame action in src/store/projectStore.ts per store-contracts.ts
+- [x] T036 [US1] Implement setCurrentFrame action in src/store/projectStore.ts per store-contracts.ts
+- [x] T037 [US1] Create FrameStrip timeline component in src/components/Timeline/FrameStrip.tsx per component-contracts.ts FrameStripProps
+- [x] T038 [US1] Create FrameThumbnail component in src/components/Timeline/FrameThumbnail.tsx per component-contracts.ts FrameThumbnailProps
+- [x] T039 [US1] Create useAnimationLoop custom hook in src/hooks/useAnimationLoop.ts with lerp interpolation per research.md
+- [x] T040 [US1] Implement play, pause, reset actions in src/store/projectStore.ts per store-contracts.ts
+- [x] T041 [US1] Create PlaybackControls component in src/components/Timeline/PlaybackControls.tsx per component-contracts.ts PlaybackControlsProps
+- [x] T042 [US1] Integrate Canvas, Timeline, and Sidebar components in src/App.tsx
+- [x] T043 [US1] Implement entity selection in src/store/uiStore.ts selectEntity and deselectAll actions per store-contracts.ts
+- [x] T044 [US1] Add keyboard shortcut support (Spacebar, Delete) in src/hooks/useKeyboardShortcuts.ts per research.md
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - can position players, add frames, and animate movement
 

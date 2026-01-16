@@ -107,11 +107,164 @@ export const useProjectStore = create<ProjectStoreState>()(
             saveProject: () => '',
             updateProjectSettings: () => { },
 
-            setCurrentFrame: () => { },
-            addFrame: () => { },
-            removeFrame: () => { },
-            duplicateFrame: () => { },
-            updateFrame: () => { },
+            setCurrentFrame: (index: number) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Guard: Return if index is out of bounds
+                if (index < 0 || index >= state.project.frames.length) {
+                    return state;
+                }
+
+                // Stop playback if playing
+                return {
+                    ...state,
+                    currentFrameIndex: index,
+                    isPlaying: false,
+                };
+            }),
+
+            addFrame: () => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Get current frame
+                const currentFrame = state.project.frames[state.currentFrameIndex];
+
+                // Create new frame with copied entities
+                const newFrameId = crypto.randomUUID();
+                const newFrame = {
+                    id: newFrameId,
+                    index: state.currentFrameIndex + 1,
+                    duration: state.project.settings.defaultTransitionDuration,
+                    entities: { ...currentFrame.entities },
+                    annotations: [],
+                };
+
+                // Insert new frame after current frame and update indices
+                const updatedFrames = state.project.frames.map((frame) => ({
+                    ...frame,
+                    index: frame.index > state.currentFrameIndex ? frame.index + 1 : frame.index
+                }));
+                updatedFrames.splice(state.currentFrameIndex + 1, 0, newFrame);
+
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: updatedFrames,
+                    },
+                    currentFrameIndex: state.currentFrameIndex + 1,
+                    isDirty: true,
+                };
+            }),
+
+            removeFrame: (frameId: string) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Guard: Prevent deletion if only one frame remains
+                if (state.project.frames.length <= 1) return state;
+
+                // Find frame index
+                const frameIndex = state.project.frames.findIndex(f => f.id === frameId);
+                if (frameIndex === -1) return state;
+
+                // Remove frame and update indices
+                const updatedFrames = state.project.frames
+                    .filter((_, idx) => idx !== frameIndex)
+                    .map((frame, idx) => ({ ...frame, index: idx }));
+
+                // Adjust currentFrameIndex if needed
+                let newCurrentFrameIndex = state.currentFrameIndex;
+                if (frameIndex < state.currentFrameIndex) {
+                    newCurrentFrameIndex = state.currentFrameIndex - 1;
+                } else if (frameIndex === state.currentFrameIndex && frameIndex === state.project.frames.length - 1) {
+                    newCurrentFrameIndex = state.currentFrameIndex - 1;
+                }
+
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: updatedFrames,
+                    },
+                    currentFrameIndex: newCurrentFrameIndex,
+                    isDirty: true,
+                };
+            }),
+
+            duplicateFrame: (frameId: string) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Find frame index
+                const frameIndex = state.project.frames.findIndex(f => f.id === frameId);
+                if (frameIndex === -1) return state;
+
+                // Clone the frame
+                const frameToClone = state.project.frames[frameIndex];
+                const newFrameId = crypto.randomUUID();
+                const clonedFrame = {
+                    id: newFrameId,
+                    index: frameIndex + 1,
+                    duration: frameToClone.duration,
+                    entities: { ...frameToClone.entities },
+                    annotations: [...frameToClone.annotations],
+                };
+
+                // Insert cloned frame and update indices
+                const updatedFrames = state.project.frames.map((frame) => ({
+                    ...frame,
+                    index: frame.index > frameIndex ? frame.index + 1 : frame.index
+                }));
+                updatedFrames.splice(frameIndex + 1, 0, clonedFrame);
+
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: updatedFrames,
+                    },
+                    isDirty: true,
+                };
+            }),
+
+            updateFrame: (frameId: string, updates: Partial<FrameUpdate>) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Find frame
+                const frameIndex = state.project.frames.findIndex(f => f.id === frameId);
+                if (frameIndex === -1) return state;
+
+                // Apply updates
+                const updatedFrames = state.project.frames.map((frame, idx) => {
+                    if (idx !== frameIndex) return frame;
+
+                    const updatedFrame = { ...frame };
+                    if (updates.duration !== undefined) {
+                        updatedFrame.duration = Math.max(
+                            VALIDATION.FRAME.DURATION_MIN_MS,
+                            Math.min(VALIDATION.FRAME.DURATION_MAX_MS, updates.duration)
+                        );
+                    }
+                    return updatedFrame;
+                });
+
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: updatedFrames,
+                    },
+                    isDirty: true,
+                };
+            }),
 
             addEntity: (entity: EntityCreate) => {
                 let newEntityId = '';
@@ -301,11 +454,31 @@ export const useProjectStore = create<ProjectStoreState>()(
             updateAnnotation: () => { },
             removeAnnotation: () => { },
 
-            play: () => { },
-            pause: () => { },
-            reset: () => { },
-            setPlaybackSpeed: () => { },
-            toggleLoop: () => { },
+            play: () => set((state) => ({
+                ...state,
+                isPlaying: true,
+            })),
+
+            pause: () => set((state) => ({
+                ...state,
+                isPlaying: false,
+            })),
+
+            reset: () => set((state) => ({
+                ...state,
+                currentFrameIndex: 0,
+                isPlaying: false,
+            })),
+
+            setPlaybackSpeed: (speed: PlaybackSpeed) => set((state) => ({
+                ...state,
+                playbackSpeed: speed,
+            })),
+
+            toggleLoop: () => set((state) => ({
+                ...state,
+                loopPlayback: !state.loopPlayback,
+            })),
 
             setPlaybackPosition: () => { },
         }),
