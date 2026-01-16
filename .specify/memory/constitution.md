@@ -145,7 +145,6 @@ This section codifies the Design Tokens into enforceable standards.
 
 ### File Organization
 
-```
 src/
 ├── components/       # UI components (co-located with styles/tests)
 ├── hooks/            # Custom React hooks
@@ -153,7 +152,6 @@ src/
 ├── utils/            # Pure utility functions
 ├── types/            # Shared TypeScript interfaces
 └── constants/        # Static configuration values
-```
 
 ## Governance
 
