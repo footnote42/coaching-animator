@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Konva from 'konva';
 import { Stage } from './components/Canvas/Stage';
 import { Field } from './components/Canvas/Field';
 import { EntityLayer } from './components/Canvas/EntityLayer';
 import { EntityPalette } from './components/Sidebar/EntityPalette';
 import { ProjectActions } from './components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from './components/Timeline';
-import { useAnimationLoop, useKeyboardShortcuts } from './hooks';
+import { useAnimationLoop, useKeyboardShortcuts, useExport } from './hooks';
 import { useAutoSave } from './hooks/useAutoSave';
 import { useProjectStore } from './store/projectStore';
 import { useUIStore } from './store/uiStore';
@@ -16,6 +17,9 @@ function App() {
     // Canvas dimensions
     const canvasWidth = 800;
     const canvasHeight = 600;
+
+    // Stage ref for video export
+    const stageRef = useRef<Konva.Stage>(null);
 
     // Get project store state and actions
     const {
@@ -41,6 +45,9 @@ function App() {
 
     // Get UI store state and actions
     const { selectedEntityId, selectEntity, deselectAll } = useUIStore();
+
+    // Initialize export hook
+    const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
 
     // Local state for crash recovery dialog
     const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
@@ -209,7 +216,13 @@ function App() {
                 </div>
 
                 <div className="bg-tactics-white flex-1 overflow-y-auto">
-                    <ProjectActions />
+                    <ProjectActions
+                        onExport={startExport}
+                        exportStatus={exportStatus}
+                        exportProgress={exportProgress}
+                        exportError={exportError}
+                        canExport={canExport}
+                    />
                     <EntityPalette
                         onAddAttackPlayer={handleAddAttackPlayer}
                         onAddDefensePlayer={handleAddDefensePlayer}
@@ -226,6 +239,7 @@ function App() {
                 <div className="flex-1 flex items-center justify-center p-4 bg-tactical-mono-100">
                     <div className="border border-tactical-mono-300 bg-white">
                         <Stage
+                            ref={stageRef}
                             width={canvasWidth}
                             height={canvasHeight}
                             onCanvasClick={handleCanvasClick}

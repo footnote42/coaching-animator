@@ -1,4 +1,4 @@
-import { Save, FolderOpen, FilePlus } from 'lucide-react';
+import { Save, FolderOpen, FilePlus, Video } from 'lucide-react';
 import { useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
@@ -10,10 +10,24 @@ import { ConfirmDialog } from '../ui/ConfirmDialog';
 /**
  * ProjectActions Component
  * 
- * Provides New, Open, and Save buttons for project management.
+ * Provides New, Open, Save, and Export buttons for project management.
  * Handles unsaved changes warnings and file I/O operations.
  */
-export const ProjectActions: React.FC = () => {
+export interface ProjectActionsProps {
+    onExport?: () => void;
+    exportStatus?: 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
+    exportProgress?: number;
+    exportError?: string | null;
+    canExport?: boolean;
+}
+
+export const ProjectActions: React.FC<ProjectActionsProps> = ({
+    onExport,
+    exportStatus = 'idle',
+    exportProgress = 0,
+    exportError = null,
+    canExport = false,
+}) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const project = useProjectStore((state) => state.project);
@@ -150,6 +164,44 @@ export const ProjectActions: React.FC = () => {
                 <Save className="w-4 h-4 mr-2" />
                 Save
             </Button>
+
+            {/* Export button */}
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={onExport}
+                disabled={!canExport || exportStatus !== 'idle'}
+                className="w-full"
+            >
+                <Video className="w-4 h-4 mr-2" />
+                Export Video
+            </Button>
+
+            {/* Export progress indicator */}
+            {exportStatus !== 'idle' && (
+                <div className="mt-2 p-2 bg-tactical-mono-100 border border-tactical-mono-300">
+                    <div className="text-xs font-mono text-tactical-mono-700 mb-1">
+                        {exportStatus === 'preparing' && 'Preparing...'}
+                        {exportStatus === 'recording' && 'Recording...'}
+                        {exportStatus === 'processing' && 'Processing...'}
+                        {exportStatus === 'complete' && '✓ Complete!'}
+                        {exportStatus === 'error' && '✗ Error'}
+                    </div>
+                    {exportStatus !== 'error' && (
+                        <div className="w-full h-2 bg-tactical-mono-200">
+                            <div
+                                className="h-full bg-pitch-green transition-all duration-300"
+                                style={{ width: `${exportProgress}%` }}
+                            />
+                        </div>
+                    )}
+                    {exportStatus === 'error' && exportError && (
+                        <div className="text-xs text-red-600 mt-1">
+                            {exportError}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Hidden file input for opening projects */}
             <input
