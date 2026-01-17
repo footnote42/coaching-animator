@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Group, Circle, Text } from 'react-konva';
+import { Group, Circle, Ellipse, Text } from 'react-konva';
 import { Entity } from '../../types';
 import { DESIGN_TOKENS } from '../../constants/design-tokens';
 
@@ -138,14 +138,27 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             onContextMenu={handleContextMenu}
             onDragEnd={handleDragEnd}
         >
-            {/* Main circle */}
-            <Circle
-                radius={radius}
-                fill={color}
-                stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
-                strokeWidth={isSelected ? 3 : 0}
-                shadowEnabled={false} // Disable shadow for performance
-            />
+            {/* Render shape based on entity type */}
+            {entity.type === 'ball' ? (
+                /* Ball: Oval/ellipse shape approximating a rugby ball (~1.5:1 ratio) */
+                <Ellipse
+                    radiusX={18}
+                    radiusY={12}
+                    fill={color}
+                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    strokeWidth={isSelected ? 3 : 1}
+                    shadowEnabled={false}
+                />
+            ) : (
+                /* Players, cones, markers: Circle shape */
+                <Circle
+                    radius={radius}
+                    fill={color}
+                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
+                    strokeWidth={isSelected ? 3 : 0}
+                    shadowEnabled={false}
+                />
+            )}
 
             {/* Label text (only for players with labels) */}
             {showLabel && (

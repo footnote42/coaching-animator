@@ -181,11 +181,11 @@ export const useProjectStore = create<ProjectStoreState>()(
                     return state;
                 }
 
-                // Stop playback if playing
+                // Update frame index WITHOUT stopping playback
+                // This allows animation loop to progress through frames
                 return {
                     ...state,
                     currentFrameIndex: index,
-                    isPlaying: false,
                 };
             }),
 

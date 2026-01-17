@@ -14,7 +14,7 @@ export const DESIGN_TOKENS = {
         // Team colors
         attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],
         defense: ['#DC2626', '#EA580C', '#F59E0B', '#EF4444'],
-        neutral: ['#1A3D1A', '#6B7280', '#854D0E'],
+        neutral: ['#FFFFFF', '#8B4513', '#FFD700', '#FF6B35'],  // White, brown leather, gold, orange
     },
     typography: {
         fontMono: "'JetBrains Mono', 'Fira Code', monospace",
