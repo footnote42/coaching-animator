@@ -1,13 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Stage } from './components/Canvas/Stage';
 import { Field } from './components/Canvas/Field';
 import { EntityLayer } from './components/Canvas/EntityLayer';
 import { EntityPalette } from './components/Sidebar/EntityPalette';
+import { ProjectActions } from './components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from './components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts } from './hooks';
+import { useAutoSave } from './hooks/useAutoSave';
 import { useProjectStore } from './store/projectStore';
 import { useUIStore } from './store/uiStore';
 import { DESIGN_TOKENS } from './constants/design-tokens';
+import { ConfirmDialog } from './components/ui/ConfirmDialog';
 
 function App() {
     // Canvas dimensions
@@ -22,6 +25,7 @@ function App() {
         playbackSpeed,
         loopPlayback,
         newProject,
+        loadProject,
         addFrame,
         setCurrentFrame,
         removeFrame,
@@ -38,16 +42,64 @@ function App() {
     // Get UI store state and actions
     const { selectedEntityId, selectEntity, deselectAll } = useUIStore();
 
+    // Local state for crash recovery dialog
+    const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
+    const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
+
     // Initialize hooks
     useAnimationLoop();
     useKeyboardShortcuts();
+    useAutoSave();
 
-    // Initialize project on mount if not already created
+    // Initialize project on mount and check for crash recovery
     useEffect(() => {
         if (!project) {
+            // Check for auto-saved data
+            const autosaveData = localStorage.getItem('rugby_animator_autosave');
+            const autosaveTimestamp = localStorage.getItem('rugby_animator_autosave_timestamp');
+
+            if (autosaveData && autosaveTimestamp) {
+                try {
+                    const data = JSON.parse(autosaveData);
+                    const timestamp = new Date(autosaveTimestamp);
+                    const now = new Date();
+                    const minutesAgo = (now.getTime() - timestamp.getTime()) / (1000 * 60);
+
+                    // Only offer recovery if autosave is less than 24 hours old
+                    if (minutesAgo < 24 * 60) {
+                        setRecoveredProject(data);
+                        setShowRecoveryDialog(true);
+                        return; // Don't create new project yet
+                    }
+                } catch (error) {
+                    console.error('Failed to parse autosave data:', error);
+                }
+            }
+
+            // No recovery data or recovery failed - create new project
             newProject();
         }
     }, [project, newProject]);
+
+    // Handle crash recovery confirmation
+    const handleRecoverProject = () => {
+        if (recoveredProject) {
+            const result = loadProject(recoveredProject);
+            if (!result.success) {
+                alert(`Failed to recover project:\n${result.errors.join('\n')}`);
+                newProject();
+            }
+        }
+        setShowRecoveryDialog(false);
+        setRecoveredProject(null);
+    };
+
+    // Handle crash recovery cancellation
+    const handleSkipRecovery = () => {
+        setShowRecoveryDialog(false);
+        setRecoveredProject(null);
+        newProject();
+    };
 
     // Entity palette handlers
     const handleAddAttackPlayer = () => {
@@ -148,18 +200,24 @@ function App() {
 
     return (
         <div className="flex h-screen bg-tactical-mono-50">
-            {/* Left sidebar - Entity palette */}
-            <aside className="w-64 border-r border-tactical-mono-300 bg-pitch-green p-4">
-                <h1 className="text-xl font-heading font-bold text-tactics-white mb-6">
-                    Rugby Animation Tool
-                </h1>
-                <EntityPalette
-                    onAddAttackPlayer={handleAddAttackPlayer}
-                    onAddDefensePlayer={handleAddDefensePlayer}
-                    onAddBall={handleAddBall}
-                    onAddCone={handleAddCone}
-                    onAddMarker={handleAddMarker}
-                />
+            {/* Left sidebar - Entity palette and Project actions */}
+            <aside className="w-64 border-r border-tactical-mono-300 bg-pitch-green flex flex-col">
+                <div className="p-4">
+                    <h1 className="text-xl font-heading font-bold text-tactics-white mb-6">
+                        Rugby Animation Tool
+                    </h1>
+                </div>
+
+                <div className="bg-tactics-white flex-1 overflow-y-auto">
+                    <ProjectActions />
+                    <EntityPalette
+                        onAddAttackPlayer={handleAddAttackPlayer}
+                        onAddDefensePlayer={handleAddDefensePlayer}
+                        onAddBall={handleAddBall}
+                        onAddCone={handleAddCone}
+                        onAddMarker={handleAddMarker}
+                    />
+                </div>
             </aside>
 
             {/* Center - Canvas and Timeline */}
@@ -217,6 +275,18 @@ function App() {
                     />
                 </footer>
             </main>
+
+            {/* Crash recovery dialog */}
+            <ConfirmDialog
+                open={showRecoveryDialog}
+                onConfirm={handleRecoverProject}
+                onCancel={handleSkipRecovery}
+                title="Recover Auto-Saved Project"
+                description="An auto-saved project was found. Would you like to recover it?"
+                confirmLabel="Recover"
+                cancelLabel="Start Fresh"
+                variant="default"
+            />
         </div>
     );
 }

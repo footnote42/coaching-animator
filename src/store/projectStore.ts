@@ -15,7 +15,7 @@ import {
 } from '../types';
 import { DESIGN_TOKENS } from '../constants/design-tokens';
 import { VALIDATION } from '../constants/validation';
-import { validateHexColor, validateEntityLabel } from '../utils/validation';
+import { validateHexColor, validateEntityLabel, validateProject } from '../utils/validation';
 
 export interface ProjectStoreState {
     project: Project | null;
@@ -103,8 +103,73 @@ export const useProjectStore = create<ProjectStoreState>()(
                     loopPlayback: false,
                 };
             }),
-            loadProject: () => ({ success: true, errors: [], warnings: [] }),
-            saveProject: () => '',
+            loadProject: (data: unknown) => {
+                let result: LoadResult = { success: false, errors: [], warnings: [] };
+
+                set((state) => {
+                    // Validate the project data
+                    const validation = validateProject(data);
+
+                    if (!validation.success) {
+                        result = {
+                            success: false,
+                            errors: validation.errors,
+                            warnings: validation.warnings,
+                        };
+                        return state; // Return unchanged state on validation failure
+                    }
+
+                    // If validation passed, cast to Project type
+                    const project = data as Project;
+
+                    // Success: Load the project into state
+                    result = {
+                        success: true,
+                        errors: [],
+                        warnings: validation.warnings,
+                    };
+
+                    return {
+                        ...state,
+                        project,
+                        currentFrameIndex: 0,
+                        isPlaying: false,
+                        isDirty: false,
+                        playbackSpeed: 1 as PlaybackSpeed,
+                        loopPlayback: false,
+                    };
+                });
+
+                return result;
+            },
+
+            saveProject: () => {
+                let jsonString = '';
+
+                set((state) => {
+                    if (!state.project) {
+                        return state;
+                    }
+
+                    // Update the project's updatedAt timestamp
+                    const updatedProject = {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                    };
+
+                    // Serialize to JSON
+                    jsonString = JSON.stringify(updatedProject, null, 2);
+
+                    // Mark as not dirty since we're saving
+                    return {
+                        ...state,
+                        project: updatedProject,
+                        isDirty: false,
+                    };
+                });
+
+                return jsonString;
+            },
             updateProjectSettings: () => { },
 
             setCurrentFrame: (index: number) => set((state) => {

@@ -64,4 +64,135 @@ export const validateUUID = (uuid: string): boolean => {
     return uuidRegex.test(uuid);
 };
 
-// ... more complex validation logic can be added as needed for Project and other structures
+/**
+ * Validates a complete project object against the schema.
+ * @param data - Unknown data to validate
+ * @returns Object with success flag and error/warning messages
+ */
+export const validateProject = (data: unknown): {
+    success: boolean;
+    errors: string[];
+    warnings: string[];
+} => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    // Type guard: Check if data is an object
+    if (!data || typeof data !== 'object') {
+        errors.push('Invalid project data: expected an object');
+        return { success: false, errors, warnings };
+    }
+
+    const project = data as Record<string, unknown>;
+
+    // Required fields validation
+    if (typeof project.version !== 'string') {
+        errors.push('Missing or invalid "version" field');
+    }
+    if (typeof project.id !== 'string' || !validateUUID(project.id)) {
+        errors.push('Missing or invalid "id" field (must be UUID)');
+    }
+    if (typeof project.name !== 'string' || !validateProjectName(project.name)) {
+        errors.push('Missing or invalid "name" field');
+    }
+    if (!['rugby-union', 'rugby-league', 'soccer', 'american-football'].includes(project.sport as string)) {
+        errors.push('Invalid "sport" field');
+    }
+    if (typeof project.createdAt !== 'string') {
+        errors.push('Missing or invalid "createdAt" field');
+    }
+    if (typeof project.updatedAt !== 'string') {
+        errors.push('Missing or invalid "updatedAt" field');
+    }
+
+    // Frames validation
+    if (!Array.isArray(project.frames)) {
+        errors.push('Missing or invalid "frames" field (must be array)');
+    } else {
+        if (project.frames.length === 0) {
+            errors.push('Project must have at least one frame');
+        }
+        if (project.frames.length > VALIDATION.PROJECT.MAX_FRAMES) {
+            errors.push(`Too many frames (max: ${VALIDATION.PROJECT.MAX_FRAMES})`);
+        }
+
+        // Validate each frame
+        project.frames.forEach((frame: unknown, idx: number) => {
+            if (!frame || typeof frame !== 'object') {
+                errors.push(`Frame ${idx}: invalid frame object`);
+                return;
+            }
+            const f = frame as Record<string, unknown>;
+
+            if (typeof f.id !== 'string' || !validateUUID(f.id)) {
+                errors.push(`Frame ${idx}: invalid id`);
+            }
+            if (typeof f.index !== 'number' || f.index !== idx) {
+                errors.push(`Frame ${idx}: invalid index (expected ${idx})`);
+            }
+            if (typeof f.duration !== 'number' || !validateFrameDuration(f.duration)) {
+                errors.push(`Frame ${idx}: invalid duration`);
+            }
+            if (!f.entities || typeof f.entities !== 'object') {
+                errors.push(`Frame ${idx}: invalid entities object`);
+            } else {
+                // Validate entities
+                Object.entries(f.entities as Record<string, unknown>).forEach(([entityId, entity]) => {
+                    if (!entity || typeof entity !== 'object') {
+                        errors.push(`Frame ${idx}, Entity ${entityId}: invalid entity object`);
+                        return;
+                    }
+                    const e = entity as Record<string, unknown>;
+
+                    if (typeof e.id !== 'string' || !validateUUID(e.id)) {
+                        errors.push(`Frame ${idx}, Entity ${entityId}: invalid id`);
+                    }
+                    if (!['player', 'ball', 'cone', 'marker'].includes(e.type as string)) {
+                        errors.push(`Frame ${idx}, Entity ${entityId}: invalid type`);
+                    }
+                    if (typeof e.x !== 'number' || typeof e.y !== 'number' || !validateCoordinates(e.x, e.y)) {
+                        errors.push(`Frame ${idx}, Entity ${entityId}: invalid coordinates`);
+                    }
+                    if (typeof e.color !== 'string' || !validateHexColor(e.color)) {
+                        warnings.push(`Frame ${idx}, Entity ${entityId}: invalid color format`);
+                    }
+                    if (typeof e.label !== 'string' || !validateEntityLabel(e.label)) {
+                        warnings.push(`Frame ${idx}, Entity ${entityId}: invalid label`);
+                    }
+                    if (!['attack', 'defense', 'neutral'].includes(e.team as string)) {
+                        errors.push(`Frame ${idx}, Entity ${entityId}: invalid team`);
+                    }
+                });
+            }
+
+            if (!Array.isArray(f.annotations)) {
+                errors.push(`Frame ${idx}: invalid annotations (must be array)`);
+            }
+        });
+    }
+
+    // Settings validation
+    if (!project.settings || typeof project.settings !== 'object') {
+        errors.push('Missing or invalid "settings" object');
+    } else {
+        const s = project.settings as Record<string, unknown>;
+        if (typeof s.showGrid !== 'boolean') {
+            errors.push('Settings: invalid showGrid');
+        }
+        if (typeof s.gridSpacing !== 'number') {
+            errors.push('Settings: invalid gridSpacing');
+        }
+        if (typeof s.defaultTransitionDuration !== 'number') {
+            errors.push('Settings: invalid defaultTransitionDuration');
+        }
+        if (!['720p', '1080p'].includes(s.exportResolution as string)) {
+            errors.push('Settings: invalid exportResolution');
+        }
+    }
+
+    return {
+        success: errors.length === 0,
+        errors,
+        warnings,
+    };
+};

@@ -111,15 +111,15 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 2
 
-- [ ] T045 [P] [US2] Create file I/O utilities in src/utils/fileIO.ts with save/load helper functions
-- [ ] T046 [P] [US2] Implement saveProject action in src/store/projectStore.ts returning JSON string per store-contracts.ts
-- [ ] T047 [P] [US2] Implement loadProject action in src/store/projectStore.ts with validation per store-contracts.ts LoadResult
-- [ ] T048 [US2] Create ProjectActions sidebar component in src/components/Sidebar/ProjectActions.tsx per component-contracts.ts ProjectActionsProps
-- [ ] T049 [US2] Implement auto-save to LocalStorage in src/hooks/useAutoSave.ts per research.md (30 second interval)
-- [ ] T050 [US2] Create unsaved changes dialog using ConfirmDialog in src/components/UI/ConfirmDialog.tsx per component-contracts.ts ConfirmDialogProps
+- [x] T045 [P] [US2] Create file I/O utilities in src/utils/fileIO.ts with save/load helper functions
+- [x] T046 [P] [US2] Implement saveProject action in src/store/projectStore.ts returning JSON string per store-contracts.ts
+- [x] T047 [P] [US2] Implement loadProject action in src/store/projectStore.ts with validation per store-contracts.ts LoadResult
+- [x] T048 [US2] Create ProjectActions sidebar component in src/components/Sidebar/ProjectActions.tsx per component-contracts.ts ProjectActionsProps
+- [x] T049 [US2] Implement auto-save to LocalStorage in src/hooks/useAutoSave.ts per research.md (30 second interval)
+- [x] T050 [US2] Create unsaved changes dialog using ConfirmDialog in src/components/ui/ConfirmDialog.tsx per component-contracts.ts ConfirmDialogProps
 - [ ] T051 [US2] Implement isDirty state tracking in src/store/projectStore.ts (set to true on any mutation)
-- [ ] T052 [US2] Implement unsaved changes dialog logic in src/store/uiStore.ts per store-contracts.ts unsavedChangesDialog
-- [ ] T053 [US2] Add crash recovery on app load by checking LocalStorage for autosave data in src/App.tsx
+- [x] T052 [US2] Implement unsaved changes dialog logic in src/store/uiStore.ts per store-contracts.ts unsavedChangesDialog
+- [x] T053 [US2] Add crash recovery on app load by checking LocalStorage for autosave data in src/App.tsx
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - projects are persistent and recoverable
 

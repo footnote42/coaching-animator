@@ -62,16 +62,71 @@ export const useUIStore = create<UIStoreState>()(
                 ...state,
                 selectedEntityId: null,
             })),
-            toggleGhosts: () => { },
-            toggleGrid: () => { },
-            setSidebarPanel: () => { },
-            startExport: () => { },
-            setExportProgress: () => { },
-            completeExport: () => { },
-            closeExportDialog: () => { },
-            showUnsavedChangesDialog: () => { },
-            confirmPendingAction: () => { },
-            cancelPendingAction: () => { },
+            toggleGhosts: () => set((state) => ({
+                ...state,
+                showGhosts: !state.showGhosts,
+            })),
+            toggleGrid: () => set((state) => ({
+                ...state,
+                showGrid: !state.showGrid,
+            })),
+            setSidebarPanel: (panel: SidebarPanel) => set((state) => ({
+                ...state,
+                activeSidebarPanel: panel,
+            })),
+            startExport: () => set((state) => ({
+                ...state,
+                exportDialog: {
+                    ...state.exportDialog,
+                    isOpen: true,
+                    progress: 0,
+                    status: 'preparing',
+                },
+            })),
+            setExportProgress: (progress: number) => set((state) => ({
+                ...state,
+                exportDialog: {
+                    ...state.exportDialog,
+                    progress,
+                },
+            })),
+            completeExport: (result: ExportResult) => set((state) => ({
+                ...state,
+                exportDialog: {
+                    ...state.exportDialog,
+                    status: result.success ? 'complete' : 'error',
+                    error: result.error,
+                },
+            })),
+            closeExportDialog: () => set((state) => ({
+                ...state,
+                exportDialog: {
+                    isOpen: false,
+                    progress: 0,
+                    status: 'idle',
+                },
+            })),
+            showUnsavedChangesDialog: (pendingAction: PendingAction) => set((state) => ({
+                ...state,
+                unsavedChangesDialog: {
+                    isOpen: true,
+                    pendingAction,
+                },
+            })),
+            confirmPendingAction: () => set((state) => ({
+                ...state,
+                unsavedChangesDialog: {
+                    isOpen: false,
+                    pendingAction: null,
+                },
+            })),
+            cancelPendingAction: () => set((state) => ({
+                ...state,
+                unsavedChangesDialog: {
+                    isOpen: false,
+                    pendingAction: null,
+                },
+            })),
         }),
         { name: 'UIStore' }
     )
