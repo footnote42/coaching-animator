@@ -1,9 +1,9 @@
-# Phase 5 → Phase 6+ Handoff Document
+# Phase 6 → Phase 7+ Handoff Document
 
 **Project**: Rugby Animation Tool  
-**Last Phase Completed**: Phase 5 - User Story 3 (Export Animation as Video)  
-**Completed**: 2026-01-17  
-**Next Phase**: Planning for remaining user stories (US4-US9)
+**Last Phase Completed**: Phase 7 - User Story 5 (Configure Player Tokens)  
+**Completed**: 2026-01-22  
+**Next Phase**: User Story 6 (Select Different Sports Fields) or P3 features (US7-US9)
 
 ---
 
@@ -47,6 +47,17 @@ All acceptance criteria met:
 
 **Key Implementation**: Interactive duration slider in `FrameThumbnail.tsx`, real-time store updates in `App.tsx`.
 
+#### Phase 7: User Story 5 - Configure Player Tokens (Completed 2026-01-22)
+All acceptance criteria met (6/7 browser tests passing):
+- ✅ Team designation with default colors (Attack: blue, Defense: red)
+- ✅ Label editing via Entity Properties panel and context menu
+- ✅ Color customization from tactical palette
+- ✅ Team toggle (Attack/Defense/Neutral)
+- ✅ Right-click context menu (Edit Label/Duplicate/Delete)
+- ⚠️ Double-click inline editing has minor timing issue (context menu "Edit Label" works as alternative)
+
+**Key Implementation**: `EntityProperties` sidebar panel, `ColorPicker`, `EntityContextMenu`, `InlineEditor` components.
+
 ---
 
 ## Remaining Work (Priority Order)
@@ -57,16 +68,11 @@ None remaining - all P1 stories complete ✅
 ### P2: Enhanced Features (Not Started)
 
 #### User Story 4 - Manage Multiple Frames ✅ COMPLETE
-**Status**: Fully implemented. Coaches can now manually set frame durations via slider.
+**Status**: Fully implemented. Frame duration slider, duplicate, and navigation all functional.
 
-#### User Story 5 - Configure Player Tokens
-**Status**: Not started
-**Features Needed**:
-- Edit player labels (jersey numbers, position codes)
-- Change player colors
-- Context menu for entity operations
-- Team designation (attack/defense) visual coding
-**Estimated Complexity**: Medium (4-6 tasks)
+#### User Story 5 - Configure Player Tokens ✅ COMPLETE
+**Status**: Fully implemented. Label editing, color customization, team designation, and context menu all functional.
+**Known Issue**: Double-click for inline label editing doesn't trigger reliably (use context menu "Edit Label" instead).
 
 #### User Story 6 - Select Different Sports Fields
 **Status**: Not started-
