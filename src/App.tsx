@@ -32,6 +32,7 @@ function App() {
         isPlaying,
         playbackSpeed,
         loopPlayback,
+        playbackPosition,
         newProject,
         loadProject,
         addFrame,
@@ -357,6 +358,8 @@ function App() {
                                 onEntityDoubleClick={handleEntityDoubleClick}
                                 onEntityContextMenu={handleEntityContextMenu}
                                 interactive={!isPlaying}
+                                playbackPosition={playbackPosition}
+                                frames={project?.frames ?? []}
                             />
                         </Stage>
                     </div>

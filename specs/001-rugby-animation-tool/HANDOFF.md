@@ -1,9 +1,9 @@
 # Phase 6 → Phase 7+ Handoff Document
 
 **Project**: Rugby Animation Tool  
-**Last Phase Completed**: Phase 7 - User Story 5 (Configure Player Tokens)  
+**Last Phase Completed**: Phase 11 - Playback Speed and Looping & Polish  
 **Completed**: 2026-01-22  
-**Next Phase**: User Story 6 (Select Different Sports Fields) or P3 features (US7-US9)
+**Next Phase**: User Story 7 (Ghost Mode) or User Story 8 (Annotations)
 
 ---
 
@@ -58,6 +58,16 @@ All acceptance criteria met (6/7 browser tests passing):
 
 **Key Implementation**: `EntityProperties` sidebar panel, `ColorPicker`, `EntityContextMenu`, `InlineEditor` components.
 
+#### Phase 8: User Story 6 - Select Different Sports Fields (Completed 2026-01-22)
+- ✅ Sport selector UI component added to sidebar
+- ✅ Dynamic field background switching
+- ✅ Supported sports: Rugby Union, Rugby League, Soccer, American Football
+
+#### Phase 11: User Story 9 - Playback Speed and Looping (Completed 2026-01-22)
+- ✅ Speed controls (0.5x, 1x, 2x) functional
+- ✅ Looping playback implemented
+- ✅ Smooth lerp-based interpolation between frames implemented for fluid movement
+
 ---
 
 ## Remaining Work (Priority Order)
@@ -74,14 +84,8 @@ None remaining - all P1 stories complete ✅
 **Status**: Fully implemented. Label editing, color customization, team designation, and context menu all functional.
 **Known Issue**: Double-click for inline label editing doesn't trigger reliably (use context menu "Edit Label" instead).
 
-#### User Story 6 - Select Different Sports Fields
-**Status**: Not started-
-**Features Needed**:
-- Sport selector UI component
-- Field background switching (Rugby Union, Rugby League, Soccer, American Football)
-- Field dimensions constants for each sport
-- SVG assets for each field type
-**Estimated Complexity**: Low-Medium (3-4 tasks)
+#### User Story 6 - Select Different Sports Fields ✅ COMPLETE
+**Status**: Fully implemented. Sport selector and dynamic backgrounds functional.
 
 ### P3: Polish Features (Not Started)
 
@@ -91,12 +95,8 @@ None remaining - all P1 stories complete ✅
 #### User Story 8 - Draw Annotations
 **Estimated Complexity**: Medium-High (5-7 tasks)
 
-#### User Story 9 - Control Playback Speed and Looping
-**Status**: Partially implemented
-- ✅ Speed control exists (0.5x, 1x, 2x)
-- ✅ Loop toggle exists
-- ⏳ UI needs to be wired up (controls exist in PlaybackControls but may need verification)
-**Estimated Complexity**: Low (1-2 tasks if just UI wiring)
+#### User Story 9 - Control Playback Speed and Looping ✅ COMPLETE
+**Status**: Fully implemented. Speed control, looping, and smooth interpolation functional.
 
 ---
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Layer } from 'react-konva';
-import { Entity } from '../../types';
+import { Entity, Frame, PlaybackPosition } from '../../types';
 import { PlayerToken } from './PlayerToken';
 
 /**
@@ -21,6 +21,10 @@ export interface EntityLayerProps {
     onEntityContextMenu: (entityId: string, event: { x: number; y: number }) => void;
     /** Whether layer is interactive (false during playback) */
     interactive: boolean;
+    /** Current playback position for interpolation */
+    playbackPosition: PlaybackPosition | null;
+    /** All frames in the project for interpolation */
+    frames: Frame[];
 }
 
 /**
@@ -33,6 +37,7 @@ export interface EntityLayerProps {
  * - Handles drag interactions and position updates
  * - Disables interactions during playback
  * - Delegates all state changes through callback props
+ * - Interpolates entity positions during playback for smooth animation
  */
 export const EntityLayer: React.FC<EntityLayerProps> = ({
     entities,
@@ -41,11 +46,54 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     onEntityMove,
     onEntityDoubleClick,
     onEntityContextMenu,
-    interactive
+    interactive,
+    playbackPosition,
+    frames
 }) => {
+    // Calculate interpolated entities when playing
+    const interpolatedEntities = useMemo(() => {
+        if (!playbackPosition || !frames.length) {
+            return entities;
+        }
+
+        const fromFrame = frames[playbackPosition.fromFrameIndex];
+        const toFrame = frames[playbackPosition.toFrameIndex];
+
+        if (!fromFrame || !toFrame) return entities;
+
+        const { progress } = playbackPosition;
+
+        // Create interpolated entity positions
+        return entities.map(entity => {
+            const fromEntity = fromFrame.entities[entity.id];
+            const toEntity = toFrame.entities[entity.id];
+
+            // If entity exists in both frames, interpolate
+            if (fromEntity && toEntity) {
+                return {
+                    ...entity,
+                    x: fromEntity.x + (toEntity.x - fromEntity.x) * progress,
+                    y: fromEntity.y + (toEntity.y - fromEntity.y) * progress,
+                };
+            }
+
+            // Entity only in "from" frame - keep position (will disappear at end)
+            if (fromEntity && !toEntity) {
+                return { ...entity, x: fromEntity.x, y: fromEntity.y };
+            }
+
+            // Entity only in "to" frame - show at destination
+            if (!fromEntity && toEntity) {
+                return { ...entity, x: toEntity.x, y: toEntity.y };
+            }
+
+            return entity;
+        });
+    }, [entities, playbackPosition, frames]);
+
     return (
         <Layer listening={interactive}>
-            {entities.map((entity) => (
+            {interpolatedEntities.map((entity) => (
                 <PlayerToken
                     key={entity.id}
                     entity={entity}
@@ -60,3 +108,4 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
         </Layer>
     );
 };
+

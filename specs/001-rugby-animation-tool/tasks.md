@@ -175,15 +175,15 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 5
 
-- [ ] T070 [P] [US5] Update EntityPalette component to have separate buttons for Attack Player and Defense Player
-- [ ] T071 [P] [US5] Implement team-based color defaults in addEntity action using DESIGN_TOKENS.colors.attack and defense
-- [ ] T072 [P] [US5] Create InlineEditor component in src/components/UI/InlineEditor.tsx per component-contracts.ts InlineEditorProps
-- [ ] T073 [P] [US5] Create ColorPicker component in src/components/UI/ColorPicker.tsx per component-contracts.ts ColorPickerProps
-- [ ] T074 [US5] Create EntityProperties panel component in src/components/Sidebar/EntityProperties.tsx per component-contracts.ts EntityPropertiesProps
-- [ ] T075 [US5] Implement label editing in PlayerToken component on double-click using InlineEditor
-- [ ] T076 [US5] Implement color and team updates in EntityProperties panel connected to updateEntity action
-- [ ] T077 [US5] Create EntityContextMenu component in src/components/UI/EntityContextMenu.tsx per component-contracts.ts EntityContextMenuProps
-- [ ] T078 [US5] Add right-click context menu support to PlayerToken component for delete/duplicate/edit actions
+- [x] T070 [P] [US5] Update EntityPalette component to have separate buttons for Attack Player and Defense Player
+- [x] T071 [P] [US5] Implement team-based color defaults in addEntity action using DESIGN_TOKENS.colors.attack and defense
+- [x] T072 [P] [US5] Create InlineEditor component in src/components/UI/InlineEditor.tsx per component-contracts.ts InlineEditorProps
+- [x] T073 [P] [US5] Create ColorPicker component in src/components/UI/ColorPicker.tsx per component-contracts.ts ColorPickerProps
+- [x] T074 [US5] Create EntityProperties panel component in src/components/Sidebar/EntityProperties.tsx per component-contracts.ts EntityPropertiesProps
+- [x] T075 [US5] Implement label editing in PlayerToken component on double-click using InlineEditor
+- [x] T076 [US5] Implement color and team updates in EntityProperties panel connected to updateEntity action
+- [x] T077 [US5] Create EntityContextMenu component in src/components/UI/EntityContextMenu.tsx per component-contracts.ts EntityContextMenuProps
+- [x] T078 [US5] Add right-click context menu support to PlayerToken component for delete/duplicate/edit actions
 
 **Checkpoint**: User Story 5 complete - full player token customization available
 
@@ -197,11 +197,11 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 6
 
-- [ ] T079 [P] [US6] Create SportSelector component in src/components/Sidebar/SportSelector.tsx per component-contracts.ts SportSelectorProps
-- [ ] T080 [P] [US6] Implement updateProjectSettings action in src/store/projectStore.ts per store-contracts.ts ProjectSettingsUpdate
-- [ ] T081 [US6] Update Field component to dynamically load correct SVG based on project.sport property
-- [ ] T082 [US6] Add sport selector to Sidebar with dropdown showing all field types from FIELD_DIMENSIONS
-- [ ] T083 [US6] Set default sport to 'rugby-union' in newProject action per Constitution II
+- [x] T079 [P] [US6] Create SportSelector component in src/components/Sidebar/SportSelector.tsx per component-contracts.ts SportSelectorProps
+- [x] T080 [P] [US6] Implement updateProjectSettings action in src/store/projectStore.ts per store-contracts.ts ProjectSettingsUpdate
+- [x] T081 [US6] Update Field component to dynamically load correct SVG based on project.sport property
+- [x] T082 [US6] Add sport selector to Sidebar with dropdown showing all field types from FIELD_DIMENSIONS
+- [x] T083 [US6] Set default sport to 'rugby-union' in newProject action per Constitution II
 
 **Checkpoint**: User Story 6 complete - multi-sport field selection functional
 
@@ -254,12 +254,12 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 9
 
-- [ ] T097 [P] [US9] Implement setPlaybackSpeed action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T098 [P] [US9] Implement toggleLoop action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T099 [US9] Add speed control buttons (0.5x, 1x, 2x) to PlaybackControls component per component-contracts.ts
-- [ ] T100 [US9] Add loop toggle checkbox to PlaybackControls component per component-contracts.ts
-- [ ] T101 [US9] Update useAnimationLoop hook to respect playbackSpeed multiplier
-- [ ] T102 [US9] Update useAnimationLoop hook to implement looping behavior when enabled
+- [x] T097 [P] [US9] Implement setPlaybackSpeed action in src/store/projectStore.ts per store-contracts.ts
+- [x] T098 [P] [US9] Implement toggleLoop action in src/store/projectStore.ts per store-contracts.ts
+- [x] T099 [US9] Add speed control buttons (0.5x, 1x, 2x) to PlaybackControls component per component-contracts.ts
+- [x] T100 [US9] Add loop toggle checkbox to PlaybackControls component per component-contracts.ts
+- [x] T101 [US9] Update useAnimationLoop hook to respect playbackSpeed multiplier
+- [x] T102 [US9] Update useAnimationLoop hook to implement looping behavior when enabled
 
 **Checkpoint**: All user stories complete - full feature set implemented
 
@@ -278,7 +278,7 @@ Verification of Phase 3 encountered three critical blockers that required archit
 - [ ] T109 [P] Implement Ctrl/Cmd+S keyboard shortcut for save in useKeyboardShortcuts hook
 - [ ] T110 [P] Implement Escape key to deselect entities in useKeyboardShortcuts hook
 - [ ] T111 [P] Add proper error boundaries and error handling throughout application
-- [ ] T112 [P] Optimize canvas rendering for 60fps performance per plan.md performance goals
+- [x] T112 [P] Optimize canvas rendering for 60fps performance per plan.md performance goals (Smooth Interpolation)
 - [ ] T113 [P] Add loading indicator during initial application startup
 - [ ] T114 [P] Implement proper accessibility attributes for all interactive elements
 - [ ] T115 Run quickstart.md validation checklist to verify setup is functional

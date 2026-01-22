@@ -24,6 +24,7 @@ export interface ProjectStoreState {
     isDirty: boolean;
     playbackSpeed: PlaybackSpeed;
     loopPlayback: boolean;
+    playbackPosition: PlaybackPosition | null;
 
     newProject: () => void;
     loadProject: (data: unknown) => LoadResult;
@@ -64,6 +65,7 @@ export const useProjectStore = create<ProjectStoreState>()(
             isDirty: false,
             playbackSpeed: 1,
             loopPlayback: false,
+            playbackPosition: null,
 
             newProject: () => set(() => {
                 const projectId = crypto.randomUUID();
@@ -550,12 +552,14 @@ export const useProjectStore = create<ProjectStoreState>()(
             pause: () => set((state) => ({
                 ...state,
                 isPlaying: false,
+                playbackPosition: null,
             })),
 
             reset: () => set((state) => ({
                 ...state,
                 currentFrameIndex: 0,
                 isPlaying: false,
+                playbackPosition: null,
             })),
 
             setPlaybackSpeed: (speed: PlaybackSpeed) => set((state) => ({
@@ -568,7 +572,10 @@ export const useProjectStore = create<ProjectStoreState>()(
                 loopPlayback: !state.loopPlayback,
             })),
 
-            setPlaybackPosition: () => { },
+            setPlaybackPosition: (position: PlaybackPosition) => set((state) => ({
+                ...state,
+                playbackPosition: position,
+            })),
         }),
         { name: 'ProjectStore' }
     )

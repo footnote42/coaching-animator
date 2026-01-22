@@ -38,6 +38,15 @@ Removed `isPlaying: false` from the `setCurrentFrame` action, allowing the anima
 
 ---
 
+### Issue #4: Playback Jumps Instantly Between Frames - RESOLVED
+**Severity**: High
+**Component**: Animation Engine / Rendering
+**Status**: ✅ FIXED
+**Fixed**: 2026-01-22
+
+**Fix Applied**:
+Implemented smooth lerp-based interpolation in `EntityLayer.tsx`. The player tokens now move fluidly between frame positions based on the playback progress (0 to 1). Updated `projectStore.ts` to manage `playbackPosition` state.
+
 ## Phase Completion Status
 
 ### ✅ Phase 1: Setup - COMPLETE
