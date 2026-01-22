@@ -3,7 +3,9 @@ import Konva from 'konva';
 import { Stage } from './components/Canvas/Stage';
 import { Field } from './components/Canvas/Field';
 import { EntityLayer } from './components/Canvas/EntityLayer';
+import { InlineEditor } from './components/Canvas/InlineEditor';
 import { EntityPalette } from './components/Sidebar/EntityPalette';
+import { EntityProperties } from './components/Sidebar/EntityProperties';
 import { ProjectActions } from './components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from './components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts, useExport } from './hooks';
@@ -12,6 +14,7 @@ import { useProjectStore } from './store/projectStore';
 import { useUIStore } from './store/uiStore';
 import { DESIGN_TOKENS } from './constants/design-tokens';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
+import { EntityContextMenu } from './components/ui/EntityContextMenu';
 
 function App() {
     // Canvas dimensions
@@ -53,6 +56,19 @@ function App() {
     // Local state for crash recovery dialog
     const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
     const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
+
+    // Local state for inline editor
+    const [inlineEditor, setInlineEditor] = useState<{
+        entityId: string;
+        position: { x: number; y: number };
+        initialValue: string;
+    } | null>(null);
+
+    // Local state for context menu
+    const [contextMenu, setContextMenu] = useState<{
+        entityId: string;
+        position: { x: number; y: number };
+    } | null>(null);
 
     // Initialize hooks
     useAnimationLoop();
@@ -175,13 +191,75 @@ function App() {
     };
 
     const handleEntityDoubleClick = (entityId: string) => {
-        console.log('Entity double-clicked:', entityId);
-        // TODO: Implement label editing in future phase
+        // Find the entity to get its current position for the editor
+        const entity = entities.find(e => e.id === entityId);
+        if (!entity) return;
+
+        // Calculate screen position from canvas position
+        // The canvas is centered in the viewport, so we need to account for that
+        const canvasElement = stageRef.current?.container();
+        if (!canvasElement) return;
+
+        const rect = canvasElement.getBoundingClientRect();
+        const screenX = rect.left + entity.x;
+        const screenY = rect.top + entity.y;
+
+        setInlineEditor({
+            entityId,
+            position: { x: screenX - 40, y: screenY - 15 }, // Center the editor
+            initialValue: entity.label || '',
+        });
     };
 
     const handleEntityContextMenu = (entityId: string, event: { x: number; y: number }) => {
-        console.log('Entity context menu:', entityId, event);
-        // TODO: Implement context menu in future phase
+        setContextMenu({
+            entityId,
+            position: event,
+        });
+    };
+
+    // Inline editor handlers
+    const handleInlineEditorConfirm = (value: string) => {
+        if (inlineEditor) {
+            updateEntity(inlineEditor.entityId, { label: value });
+        }
+        setInlineEditor(null);
+    };
+
+    const handleInlineEditorCancel = () => {
+        setInlineEditor(null);
+    };
+
+    // Context menu handlers
+    const handleContextMenuDuplicate = () => {
+        if (!contextMenu || !project) return;
+        const currentFrame = project.frames[currentFrameIndex];
+        if (!currentFrame) return;
+
+        const entity = currentFrame.entities[contextMenu.entityId];
+        if (!entity) return;
+
+        // Create a duplicate with offset position
+        addEntity({
+            type: entity.type,
+            x: entity.x + 30,
+            y: entity.y + 30,
+            team: entity.team,
+            color: entity.color,
+            label: entity.label,
+        });
+    };
+
+    const handleContextMenuDelete = () => {
+        if (!contextMenu) return;
+        const { removeEntity } = useProjectStore.getState();
+        removeEntity(contextMenu.entityId);
+        deselectAll();
+    };
+
+    const handleContextMenuEditLabel = () => {
+        if (!contextMenu) return;
+        handleEntityDoubleClick(contextMenu.entityId);
     };
 
     // Canvas click handler
@@ -234,6 +312,14 @@ function App() {
                         onAddBall={handleAddBall}
                         onAddCone={handleAddCone}
                         onAddMarker={handleAddMarker}
+                    />
+                    <EntityProperties
+                        entity={selectedEntityId ? entities.find(e => e.id === selectedEntityId) || null : null}
+                        onUpdate={(updates) => {
+                            if (selectedEntityId) {
+                                updateEntity(selectedEntityId, updates);
+                            }
+                        }}
                     />
                 </div>
             </aside>
@@ -306,6 +392,25 @@ function App() {
                 confirmLabel="Recover"
                 cancelLabel="Start Fresh"
                 variant="default"
+            />
+
+            {/* Inline editor */}
+            {inlineEditor && (
+                <InlineEditor
+                    initialValue={inlineEditor.initialValue}
+                    position={inlineEditor.position}
+                    onConfirm={handleInlineEditorConfirm}
+                    onCancel={handleInlineEditorCancel}
+                />
+            )}
+
+            {/* Context menu */}
+            <EntityContextMenu
+                position={contextMenu?.position || null}
+                onDuplicate={handleContextMenuDuplicate}
+                onDelete={handleContextMenuDelete}
+                onEditLabel={handleContextMenuEditLabel}
+                onClose={() => setContextMenu(null)}
             />
         </div>
     );
