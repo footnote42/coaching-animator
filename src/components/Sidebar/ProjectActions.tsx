@@ -5,6 +5,8 @@ import { useUIStore } from '../../store/uiStore';
 import { downloadJson, readJsonFile, generateProjectFilename } from '../../utils/fileIO';
 import { Button } from '../ui/button';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { SportSelector } from './SportSelector';
+import { SportType } from '../../types';
 
 
 /**
@@ -14,6 +16,8 @@ import { ConfirmDialog } from '../ui/ConfirmDialog';
  * Handles unsaved changes warnings and file I/O operations.
  */
 export interface ProjectActionsProps {
+    currentSport: SportType;
+    onSportChange: (sport: SportType) => void;
     onExport?: () => void;
     exportStatus?: 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
     exportProgress?: number;
@@ -22,6 +26,8 @@ export interface ProjectActionsProps {
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
+    currentSport,
+    onSportChange,
     onExport,
     exportStatus = 'idle',
     exportProgress = 0,
@@ -127,103 +133,117 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     };
 
     return (
-        <div className="flex flex-col gap-2 p-4 border-b border-[var(--color-border)]">
-            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
-                Project
-            </h3>
-
-            <div className="flex gap-2">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNewProject}
-                    className="flex-1"
-                >
-                    <FilePlus className="w-4 h-4 mr-2" />
-                    New
-                </Button>
-
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleOpen}
-                    className="flex-1"
-                >
-                    <FolderOpen className="w-4 h-4 mr-2" />
-                    Open
-                </Button>
+        <div className="flex flex-col gap-4 p-4 border-b border-[var(--color-border)]">
+            {/* Field Settings Section */}
+            <div>
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                    Field Settings
+                </h3>
+                <SportSelector
+                    currentSport={currentSport}
+                    onSportChange={onSportChange}
+                />
             </div>
 
-            <Button
-                variant="default"
-                size="sm"
-                onClick={handleSave}
-                disabled={!project}
-                className="w-full"
-            >
-                <Save className="w-4 h-4 mr-2" />
-                Save
-            </Button>
+            {/* Project Actions Section */}
+            <div>
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                    Project
+                </h3>
 
-            {/* Export button */}
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={onExport}
-                disabled={!canExport || exportStatus !== 'idle'}
-                className="w-full"
-            >
-                <Video className="w-4 h-4 mr-2" />
-                Export Video
-            </Button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNewProject}
+                        className="flex-1"
+                    >
+                        <FilePlus className="w-4 h-4 mr-2" />
+                        New
+                    </Button>
 
-            {/* Export progress indicator */}
-            {exportStatus !== 'idle' && (
-                <div className="mt-2 p-2 bg-tactical-mono-100 border border-tactical-mono-300">
-                    <div className="text-xs font-mono text-tactical-mono-700 mb-1">
-                        {exportStatus === 'preparing' && 'Preparing...'}
-                        {exportStatus === 'recording' && 'Recording...'}
-                        {exportStatus === 'processing' && 'Processing...'}
-                        {exportStatus === 'complete' && '✓ Complete!'}
-                        {exportStatus === 'error' && '✗ Error'}
-                    </div>
-                    {exportStatus !== 'error' && (
-                        <div className="w-full h-2 bg-tactical-mono-200">
-                            <div
-                                className="h-full bg-pitch-green transition-all duration-300"
-                                style={{ width: `${exportProgress}%` }}
-                            />
-                        </div>
-                    )}
-                    {exportStatus === 'error' && exportError && (
-                        <div className="text-xs text-red-600 mt-1">
-                            {exportError}
-                        </div>
-                    )}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleOpen}
+                        className="flex-1"
+                    >
+                        <FolderOpen className="w-4 h-4 mr-2" />
+                        Open
+                    </Button>
                 </div>
-            )}
 
-            {/* Hidden file input for opening projects */}
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileSelect}
-                className="hidden"
-                aria-label="Select project file to open"
-            />
+                <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={!project}
+                    className="w-full"
+                >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                </Button>
 
-            {/* Unsaved changes confirmation dialog */}
-            <ConfirmDialog
-                open={unsavedChangesDialog.isOpen}
-                onConfirm={handleConfirmUnsavedChanges}
-                onCancel={cancelPendingAction}
-                title="Unsaved Changes"
-                description="You have unsaved changes. If you continue, you will lose your work. Are you sure?"
-                confirmLabel="Discard Changes"
-                cancelLabel="Keep Editing"
-                variant="destructive"
-            />
+                {/* Export button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onExport}
+                    disabled={!canExport || exportStatus !== 'idle'}
+                    className="w-full"
+                >
+                    <Video className="w-4 h-4 mr-2" />
+                    Export Video
+                </Button>
+
+                {/* Export progress indicator */}
+                {exportStatus !== 'idle' && (
+                    <div className="mt-2 p-2 bg-tactical-mono-100 border border-tactical-mono-300">
+                        <div className="text-xs font-mono text-tactical-mono-700 mb-1">
+                            {exportStatus === 'preparing' && 'Preparing...'}
+                            {exportStatus === 'recording' && 'Recording...'}
+                            {exportStatus === 'processing' && 'Processing...'}
+                            {exportStatus === 'complete' && '✓ Complete!'}
+                            {exportStatus === 'error' && '✗ Error'}
+                        </div>
+                        {exportStatus !== 'error' && (
+                            <div className="w-full h-2 bg-tactical-mono-200">
+                                <div
+                                    className="h-full bg-pitch-green transition-all duration-300"
+                                    style={{ width: `${exportProgress}%` }}
+                                />
+                            </div>
+                        )}
+                        {exportStatus === 'error' && exportError && (
+                            <div className="text-xs text-red-600 mt-1">
+                                {exportError}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Hidden file input for opening projects */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    aria-label="Select project file to open"
+                />
+
+                {/* Unsaved changes confirmation dialog */}
+                <ConfirmDialog
+                    open={unsavedChangesDialog.isOpen}
+                    onConfirm={handleConfirmUnsavedChanges}
+                    onCancel={cancelPendingAction}
+                    title="Unsaved Changes"
+                    description="You have unsaved changes. If you continue, you will lose your work. Are you sure?"
+                    confirmLabel="Discard Changes"
+                    cancelLabel="Keep Editing"
+                    variant="destructive"
+                />
+            </div>
         </div>
     );
 };

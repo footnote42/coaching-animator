@@ -170,7 +170,30 @@ export const useProjectStore = create<ProjectStoreState>()(
 
                 return jsonString;
             },
-            updateProjectSettings: () => { },
+            updateProjectSettings: (updates: Partial<ProjectSettingsUpdate>) => set((state) => {
+                if (!state.project) return state;
+
+                const now = new Date().toISOString();
+
+                return {
+                    project: {
+                        ...state.project,
+                        // Update top-level project fields
+                        ...(updates.name !== undefined && { name: updates.name }),
+                        ...(updates.sport !== undefined && { sport: updates.sport }),
+                        updatedAt: now,
+                        // Update settings object
+                        settings: {
+                            ...state.project.settings,
+                            ...(updates.showGrid !== undefined && { showGrid: updates.showGrid }),
+                            ...(updates.gridSpacing !== undefined && { gridSpacing: updates.gridSpacing }),
+                            ...(updates.defaultTransitionDuration !== undefined && { defaultTransitionDuration: updates.defaultTransitionDuration }),
+                            ...(updates.exportResolution !== undefined && { exportResolution: updates.exportResolution }),
+                        },
+                    },
+                    isDirty: true,
+                };
+            }),
 
             setCurrentFrame: (index: number) => set((state) => {
                 // Guard: Return if no project

@@ -15,6 +15,7 @@ import { useUIStore } from './store/uiStore';
 import { DESIGN_TOKENS } from './constants/design-tokens';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { EntityContextMenu } from './components/ui/EntityContextMenu';
+import { SportType } from './types';
 
 function App() {
     // Canvas dimensions
@@ -45,6 +46,7 @@ function App() {
         setPlaybackSpeed,
         toggleLoop,
         updateFrame,
+        updateProjectSettings,
     } = useProjectStore();
 
     // Get UI store state and actions
@@ -288,6 +290,11 @@ function App() {
         updateFrame(frameId, { duration: durationMs });
     };
 
+    // Sport change handler
+    const handleSportChange = (sport: SportType) => {
+        updateProjectSettings({ sport });
+    };
+
     return (
         <div className="flex h-screen bg-tactical-mono-50">
             {/* Left sidebar - Entity palette and Project actions */}
@@ -300,6 +307,8 @@ function App() {
 
                 <div className="bg-tactics-white flex-1 overflow-y-auto">
                     <ProjectActions
+                        currentSport={project?.sport || 'rugby-union'}
+                        onSportChange={handleSportChange}
                         onExport={startExport}
                         exportStatus={exportStatus}
                         exportProgress={exportProgress}
@@ -336,7 +345,7 @@ function App() {
                             onCanvasClick={handleCanvasClick}
                         >
                             <Field
-                                sport="rugby-union"
+                                sport={project?.sport || 'rugby-union'}
                                 width={canvasWidth}
                                 height={canvasHeight}
                             />
