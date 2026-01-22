@@ -10,6 +10,7 @@ export interface FrameStripProps {
   onAddFrame: () => void;
   onRemoveFrame: (frameId: string) => void;
   onDuplicateFrame: (frameId: string) => void;
+  onDurationChange: (frameId: string, durationMs: number) => void;
 }
 
 export const FrameStrip: React.FC<FrameStripProps> = ({
@@ -19,6 +20,7 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
   onAddFrame,
   onRemoveFrame,
   onDuplicateFrame,
+  onDurationChange,
 }) => {
   return (
     <div className="flex items-center gap-2 p-2 bg-tactical-mono-50 border-t border-tactical-mono-300 overflow-x-auto">
@@ -32,6 +34,7 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
           onClick={() => onFrameSelect(index)}
           onDelete={() => onRemoveFrame(frame.id)}
           onDuplicate={() => onDuplicateFrame(frame.id)}
+          onDurationChange={onDurationChange}
         />
       ))}
 

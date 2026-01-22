@@ -154,14 +154,14 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 4
 
-- [ ] T062 [P] [US4] Implement removeFrame action in src/store/projectStore.ts with last-frame protection per store-contracts.ts
-- [ ] T063 [P] [US4] Implement duplicateFrame action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T064 [P] [US4] Implement updateFrame action in src/store/projectStore.ts for duration changes per store-contracts.ts FrameUpdate
-- [ ] T065 [US4] Add frame action buttons (Add, Duplicate, Remove) to FrameStrip component
-- [ ] T066 [US4] Create FrameSettings component in src/components/Timeline/FrameSettings.tsx per component-contracts.ts FrameSettingsProps
-- [ ] T067 [US4] Add prev/next frame navigation buttons to PlaybackControls component
-- [ ] T068 [US4] Add keyboard shortcuts for frame navigation (Left/Right arrows) to useKeyboardShortcuts hook
-- [ ] T069 [US4] Update FrameThumbnail component to show frame duration and provide delete/duplicate actions
+- [x] T062 [P] [US4] Implement removeFrame action in src/store/projectStore.ts with last-frame protection per store-contracts.ts
+- [x] T063 [P] [US4] Implement duplicateFrame action in src/store/projectStore.ts per store-contracts.ts
+- [x] T064 [P] [US4] Implement updateFrame action in src/store/projectStore.ts for duration changes per store-contracts.ts FrameUpdate
+- [x] T065 [US4] Add frame action buttons (Add, Duplicate, Remove) to FrameStrip component
+- [x] T066 [US4] Create FrameSettings component in src/components/Timeline/FrameSettings.tsx per component-contracts.ts FrameSettingsProps
+- [x] T067 [US4] Add prev/next frame navigation buttons to PlaybackControls component
+- [x] T068 [US4] Add keyboard shortcuts for frame navigation (Left/Right arrows) to useKeyboardShortcuts hook
+- [x] T069 [US4] Update FrameThumbnail component to show frame duration and provide delete/duplicate actions
 
 **Checkpoint**: User Story 4 complete - multi-frame management fully functional
 

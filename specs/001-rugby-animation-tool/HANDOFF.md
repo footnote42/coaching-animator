@@ -38,14 +38,14 @@ Three critical issues resolved:
 - ✅ Ball color changed from pitch green to white for visibility
 - ✅ Ball shape corrected to oval (Ellipse with radiusX=18, radiusY=12)
 
-#### Phase 5: User Story 3 - Export Animation as Video (Completed 2026-01-17)
+#### Phase 6: User Story 4 - Manage Multiple Frames (Completed 2026-01-22)
 All acceptance criteria met:
-- ✅ Export button triggers animation playback and generates .webm video
-- ✅ Progress indicator visible during export (Preparing → Recording → Processing → Complete)
-- ✅ Video file automatically downloads upon completion
-- ✅ Exported video plays correctly showing animated player movements
+- ✅ Frame duration slider adjusts transition times (0.1s - 10s)
+- ✅ Duplicate frame creates exact copy after selected frame
+- ✅ Frame navigation improvements
+- ✅ UI follows Constitution guidelines (sharp corners, monospace, pitch green)
 
-**Key Implementation**: MediaRecorder API integration in `useExport.ts` hook, Stage ref forwarding, progress UI in ProjectActions
+**Key Implementation**: Interactive duration slider in `FrameThumbnail.tsx`, real-time store updates in `App.tsx`.
 
 ---
 
@@ -56,13 +56,8 @@ None remaining - all P1 stories complete ✅
 
 ### P2: Enhanced Features (Not Started)
 
-#### User Story 4 - Manage Multiple Frames ⏳ NEXT
-**Status**: Basic add/remove frame functionality exists, but needs:
-- Frame duration slider (per-frame transition time)
-- Duplicate frame functionality
-- Frame navigation improvements
-**Estimated Complexity**: Medium (3-5 tasks)
-**Dependencies**: None (can start immediately)
+#### User Story 4 - Manage Multiple Frames ✅ COMPLETE
+**Status**: Fully implemented. Coaches can now manually set frame durations via slider.
 
 #### User Story 5 - Configure Player Tokens
 **Status**: Not started
@@ -74,7 +69,7 @@ None remaining - all P1 stories complete ✅
 **Estimated Complexity**: Medium (4-6 tasks)
 
 #### User Story 6 - Select Different Sports Fields
-**Status**: Not started
+**Status**: Not started-
 **Features Needed**:
 - Sport selector UI component
 - Field background switching (Rugby Union, Rugby League, Soccer, American Football)

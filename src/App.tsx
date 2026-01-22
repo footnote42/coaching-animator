@@ -41,6 +41,7 @@ function App() {
         reset,
         setPlaybackSpeed,
         toggleLoop,
+        updateFrame,
     } = useProjectStore();
 
     // Get UI store state and actions
@@ -205,6 +206,10 @@ function App() {
         }
     };
 
+    const handleFrameDurationChange = (frameId: string, durationMs: number) => {
+        updateFrame(frameId, { duration: durationMs });
+    };
+
     return (
         <div className="flex h-screen bg-tactical-mono-50">
             {/* Left sidebar - Entity palette and Project actions */}
@@ -286,6 +291,7 @@ function App() {
                         onAddFrame={addFrame}
                         onRemoveFrame={removeFrame}
                         onDuplicateFrame={duplicateFrame}
+                        onDurationChange={handleFrameDurationChange}
                     />
                 </footer>
             </main>
