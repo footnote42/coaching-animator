@@ -38,8 +38,8 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
 
     return (
         <div className="flex flex-col gap-4 p-4">
-            <h3 className="text-sm font-semibold text-tactical-mono-700">
-                Entity Properties
+            <h3 className="text-sm font-semibold text-tactical-mono-700 truncate">
+                Entity: {entity.label || (entity.id ? `Unnamed ${entity.type} (${entity.id.slice(0, 4)})` : entity.type)}
             </h3>
 
             {/* Entity Type (read-only) */}
@@ -47,7 +47,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                 <label className="text-xs font-semibold text-tactical-mono-700">
                     Type
                 </label>
-                <div className="px-3 py-2 text-sm bg-tactical-mono-100 border border-tactical-mono-300 font-mono">
+                <div className="px-3 py-2 text-sm bg-tactical-mono-100 border border-tactical-mono-300 font-mono capitalize">
                     {entity.type}
                 </div>
             </div>

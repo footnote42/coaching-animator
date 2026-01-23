@@ -146,8 +146,16 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             // Setup MediaRecorder
             recordedChunksRef.current = [];
 
+            // Find supported mime type
+            const mimeTypes = [
+                'video/webm;codecs=vp8,opus',
+                'video/webm;codecs=vp8',
+                'video/webm',
+            ];
+            const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
+
             const options: MediaRecorderOptions = {
-                mimeType: 'video/webm;codecs=vp8',
+                mimeType,
                 videoBitsPerSecond: 2500000, // 2.5 Mbps for good quality
             };
 
@@ -161,6 +169,9 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             };
 
             mediaRecorder.onstop = () => {
+                // Stop all tracks in the stream to release resources (camera, mic, or canvas capture)
+                stream.getTracks().forEach(track => track.stop());
+
                 // Restore original stage dimensions and scale
                 stage.width(originalWidth);
                 stage.height(originalHeight);
@@ -189,6 +200,9 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             };
 
             mediaRecorder.onerror = (event) => {
+                // Stop all tracks in the stream
+                stream.getTracks().forEach(track => track.stop());
+
                 // Restore original stage dimensions and scale on error
                 stage.width(originalWidth);
                 stage.height(originalHeight);

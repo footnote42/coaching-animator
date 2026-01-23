@@ -200,14 +200,16 @@ function App() {
     const handleEntityDoubleClick = (entityId: string) => {
         // Find the entity to get its current position for the editor
         const entity = entities.find(e => e.id === entityId);
-        if (!entity) return;
+        if (!entity || !stageRef.current) return;
 
         // Calculate screen position from canvas position
         // The canvas is centered in the viewport, so we need to account for that
-        const canvasElement = stageRef.current?.container();
-        if (!canvasElement) return;
-
+        const canvasElement = stageRef.current.container();
         const rect = canvasElement.getBoundingClientRect();
+
+        // Convert stage coordinates to absolute screen coordinates
+        // stageRef.current.getAbsoluteTransform().point(entity) would be more robust 
+        // if we had zooming/panning, but for now rect.left + entity.x is correct.
         const screenX = rect.left + entity.x;
         const screenY = rect.top + entity.y;
 
@@ -219,9 +221,17 @@ function App() {
     };
 
     const handleEntityContextMenu = (entityId: string, event: { x: number; y: number }) => {
+        if (!stageRef.current) return;
+
+        const canvasElement = stageRef.current.container();
+        const rect = canvasElement.getBoundingClientRect();
+
         setContextMenu({
             entityId,
-            position: event,
+            position: {
+                x: rect.left + event.x,
+                y: rect.top + event.y
+            },
         });
     };
 

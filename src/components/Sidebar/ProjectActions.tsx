@@ -205,7 +205,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             disabled={!project}
                             className="flex-1"
                         >
-                            720p
+                            {project?.settings.exportResolution === '720p' && '✓ '}720p
                         </Button>
                         <Button
                             variant={project?.settings.exportResolution === '1080p' ? 'default' : 'outline'}
@@ -214,7 +214,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             disabled={!project}
                             className="flex-1"
                         >
-                            1080p
+                            {project?.settings.exportResolution === '1080p' && '✓ '}1080p
                         </Button>
                     </div>
                 </div>
