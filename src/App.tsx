@@ -4,6 +4,7 @@ import { Stage } from './components/Canvas/Stage';
 import { Field } from './components/Canvas/Field';
 import { EntityLayer } from './components/Canvas/EntityLayer';
 import { InlineEditor } from './components/Canvas/InlineEditor';
+import { GhostLayer } from './components/Canvas/GhostLayer';
 import { EntityPalette } from './components/Sidebar/EntityPalette';
 import { EntityProperties } from './components/Sidebar/EntityProperties';
 import { ProjectActions } from './components/Sidebar/ProjectActions';
@@ -51,7 +52,7 @@ function App() {
     } = useProjectStore();
 
     // Get UI store state and actions
-    const { selectedEntityId, selectEntity, deselectAll } = useUIStore();
+    const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts } = useUIStore();
 
     // Initialize export hook
     const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
@@ -350,6 +351,7 @@ function App() {
                                 width={canvasWidth}
                                 height={canvasHeight}
                             />
+                            <GhostLayer />
                             <EntityLayer
                                 entities={entities}
                                 selectedEntityId={selectedEntityId}
@@ -380,6 +382,8 @@ function App() {
                         onNextFrame={handleNextFrame}
                         onSpeedChange={setPlaybackSpeed}
                         onLoopToggle={toggleLoop}
+                        ghostEnabled={showGhosts}
+                        onGhostToggle={toggleGhosts}
                     />
 
                     <FrameStrip

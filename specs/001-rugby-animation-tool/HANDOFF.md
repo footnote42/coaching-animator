@@ -1,9 +1,10 @@
-# Phase 6 → Phase 7+ Handoff Document
+# Phase 8 & 11 → Phase 9+ Handoff Document
 
 **Project**: Rugby Animation Tool  
-**Last Phase Completed**: Phase 11 - Playback Speed and Looping & Polish  
-**Completed**: 2026-01-22  
-**Next Phase**: User Story 7 (Ghost Mode) or User Story 8 (Annotations)
+**Last Phase Completed**: Phase 9 (Ghost Mode)  
+**Completed**: 2026-01-23  
+**Next Phase**: User Story 8 (Annotations)
+
 
 ---
 
@@ -68,6 +69,13 @@ All acceptance criteria met (6/7 browser tests passing):
 - ✅ Looping playback implemented
 - ✅ Smooth lerp-based interpolation between frames implemented for fluid movement
 
+#### Phase 9: User Story 7 - Ghost Mode (Completed 2026-01-23)
+- ✅ GhostLayer component renders entities from previous frame at 30% opacity
+- ✅ Ghost Mode toggle button in playback controls (pitch green active state)
+- ✅ Handles Frame 1 edge case (no previous frame, no ghosts)
+- ✅ Constitution-compliant styling (sharp corners, Ghost icon)
+- ✅ All 7 browser verification tests passed
+
 ---
 
 ## Remaining Work (Priority Order)
@@ -89,8 +97,8 @@ None remaining - all P1 stories complete ✅
 
 ### P3: Polish Features (Not Started)
 
-#### User Story 7 - View Previous Frame Positions (Ghost Mode)
-**Estimated Complexity**: Low (2-3 tasks)
+#### User Story 7 - View Previous Frame Positions (Ghost Mode) ✅ COMPLETE
+**Status**: Fully implemented. Ghost entities render at 30% opacity when enabled.
 
 #### User Story 8 - Draw Annotations
 **Estimated Complexity**: Medium-High (5-7 tasks)

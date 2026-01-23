@@ -117,7 +117,7 @@ Verification of Phase 3 encountered three critical blockers that required archit
 - [x] T048 [US2] Create ProjectActions sidebar component in src/components/Sidebar/ProjectActions.tsx per component-contracts.ts ProjectActionsProps
 - [x] T049 [US2] Implement auto-save to LocalStorage in src/hooks/useAutoSave.ts per research.md (30 second interval)
 - [x] T050 [US2] Create unsaved changes dialog using ConfirmDialog in src/components/ui/ConfirmDialog.tsx per component-contracts.ts ConfirmDialogProps
-- [ ] T051 [US2] Implement isDirty state tracking in src/store/projectStore.ts (set to true on any mutation)
+- [x] T051 [US2] Implement isDirty state tracking in src/store/projectStore.ts (set to true on any mutation)
 - [x] T052 [US2] Implement unsaved changes dialog logic in src/store/uiStore.ts per store-contracts.ts unsavedChangesDialog
 - [x] T053 [US2] Add crash recovery on app load by checking LocalStorage for autosave data in src/App.tsx
 
@@ -133,14 +133,14 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 3
 
-- [ ] T054 [P] [US3] Create video export hook in src/hooks/useExport.ts using MediaRecorder API per research.md
-- [ ] T055 [P] [US3] Create ExportDialog component in src/components/UI/ExportDialog.tsx per component-contracts.ts ExportDialogProps
-- [ ] T056 [US3] Implement startExport, setExportProgress, completeExport actions in src/store/uiStore.ts per store-contracts.ts
-- [ ] T057 [US3] Integrate export workflow in ProjectActions component to trigger export process
-- [ ] T058 [US3] Implement canvas capture and MediaRecorder setup in useExport hook with 60fps stream
-- [ ] T059 [US3] Add export resolution configuration in ProjectSettings and apply to canvas capture
-- [ ] T060 [US3] Implement export error handling and retry logic in useExport hook
-- [ ] T061 [US3] Add export validation to prevent exports longer than 5 minutes per VALIDATION.EXPORT.MAX_DURATION_MS
+- [x] T054 [P] [US3] Create video export hook in src/hooks/useExport.ts using MediaRecorder API per research.md
+- [x] T055 [P] [US3] Create ExportDialog component in src/components/UI/ExportDialog.tsx per component-contracts.ts ExportDialogProps
+- [x] T056 [US3] Implement startExport, setExportProgress, completeExport actions in src/store/uiStore.ts per store-contracts.ts
+- [x] T057 [US3] Integrate export workflow in ProjectActions component to trigger export process
+- [x] T058 [US3] Implement canvas capture and MediaRecorder setup in useExport hook with 60fps stream
+- [x] T059 [US3] Add export resolution configuration in ProjectSettings and apply to canvas capture
+- [x] T1060 [US3] Implement export error handling and retry logic in useExport hook
+- [x] T1061 [US3] Add export validation to prevent exports longer than 5 minutes per VALIDATION.EXPORT.MAX_DURATION_MS
 
 **Checkpoint**: All P1 user stories complete - MVP is fully functional with create, save, load, and export capabilities
 
@@ -215,11 +215,11 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 7
 
-- [ ] T084 [P] [US7] Create GhostLayer component in src/components/Canvas/GhostLayer.tsx per component-contracts.ts GhostLayerProps
-- [ ] T085 [P] [US7] Implement toggleGhosts action in src/store/uiStore.ts per store-contracts.ts
-- [ ] T086 [US7] Add ghost toggle button to UI (Sidebar or Timeline)
-- [ ] T087 [US7] Integrate GhostLayer into Stage component after EntityLayer
-- [ ] T088 [US7] Implement logic to get previous frame entities in GhostLayer (hide if on frame 0)
+- [x] T084 [P] [US7] Create GhostLayer component in src/components/Canvas/GhostLayer.tsx per component-contracts.ts GhostLayerProps
+- [x] T085 [P] [US7] Implement toggleGhosts action in src/store/uiStore.ts per store-contracts.ts (ALREADY EXISTED)
+- [x] T086 [US7] Add ghost toggle button to UI (Sidebar or Timeline)
+- [x] T087 [US7] Integrate GhostLayer into Stage component after EntityLayer
+- [x] T088 [US7] Implement logic to get previous frame entities in GhostLayer (hide if on frame 0)
 
 **Checkpoint**: User Story 7 complete - ghost layer functional for authoring aid
 

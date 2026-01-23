@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat } from 'lucide-react';
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat, Ghost } from 'lucide-react';
 import { PlaybackSpeed } from '../../types';
 
 export interface PlaybackControlsProps {
@@ -15,6 +15,8 @@ export interface PlaybackControlsProps {
   onNextFrame: () => void;
   onSpeedChange: (speed: PlaybackSpeed) => void;
   onLoopToggle: () => void;
+  ghostEnabled: boolean;
+  onGhostToggle: () => void;
 }
 
 export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
@@ -30,6 +32,8 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   onNextFrame,
   onSpeedChange,
   onLoopToggle,
+  ghostEnabled,
+  onGhostToggle,
 }) => {
   const speedOptions: PlaybackSpeed[] = [0.5, 1, 2];
 
@@ -108,6 +112,20 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         title={loopEnabled ? 'Loop enabled' : 'Loop disabled'}
       >
         <Repeat size={16} />
+      </button>
+
+      {/* Ghost Mode toggle */}
+      <button
+        onClick={onGhostToggle}
+        className={`
+          p-2
+          border border-tactical-mono-300
+          rounded-none
+          ${ghostEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+        `}
+        title={ghostEnabled ? 'Ghost mode enabled' : 'Ghost mode disabled'}
+      >
+        <Ghost size={16} />
       </button>
     </div>
   );
