@@ -265,25 +265,152 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ---
 
-## Phase 12: Polish & Cross-Cutting Concerns
+## Phase 12: Stabilization 🛡️ (Remediation)
 
-**Purpose**: Improvements that affect multiple user stories
+**Purpose**: Fix high-impact issues preventing production use  
+**Input**: [specification_audit.md](./specification_audit.md) findings AF-01, AF-02, AF-03, MF-06, MF-07, MF-08, SF-02  
+**Estimated Effort**: 4-6 hours
 
-- [ ] T103 [P] Create GridOverlay component in src/components/Canvas/GridOverlay.tsx per component-contracts.ts GridOverlayProps
-- [ ] T104 [P] Implement toggleGrid action in src/store/uiStore.ts and integrate GridOverlay into Stage
-- [ ] T105 [P] Add loading states to all async operations (save, load, export)
-- [ ] T106 [P] Implement entity fade-out animation when entity doesn't exist in target frame per FR-ANI-05
-- [ ] T107 [P] Implement ball possession logic (parentId) in updateEntity and PlayerToken rendering
-- [x] T108 [P] Add tooltips with keyboard shortcuts to all major action buttons per research.md
-- [x] T109 [P] Implement Ctrl/Cmd+S keyboard shortcut for save in useKeyboardShortcuts hook
-- [x] T110 [P] Implement Escape key to deselect entities in useKeyboardShortcuts hook
-- [ ] T111 [P] Add proper error boundaries and error handling throughout application
-- [x] T112 [P] Optimize canvas rendering for 60fps performance per plan.md performance goals (Smooth Interpolation)
-- [ ] T113 [P] Add loading indicator during initial application startup
-- [ ] T114 [P] Implement proper accessibility attributes for all interactive elements
-- [ ] T115 Run quickstart.md validation checklist to verify setup is functional
-- [ ] T116 Create user-facing README.md with usage instructions and feature overview
-- [ ] T117 Final code cleanup: remove console.logs, TODOs, and unused imports
+> **Note**: Original Phase 12 tasks (T103-T117) redistributed across Phases 12-15 per [plan.md](./plan.md) remediation structure.
+
+### 12.1 Error Boundaries (AF-02, ER-02)
+
+- [ ] T103 [P] Create ErrorBoundary component in src/components/ErrorBoundary.tsx with fallback UI
+- [ ] T104 Wrap major component trees (Canvas, Sidebar, Timeline) with ErrorBoundary in src/App.tsx
+
+### 12.2 Loading States (AF-01, ER-01)
+
+- [ ] T105 [P] Add `isLoading` state to src/store/uiStore.ts for async operation tracking
+- [ ] T106 [P] Update src/components/Sidebar/ProjectActions.tsx with loading indicators for Save/Load buttons
+- [ ] T107 Verify src/hooks/useExport.ts updates progress state correctly during export
+
+### 12.3 Tab Close Warning (MF-06, MF-09, AF-03)
+
+- [ ] T108 Implement `beforeunload` event listener in src/App.tsx to warn on unsaved changes per FR-PER-04
+
+### 12.4 Double-Click Reliability (SF-02)
+
+- [ ] T109 [P] Improve double-click timing in src/components/Canvas/PlayerToken.tsx (300ms → 500ms window)
+- [ ] T110 [P] Adjust click-drag threshold in src/components/Canvas/InlineEditor.tsx to distinguish from edit intent
+
+### 12.5 Edge Case Verification (MF-07, MF-08)
+
+- [ ] T111 Verify malformed JSON loading shows user-friendly toast in src/utils/validation.ts
+- [ ] T112 Verify 50-frame limit shows "Maximum frames reached" message in src/store/projectStore.ts addFrame action
+
+**Checkpoint**: Application is stable and resilient - errors don't crash the app, async operations show progress, unsaved changes protected.
+
+---
+
+## Phase 13: Spec Compliance 📋 (Remediation)
+
+**Purpose**: Address all must-fix items to achieve 100% FR coverage  
+**Input**: [specification_audit.md](./specification_audit.md) findings MF-01 to MF-05  
+**Estimated Effort**: 6-10 hours
+
+### 13.1 Grid Overlay (MF-01, FR-CAN-04)
+
+- [ ] T113 [P] Create GridOverlay component in src/components/Canvas/GridOverlay.tsx with 100-unit grid lines
+- [ ] T114 [P] Ensure toggleGrid action is functional in src/store/uiStore.ts
+- [ ] T115 Integrate GridOverlay into src/components/Canvas/Stage.tsx
+
+### 13.2 Entity Fade-Out (MF-04, FR-ANI-05)
+
+- [ ] T116 [P] Implement opacity interpolation in src/components/Canvas/EntityLayer.tsx for entities not in target frame
+- [ ] T117 [P] Track entity existence in src/hooks/useAnimationLoop.ts for fade timing
+
+### 13.3 Export Resolution UI (MF-05, FR-EXP-03)
+
+- [ ] T118 [P] Add resolution dropdown to src/components/Sidebar/ProjectActions.tsx (720p default, 1080p optional)
+- [ ] T119 Update src/hooks/useExport.ts to respect resolution setting from projectStore.settings.exportResolution
+
+### 13.4 Ball Possession Logic (MF-02, FR-ENT-06)
+
+- [ ] T120 [P] Add "Possession" dropdown to src/components/Sidebar/EntityProperties.tsx for ball entity
+- [ ] T121 [P] Render ball relative to parent player position in src/components/Canvas/EntityLayer.tsx
+- [ ] T122 Interpolate ball with parent during animation in src/hooks/useAnimationLoop.ts
+
+### 13.5 Annotation Frame Visibility (MF-03, FR-ENT-07)
+
+- [ ] T123 [P] Add Start Frame/End Frame dropdowns to src/components/Sidebar/EntityProperties.tsx for annotations
+- [ ] T124 [P] Filter annotations by frame visibility in src/components/Canvas/AnnotationLayer.tsx
+- [ ] T125 Ensure startFrameId/endFrameId are properly used in src/store/projectStore.ts
+
+**Checkpoint**: All 9 must-fix issues resolved - 100% spec compliance achieved.
+
+---
+
+## Phase 14: Polish & UX 💎 (Remediation)
+
+**Purpose**: Address should-fix items and remaining polish tasks  
+**Input**: [specification_audit.md](./specification_audit.md) findings SF-01, SF-05, SF-06, SF-07  
+**Estimated Effort**: 4-6 hours
+
+### 14.1 High-DPI Support (SF-01, FR-CAN-05)
+
+- [ ] T126 Add pixelRatio={window.devicePixelRatio || 1} prop to Stage in src/components/Canvas/Stage.tsx
+
+### 14.2 Context Menu Coverage (SF-05, FR-UI-06)
+
+- [ ] T127 [P] Verify right-click context menu on PlayerToken in src/components/Canvas/PlayerToken.tsx
+- [ ] T128 [P] Add context menu to annotations in src/components/Canvas/AnnotationLayer.tsx with Delete option
+- [ ] T129 Add context menu to ball entity in PlayerToken rendering
+
+### 14.3 Aesthetic Compliance Audit (SF-06, FR-CON-03)
+
+- [ ] T130 Audit src/index.css for @theme Pitch Green (#1A3D1A) and Tactics White (#F8F9FA) usage
+- [ ] T131 Verify sharp corners (border-radius: 0) across Sidebar, Timeline, Dialog components
+- [ ] T132 Verify monospace fonts for frame counts/timecodes
+
+### 14.4 Remaining Polish Tasks (SF-07)
+
+- [x] T133 [P] Add tooltips with keyboard shortcuts to all major action buttons per research.md (was T108)
+- [x] T134 [P] Implement Ctrl/Cmd+S keyboard shortcut for save in useKeyboardShortcuts hook (was T109)
+- [x] T135 [P] Implement Escape key to deselect entities in useKeyboardShortcuts hook (was T110)
+- [x] T136 [P] Optimize canvas rendering for 60fps performance per plan.md performance goals (was T112)
+- [ ] T137 [P] Add loading indicator during initial application startup
+- [ ] T138 [P] Implement proper accessibility attributes (ARIA labels) for all interactive elements
+- [ ] T139 Create user-facing README.md with usage instructions and feature overview
+- [ ] T140 Final code cleanup: remove console.logs, TODOs, and unused imports
+
+**Checkpoint**: Polish complete - production-quality UX achieved.
+
+---
+
+## Phase 15: Validation & UAT 🧪 (Remediation)
+
+**Purpose**: Testing and documentation for deployment readiness  
+**Input**: [specification_audit.md](./specification_audit.md) Sections 5.4 (I1-I5) and 4.1 (Browser Matrix)  
+**Estimated Effort**: 3-5 hours
+
+### 15.1 Browser Test Matrix
+
+Execute manual tests across browsers:
+
+- [ ] T141 Test entity drag in Chrome, Edge, Firefox, Safari
+- [ ] T142 Test animation playback in Chrome, Edge, Firefox, Safari
+- [ ] T143 Test video export in Chrome, Edge (WebM not supported in Safari)
+- [ ] T144 Test Save/Load functionality in Chrome, Edge, Firefox, Safari
+- [ ] T145 Test Auto-save recovery in Chrome, Edge, Firefox, Safari
+
+### 15.2 Performance Benchmarking
+
+- [ ] T146 Benchmark 50 frames, 30 entities at 60fps playback
+- [ ] T147 Test 5-minute animation export completes without timeout
+- [ ] T148 Test large project approaching 5MB LocalStorage auto-save handles gracefully
+
+### 15.3 User Acceptance Testing (SC-001)
+
+- [ ] T149 Execute UAT scenario: Rugby coach creates 2-frame animation in < 5 minutes
+  - Steps: Add 8 attack + 4 defense players, add ball, assign possession, create Frame 2, reposition, play, export, save
+
+### 15.4 Final Documentation
+
+- [ ] T150 Run quickstart.md validation checklist to verify setup is functional
+- [ ] T151 Document known limitations in README.md (browser support, export formats)
+- [ ] T152 Update PROJECT_STATE.md with all resolved issues
+
+**Checkpoint**: All validation complete - deployment-ready with documented limitations.
 
 ---
 
@@ -296,7 +423,11 @@ Verification of Phase 3 encountered three critical blockers that required archit
 - **User Stories (Phase 3-11)**: All depend on Foundational phase completion
   - User stories can then proceed in parallel (if staffed)
   - Or sequentially in priority order (P1 → P2 → P3)
-- **Polish (Phase 12)**: Depends on all desired user stories being complete
+- **Remediation Phases (12-15)**: Depend on all user stories being complete
+  - **Phase 12 (Stabilization)**: Should be completed first - fixes critical resilience issues
+  - **Phase 13 (Spec Compliance)**: Address must-fix items after stabilization
+  - **Phase 14 (Polish & UX)**: Complete after spec compliance achieved
+  - **Phase 15 (Validation)**: Final phase - requires all previous work complete
 
 ### User Story Dependencies
 
@@ -323,6 +454,7 @@ Verification of Phase 3 encountered three critical blockers that required archit
 - **Phase 2 (Foundational)**: Most tasks marked [P] can run in parallel
 - **User Stories**: Each story can be worked on by different team members simultaneously (after Phase 2 completes)
 - **Within Stories**: Tasks marked [P] indicate different files with no dependencies
+- **Remediation Phases**: Tasks marked [P] within same subsection can run in parallel
 
 ---
 
@@ -350,41 +482,26 @@ Task: "Install Dialog component in src/components/UI/Dialog.tsx"
 
 ## Implementation Strategy
 
-### MVP First (User Stories 1-3 Only)
+### MVP First (User Stories 1-3 Only) ✅ COMPLETE
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-3. Complete Phase 3: User Story 1
-4. Complete Phase 4: User Story 2
-5. Complete Phase 5: User Story 3
-6. **STOP and VALIDATE**: Test all P1 stories independently
-7. Deploy/demo MVP
+1. Complete Phase 1: Setup ✅
+2. Complete Phase 2: Foundational (CRITICAL - blocks all stories) ✅
+3. Complete Phase 3: User Story 1 ✅
+4. Complete Phase 4: User Story 2 ✅
+5. Complete Phase 5: User Story 3 ✅
+6. **STOP and VALIDATE**: Test all P1 stories independently ✅
+7. Deploy/demo MVP ✅
 
-### Incremental Delivery
+### Full Feature Set (User Stories 1-9) ✅ COMPLETE
 
-1. Complete Setup + Foundational → Foundation ready
-2. Add User Story 1 → Test independently → Deploy/Demo (basic animation!)
-3. Add User Story 2 → Test independently → Deploy/Demo (with persistence!)
-4. Add User Story 3 → Test independently → Deploy/Demo (MVP complete!)
-5. Add User Story 4 → Test independently → Deploy/Demo
-6. Add User Story 5 → Test independently → Deploy/Demo
-7. Add User Story 6 → Test independently → Deploy/Demo
-8. Add User Story 7 → Test independently → Deploy/Demo
-9. Add User Story 8 → Test independently → Deploy/Demo
-10. Add User Story 9 → Test independently → Deploy/Demo
-11. Polish phase → Final release
+All 9 user stories (Phases 3-11) have been implemented and verified.
 
-### Parallel Team Strategy
+### Remediation & Production Readiness (Current Focus) 🚧
 
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Once Foundational is done:
-   - Developer A: User Story 1 (P1)
-   - Developer B: User Story 2 (P1)
-   - Developer C: User Story 4 (P2)
-3. After US1 complete: Developer A moves to User Story 3 (depends on US1)
-4. Stories complete and integrate independently
+1. Complete Phase 12: Stabilization (error boundaries, loading states, tab warning)
+2. Complete Phase 13: Spec Compliance (grid, fade-out, export UI, possession, annotations)
+3. Complete Phase 14: Polish & UX (high-DPI, context menus, aesthetic audit)
+4. Complete Phase 15: Validation & UAT (browser testing, benchmarking, documentation)
 
 ---
 
@@ -397,6 +514,9 @@ With multiple developers:
 - Stop at any checkpoint to validate story independently
 - Tests are not included as they were not explicitly requested in the specification
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
-- Total task count: 117 tasks across 12 phases
-- MVP scope: Phases 1-5 (Tasks T001-T061) = 61 tasks
+- **Total task count**: 152 tasks across 15 phases
+- **MVP scope (complete)**: Phases 1-5 (Tasks T001-T061) = 61 tasks
+- **User stories (complete)**: Phases 3-11 (Tasks T026-T102) = all 9 stories implemented
+- **Remediation scope**: Phases 12-15 (Tasks T103-T152) = 50 tasks remaining
 - P1 stories deliver core value: create animations, save/load, export videos
+
