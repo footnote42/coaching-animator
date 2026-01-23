@@ -1,0 +1,21 @@
+{
+    "archivedAt": "2026-01-23",
+    "reason": "Consolidation of project state into PROJECT_STATE.md and synchronization of tasks.md. Archiving historical implementation plans and outdated status documents.",
+    "files": [
+        {
+            "originalPath": "specs/001-rugby-animation-tool/HANDOFF.md",
+            "newPath": "archive/HANDOFF.md",
+            "reason": "Superseded by PROJECT_STATE.md"
+        },
+        {
+            "originalPath": "specs/001-rugby-animation-tool/KNOWN_ISSUES.md",
+            "newPath": "archive/KNOWN_ISSUES.md",
+            "reason": "Superseded by PROJECT_STATE.md"
+        },
+        {
+            "originalPath": "specs/001-rugby-animation-tool/implementation_plans/*.md",
+            "newPath": "archive/implementation_plans/*.md",
+            "reason": "Historical implementation plans for completed phases"
+        }
+    ]
+}

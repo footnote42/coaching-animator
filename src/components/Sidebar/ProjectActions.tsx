@@ -41,6 +41,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     const saveProject = useProjectStore((state) => state.saveProject);
     const loadProject = useProjectStore((state) => state.loadProject);
     const newProject = useProjectStore((state) => state.newProject);
+    const updateProjectSettings = useProjectStore((state) => state.updateProjectSettings);
 
     const unsavedChangesDialog = useUIStore((state) => state.unsavedChangesDialog);
     const showUnsavedChangesDialog = useUIStore((state) => state.showUnsavedChangesDialog);
@@ -183,6 +184,40 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     <Save className="w-4 h-4 mr-2" />
                     Save
                 </Button>
+            </div>
+
+            {/* Export Settings Section */}
+            <div>
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                    Export Settings
+                </h3>
+
+                {/* Resolution Selector */}
+                <div className="flex flex-col gap-1 mb-3">
+                    <label className="text-xs font-semibold text-tactical-mono-700">
+                        Export Resolution
+                    </label>
+                    <div className="flex gap-2">
+                        <Button
+                            variant={project?.settings.exportResolution === '720p' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ exportResolution: '720p' })}
+                            disabled={!project}
+                            className="flex-1"
+                        >
+                            720p
+                        </Button>
+                        <Button
+                            variant={project?.settings.exportResolution === '1080p' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ exportResolution: '1080p' })}
+                            disabled={!project}
+                            className="flex-1"
+                        >
+                            1080p
+                        </Button>
+                    </div>
+                </div>
 
                 {/* Export button */}
                 <Button

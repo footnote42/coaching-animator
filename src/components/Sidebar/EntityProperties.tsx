@@ -2,6 +2,8 @@ import { Entity } from '../../types';
 import { Input } from '../ui/input';
 import { ColorPicker } from '../ui/ColorPicker';
 import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useProjectStore } from '../../store/projectStore';
 
 export interface EntityPropertiesProps {
     /** Selected entity to edit */
@@ -16,6 +18,8 @@ export interface EntityPropertiesProps {
  * Displays editable properties for the selected entity.
  */
 export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
+    const { project, currentFrameIndex } = useProjectStore();
+
     if (!entity) {
         return (
             <div className="p-4 text-sm text-tactical-mono-500">
@@ -25,6 +29,12 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
     }
 
     const isPlayer = entity.type === 'player';
+    const isBall = entity.type === 'ball';
+
+    // Get players from the current frame for possession dropdown
+    const currentPlayers = project && project.frames[currentFrameIndex]
+        ? Object.values(project.frames[currentFrameIndex].entities).filter(e => e.type === 'player')
+        : [];
 
     return (
         <div className="flex flex-col gap-4 p-4">
@@ -91,6 +101,31 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                             Neutral
                         </Button>
                     </div>
+                </div>
+            )}
+
+            {/* Possession (editable for ball) */}
+            {isBall && (
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-tactical-mono-700">
+                        Possession
+                    </label>
+                    <Select
+                        value={entity.parentId || 'none'}
+                        onValueChange={(value) => onUpdate({ parentId: value === 'none' ? undefined : value })}
+                    >
+                        <SelectTrigger className="font-mono">
+                            <SelectValue placeholder="None" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {currentPlayers.map((player) => (
+                                <SelectItem key={player.id} value={player.id}>
+                                    {player.label || `Player ${player.id.slice(0, 4)}`}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             )}
 

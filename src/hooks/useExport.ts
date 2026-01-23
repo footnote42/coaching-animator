@@ -111,8 +111,33 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             setExportStatus('recording');
             setExportProgress(20);
 
-            // Get the canvas element from Konva Stage
+            // Get the Konva Stage
             const stage = stageRef.current;
+
+            // Determine export dimensions based on project settings
+            const exportResolution = project!.settings.exportResolution;
+            const dimensions = exportResolution === '1080p'
+                ? { width: 1920, height: 1080 }
+                : { width: 1280, height: 720 };
+
+            // Store original stage dimensions and scale
+            const originalWidth = stage.width();
+            const originalHeight = stage.height();
+            const originalScale = stage.scale();
+
+            // Temporarily resize and scale the stage for export
+            // Assuming the stage's native coordinate system is 2000x2000
+            stage.width(dimensions.width);
+            stage.height(dimensions.height);
+            stage.scale({
+                x: dimensions.width / 2000,
+                y: dimensions.height / 2000
+            });
+
+            // Force stage to redraw with new dimensions
+            stage.batchDraw();
+
+            // Get the canvas element from Konva Stage with new resolution
             const canvas = stage.toCanvas();
 
             // Create MediaStream from canvas
@@ -136,6 +161,12 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             };
 
             mediaRecorder.onstop = () => {
+                // Restore original stage dimensions and scale
+                stage.width(originalWidth);
+                stage.height(originalHeight);
+                stage.scale(originalScale || { x: 1, y: 1 });
+                stage.batchDraw();
+
                 setExportStatus('processing');
                 setExportProgress(80);
 
@@ -158,6 +189,12 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             };
 
             mediaRecorder.onerror = (event) => {
+                // Restore original stage dimensions and scale on error
+                stage.width(originalWidth);
+                stage.height(originalHeight);
+                stage.scale(originalScale || { x: 1, y: 1 });
+                stage.batchDraw();
+
                 console.error('MediaRecorder error:', event);
                 setExportStatus('error');
                 setExportError('Recording failed. Please try again.');
@@ -195,6 +232,18 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
             }, 100);
 
         } catch (error) {
+            // Restore original dimensions if they were set
+            if (stageRef.current) {
+                const stage = stageRef.current;
+                // Check if we have originalWidth variable in scope (we might not if error happened early)
+                try {
+                    stage.scale({ x: 1, y: 1 });
+                    stage.batchDraw();
+                } catch (restoreError) {
+                    // Ignore restore errors
+                }
+            }
+
             console.error('Export error:', error);
             setExportStatus('error');
             setExportError(error instanceof Error ? error.message : 'Export failed');

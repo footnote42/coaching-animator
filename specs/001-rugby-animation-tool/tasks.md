@@ -233,14 +233,14 @@ Verification of Phase 3 encountered three critical blockers that required archit
 
 ### Implementation for User Story 8
 
-- [ ] T089 [P] [US8] Create AnnotationLayer component in src/components/Canvas/AnnotationLayer.tsx per component-contracts.ts AnnotationLayerProps
-- [ ] T090 [P] [US8] Implement addAnnotation action in src/store/projectStore.ts per store-contracts.ts AnnotationCreate
-- [ ] T091 [P] [US8] Implement updateAnnotation action in src/store/projectStore.ts per store-contracts.ts AnnotationUpdate
-- [ ] T092 [P] [US8] Implement removeAnnotation action in src/store/projectStore.ts per store-contracts.ts
-- [ ] T093 [US8] Add annotation drawing tool to EntityPalette (Arrow and Line tools)
-- [ ] T094 [US8] Implement annotation drawing interaction (click-drag-release) in AnnotationLayer component
-- [ ] T095 [US8] Add annotation selection and editing in AnnotationLayer component
-- [ ] T096 [US8] Integrate AnnotationLayer into Stage component after GhostLayer
+- [x] T089 [P] [US8] Create AnnotationLayer component in src/components/Canvas/AnnotationLayer.tsx per component-contracts.ts AnnotationLayerProps
+- [x] T090 [P] [US8] Implement addAnnotation action in src/store/projectStore.ts per store-contracts.ts AnnotationCreate
+- [x] T091 [P] [US8] Implement updateAnnotation action in src/store/projectStore.ts per store-contracts.ts AnnotationUpdate
+- [x] T092 [P] [US8] Implement removeAnnotation action in src/store/projectStore.ts per store-contracts.ts
+- [x] T093 [US8] Add annotation drawing tool to EntityPalette (Arrow and Line tools)
+- [x] T094 [US8] Implement annotation drawing interaction (click-drag-release) in AnnotationLayer component
+- [x] T095 [US8] Add annotation selection and editing in AnnotationLayer component
+- [x] T096 [US8] Integrate AnnotationLayer into Stage component after GhostLayer
 
 **Checkpoint**: User Story 8 complete - annotation drawing functional
 
@@ -274,9 +274,9 @@ Verification of Phase 3 encountered three critical blockers that required archit
 - [ ] T105 [P] Add loading states to all async operations (save, load, export)
 - [ ] T106 [P] Implement entity fade-out animation when entity doesn't exist in target frame per FR-ANI-05
 - [ ] T107 [P] Implement ball possession logic (parentId) in updateEntity and PlayerToken rendering
-- [ ] T108 [P] Add tooltips with keyboard shortcuts to all major action buttons per research.md
-- [ ] T109 [P] Implement Ctrl/Cmd+S keyboard shortcut for save in useKeyboardShortcuts hook
-- [ ] T110 [P] Implement Escape key to deselect entities in useKeyboardShortcuts hook
+- [x] T108 [P] Add tooltips with keyboard shortcuts to all major action buttons per research.md
+- [x] T109 [P] Implement Ctrl/Cmd+S keyboard shortcut for save in useKeyboardShortcuts hook
+- [x] T110 [P] Implement Escape key to deselect entities in useKeyboardShortcuts hook
 - [ ] T111 [P] Add proper error boundaries and error handling throughout application
 - [x] T112 [P] Optimize canvas rendering for 60fps performance per plan.md performance goals (Smooth Interpolation)
 - [ ] T113 [P] Add loading indicator during initial application startup

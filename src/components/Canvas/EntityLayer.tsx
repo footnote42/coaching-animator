@@ -63,8 +63,8 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
 
         const { progress } = playbackPosition;
 
-        // Create interpolated entity positions
-        return entities.map(entity => {
+        // First pass: Calculate base interpolated positions
+        const baseInterpolated = entities.map(entity => {
             const fromEntity = fromFrame.entities[entity.id];
             const toEntity = toFrame.entities[entity.id];
 
@@ -87,6 +87,24 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
                 return { ...entity, x: toEntity.x, y: toEntity.y };
             }
 
+            return entity;
+        });
+
+        // Second pass: Apply parent-relative positioning for entities with parentId
+        return baseInterpolated.map(entity => {
+            // Check if this entity has a parent (ball possession)
+            if (entity.parentId) {
+                // Find the parent entity in the interpolated list
+                const parent = baseInterpolated.find(e => e.id === entity.parentId);
+                if (parent) {
+                    // Entity follows parent's interpolated position
+                    return {
+                        ...entity,
+                        x: parent.x,
+                        y: parent.y,
+                    };
+                }
+            }
             return entity;
         });
     }, [entities, playbackPosition, frames]);

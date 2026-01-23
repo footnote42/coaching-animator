@@ -44,6 +44,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     onContextMenu
 }) => {
     const groupRef = useRef<any>(null);
+    const lastClickTimeRef = useRef<number>(0);
 
     // Determine size based on entity type
     const getRadius = (type: Entity['type']): number => {
@@ -109,6 +110,22 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
         onDragEnd(clampedX, clampedY);
     };
 
+    // Handle click with custom double-click detection
+    const handleClick = () => {
+        const now = Date.now();
+        const timeSinceLastClick = now - lastClickTimeRef.current;
+
+        if (timeSinceLastClick < 300) {
+            // Double-click detected
+            onDoubleClick();
+            lastClickTimeRef.current = 0; // Reset to prevent triple-click
+        } else {
+            // Single click
+            onSelect();
+            lastClickTimeRef.current = now;
+        }
+    };
+
     // Handle right-click context menu
     const handleContextMenu = (e: any) => {
         e.evt.preventDefault();
@@ -131,8 +148,8 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             x={entity.x}
             y={entity.y}
             draggable={draggable}
-            onClick={onSelect}
-            onTap={onSelect}
+            onClick={handleClick}
+            onTap={handleClick}
             onDblClick={onDoubleClick}
             onDblTap={onDoubleClick}
             onContextMenu={handleContextMenu}
