@@ -4,11 +4,14 @@ import {
     SidebarPanel,
     ExportStatus,
     PendingAction,
-    ExportResult
+    ExportResult,
+    DrawingMode
 } from '../types';
 
 export interface UIStoreState {
     selectedEntityId: string | null;
+    selectedAnnotationId: string | null;
+    drawingMode: DrawingMode;
     showGhosts: boolean;
     showGrid: boolean;
     activeSidebarPanel: SidebarPanel;
@@ -35,12 +38,16 @@ export interface UIStoreState {
     showUnsavedChangesDialog: (pendingAction: PendingAction) => void;
     confirmPendingAction: () => void;
     cancelPendingAction: () => void;
+    setDrawingMode: (mode: DrawingMode) => void;
+    selectAnnotation: (id: string | null) => void;
 }
 
 export const useUIStore = create<UIStoreState>()(
     devtools(
         (set) => ({
             selectedEntityId: null,
+            selectedAnnotationId: null,
+            drawingMode: 'none',
             showGhosts: false,
             showGrid: false,
             activeSidebarPanel: 'entities',
@@ -126,6 +133,18 @@ export const useUIStore = create<UIStoreState>()(
                     isOpen: false,
                     pendingAction: null,
                 },
+            })),
+            setDrawingMode: (mode: DrawingMode) => set((state) => ({
+                ...state,
+                drawingMode: mode,
+                // Clear entity selection when entering drawing mode
+                selectedEntityId: mode !== 'none' ? null : state.selectedEntityId,
+            })),
+            selectAnnotation: (id: string | null) => set((state) => ({
+                ...state,
+                selectedAnnotationId: id,
+                // Clear entity selection when selecting annotation
+                selectedEntityId: id !== null ? null : state.selectedEntityId,
             })),
         }),
         { name: 'UIStore' }

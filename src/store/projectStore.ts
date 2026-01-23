@@ -540,9 +540,130 @@ export const useProjectStore = create<ProjectStoreState>()(
             removeEntityGlobally: () => { },
             propagateEntity: () => { },
 
-            addAnnotation: () => '',
-            updateAnnotation: () => { },
-            removeAnnotation: () => { },
+            addAnnotation: (annotation: AnnotationCreate) => {
+                let newAnnotationId = '';
+
+                set((state) => {
+                    // Guard: Return if no project
+                    if (!state.project) return state;
+
+                    // Guard: Return if currentFrameIndex is out of bounds
+                    if (state.currentFrameIndex < 0 || state.currentFrameIndex >= state.project.frames.length) {
+                        return state;
+                    }
+
+                    // Generate new annotation ID
+                    newAnnotationId = crypto.randomUUID();
+
+                    // Get current frame
+                    const currentFrame = state.project.frames[state.currentFrameIndex];
+
+                    // Create new annotation
+                    const newAnnotation = {
+                        id: newAnnotationId,
+                        type: annotation.type,
+                        points: annotation.points,
+                        color: annotation.color,
+                        startFrameId: currentFrame.id,
+                        endFrameId: currentFrame.id,
+                    };
+
+                    // Add annotation to current frame
+                    const updatedAnnotations = [...currentFrame.annotations, newAnnotation];
+
+                    // Return updated state
+                    return {
+                        ...state,
+                        project: {
+                            ...state.project,
+                            updatedAt: new Date().toISOString(),
+                            frames: state.project.frames.map((frame, idx) =>
+                                idx === state.currentFrameIndex
+                                    ? { ...frame, annotations: updatedAnnotations }
+                                    : frame
+                            ),
+                        },
+                        isDirty: true,
+                    };
+                });
+
+                return newAnnotationId;
+            },
+
+            updateAnnotation: (annotationId: string, updates: Partial<AnnotationUpdate>) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Guard: Return if currentFrameIndex is out of bounds
+                if (state.currentFrameIndex < 0 || state.currentFrameIndex >= state.project.frames.length) {
+                    return state;
+                }
+
+                // Get current frame
+                const currentFrame = state.project.frames[state.currentFrameIndex];
+
+                // Find annotation
+                const annotationIndex = currentFrame.annotations.findIndex(a => a.id === annotationId);
+                if (annotationIndex === -1) return state;
+
+                // Update annotation
+                const updatedAnnotations = currentFrame.annotations.map((annotation, idx) => {
+                    if (idx !== annotationIndex) return annotation;
+
+                    return {
+                        ...annotation,
+                        ...(updates.points !== undefined && { points: updates.points }),
+                        ...(updates.color !== undefined && { color: updates.color }),
+                        ...(updates.endFrameId !== undefined && { endFrameId: updates.endFrameId }),
+                    };
+                });
+
+                // Return updated state
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: state.project.frames.map((frame, idx) =>
+                            idx === state.currentFrameIndex
+                                ? { ...frame, annotations: updatedAnnotations }
+                                : frame
+                        ),
+                    },
+                    isDirty: true,
+                };
+            }),
+
+            removeAnnotation: (annotationId: string) => set((state) => {
+                // Guard: Return if no project
+                if (!state.project) return state;
+
+                // Guard: Return if currentFrameIndex is out of bounds
+                if (state.currentFrameIndex < 0 || state.currentFrameIndex >= state.project.frames.length) {
+                    return state;
+                }
+
+                // Get current frame
+                const currentFrame = state.project.frames[state.currentFrameIndex];
+
+                // Filter out the annotation
+                const updatedAnnotations = currentFrame.annotations.filter(a => a.id !== annotationId);
+
+                // Return updated state
+                return {
+                    ...state,
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: state.project.frames.map((frame, idx) =>
+                            idx === state.currentFrameIndex
+                                ? { ...frame, annotations: updatedAnnotations }
+                                : frame
+                        ),
+                    },
+                    isDirty: true,
+                };
+            }),
 
             play: () => set((state) => ({
                 ...state,

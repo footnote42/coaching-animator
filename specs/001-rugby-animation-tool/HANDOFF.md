@@ -76,6 +76,16 @@ All acceptance criteria met (6/7 browser tests passing):
 - ✅ Constitution-compliant styling (sharp corners, Ghost icon)
 - ✅ All 7 browser verification tests passed
 
+#### Phase 10: User Story 8 - Draw Annotations (Completed 2026-01-23)
+- ✅ Full annotation store actions: `addAnnotation`, `updateAnnotation`, `removeAnnotation`
+- ✅ `DrawingMode` type and UI state management in `uiStore.ts`
+- ✅ `AnnotationLayer.tsx` renders Konva Arrow and Line shapes with selection
+- ✅ `AnnotationDrawingLayer.tsx` handles click-and-drag drawing with preview
+- ✅ Arrow/Line tool buttons in EntityPalette sidebar
+- ✅ Keyboard shortcuts: Delete to remove annotation, Escape to exit drawing mode
+- ✅ Annotations persist with frames (save/load compatible)
+- ✅ Build passes with 0 errors
+
 ---
 
 ## Remaining Work (Priority Order)
@@ -100,8 +110,8 @@ None remaining - all P1 stories complete ✅
 #### User Story 7 - View Previous Frame Positions (Ghost Mode) ✅ COMPLETE
 **Status**: Fully implemented. Ghost entities render at 30% opacity when enabled.
 
-#### User Story 8 - Draw Annotations
-**Estimated Complexity**: Medium-High (5-7 tasks)
+#### User Story 8 - Draw Annotations ✅ COMPLETE
+**Status**: Fully implemented. Arrow/Line drawing tools, selection, deletion, and persistence all functional.
 
 #### User Story 9 - Control Playback Speed and Looping ✅ COMPLETE
 **Status**: Fully implemented. Speed control, looping, and smooth interpolation functional.

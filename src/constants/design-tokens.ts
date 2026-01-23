@@ -15,6 +15,9 @@ export const DESIGN_TOKENS = {
         attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],
         defense: ['#DC2626', '#EA580C', '#F59E0B', '#EF4444'],
         neutral: ['#FFFFFF', '#8B4513', '#FFD700', '#FF6B35'],  // White, brown leather, gold, orange
+
+        // Annotation color (tactical yellow - high visibility)
+        annotation: '#FACC15',
     },
     typography: {
         fontMono: "'JetBrains Mono', 'Fira Code', monospace",

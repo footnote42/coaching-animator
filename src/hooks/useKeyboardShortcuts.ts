@@ -7,11 +7,11 @@ import { useUIStore } from '../store/uiStore';
  *
  * Shortcuts:
  * - Space: Toggle play/pause
- * - Delete/Backspace: Remove selected entity
+ * - Delete/Backspace: Remove selected entity or annotation
  * - Ctrl/Cmd+S: Save project
  * - Left Arrow: Previous frame
  * - Right Arrow: Next frame
- * - Escape: Deselect all entities
+ * - Escape: Deselect all entities, cancel drawing mode
  */
 export function useKeyboardShortcuts() {
   const {
@@ -21,11 +21,19 @@ export function useKeyboardShortcuts() {
     currentFrameIndex,
     setCurrentFrame,
     removeEntity,
+    removeAnnotation,
     saveProject,
     project,
   } = useProjectStore();
 
-  const { selectedEntityId, deselectAll } = useUIStore();
+  const {
+    selectedEntityId,
+    selectedAnnotationId,
+    deselectAll,
+    selectAnnotation,
+    drawingMode,
+    setDrawingMode,
+  } = useUIStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,11 +58,16 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // Delete/Backspace: Remove selected entity
-      if ((e.code === 'Delete' || e.code === 'Backspace') && selectedEntityId) {
+      // Delete/Backspace: Remove selected entity or annotation
+      if (e.code === 'Delete' || e.code === 'Backspace') {
         e.preventDefault();
-        removeEntity(selectedEntityId);
-        deselectAll();
+        if (selectedEntityId) {
+          removeEntity(selectedEntityId);
+          deselectAll();
+        } else if (selectedAnnotationId) {
+          removeAnnotation(selectedAnnotationId);
+          selectAnnotation(null);
+        }
         return;
       }
 
@@ -63,7 +76,6 @@ export function useKeyboardShortcuts() {
         e.preventDefault();
         if (project) {
           saveProject();
-          // Note: saveProject() is currently a stub, but will be implemented in Phase 4
           console.log('Save project shortcut triggered');
         }
         return;
@@ -87,10 +99,14 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // Escape: Deselect all entities
+      // Escape: Cancel drawing mode, deselect all
       if (e.code === 'Escape') {
         e.preventDefault();
+        if (drawingMode !== 'none') {
+          setDrawingMode('none');
+        }
         deselectAll();
+        selectAnnotation(null);
         return;
       }
     };
@@ -107,9 +123,14 @@ export function useKeyboardShortcuts() {
     currentFrameIndex,
     setCurrentFrame,
     removeEntity,
+    removeAnnotation,
     saveProject,
     project,
     selectedEntityId,
+    selectedAnnotationId,
     deselectAll,
+    selectAnnotation,
+    drawingMode,
+    setDrawingMode,
   ]);
 }

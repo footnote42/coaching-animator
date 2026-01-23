@@ -208,6 +208,8 @@ export type SidebarPanel = 'entities' | 'settings' | 'export';
 
 export type ExportStatus = 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
 
+export type DrawingMode = 'none' | 'arrow' | 'line';
+
 export type PendingAction =
     | { type: 'new-project' }
     | { type: 'load-project'; data: unknown }

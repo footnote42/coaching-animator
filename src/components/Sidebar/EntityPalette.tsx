@@ -1,4 +1,5 @@
 import { Button } from '../ui/button';
+import { DrawingMode } from '../../types';
 
 export interface EntityPaletteProps {
   /** Called when attack player button clicked */
@@ -15,6 +16,12 @@ export interface EntityPaletteProps {
 
   /** Called when marker button clicked */
   onAddMarker: () => void;
+
+  /** Current drawing mode */
+  drawingMode: DrawingMode;
+
+  /** Called to change drawing mode */
+  onDrawingModeChange: (mode: DrawingMode) => void;
 }
 
 /**
@@ -26,11 +33,21 @@ export function EntityPalette({
   onAddDefensePlayer,
   onAddBall,
   onAddCone,
-  onAddMarker
+  onAddMarker,
+  drawingMode,
+  onDrawingModeChange,
 }: EntityPaletteProps) {
+  const handleArrowClick = () => {
+    onDrawingModeChange(drawingMode === 'arrow' ? 'none' : 'arrow');
+  };
+
+  const handleLineClick = () => {
+    onDrawingModeChange(drawingMode === 'line' ? 'none' : 'line');
+  };
+
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-semibold text-tactics-white">Entities</h3>
+    <div className="p-4 border-b border-tactical-mono-200">
+      <h3 className="text-sm font-semibold text-pitch-green mb-2">Entities</h3>
       <div className="flex flex-col gap-2">
         <Button
           variant="default"
@@ -73,6 +90,31 @@ export function EntityPalette({
           + Marker
         </Button>
       </div>
+
+      <h3 className="text-sm font-semibold text-pitch-green mt-4 mb-2">Annotations</h3>
+      <div className="flex gap-2">
+        <Button
+          variant={drawingMode === 'arrow' ? 'default' : 'outline'}
+          size="sm"
+          onClick={handleArrowClick}
+          className="flex-1"
+        >
+          Arrow →
+        </Button>
+        <Button
+          variant={drawingMode === 'line' ? 'default' : 'outline'}
+          size="sm"
+          onClick={handleLineClick}
+          className="flex-1"
+        >
+          Line —
+        </Button>
+      </div>
+      {drawingMode !== 'none' && (
+        <p className="text-xs text-tactical-mono-500 mt-2 font-mono">
+          Click and drag on canvas to draw
+        </p>
+      )}
     </div>
   );
 }

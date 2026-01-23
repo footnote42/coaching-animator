@@ -14,3 +14,9 @@ export type { PlayerTokenProps } from './PlayerToken';
 
 export { EntityLayer } from './EntityLayer';
 export type { EntityLayerProps } from './EntityLayer';
+
+export { AnnotationLayer } from './AnnotationLayer';
+export type { AnnotationLayerProps } from './AnnotationLayer';
+
+export { AnnotationDrawingLayer } from './AnnotationDrawingLayer';
+export type { AnnotationDrawingLayerProps } from './AnnotationDrawingLayer';

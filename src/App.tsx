@@ -5,6 +5,8 @@ import { Field } from './components/Canvas/Field';
 import { EntityLayer } from './components/Canvas/EntityLayer';
 import { InlineEditor } from './components/Canvas/InlineEditor';
 import { GhostLayer } from './components/Canvas/GhostLayer';
+import { AnnotationLayer } from './components/Canvas/AnnotationLayer';
+import { AnnotationDrawingLayer } from './components/Canvas/AnnotationDrawingLayer';
 import { EntityPalette } from './components/Sidebar/EntityPalette';
 import { EntityProperties } from './components/Sidebar/EntityProperties';
 import { ProjectActions } from './components/Sidebar/ProjectActions';
@@ -49,10 +51,11 @@ function App() {
         toggleLoop,
         updateFrame,
         updateProjectSettings,
+        addAnnotation,
     } = useProjectStore();
 
     // Get UI store state and actions
-    const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts } = useUIStore();
+    const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts, selectedAnnotationId, selectAnnotation, drawingMode, setDrawingMode } = useUIStore();
 
     // Initialize export hook
     const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
@@ -271,9 +274,10 @@ function App() {
         deselectAll();
     };
 
-    // Get current frame entities
+    // Get current frame entities and annotations
     const currentFrame = project?.frames[currentFrameIndex];
     const entities = currentFrame ? Object.values(currentFrame.entities) : [];
+    const annotations = currentFrame ? currentFrame.annotations : [];
 
     // Playback controls handlers
     const handlePreviousFrame = () => {
@@ -295,6 +299,17 @@ function App() {
     // Sport change handler
     const handleSportChange = (sport: SportType) => {
         updateProjectSettings({ sport });
+    };
+
+    // Drawing completion handler
+    const handleDrawingComplete = (points: number[], type: 'arrow' | 'line') => {
+        addAnnotation({
+            type,
+            points,
+            color: DESIGN_TOKENS.colors.annotation,
+        });
+        // Exit drawing mode after completing an annotation
+        setDrawingMode('none');
     };
 
     return (
@@ -323,6 +338,8 @@ function App() {
                         onAddBall={handleAddBall}
                         onAddCone={handleAddCone}
                         onAddMarker={handleAddMarker}
+                        drawingMode={drawingMode}
+                        onDrawingModeChange={setDrawingMode}
                     />
                     <EntityProperties
                         entity={selectedEntityId ? entities.find(e => e.id === selectedEntityId) || null : null}
@@ -362,6 +379,20 @@ function App() {
                                 interactive={!isPlaying}
                                 playbackPosition={playbackPosition}
                                 frames={project?.frames ?? []}
+                            />
+                            <AnnotationLayer
+                                annotations={annotations}
+                                selectedAnnotationId={selectedAnnotationId}
+                                onAnnotationSelect={selectAnnotation}
+                                interactive={!isPlaying}
+                            />
+                            <AnnotationDrawingLayer
+                                drawingMode={drawingMode}
+                                defaultColor={DESIGN_TOKENS.colors.annotation}
+                                onDrawingComplete={handleDrawingComplete}
+                                interactive={!isPlaying}
+                                width={canvasWidth}
+                                height={canvasHeight}
                             />
                         </Stage>
                     </div>
