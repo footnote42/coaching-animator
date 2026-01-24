@@ -51,6 +51,7 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
           font-mono text-xs
         "
         title="Add frame"
+        aria-label="Add new frame"
       >
         <Plus size={16} />
       </button>

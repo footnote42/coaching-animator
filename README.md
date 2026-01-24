@@ -107,11 +107,18 @@ The application will open at http://localhost:5173/
 
 ## 📝 Known Limitations
 
-- **50-Frame Limit**: Projects can have a maximum of 50 frames
+- **50-Frame Limit**: Projects can have a maximum of 50 frames (per FR-FRM-01)
 - **Export Format**: Videos are exported as .webm only (not supported in Safari)
-- **Max Animation Duration**: 5 minutes per export
-- **No Cloud Sync**: All data is stored locally in your browser
+  - **Workaround**: Use Chrome or Edge for video export, or convert .webm to .mp4 using external tools
+- **Max Animation Duration**: 5 minutes per export (300,000ms total frame duration per FR-EXP-04)
+- **No Cloud Sync**: All data is stored locally in your browser (offline-first design)
 - **Auto-Save Quota**: Auto-save limited to ~5MB (browser LocalStorage limit)
+  - **Behavior**: If quota exceeded, app displays warning toast and prompts manual save
+- **Safari Limitations**: 
+  - MediaRecorder API not available → Video export disabled
+  - Recommend using Chrome/Edge for full functionality
+- **Entity Limits**: While not enforced, performance is optimal with ≤30 entities per frame
+- **Annotation Limits**: Maximum 100 annotations per frame (per data-model.md validation rules)
 
 ---
 

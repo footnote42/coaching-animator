@@ -50,16 +50,45 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     playbackPosition,
     frames
 }) => {
+    /**
+     * Helper function to apply parent-relative positioning.
+     * Entities with a parentId (e.g., ball with possession) will inherit
+     * their parent's x/y coordinates.
+     */
+    const applyParentRelativePositioning = (entitiesToProcess: any[]) => {
+        return entitiesToProcess.map(entity => {
+            // Check if this entity has a parent (ball possession)
+            if (entity.parentId) {
+                // Find the parent entity in the list
+                const parent = entitiesToProcess.find(e => e.id === entity.parentId);
+                if (parent) {
+                    // Entity follows parent's position
+                    return {
+                        ...entity,
+                        x: parent.x,
+                        y: parent.y,
+                    };
+                }
+            }
+            return entity;
+        });
+    };
+
     // Calculate interpolated entities when playing
     const interpolatedEntities = useMemo(() => {
+        // Edit mode: Apply parent positioning to current entities
         if (!playbackPosition || !frames.length) {
-            return entities.map(e => ({ ...e, opacity: 1.0 }));
+            const entitiesWithOpacity = entities.map(e => ({ ...e, opacity: 1.0 }));
+            return applyParentRelativePositioning(entitiesWithOpacity);
         }
 
         const fromFrame = frames[playbackPosition.fromFrameIndex];
         const toFrame = frames[playbackPosition.toFrameIndex];
 
-        if (!fromFrame || !toFrame) return entities.map(e => ({ ...e, opacity: 1.0 }));
+        if (!fromFrame || !toFrame) {
+            const entitiesWithOpacity = entities.map(e => ({ ...e, opacity: 1.0 }));
+            return applyParentRelativePositioning(entitiesWithOpacity);
+        }
 
         const { progress } = playbackPosition;
 
@@ -102,22 +131,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
         });
 
         // Second pass: Apply parent-relative positioning for entities with parentId
-        return baseInterpolated.map(entity => {
-            // Check if this entity has a parent (ball possession)
-            if (entity.parentId) {
-                // Find the parent entity in the interpolated list
-                const parent = baseInterpolated.find(e => e.id === entity.parentId);
-                if (parent) {
-                    // Entity follows parent's interpolated position
-                    return {
-                        ...entity,
-                        x: parent.x,
-                        y: parent.y,
-                    };
-                }
-            }
-            return entity;
-        });
+        return applyParentRelativePositioning(baseInterpolated);
     }, [entities, playbackPosition, frames]);
 
     return (
@@ -127,7 +141,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
                     key={entity.id}
                     entity={entity}
                     isSelected={selectedEntityId === entity.id}
-                    draggable={interactive}
+                    draggable={interactive && !entity.parentId}
                     onSelect={() => onEntitySelect(entity.id)}
                     onDragEnd={(x, y) => onEntityMove(entity.id, x, y)}
                     onDoubleClick={() => onEntityDoubleClick(entity.id)}

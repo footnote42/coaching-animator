@@ -54,6 +54,7 @@ export function EntityPalette({
           size="sm"
           onClick={onAddAttackPlayer}
           className="justify-start"
+          aria-label="Add attack player"
         >
           + Attack Player
         </Button>
@@ -62,6 +63,7 @@ export function EntityPalette({
           size="sm"
           onClick={onAddDefensePlayer}
           className="justify-start"
+          aria-label="Add defense player"
         >
           + Defense Player
         </Button>
@@ -70,6 +72,7 @@ export function EntityPalette({
           size="sm"
           onClick={onAddBall}
           className="justify-start"
+          aria-label="Add ball"
         >
           + Ball
         </Button>
@@ -78,6 +81,7 @@ export function EntityPalette({
           size="sm"
           onClick={onAddCone}
           className="justify-start"
+          aria-label="Add cone"
         >
           + Cone
         </Button>
@@ -86,6 +90,7 @@ export function EntityPalette({
           size="sm"
           onClick={onAddMarker}
           className="justify-start"
+          aria-label="Add marker"
         >
           + Marker
         </Button>
@@ -98,6 +103,7 @@ export function EntityPalette({
           size="sm"
           onClick={handleArrowClick}
           className="flex-1"
+          aria-label={drawingMode === 'arrow' ? 'Disable arrow drawing' : 'Enable arrow drawing'}
         >
           Arrow →
         </Button>
@@ -106,6 +112,7 @@ export function EntityPalette({
           size="sm"
           onClick={handleLineClick}
           className="flex-1"
+          aria-label={drawingMode === 'line' ? 'Disable line drawing' : 'Enable line drawing'}
         >
           Line —
         </Button>

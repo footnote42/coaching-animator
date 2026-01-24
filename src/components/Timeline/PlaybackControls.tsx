@@ -49,6 +49,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           onClick={isPlaying ? onPause : onPlay}
           className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
           title={isPlaying ? 'Pause' : 'Play'}
+          aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
@@ -56,6 +57,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           onClick={onReset}
           className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
           title="Reset to frame 1"
+          aria-label="Reset to frame 1"
         >
           <RotateCcw size={16} />
         </button>
@@ -67,6 +69,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           onClick={onPreviousFrame}
           className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
           title="Previous frame"
+          aria-label="Previous frame"
           disabled={currentFrame === 0}
         >
           <ChevronLeft size={16} />
@@ -78,6 +81,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           onClick={onNextFrame}
           className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
           title="Next frame"
+          aria-label="Next frame"
           disabled={currentFrame >= totalFrames - 1}
         >
           <ChevronRight size={16} />
@@ -114,6 +118,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           ${loopEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
         `}
         title={loopEnabled ? 'Loop enabled' : 'Loop disabled'}
+        aria-label={loopEnabled ? 'Disable loop' : 'Enable loop'}
       >
         <Repeat size={16} />
       </button>
@@ -128,6 +133,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           ${ghostEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
         `}
         title={ghostEnabled ? 'Ghost mode enabled' : 'Ghost mode disabled'}
+        aria-label={ghostEnabled ? 'Disable ghost mode' : 'Enable ghost mode'}
       >
         <Ghost size={16} />
       </button>
@@ -142,6 +148,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           ${gridEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
         `}
         title={gridEnabled ? 'Grid overlay enabled' : 'Grid overlay disabled'}
+        aria-label={gridEnabled ? 'Disable grid overlay' : 'Enable grid overlay'}
       >
         <Grid size={16} />
       </button>

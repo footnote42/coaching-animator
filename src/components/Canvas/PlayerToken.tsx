@@ -165,6 +165,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     return (
         <Group
             ref={groupRef}
+            id={entity.id}
             x={entity.x}
             y={entity.y}
             draggable={draggable}
