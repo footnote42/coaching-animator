@@ -21,6 +21,8 @@ export interface PlayerTokenProps {
     onDoubleClick: () => void;
     /** Called on right-click */
     onContextMenu: (event: { x: number; y: number }) => void;
+    /** Opacity for fade-in/fade-out (0-1, default 1) */
+    opacity?: number;
 }
 
 /**
@@ -41,10 +43,12 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     onSelect,
     onDragEnd,
     onDoubleClick,
-    onContextMenu
+    onContextMenu,
+    opacity = 1.0
 }) => {
     const groupRef = useRef<any>(null);
     const lastClickTimeRef = useRef<number>(0);
+    const lastClickPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
     // Determine size based on entity type
     const getRadius = (type: Entity['type']): number => {
@@ -110,19 +114,35 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
         onDragEnd(clampedX, clampedY);
     };
 
-    // Handle click with custom double-click detection
-    const handleClick = () => {
+    // Handle click with custom double-click detection and drag threshold
+    const handleClick = (e: any) => {
         const now = Date.now();
         const timeSinceLastClick = now - lastClickTimeRef.current;
 
-        if (timeSinceLastClick < 300) {
-            // Double-click detected
+        // Get current mouse position
+        const stage = e.target.getStage();
+        const pointerPosition = stage.getPointerPosition();
+        const currentX = pointerPosition.x;
+        const currentY = pointerPosition.y;
+
+        // Calculate distance moved since last click
+        const deltaX = currentX - lastClickPositionRef.current.x;
+        const deltaY = currentY - lastClickPositionRef.current.y;
+        const distanceMoved = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        // Define threshold: 10 pixels - if mouse moved more than this, it's likely a drag not a double-click
+        const movementThreshold = 10;
+
+        if (timeSinceLastClick < 500 && distanceMoved < movementThreshold) {
+            // Double-click detected (increased from 300ms to 500ms for better reliability)
+            // Only trigger if mouse didn't move significantly (prevents triggering during drag)
             onDoubleClick();
             lastClickTimeRef.current = 0; // Reset to prevent triple-click
         } else {
             // Single click
             onSelect();
             lastClickTimeRef.current = now;
+            lastClickPositionRef.current = { x: currentX, y: currentY };
         }
     };
 
@@ -165,6 +185,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
                     strokeWidth={isSelected ? 3 : 1}
                     shadowEnabled={false}
+                    opacity={opacity}
                 />
             ) : (
                 /* Players, cones, markers: Circle shape */
@@ -174,6 +195,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
                     strokeWidth={isSelected ? 3 : 0}
                     shadowEnabled={false}
+                    opacity={opacity}
                 />
             )}
 
@@ -191,6 +213,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     offsetX={radius}
                     offsetY={radius}
                     listening={false} // Text shouldn't intercept events
+                    opacity={opacity}
                 />
             )}
         </Group>

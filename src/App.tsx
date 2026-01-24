@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import Konva from 'konva';
 import { Stage } from './components/Canvas/Stage';
 import { Field } from './components/Canvas/Field';
+import { GridOverlay } from './components/Canvas/GridOverlay';
 import { EntityLayer } from './components/Canvas/EntityLayer';
 import { InlineEditor } from './components/Canvas/InlineEditor';
 import { GhostLayer } from './components/Canvas/GhostLayer';
@@ -18,6 +19,7 @@ import { useUIStore } from './store/uiStore';
 import { DESIGN_TOKENS } from './constants/design-tokens';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { EntityContextMenu } from './components/ui/EntityContextMenu';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { SportType } from './types';
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
         playbackSpeed,
         loopPlayback,
         playbackPosition,
+        isDirty,
         newProject,
         loadProject,
         addFrame,
@@ -55,7 +58,7 @@ function App() {
     } = useProjectStore();
 
     // Get UI store state and actions
-    const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts, selectedAnnotationId, selectAnnotation, drawingMode, setDrawingMode } = useUIStore();
+    const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts, showGrid, toggleGrid, selectedAnnotationId, selectAnnotation, drawingMode, setDrawingMode } = useUIStore();
 
     // Initialize export hook
     const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
@@ -77,10 +80,34 @@ function App() {
         position: { x: number; y: number };
     } | null>(null);
 
+    // Local state for annotation context menu
+    const [annotationContextMenu, setAnnotationContextMenu] = useState<{
+        annotationId: string;
+        position: { x: number; y: number };
+    } | null>(null);
+
     // Initialize hooks
     useAnimationLoop();
     useKeyboardShortcuts();
     useAutoSave();
+
+    // Warn user before closing tab with unsaved changes (FR-PER-04)
+    useEffect(() => {
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            if (isDirty) {
+                // Modern browsers ignore the custom message and show a generic one
+                event.preventDefault();
+                // Chrome requires returnValue to be set
+                event.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [isDirty]);
 
     // Initialize project on mount and check for crash recovery
     useEffect(() => {
@@ -279,6 +306,30 @@ function App() {
         handleEntityDoubleClick(contextMenu.entityId);
     };
 
+    // Annotation context menu handlers
+    const handleAnnotationContextMenu = (annotationId: string, event: { x: number; y: number }) => {
+        if (!stageRef.current) return;
+
+        const canvasElement = stageRef.current.container();
+        const rect = canvasElement.getBoundingClientRect();
+
+        setAnnotationContextMenu({
+            annotationId,
+            position: {
+                x: rect.left + event.x,
+                y: rect.top + event.y
+            },
+        });
+    };
+
+    const handleAnnotationContextMenuDelete = () => {
+        if (!annotationContextMenu) return;
+        const { removeAnnotation } = useProjectStore.getState();
+        removeAnnotation(annotationContextMenu.annotationId);
+        deselectAll();
+        setAnnotationContextMenu(null);
+    };
+
     // Canvas click handler
     const handleCanvasClick = () => {
         deselectAll();
@@ -332,111 +383,127 @@ function App() {
                     </h1>
                 </div>
 
-                <div className="bg-tactics-white flex-1 overflow-y-auto">
-                    <ProjectActions
-                        currentSport={project?.sport || 'rugby-union'}
-                        onSportChange={handleSportChange}
-                        onExport={startExport}
-                        exportStatus={exportStatus}
-                        exportProgress={exportProgress}
-                        exportError={exportError}
-                        canExport={canExport}
-                    />
-                    <EntityPalette
-                        onAddAttackPlayer={handleAddAttackPlayer}
-                        onAddDefensePlayer={handleAddDefensePlayer}
-                        onAddBall={handleAddBall}
-                        onAddCone={handleAddCone}
-                        onAddMarker={handleAddMarker}
-                        drawingMode={drawingMode}
-                        onDrawingModeChange={setDrawingMode}
-                    />
-                    <EntityProperties
-                        entity={selectedEntityId ? entities.find(e => e.id === selectedEntityId) || null : null}
-                        onUpdate={(updates) => {
-                            if (selectedEntityId) {
-                                updateEntity(selectedEntityId, updates);
-                            }
-                        }}
-                    />
-                </div>
+                <ErrorBoundary fallbackTitle="Sidebar Error">
+                    <div className="bg-tactics-white flex-1 overflow-y-auto">
+                        <ProjectActions
+                            currentSport={project?.sport || 'rugby-union'}
+                            onSportChange={handleSportChange}
+                            onExport={startExport}
+                            exportStatus={exportStatus}
+                            exportProgress={exportProgress}
+                            exportError={exportError}
+                            canExport={canExport}
+                        />
+                        <EntityPalette
+                            onAddAttackPlayer={handleAddAttackPlayer}
+                            onAddDefensePlayer={handleAddDefensePlayer}
+                            onAddBall={handleAddBall}
+                            onAddCone={handleAddCone}
+                            onAddMarker={handleAddMarker}
+                            drawingMode={drawingMode}
+                            onDrawingModeChange={setDrawingMode}
+                        />
+                        <EntityProperties
+                            entity={selectedEntityId ? entities.find(e => e.id === selectedEntityId) || null : null}
+                            onUpdate={(updates) => {
+                                if (selectedEntityId) {
+                                    updateEntity(selectedEntityId, updates);
+                                }
+                            }}
+                        />
+                    </div>
+                </ErrorBoundary>
             </aside>
 
             {/* Center - Canvas and Timeline */}
             <main className="flex-1 flex flex-col">
                 {/* Canvas area */}
                 <div className="flex-1 flex items-center justify-center p-4 bg-tactical-mono-100">
-                    <div className="border border-tactical-mono-300 bg-white">
-                        <Stage
-                            ref={stageRef}
-                            width={canvasWidth}
-                            height={canvasHeight}
-                            onCanvasClick={handleCanvasClick}
-                        >
-                            <Field
-                                sport={project?.sport || 'rugby-union'}
+                    <ErrorBoundary fallbackTitle="Canvas Error">
+                        <div className="border border-tactical-mono-300 bg-white">
+                            <Stage
+                                ref={stageRef}
                                 width={canvasWidth}
                                 height={canvasHeight}
-                            />
-                            <GhostLayer />
-                            <EntityLayer
-                                entities={entities}
-                                selectedEntityId={selectedEntityId}
-                                onEntitySelect={handleEntitySelect}
-                                onEntityMove={handleEntityMove}
-                                onEntityDoubleClick={handleEntityDoubleClick}
-                                onEntityContextMenu={handleEntityContextMenu}
-                                interactive={!isPlaying}
-                                playbackPosition={playbackPosition}
-                                frames={project?.frames ?? []}
-                            />
-                            <AnnotationLayer
-                                annotations={annotations}
-                                selectedAnnotationId={selectedAnnotationId}
-                                onAnnotationSelect={selectAnnotation}
-                                interactive={!isPlaying}
-                            />
-                            <AnnotationDrawingLayer
-                                drawingMode={drawingMode}
-                                defaultColor={DESIGN_TOKENS.colors.annotation}
-                                onDrawingComplete={handleDrawingComplete}
-                                interactive={!isPlaying}
-                                width={canvasWidth}
-                                height={canvasHeight}
-                            />
-                        </Stage>
-                    </div>
+                                onCanvasClick={handleCanvasClick}
+                            >
+                                <Field
+                                    sport={project?.sport || 'rugby-union'}
+                                    width={canvasWidth}
+                                    height={canvasHeight}
+                                />
+                                <GridOverlay
+                                    width={canvasWidth}
+                                    height={canvasHeight}
+                                    visible={showGrid}
+                                />
+                                <GhostLayer />
+                                <EntityLayer
+                                    entities={entities}
+                                    selectedEntityId={selectedEntityId}
+                                    onEntitySelect={handleEntitySelect}
+                                    onEntityMove={handleEntityMove}
+                                    onEntityDoubleClick={handleEntityDoubleClick}
+                                    onEntityContextMenu={handleEntityContextMenu}
+                                    interactive={!isPlaying}
+                                    playbackPosition={playbackPosition}
+                                    frames={project?.frames ?? []}
+                                />
+                                <AnnotationLayer
+                                    annotations={annotations}
+                                    selectedAnnotationId={selectedAnnotationId}
+                                    onAnnotationSelect={selectAnnotation}
+                                    onContextMenu={handleAnnotationContextMenu}
+                                    interactive={!isPlaying}
+                                    currentFrameId={currentFrame?.id || ''}
+                                    frameIds={project?.frames.map(f => f.id) || []}
+                                />
+                                <AnnotationDrawingLayer
+                                    drawingMode={drawingMode}
+                                    defaultColor={DESIGN_TOKENS.colors.annotation}
+                                    onDrawingComplete={handleDrawingComplete}
+                                    interactive={!isPlaying}
+                                    width={canvasWidth}
+                                    height={canvasHeight}
+                                />
+                            </Stage>
+                        </div>
+                    </ErrorBoundary>
                 </div>
 
                 {/* Timeline footer */}
-                <footer className="border-t border-tactical-mono-300">
-                    <PlaybackControls
-                        isPlaying={isPlaying}
-                        speed={playbackSpeed}
-                        loopEnabled={loopPlayback}
-                        currentFrame={currentFrameIndex}
-                        totalFrames={project?.frames.length ?? 0}
-                        onPlay={play}
-                        onPause={pause}
-                        onReset={reset}
-                        onPreviousFrame={handlePreviousFrame}
-                        onNextFrame={handleNextFrame}
-                        onSpeedChange={setPlaybackSpeed}
-                        onLoopToggle={toggleLoop}
-                        ghostEnabled={showGhosts}
-                        onGhostToggle={toggleGhosts}
-                    />
+                <ErrorBoundary fallbackTitle="Timeline Error">
+                    <footer className="border-t border-tactical-mono-300">
+                        <PlaybackControls
+                            isPlaying={isPlaying}
+                            speed={playbackSpeed}
+                            loopEnabled={loopPlayback}
+                            currentFrame={currentFrameIndex}
+                            totalFrames={project?.frames.length ?? 0}
+                            onPlay={play}
+                            onPause={pause}
+                            onReset={reset}
+                            onPreviousFrame={handlePreviousFrame}
+                            onNextFrame={handleNextFrame}
+                            onSpeedChange={setPlaybackSpeed}
+                            onLoopToggle={toggleLoop}
+                            ghostEnabled={showGhosts}
+                            onGhostToggle={toggleGhosts}
+                            gridEnabled={showGrid}
+                            onGridToggle={toggleGrid}
+                        />
 
-                    <FrameStrip
-                        frames={project?.frames ?? []}
-                        currentFrameIndex={currentFrameIndex}
-                        onFrameSelect={setCurrentFrame}
-                        onAddFrame={addFrame}
-                        onRemoveFrame={removeFrame}
-                        onDuplicateFrame={duplicateFrame}
-                        onDurationChange={handleFrameDurationChange}
-                    />
-                </footer>
+                        <FrameStrip
+                            frames={project?.frames ?? []}
+                            currentFrameIndex={currentFrameIndex}
+                            onFrameSelect={setCurrentFrame}
+                            onAddFrame={addFrame}
+                            onRemoveFrame={removeFrame}
+                            onDuplicateFrame={duplicateFrame}
+                            onDurationChange={handleFrameDurationChange}
+                        />
+                    </footer>
+                </ErrorBoundary>
             </main>
 
             {/* Crash recovery dialog */}
@@ -461,7 +528,7 @@ function App() {
                 />
             )}
 
-            {/* Context menu */}
+            {/* Entity Context menu */}
             <EntityContextMenu
                 position={contextMenu?.position || null}
                 onDuplicate={handleContextMenuDuplicate}
@@ -469,6 +536,25 @@ function App() {
                 onEditLabel={handleContextMenuEditLabel}
                 onClose={() => setContextMenu(null)}
             />
+
+            {/* Annotation context menu */}
+            {annotationContextMenu && (
+                <div
+                    className="absolute z-50 border border-tactical-mono-300 bg-white shadow-lg"
+                    style={{
+                        left: annotationContextMenu.position.x,
+                        top: annotationContextMenu.position.y,
+                    }}
+                    onMouseLeave={() => setAnnotationContextMenu(null)}
+                >
+                    <button
+                        className="block w-full px-4 py-2 text-left hover:bg-tactical-mono-100 text-sm"
+                        onClick={handleAnnotationContextMenuDelete}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

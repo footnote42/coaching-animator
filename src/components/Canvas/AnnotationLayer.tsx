@@ -12,8 +12,14 @@ export interface AnnotationLayerProps {
     selectedAnnotationId: string | null;
     /** Called when annotation is clicked/selected */
     onAnnotationSelect: (annotationId: string) => void;
+    /** Called on right-click */
+    onContextMenu: (annotationId: string, event: { x: number; y: number }) => void;
     /** Whether layer is interactive (false during playback) */
     interactive: boolean;
+    /** Current frame ID for visibility filtering */
+    currentFrameId: string;
+    /** All frame IDs in order for visibility range checks */
+    frameIds: string[];
 }
 
 /**
@@ -22,6 +28,7 @@ export interface AnnotationLayerProps {
  * 
  * Responsibilities:
  * - Renders all annotations for the current frame
+ * - Filters annotations by frame visibility range (FR-ENT-07)
  * - Manages selection highlighting
  * - Disables interactions during playback
  * - Delegates all state changes through callback props
@@ -30,11 +37,36 @@ export const AnnotationLayer: React.FC<AnnotationLayerProps> = ({
     annotations,
     selectedAnnotationId,
     onAnnotationSelect,
+    onContextMenu,
     interactive,
+    currentFrameId,
+    frameIds,
 }) => {
+    // Filter annotations by frame visibility (FR-ENT-07)
+    const visibleAnnotations = annotations.filter((annotation) => {
+        const currentFrameIndex = frameIds.indexOf(currentFrameId);
+        const startFrameIndex = frameIds.indexOf(annotation.startFrameId);
+        const endFrameIndex = frameIds.indexOf(annotation.endFrameId);
+
+        // Show annotation if current frame is within the visibility range
+        return currentFrameIndex >= startFrameIndex && currentFrameIndex <= endFrameIndex;
+    });
+
+    // Handle right-click context menu
+    const handleContextMenu = (annotationId: string, e: any) => {
+        e.evt.preventDefault();
+        const stage = e.target.getStage();
+        const pointerPosition = stage.getPointerPosition();
+
+        onContextMenu(annotationId, {
+            x: pointerPosition.x,
+            y: pointerPosition.y
+        });
+    };
+
     return (
         <Layer listening={interactive}>
-            {annotations.map((annotation) => {
+            {visibleAnnotations.map((annotation) => {
                 const isSelected = selectedAnnotationId === annotation.id;
                 const strokeWidth = isSelected ? 4 : 3;
 
@@ -55,6 +87,7 @@ export const AnnotationLayer: React.FC<AnnotationLayerProps> = ({
                             lineJoin="round"
                             onClick={() => onAnnotationSelect(annotation.id)}
                             onTap={() => onAnnotationSelect(annotation.id)}
+                            onContextMenu={(e) => handleContextMenu(annotation.id, e)}
                             hitStrokeWidth={20}
                         />
                     );
@@ -71,6 +104,7 @@ export const AnnotationLayer: React.FC<AnnotationLayerProps> = ({
                         lineJoin="round"
                         onClick={() => onAnnotationSelect(annotation.id)}
                         onTap={() => onAnnotationSelect(annotation.id)}
+                        onContextMenu={(e) => handleContextMenu(annotation.id, e)}
                         hitStrokeWidth={20}
                     />
                 );

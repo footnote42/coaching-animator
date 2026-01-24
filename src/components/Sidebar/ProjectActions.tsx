@@ -1,4 +1,4 @@
-import { Save, FolderOpen, FilePlus, Video } from 'lucide-react';
+import { Save, FolderOpen, FilePlus, Video, Loader2 } from 'lucide-react';
 import { useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
@@ -43,6 +43,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     const newProject = useProjectStore((state) => state.newProject);
     const updateProjectSettings = useProjectStore((state) => state.updateProjectSettings);
 
+    const isLoading = useUIStore((state) => state.isLoading);
+    const setLoadingState = useUIStore((state) => state.setLoadingState);
     const unsavedChangesDialog = useUIStore((state) => state.unsavedChangesDialog);
     const showUnsavedChangesDialog = useUIStore((state) => state.showUnsavedChangesDialog);
     const confirmPendingAction = useUIStore((state) => state.confirmPendingAction);
@@ -79,6 +81,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
         const file = event.target.files?.[0];
         if (!file) return;
 
+        setLoadingState('load', true);
         try {
             const data = await readJsonFile(file);
             const result = loadProject(data);
@@ -93,6 +96,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             alert(`Failed to load project: ${message}`);
+        } finally {
+            setLoadingState('load', false);
         }
 
         // Reset the input so the same file can be selected again
@@ -105,14 +110,17 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     const handleSave = () => {
         if (!project) return;
 
-        const jsonContent = saveProject();
-        const filename = generateProjectFilename(project.name);
-
+        setLoadingState('save', true);
         try {
+            const jsonContent = saveProject();
+            const filename = generateProjectFilename(project.name);
             downloadJson(filename, jsonContent);
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             alert(`Failed to save project: ${message}`);
+        } finally {
+            // Reset loading state after a short delay to ensure user sees feedback
+            setTimeout(() => setLoadingState('save', false), 300);
         }
     };
 
@@ -167,9 +175,14 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                         variant="outline"
                         size="sm"
                         onClick={handleOpen}
+                        disabled={isLoading.load}
                         className="flex-1"
                     >
-                        <FolderOpen className="w-4 h-4 mr-2" />
+                        {isLoading.load ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                            <FolderOpen className="w-4 h-4 mr-2" />
+                        )}
                         Open
                     </Button>
                 </div>
@@ -178,10 +191,14 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     variant="default"
                     size="sm"
                     onClick={handleSave}
-                    disabled={!project}
+                    disabled={!project || isLoading.save}
                     className="w-full"
                 >
-                    <Save className="w-4 h-4 mr-2" />
+                    {isLoading.save ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                        <Save className="w-4 h-4 mr-2" />
+                    )}
                     Save
                 </Button>
             </div>

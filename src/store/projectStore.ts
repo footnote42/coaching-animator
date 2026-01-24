@@ -218,6 +218,14 @@ export const useProjectStore = create<ProjectStoreState>()(
                 // Guard: Return if no project
                 if (!state.project) return state;
 
+                // Guard: Check 50-frame limit per FR-FRM-01 and Edge Case validation
+                if (state.project.frames.length >= VALIDATION.PROJECT.MAX_FRAMES) {
+                    console.warn(`Maximum frames reached (${VALIDATION.PROJECT.MAX_FRAMES})`);
+                    // Show user-friendly message - using alert for now, can be upgraded to toast
+                    alert(`Maximum frames reached. You can have up to ${VALIDATION.PROJECT.MAX_FRAMES} frames in a project.`);
+                    return state;
+                }
+
                 // Get current frame
                 const currentFrame = state.project.frames[state.currentFrameIndex];
 

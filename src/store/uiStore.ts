@@ -15,6 +15,10 @@ export interface UIStoreState {
     showGhosts: boolean;
     showGrid: boolean;
     activeSidebarPanel: SidebarPanel;
+    isLoading: {
+        save: boolean;
+        load: boolean;
+    };
     exportDialog: {
         isOpen: boolean;
         progress: number;
@@ -31,6 +35,7 @@ export interface UIStoreState {
     toggleGhosts: () => void;
     toggleGrid: () => void;
     setSidebarPanel: (panel: SidebarPanel) => void;
+    setLoadingState: (operation: 'save' | 'load', loading: boolean) => void;
     startExport: () => void;
     setExportProgress: (progress: number) => void;
     completeExport: (result: ExportResult) => void;
@@ -51,6 +56,10 @@ export const useUIStore = create<UIStoreState>()(
             showGhosts: false,
             showGrid: false,
             activeSidebarPanel: 'entities',
+            isLoading: {
+                save: false,
+                load: false,
+            },
             exportDialog: {
                 isOpen: false,
                 progress: 0,
@@ -80,6 +89,13 @@ export const useUIStore = create<UIStoreState>()(
             setSidebarPanel: (panel: SidebarPanel) => set((state) => ({
                 ...state,
                 activeSidebarPanel: panel,
+            })),
+            setLoadingState: (operation: 'save' | 'load', loading: boolean) => set((state) => ({
+                ...state,
+                isLoading: {
+                    ...state.isLoading,
+                    [operation]: loading,
+                },
             })),
             startExport: () => set((state) => ({
                 ...state,

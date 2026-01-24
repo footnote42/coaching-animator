@@ -76,7 +76,6 @@ export function useKeyboardShortcuts() {
         e.preventDefault();
         if (project) {
           saveProject();
-          console.log('Save project shortcut triggered');
         }
         return;
       }

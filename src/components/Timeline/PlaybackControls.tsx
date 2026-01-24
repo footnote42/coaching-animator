@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat, Ghost } from 'lucide-react';
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat, Ghost, Grid } from 'lucide-react';
 import { PlaybackSpeed } from '../../types';
 
 export interface PlaybackControlsProps {
@@ -17,6 +17,8 @@ export interface PlaybackControlsProps {
   onLoopToggle: () => void;
   ghostEnabled: boolean;
   onGhostToggle: () => void;
+  gridEnabled: boolean;
+  onGridToggle: () => void;
 }
 
 export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
@@ -34,6 +36,8 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   onLoopToggle,
   ghostEnabled,
   onGhostToggle,
+  gridEnabled,
+  onGridToggle,
 }) => {
   const speedOptions: PlaybackSpeed[] = [0.5, 1, 2];
 
@@ -126,6 +130,20 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         title={ghostEnabled ? 'Ghost mode enabled' : 'Ghost mode disabled'}
       >
         <Ghost size={16} />
+      </button>
+
+      {/* Grid overlay toggle */}
+      <button
+        onClick={onGridToggle}
+        className={`
+          p-2
+          border border-tactical-mono-300
+          rounded-none
+          ${gridEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+        `}
+        title={gridEnabled ? 'Grid overlay enabled' : 'Grid overlay disabled'}
+      >
+        <Grid size={16} />
       </button>
     </div>
   );

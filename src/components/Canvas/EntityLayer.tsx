@@ -53,41 +53,52 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     // Calculate interpolated entities when playing
     const interpolatedEntities = useMemo(() => {
         if (!playbackPosition || !frames.length) {
-            return entities;
+            return entities.map(e => ({ ...e, opacity: 1.0 }));
         }
 
         const fromFrame = frames[playbackPosition.fromFrameIndex];
         const toFrame = frames[playbackPosition.toFrameIndex];
 
-        if (!fromFrame || !toFrame) return entities;
+        if (!fromFrame || !toFrame) return entities.map(e => ({ ...e, opacity: 1.0 }));
 
         const { progress } = playbackPosition;
 
-        // First pass: Calculate base interpolated positions
+        // First pass: Calculate base interpolated positions and opacity
         const baseInterpolated = entities.map(entity => {
             const fromEntity = fromFrame.entities[entity.id];
             const toEntity = toFrame.entities[entity.id];
 
-            // If entity exists in both frames, interpolate
+            // If entity exists in both frames, interpolate with full opacity
             if (fromEntity && toEntity) {
                 return {
                     ...entity,
                     x: fromEntity.x + (toEntity.x - fromEntity.x) * progress,
                     y: fromEntity.y + (toEntity.y - fromEntity.y) * progress,
+                    opacity: 1.0,
                 };
             }
 
-            // Entity only in "from" frame - keep position (will disappear at end)
+            // Entity only in "from" frame - fade out (FR-ANI-05)
             if (fromEntity && !toEntity) {
-                return { ...entity, x: fromEntity.x, y: fromEntity.y };
+                return {
+                    ...entity,
+                    x: fromEntity.x,
+                    y: fromEntity.y,
+                    opacity: 1.0 - progress, // Fade from 1.0 to 0.0
+                };
             }
 
-            // Entity only in "to" frame - show at destination
+            // Entity only in "to" frame - fade in
             if (!fromEntity && toEntity) {
-                return { ...entity, x: toEntity.x, y: toEntity.y };
+                return {
+                    ...entity,
+                    x: toEntity.x,
+                    y: toEntity.y,
+                    opacity: progress, // Fade from 0.0 to 1.0
+                };
             }
 
-            return entity;
+            return { ...entity, opacity: 1.0 };
         });
 
         // Second pass: Apply parent-relative positioning for entities with parentId
@@ -111,7 +122,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
 
     return (
         <Layer listening={interactive}>
-            {interpolatedEntities.map((entity) => (
+            {interpolatedEntities.map((entity: any) => (
                 <PlayerToken
                     key={entity.id}
                     entity={entity}
@@ -121,6 +132,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
                     onDragEnd={(x, y) => onEntityMove(entity.id, x, y)}
                     onDoubleClick={() => onEntityDoubleClick(entity.id)}
                     onContextMenu={(event) => onEntityContextMenu(entity.id, event)}
+                    opacity={entity.opacity ?? 1.0}
                 />
             ))}
         </Layer>

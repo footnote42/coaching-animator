@@ -1,9 +1,10 @@
-import { Entity } from '../../types';
+import { Entity, Annotation } from '../../types';
 import { Input } from '../ui/input';
 import { ColorPicker } from '../ui/ColorPicker';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useProjectStore } from '../../store/projectStore';
+import { useUIStore } from '../../store/uiStore';
 
 export interface EntityPropertiesProps {
     /** Selected entity to edit */
@@ -15,11 +16,106 @@ export interface EntityPropertiesProps {
 
 /**
  * EntityProperties sidebar component.
- * Displays editable properties for the selected entity.
+ * Displays editable properties for the selected entity or annotation.
  */
 export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
-    const { project, currentFrameIndex } = useProjectStore();
+    const { project, currentFrameIndex, updateAnnotation } = useProjectStore();
+    const { selectedAnnotationId } = useUIStore();
 
+    // Get selected annotation from current frame
+    const currentFrame = project?.frames[currentFrameIndex];
+    const selectedAnnotation = selectedAnnotationId && currentFrame
+        ? currentFrame.annotations.find((a: Annotation) => a.id === selectedAnnotationId)
+        : null;
+
+    // Get players from the current frame for possession dropdown
+    const currentPlayers = project && project.frames[currentFrameIndex]
+        ? Object.values(project.frames[currentFrameIndex].entities).filter(e => e.type === 'player')
+        : [];
+
+    // If annotation is selected, show annotation properties
+    if (selectedAnnotation && project) {
+        return (
+            <div className="flex flex-col gap-4 p-4">
+                <h3 className="text-sm font-semibold text-tactical-mono-700 truncate">
+                    Annotation: {selectedAnnotation.type.charAt(0).toUpperCase() + selectedAnnotation.type.slice(1)} ({selectedAnnotation.id.slice(0, 4)})
+                </h3>
+
+                {/* Annotation Type (read-only) */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-tactical-mono-700">
+                        Type
+                    </label>
+                    <div className="px-3 py-2 text-sm bg-tactical-mono-100 border border-tactical-mono-300 font-mono capitalize">
+                        {selectedAnnotation.type}
+                    </div>
+                </div>
+
+                {/* Start Frame */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-tactical-mono-700">
+                        Start Frame
+                    </label>
+                    <Select
+                        value={selectedAnnotation.startFrameId}
+                        onValueChange={() => {
+                            // Update via store - need to update the annotation in the frame
+                            // Since startFrameId isn't in AnnotationUpdate, we'll just show it as read-only for now
+                        }}
+                        disabled={true}
+                    >
+                        <SelectTrigger className="font-mono">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {project.frames.map((frame, idx) => (
+                                <SelectItem key={frame.id} value={frame.id}>
+                                    Frame {idx + 1}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <span className="text-xs text-tactical-mono-500">Created on current frame</span>
+                </div>
+
+                {/* End Frame */}
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-tactical-mono-700">
+                        End Frame
+                    </label>
+                    <Select
+                        value={selectedAnnotation.endFrameId}
+                        onValueChange={(value) => updateAnnotation(selectedAnnotation.id, { endFrameId: value })}
+                    >
+                        <SelectTrigger className="font-mono">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {project.frames.map((frame, idx) => (
+                                <SelectItem
+                                    key={frame.id}
+                                    value={frame.id}
+                                    disabled={project.frames.findIndex(f => f.id === frame.id) < project.frames.findIndex(f => f.id === selectedAnnotation.startFrameId)}
+                                >
+                                    Frame {idx + 1}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <span className="text-xs text-tactical-mono-500">Annotation visible from start to end frame</span>
+                </div>
+
+                {/* Color */}
+                <ColorPicker
+                    label="Color"
+                    value={selectedAnnotation.color || '#FACC15'}
+                    onChange={(color) => updateAnnotation(selectedAnnotation.id, { color })}
+                />
+            </div>
+        );
+    }
+
+    // Otherwise show entity properties
     if (!entity) {
         return (
             <div className="p-4 text-sm text-tactical-mono-500">
@@ -30,11 +126,6 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
 
     const isPlayer = entity.type === 'player';
     const isBall = entity.type === 'ball';
-
-    // Get players from the current frame for possession dropdown
-    const currentPlayers = project && project.frames[currentFrameIndex]
-        ? Object.values(project.frames[currentFrameIndex].entities).filter(e => e.type === 'player')
-        : [];
 
     return (
         <div className="flex flex-col gap-4 p-4">
