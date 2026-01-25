@@ -1,26 +1,47 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import Konva from 'konva';
 import { useProjectStore } from '../store/projectStore';
-import { ExportStatus } from '../types';
+import { EXPORT_SETTINGS } from './useFrameCapture';
+
+// TODO: [GIF-MIGRATION] FFmpeg has been removed. Export is temporarily disabled.
+// Phase 2-4 of gif-export-plan.md will implement GIF export using gif.js.
+// This file will be updated in Phase 4 (useExport Integration) to use the new useGifExport hook.
+//
+// Original imports that were removed:
+// - import { useFrameCapture } from './useFrameCapture';
+// - import { useMp4Export } from './useMp4Export';
+
+export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
+
+export interface ExportState {
+    status: ExportStatus;
+    progress: number; // 0-100
+    error: string | null;
+    phase: string;
+    fileSize?: number;
+}
 
 /**
- * Hook to manage video export using MediaRecorder API
- * 
- * Captures the Konva Stage during playback and generates a downloadable .webm video.
- * Manages export state machine: idle → preparing → recording → processing → complete (or error)
+ * Hook to manage animation export.
+ *
+ * TODO: [GIF-MIGRATION] Currently disabled during FFmpeg -> gif.js migration.
+ * Phase 4 of gif-export-plan.md will integrate the new useGifExport hook here.
+ *
+ * Original: Exported animation as H.264 MP4 at 720p/30fps via FFmpeg.wasm
+ * Future: Will export as GIF using gif.js for better browser compatibility.
  */
-export function useExport(stageRef: React.RefObject<Konva.Stage>) {
-    const [exportStatus, setExportStatus] = useState<ExportStatus>('idle');
-    const [exportProgress, setExportProgress] = useState<number>(0);
-    const [exportError, setExportError] = useState<string | null>(null);
-
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const recordedChunksRef = useRef<Blob[]>([]);
+export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
+    const [state, setState] = useState<ExportState>({
+        status: 'idle',
+        progress: 0,
+        error: null,
+        phase: '',
+    });
 
     const project = useProjectStore((state) => state.project);
-    const currentFrameIndex = useProjectStore((state) => state.currentFrameIndex);
-    const setCurrentFrame = useProjectStore((state) => state.setCurrentFrame);
-    const play = useProjectStore((state) => state.play);
+
+    // TODO: [GIF-MIGRATION] Phase 4 will add:
+    // const gifExport = useGifExport(stageRef);
 
     /**
      * Validate project before export
@@ -46,237 +67,77 @@ export function useExport(stageRef: React.RefObject<Konva.Stage>) {
     }, [project]);
 
     /**
-     * Download the video blob
-     */
-    const downloadVideo = useCallback((blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${project?.name || 'animation'}-${Date.now()}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, [project]);
-
-    /**
-     * Clean up MediaRecorder and recorded data
-     */
-    const cleanup = useCallback(() => {
-        if (mediaRecorderRef.current) {
-            try {
-                if (mediaRecorderRef.current.state !== 'inactive') {
-                    mediaRecorderRef.current.stop();
-                }
-            } catch (error) {
-                console.error('Error stopping MediaRecorder:', error);
-            }
-            mediaRecorderRef.current = null;
-        }
-        recordedChunksRef.current = [];
-    }, []);
-
-    /**
-     * Start the export process
+     * Start the export process.
+     *
+     * TODO: [GIF-MIGRATION] This function is temporarily disabled.
+     * Phase 4 of gif-export-plan.md will implement: capture frames -> encode to GIF -> download
+     * Original flow was: capture frames -> encode to MP4 via FFmpeg -> download
      */
     const startExport = useCallback(async () => {
-        // Validate
+        // Validate project first
         const validation = validateExport();
         if (!validation.valid) {
-            setExportStatus('error');
-            setExportError(validation.error || 'Export validation failed');
+            setState({
+                status: 'error',
+                progress: 0,
+                error: validation.error || 'Export validation failed',
+                phase: '',
+            });
             return;
         }
 
         if (!stageRef.current) {
-            setExportStatus('error');
-            setExportError('Canvas not ready for export');
+            setState({
+                status: 'error',
+                progress: 0,
+                error: 'Canvas not ready for export',
+                phase: '',
+            });
             return;
         }
 
-        try {
-            // Phase 1: Preparing
-            setExportStatus('preparing');
-            setExportProgress(10);
-            setExportError(null);
-            cleanup();
+        // TODO: [GIF-MIGRATION] Export temporarily disabled during migration.
+        // This entire block will be replaced with GIF export logic in Phase 4.
+        // The useGifExport hook will handle: frame capture -> GIF encoding -> download
+        setState({
+            status: 'error',
+            progress: 0,
+            error: 'Export temporarily unavailable. GIF export coming soon!',
+            phase: '',
+        });
+    }, [validateExport, stageRef]);
 
-            // Reset to frame 0
-            if (currentFrameIndex !== 0) {
-                setCurrentFrame(0);
-                await new Promise(resolve => setTimeout(resolve, 100)); // Allow frame to update
-            }
-
-            // Phase 2: Recording
-            setExportStatus('recording');
-            setExportProgress(20);
-
-            // Get the Konva Stage
-            const stage = stageRef.current;
-
-            // Determine export dimensions based on project settings
-            const exportResolution = project!.settings.exportResolution;
-            const dimensions = exportResolution === '1080p'
-                ? { width: 1920, height: 1080 }
-                : { width: 1280, height: 720 };
-
-            // Store original stage dimensions and scale
-            const originalWidth = stage.width();
-            const originalHeight = stage.height();
-            const originalScale = stage.scale();
-
-            // Temporarily resize and scale the stage for export
-            // Assuming the stage's native coordinate system is 2000x2000
-            stage.width(dimensions.width);
-            stage.height(dimensions.height);
-            stage.scale({
-                x: dimensions.width / 2000,
-                y: dimensions.height / 2000
-            });
-
-            // Force stage to redraw with new dimensions
-            stage.batchDraw();
-
-            // Get the canvas element from Konva Stage with new resolution
-            const canvas = stage.toCanvas();
-
-            // Create MediaStream from canvas
-            const stream = canvas.captureStream(60); // 60 FPS
-
-            // Setup MediaRecorder
-            recordedChunksRef.current = [];
-
-            // Find supported mime type
-            const mimeTypes = [
-                'video/webm;codecs=vp8,opus',
-                'video/webm;codecs=vp8',
-                'video/webm',
-            ];
-            const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
-
-            const options: MediaRecorderOptions = {
-                mimeType,
-                videoBitsPerSecond: 2500000, // 2.5 Mbps for good quality
-            };
-
-            const mediaRecorder = new MediaRecorder(stream, options);
-            mediaRecorderRef.current = mediaRecorder;
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data && event.data.size > 0) {
-                    recordedChunksRef.current.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                // Stop all tracks in the stream to release resources (camera, mic, or canvas capture)
-                stream.getTracks().forEach(track => track.stop());
-
-                // Restore original stage dimensions and scale
-                stage.width(originalWidth);
-                stage.height(originalHeight);
-                stage.scale(originalScale || { x: 1, y: 1 });
-                stage.batchDraw();
-
-                setExportStatus('processing');
-                setExportProgress(80);
-
-                // Create blob from recorded chunks
-                const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-
-                // Download the video
-                downloadVideo(blob);
-
-                setExportStatus('complete');
-                setExportProgress(100);
-
-                // Reset to idle after 2 seconds
-                setTimeout(() => {
-                    setExportStatus('idle');
-                    setExportProgress(0);
-                }, 2000);
-
-                cleanup();
-            };
-
-            mediaRecorder.onerror = (event) => {
-                // Stop all tracks in the stream
-                stream.getTracks().forEach(track => track.stop());
-
-                // Restore original stage dimensions and scale on error
-                stage.width(originalWidth);
-                stage.height(originalHeight);
-                stage.scale(originalScale || { x: 1, y: 1 });
-                stage.batchDraw();
-
-                console.error('MediaRecorder error:', event);
-                setExportStatus('error');
-                setExportError('Recording failed. Please try again.');
-                cleanup();
-            };
-
-            // Start recording
-            mediaRecorder.start(100); // Capture data every 100ms
-
-            // Update progress slightly
-            setExportProgress(30);
-
-            // Start playback
-            play();
-
-            // Monitor playback and update progress
-            const checkPlayback = setInterval(() => {
-                const store = useProjectStore.getState();
-
-                if (!store.isPlaying) {
-                    // Animation finished
-                    clearInterval(checkPlayback);
-
-                    // Stop recording after a short delay to ensure last frame is captured
-                    setTimeout(() => {
-                        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-                            mediaRecorderRef.current.stop();
-                        }
-                    }, 500);
-                } else {
-                    // Update progress based on current frame
-                    const progress = 30 + ((store.currentFrameIndex / (project!.frames.length - 1)) * 40);
-                    setExportProgress(Math.min(progress, 70));
-                }
-            }, 100);
-
-        } catch (error) {
-            // Restore original dimensions if they were set
-            if (stageRef.current) {
-                const stage = stageRef.current;
-                // Check if we have originalWidth variable in scope (we might not if error happened early)
-                try {
-                    stage.scale({ x: 1, y: 1 });
-                    stage.batchDraw();
-                } catch (restoreError) {
-                    // Ignore restore errors
-                }
-            }
-
-            console.error('Export error:', error);
-            setExportStatus('error');
-            setExportError(error instanceof Error ? error.message : 'Export failed');
-            cleanup();
-        }
-    }, [validateExport, stageRef, currentFrameIndex, setCurrentFrame, play, downloadVideo, cleanup, project]);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            cleanup();
-        };
-    }, [cleanup]);
+    /**
+     * Cancel an in-progress export
+     *
+     * TODO: [GIF-MIGRATION] Phase 4 will call gifExport.cancel() here
+     */
+    const cancelExport = useCallback(() => {
+        setState({
+            status: 'idle',
+            progress: 0,
+            error: null,
+            phase: 'Cancelled',
+        });
+    }, []);
 
     return {
-        exportStatus,
-        exportProgress,
-        exportError,
+        // State
+        exportStatus: state.status,
+        exportProgress: state.progress,
+        exportError: state.error,
+        exportPhase: state.phase,
+        fileSize: state.fileSize,
+
+        // Actions
         startExport,
+        cancelExport,
+
+        // Computed
         canExport: project !== null && project.frames.length >= 2,
+        isExporting: state.status !== 'idle' && state.status !== 'complete' && state.status !== 'error',
+
+        // Export settings info (kept for Phase 4 compatibility)
+        exportSettings: EXPORT_SETTINGS,
     };
 }

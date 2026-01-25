@@ -6,7 +6,7 @@ import { downloadJson, readJsonFile, generateProjectFilename } from '../../utils
 import { Button } from '../ui/button';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { SportSelector } from './SportSelector';
-import { SportType } from '../../types';
+import { SportType, ExportStatus } from '../../types';
 
 
 /**
@@ -19,7 +19,7 @@ export interface ProjectActionsProps {
     currentSport: SportType;
     onSportChange: (sport: SportType) => void;
     onExport?: () => void;
-    exportStatus?: 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
+    exportStatus?: ExportStatus;
     exportProgress?: number;
     exportError?: string | null;
     canExport?: boolean;
@@ -253,8 +253,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     <div className="mt-2 p-2 bg-tactical-mono-100 border border-tactical-mono-300">
                         <div className="text-xs font-mono text-tactical-mono-700 mb-1">
                             {exportStatus === 'preparing' && 'Preparing...'}
-                            {exportStatus === 'recording' && 'Recording...'}
-                            {exportStatus === 'processing' && 'Processing...'}
+                            {exportStatus === 'capturing' && 'Capturing frames...'}
+                            {exportStatus === 'encoding' && 'Encoding video...'}
                             {exportStatus === 'complete' && '✓ Complete!'}
                             {exportStatus === 'error' && '✗ Error'}
                         </div>

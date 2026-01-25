@@ -206,7 +206,7 @@ export type PlaybackSpeed = 0.5 | 1 | 2;
 
 export type SidebarPanel = 'entities' | 'settings' | 'export';
 
-export type ExportStatus = 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
+export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
 
 export type DrawingMode = 'none' | 'arrow' | 'line';
 
