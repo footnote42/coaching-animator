@@ -14,6 +14,7 @@ import { ProjectActions } from './components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from './components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts, useExport } from './hooks';
 import { useAutoSave } from './hooks/useAutoSave';
+import { useGifExportSpike } from './hooks/useGifExportSpike';
 import { useProjectStore } from './store/projectStore';
 import { useUIStore } from './store/uiStore';
 import { DESIGN_TOKENS } from './constants/design-tokens';
@@ -62,6 +63,9 @@ function App() {
 
     // Initialize export hook
     const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
+
+    // SPIKE: Initialize GIF export spike for testing
+    const gifSpike = useGifExportSpike(stageRef);
 
     // Local state for crash recovery dialog
     const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
@@ -393,6 +397,8 @@ function App() {
                             exportProgress={exportProgress}
                             exportError={exportError}
                             canExport={canExport}
+                            onGifSpikeTest={gifSpike.exportAsGif}
+                            gifSpikeInProgress={gifSpike.isExporting}
                         />
                         <EntityPalette
                             onAddAttackPlayer={handleAddAttackPlayer}

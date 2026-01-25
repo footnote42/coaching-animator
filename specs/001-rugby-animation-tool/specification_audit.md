@@ -232,11 +232,11 @@ All functional requirements use **MUST** language:
 **Status**: PARTIAL (🟡)
 
 **Evidence**:
-- `Entity` type has `parentId?: string` field (Line 175 PRD.md, types/index.ts)
+- `Entity` type has `parentId?: string` field (Line 175 specs/001-rugby-animation-tool/PRD.md, types/index.ts)
 - `projectStore.ts` has `parentId` in EntityUpdate
 - **Missing**: UI to set possession (EntityProperties dropdown?)
 - **Missing**: Interpolation logic to follow parent during animation
-- CLEANUP_REPORT.md Line 28: "Ball Possession UI: While the store and interpolation handle parented entities, ensure the 'Possession' dropdown in EntityProperties.tsx is intuitive"
+- archive/CLEANUP_REPORT.md Line 28: "Ball Possession UI: While the store and interpolation handle parented entities, ensure the 'Possession' dropdown in EntityProperties.tsx is intuitive"
 
 **Spec Reference**: FR-ENT-06, US story mentions "ball possession"
 
@@ -674,7 +674,7 @@ All functional requirements use **MUST** language:
 
 **Description**: Archive folder created but may contain needed documentation
 
-**Evidence**: CLEANUP_REPORT.md shows 17 files moved to /archive
+**Evidence**: archive/CLEANUP_REPORT.md shows 17 files moved to /archive
 
 **Risk**: New developers don't know where to look for historical context
 

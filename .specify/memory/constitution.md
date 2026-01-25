@@ -2,24 +2,41 @@
 ================================================================================
 SYNC IMPACT REPORT
 ================================================================================
-Version change: N/A → 1.0.0 (initial constitution)
+Version change: 1.0.0 → 2.0.0 (MAJOR - Core Principle redefinition)
 
-Modified principles: N/A (new document)
+Modified principles:
+- Principle V: "Offline-First Privacy" → "Privacy-First Architecture"
+  - Changed from absolute offline-only to tiered feature governance
+  - Added Tier 1 (Sacred Offline) and Tier 2 (Controlled Networked)
+  - Introduced privacy policies and governance framework for backend features
 
 Added sections:
-- Core Principles (5 principles)
-- Design System (design tokens codification)
-- Development Workflow (component patterns)
-- Governance
+- V.1 Core Offline Features (Tier 1 - Sacred)
+- V.2 Optional Networked Features (Tier 2 - Controlled)
+- V.3 Data Retention & Privacy Policies
+- V.4 Security Baseline for Networked Features
+- V.5 Governance for Future Backend Features
+- V.6 Absolute Prohibitions (Unchanged)
 
-Removed sections: N/A
+Removed sections:
+- Previous Principle V content (absolute offline-only mandate)
+
+Rationale for Amendment:
+- Link-sharing feature solves critical user need (WhatsApp distribution)
+- Absolute offline-first blocked this essential use case
+- Tiered architecture preserves core offline-first identity while enabling optional networked features
+- Privacy and governance safeguards ensure networked features remain user-controlled and privacy-respecting
 
 Templates requiring updates:
-- ✅ plan-template.md - Compatible (Constitution Check section exists)
-- ✅ spec-template.md - Compatible (requirements structure aligns)
-- ✅ tasks-template.md - Compatible (phase structure supports modular approach)
+- ✅ plan-template.md - Compatible (Constitution Check section supports tiered architecture)
+- ✅ spec-template.md - Compatible (requirements structure supports Tier 1/Tier 2 distinction)
+- ✅ tasks-template.md - Compatible (phase structure supports incremental backend features)
 
-Follow-up TODOs: None
+Follow-up TODOs:
+- Update PRD.md Section 2 (Problem Statement) and Section 5.5 (Export System)
+- Update spec.md Section 5 (Requirements) to reflect tiered privacy model
+- Update animation-share-spec.md with constitutional references
+- Update CLAUDE.md Active Technologies section
 ================================================================================
 -->
 
@@ -84,17 +101,76 @@ The visual design MUST embody a focused, professional coaching environment.
 
 **Rationale**: The aesthetic establishes credibility and focus. A tactical, no-nonsense appearance reinforces the tool's purpose.
 
-### V. Offline-First Privacy
+### V. Privacy-First Architecture
 
-All data MUST remain on the user's device unless explicitly exported.
+The application adopts a **tiered feature architecture** that preserves offline-first as the sacred core while enabling optional networked features under strict governance.
 
-- **No Network Calls**: The application MUST function without any network connectivity
-- **Local Storage Only**: Persistence MUST use browser LocalStorage or IndexedDB exclusively
-- **No Telemetry**: No analytics, tracking, or usage reporting of any kind
-- **Export Ownership**: Users MUST receive standalone files (JSON, WebM/MP4) with no external dependencies
-- **No Accounts**: Authentication and user accounts MUST NOT be implemented
+#### V.1 Core Offline Features (Tier 1 - Sacred)
 
-**Rationale**: Coaches store team strategies and player information. Privacy is non-negotiable for trust. Zero backend means zero ongoing costs and maintenance.
+**MUST remain 100% offline with zero network dependencies:**
+- Animation creation & editing
+- Local persistence (LocalStorage, JSON file downloads)
+- Local export (GIF generation, video rendering)
+- Application bootstrap and all UI interactions
+
+**Enforcement**: No network calls permitted in Tier 1 code paths.
+
+#### V.2 Optional Networked Features (Tier 2 - Controlled)
+
+**MAY utilize network connectivity under strict conditions:**
+- Link sharing (read-only replay URLs)
+- Future: Cloud backup (optional), template libraries (read-only)
+
+**Mandatory Safeguards**:
+1. **Explicit User Consent**: Network features require user-initiated action (button click)
+2. **Clear Visual Indication**: UI must distinguish networked features (e.g., "Share Link 🌐")
+3. **Graceful Degradation**: Network failures must not break core offline functionality
+4. **Privacy Disclosure**: First use must display privacy notice explaining data handling
+
+#### V.3 Data Retention & Privacy Policies
+
+**All networked features must adhere to:**
+- **Data Minimization**: Transmit only required data (animation payload, no metadata)
+- **No Telemetry**: No user identity, device fingerprints, or usage analytics
+- **Retention Limits**: 90-day automatic expiration from last access
+- **Right to Deletion**: Users must be able to delete shared animations (future: deletion link)
+- **Security by Obscurity (MVP)**: UUID/nanoid provides baseline privacy without authentication
+
+#### V.4 Security Baseline for Networked Features
+
+**All backend endpoints must implement:**
+- JSON schema validation
+- Maximum payload size enforcement (100KB)
+- Rate limiting (POST /api/share: 10/hour, GET /api/share/:id: 100/hour)
+- Generic error messages (no sensitive information)
+- Strict CORS policy (no wildcard)
+
+**MVP Limitations (Acknowledged)**:
+- No authentication/authorization (UUID obscurity is the security model)
+- No DDoS protection beyond basic rate limiting
+- No data encryption at rest
+
+#### V.5 Governance for Future Backend Features
+
+**Any proposed backend feature must pass:**
+1. **Necessity Test**: Can this be implemented offline-first? (If yes, mandatory)
+2. **Privacy Impact Assessment**: What data is transmitted? How long retained? Who accesses?
+3. **Amendment Approval**: Document in constitution.md with version bump
+
+**Rejection Criteria (Automatic Disqualification)**:
+- Features requiring persistent user accounts (violates "No Accounts" unless amended)
+- Features sending telemetry to third parties (violates "No Telemetry")
+- Features with indefinite data retention (violates retention limits)
+
+#### V.6 Absolute Prohibitions (Unchanged)
+
+**STRICTLY FORBIDDEN regardless of tier:**
+- No telemetry, analytics, tracking, or user behavior monitoring
+- No third-party services (Google Analytics, Sentry, Mixpanel, etc.)
+- No persistent user accounts (MVP scope)
+- No paywalls
+
+**Rationale**: Coaches store team strategies and player information. Privacy remains non-negotiable for trust. The tiered architecture preserves the offline-first core while solving critical sharing needs (WhatsApp distribution) under strict privacy governance.
 
 ## Design System
 
@@ -174,4 +250,4 @@ src/
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-16
+**Version**: 2.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-25

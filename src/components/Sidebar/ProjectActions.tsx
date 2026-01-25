@@ -1,4 +1,4 @@
-import { Save, FolderOpen, FilePlus, Video, Loader2 } from 'lucide-react';
+import { Save, FolderOpen, FilePlus, Video, Loader2, Beaker } from 'lucide-react';
 import { useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
@@ -23,6 +23,8 @@ export interface ProjectActionsProps {
     exportProgress?: number;
     exportError?: string | null;
     canExport?: boolean;
+    onGifSpikeTest?: () => void;
+    gifSpikeInProgress?: boolean;
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
@@ -33,6 +35,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     exportProgress = 0,
     exportError = null,
     canExport = false,
+    onGifSpikeTest,
+    gifSpikeInProgress = false,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -235,6 +239,24 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                         </Button>
                     </div>
                 </div>
+
+                {/* SPIKE: GIF Export Test Button */}
+                {onGifSpikeTest && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={onGifSpikeTest}
+                        disabled={!canExport || gifSpikeInProgress}
+                        className="w-full mb-2 bg-yellow-50 border-yellow-300 hover:bg-yellow-100"
+                    >
+                        {gifSpikeInProgress ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                            <Beaker className="w-4 h-4 mr-2" />
+                        )}
+                        🧪 Test GIF Spike
+                    </Button>
+                )}
 
                 {/* Export button */}
                 <Button

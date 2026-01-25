@@ -32,19 +32,19 @@
 
 ### Research & Validation
 
-- [ ] T004 [GIF] Create spike implementation to test gif.js with sample canvas capture from CanvasStage in src/components/Canvas/Stage.tsx
-- [ ] T005 [GIF] Measure encoding time for 10-frame, 5-second test sequence
-- [ ] T006 [GIF] Verify gif.js can be bundled locally (no CDN dependencies) per offline-first constitution
-- [ ] T007 [GIF] Document memory usage and output file size for test sequence
-- [ ] T008 [P] [GIF] Test GIF playback on Chrome target browser
-- [ ] T009 [P] [GIF] Test GIF playback on Edge target browser
+- [x] T004 [GIF] Create spike implementation to test gif.js with sample canvas capture from CanvasStage in src/components/Canvas/Stage.tsx
+- [x] T005 [GIF] Measure encoding time for 10-frame, 5-second test sequence
+- [x] T006 [GIF] Verify gif.js can be bundled locally (no CDN dependencies) per offline-first constitution
+- [x] T007 [GIF] Document memory usage and output file size for test sequence
+- [x] T008 [P] [GIF] Test GIF playback on Chrome target browser
+- [x] T009 [P] [GIF] Test GIF playback on Edge target browser
 - [ ] T010 [GIF] Test GIF playback on WhatsApp Web to ensure sharing compatibility
-- [ ] T011 [GIF] Create specs/001-rugby-animation-tool/gif-export-research.md with findings and performance metrics
+- [x] T011 [GIF] Create specs/001-rugby-animation-tool/gif-export-research.md with findings and performance metrics
 
 **Acceptance Criteria**:
-- [ ] gif.js successfully encodes 10-frame test animation
+- [x] gif.js successfully encodes 10-frame test animation
 - [ ] GIF plays on WhatsApp Web without errors
-- [ ] Research document committed with baseline metrics (encoding time, file size, quality)
+- [x] Research document committed with baseline metrics (encoding time, file size, quality)
 
 **Checkpoint**: Library validated - gif.js proven to work, research documented
 

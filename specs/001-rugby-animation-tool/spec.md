@@ -3,7 +3,7 @@
 **Feature Branch**: `001-rugby-animation-tool`
 **Created**: 2026-01-16
 **Status**: Draft
-**Input**: User description: "Build an animation tool for rugby coaches in line with the PRD.md document and the CONSTITUTION.md instructions"
+**Input**: User description: "Build an animation tool for rugby coaches in line with the specs/001-rugby-animation-tool/PRD.md document and the CONSTITUTION.md instructions"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -160,6 +160,24 @@ As a rugby coach, I want to control animation speed and enable looping so that I
 
 ---
 
+### User Story 10 - Share Animation Link (Priority: P1)
+
+As a rugby coach, I want to generate a shareable link for my animation so that I can send it via WhatsApp without manually sharing files.
+
+**Why this priority**: Link sharing solves the primary distribution use case (WhatsApp) with minimal friction, complementing the offline-first file export. This is a Tier 2 feature under Constitution Principle V.2 (Optional Networked Features).
+
+**Independent Test**: Can be fully tested by creating an animation, clicking "Share Link", verifying URL is copied to clipboard, opening URL in a new browser tab, and confirming animation auto-plays and loops.
+
+**Acceptance Scenarios**:
+
+1. **Given** I have a project with animation, **When** I click "Share Link", **Then** a URL is copied to clipboard and a success message is shown
+2. **Given** I share the URL via WhatsApp, **When** another coach taps the link, **Then** the animation loads in a mobile browser and auto-plays
+3. **Given** I am offline, **When** I click "Share Link", **Then** I see "Connect to internet to share" message and button is disabled
+4. **Given** the shared link is accessed, **When** the recipient views it, **Then** the animation loops automatically with no editing controls visible
+5. **Given** I use the share feature for the first time, **When** I click "Share Link", **Then** I see a privacy notice explaining data retention (90 days) and no user tracking
+
+---
+
 ### Edge Cases
 
 - What happens when a user tries to load a corrupted or invalid JSON file?
@@ -234,10 +252,11 @@ As a rugby coach, I want to control animation speed and enable looping so that I
 - **FR-UI-06**: System MUST provide context menu via right-click on entities
 
 #### Privacy & Offline
-- **FR-PRV-01**: System MUST function entirely offline with no network calls
+- **FR-PRV-01**: System MUST function entirely offline for core features (Tier 1: animation creation, editing, local export, persistence)
+- **FR-PRV-01a**: System MAY use network connectivity for optional sharing features (Tier 2) with explicit user consent and clear visual indication
 - **FR-PRV-02**: System MUST NOT include any analytics, tracking, or telemetry
-- **FR-PRV-03**: System MUST store all data locally (browser storage only)
-- **FR-PRV-04**: System MUST NOT require any user accounts or authentication
+- **FR-PRV-03**: System MUST store all core data locally; shared data MAY be stored on backend with 90-day retention and right to deletion
+- **FR-PRV-04**: System MUST NOT require any user accounts or authentication for MVP scope
 
 #### Constitution Compliance
 - **FR-CON-01**: System MUST use rugby-appropriate terminology (phases instead of keyframes where applicable)
@@ -269,7 +288,8 @@ As a rugby coach, I want to control animation speed and enable looping so that I
 - **SC-007**: Auto-save recovers user work after browser crash with no more than 30 seconds of lost changes
 - **SC-008**: Users can differentiate attack and defense players at a glance through color coding
 - **SC-009**: Exported videos are shareable via WhatsApp without additional conversion (file size under 25MB for typical animations)
-- **SC-010**: Application functions completely offline after initial load
+- **SC-010**: Application functions completely offline after initial load (Tier 1 features)
+- **SC-011**: Share link generation completes within 2 seconds and recipient can view animation immediately on mobile
 
 ## Assumptions
 

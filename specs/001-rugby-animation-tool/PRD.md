@@ -21,13 +21,16 @@ This is a personal-use application intended for the creator and a small circle o
 
 Commercial coaching animation tools like AnimationSlate require subscriptions, cloud accounts, and often lock features behind paywalls. Coaches who need simple tactical animations for training sessions or team communication lack a free, private, offline-capable alternative.
 
+While the tool operates offline-first, coaches need a frictionless way to share animated plays. File-based sharing (JSON/video downloads) requires manual file management. Optional link-sharing solves this by generating shareable URLs for WhatsApp/messaging apps while maintaining offline-first for core features.
+
 **User Needs:**
 
 - Create drag-and-drop tactical diagrams quickly
 - Animate player movements between positions without complex timeline editing
-- Export shareable video files (.webm/.mp4)
+- Export shareable video files (.webm/.mp4) OR shareable links
 - Save and reload projects without cloud dependencies
 - Support multiple sports (rugby, soccer, gridiron)
+- Share animations via WhatsApp without manual file handling
 
 ---
 
@@ -128,6 +131,8 @@ Commercial coaching animation tools like AnimationSlate require subscriptions, c
 |F-EXP-02|Display export progress indicator|P1|
 |F-EXP-03|Configure export resolution (720p default, optional 1080p)|P2|
 |F-EXP-04|Optional: Transcode to .mp4 via ffmpeg.wasm|P3|
+|F-EXP-05|Generate shareable replay link via POST to backend (Tier 2 feature)|P1|
+|F-EXP-06|Copy share URL to clipboard with privacy notice on first use|P1|
 
 ### 5.6 Persistence System
 
@@ -195,6 +200,30 @@ type SportType = 'rugby-union' | 'rugby-league' | 'soccer' | 'american-football'
 type EntityType = 'player' | 'ball' | 'cone' | 'marker';
 type TeamType = 'attack' | 'defense' | 'neutral';
 type AnnotationType = 'arrow' | 'line' | 'curve';
+
+// Minimal Share Payload for Link Sharing (Tier 2 Feature)
+interface SharePayloadV1 {
+  version: 1;
+  canvas: {
+    width: number;
+    height: number;
+  };
+  entities: Array<{
+    id: string;
+    type: 'player' | 'ball';
+    team: 'attack' | 'defence';
+    x: number;
+    y: number;
+  }>;
+  frames: Array<{
+    t: number; // seconds from start
+    updates: Array<{
+      id: string;
+      x: number;
+      y: number;
+    }>;
+  }>;
+}
 ```
 
 ---
@@ -433,6 +462,37 @@ async function callExternalService(data: unknown) {
 }
 ```
 
+### 7.8 Share Feature Security
+
+**Applicable to**: Link sharing (Tier 2 feature, Constitution Principle V.2)
+
+|Security Control|Implementation|Rationale|
+|---|---|---|
+|**Payload Size Limit**|Reject payloads >100KB|Prevent storage abuse and network overhead|
+|**Schema Validation**|Validate SharePayloadV1 structure|Prevent malformed data from corrupting storage|
+|**UUID Generation**|Use cryptographically random UUIDs|Security by obscurity; prevents enumeration|
+|**CORS Headers**|Restrict origin to production domain|Prevent unauthorized API access from other sites|
+|**Rate Limiting**|POST: 10/hour, GET: 100/hour (Phase 2)|Prevent abuse and storage exhaustion|
+|**Generic Errors**|Return non-specific error messages|Prevent information leakage about system internals|
+|**90-Day Expiration**|Automatic deletion from storage|Aligns with privacy-first, minimizes data retention|
+
+**MVP Scope (Phase 1)**:
+- Payload size validation (implemented immediately)
+- Schema validation (basic version check)
+- UUID generation (Supabase default)
+- CORS headers (Vercel Functions configuration)
+
+**Deferred to Phase 2**:
+- Advanced rate limiting (requires Upstash Redis)
+- Detailed schema validation (ajv library)
+- IP-based abuse prevention
+
+**Security Model Acknowledgment**:
+- MVP relies on UUID obscurity (no authentication)
+- Shared links are public to anyone with the URL
+- No access control or ownership tracking
+- Suitable for non-sensitive tactical diagrams; not for confidential information
+
 ---
 
 ## 8. Technical Architecture
@@ -450,6 +510,8 @@ async function callExternalService(data: unknown) {
 |Icons|Lucide React|Consistent icon set|
 |Video Export|MediaRecorder API|Native browser capability|
 |(Optional) Video|ffmpeg.wasm|Client-side MP4 transcoding|
+|**Backend (Tier 2)**|Vercel Functions|Serverless API endpoints for share feature|
+|**Database (Tier 2)**|Supabase PostgreSQL|Shared animation payload storage|
 
 ### 8.2 Component Architecture
 
@@ -677,14 +739,21 @@ Total Estimated Effort: 63-78 hours
 
 ## 13. Future Considerations
 
-These features are explicitly out of scope for v1.0 but noted for potential future development:
+### Now In-Scope (Tier 2 Features)
 
-- **Cloud sync** - Would require backend, authentication, secrets management
-- **Collaborative editing** - Real-time sync, conflict resolution
-- **Template library** - Pre-built plays and formations
-- **Mobile app** - React Native port
-- **Advanced animations** - Bezier curves, easing functions
-- **Team/club branding** - Custom colors, logos on export
+- **Link Sharing** - Optional backend for read-only animation replay via shareable URLs. Does not require accounts or authentication. Implemented via Vercel Functions + Supabase PostgreSQL with 90-day automatic expiration.
+
+### Explicitly Out of Scope
+
+These features remain out of scope but noted for potential future development:
+
+- **Full Cloud Sync** - Persistent cloud storage beyond 90-day share links; would require authentication, ongoing storage costs
+- **Collaborative Editing** - Real-time sync, conflict resolution
+- **Template Library** - Pre-built plays and formations
+- **Mobile App** - React Native port
+- **Advanced Animations** - Bezier curves, easing functions
+- **Team/Club Branding** - Custom colors, logos on export
+- **Share Link Management** - Dashboard to view/delete/extend shared animations (Tier 2 Phase 2)
 
 ---
 
