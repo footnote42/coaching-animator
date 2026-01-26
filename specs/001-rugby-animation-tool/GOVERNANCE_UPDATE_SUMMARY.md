@@ -81,7 +81,7 @@
   - Tiered architecture summary
   - Governance requirements
 
-**Source**: Content extracted from `specs/001-rugby-animation-tool/LEARNINGS.md` (will be deleted in Phase 2)
+**Source**: Content extracted from `specs/001-rugby-animation-tool/LEARNINGS.md` (deleted in Phase 2)
 
 ---
 
@@ -126,8 +126,8 @@
 - `specs/001-rugby-animation-tool/gif-export-plan.md` → `archive/`
 - `public/ffmpeg-core` → `archive/ffmpeg-core`
 
-**To Delete** (after extraction to CLAUDE.md):
-- `specs/001-rugby-animation-tool/LEARNINGS.md` ✅ (content already extracted)
+**Deleted** (content preserved in CLAUDE.md):
+- `specs/001-rugby-animation-tool/LEARNINGS.md` ✅ (deleted 2026-01-26)
 
 ---
 

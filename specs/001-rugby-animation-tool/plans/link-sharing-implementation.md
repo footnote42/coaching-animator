@@ -39,19 +39,19 @@ This plan implements User Story 10 (Share Animation Link) as a Tier 2 optional n
 
 ---
 
-### Phase 2: Codebase Cleanup & Organization
+### Phase 2: Codebase Cleanup & Organization ✅ COMPLETE
 
 **Objective**: Archive obsolete files, extract learnings, and prepare project structure for backend implementation.
 
-**Status**: PENDING (awaits user approval)
+**Status**: COMPLETE (2026-01-26)
 
 #### Sub-Phase 2.1: Archive Research Documents
 **Estimated Effort**: 15 minutes
 
 **Tasks**:
-- [ ] **T201**: Move `specs/001-rugby-animation-tool/gif-export-research.md` → `archive/gif-export-research.md`
-- [ ] **T202**: Move `specs/001-rugby-animation-tool/gif-export-plan.md` → `archive/gif-export-plan.md`
-- [ ] **T203**: Verify archived files are readable and commit archive
+- [x] **T201**: Move `specs/001-rugby-animation-tool/gif-export-research.md` → `archive/gif-export-research.md`
+- [x] **T202**: Move `specs/001-rugby-animation-tool/gif-export-plan.md` → `archive/gif-export-plan.md`
+- [x] **T203**: Verify archived files are readable and commit archive
 
 **Rationale**: These are historical research documents superseded by implementation. Archiving preserves history without cluttering active specs directory.
 
@@ -64,9 +64,9 @@ This plan implements User Story 10 (Share Animation Link) as a Tier 2 optional n
 **Estimated Effort**: 10 minutes
 
 **Tasks**:
-- [ ] **T204**: Verify all LEARNINGS.md content extracted to CLAUDE.md "Development Learnings" section (already complete)
-- [ ] **T205**: Delete `specs/001-rugby-animation-tool/LEARNINGS.md`
-- [ ] **T206**: Update any references to LEARNINGS.md in other documents
+- [x] **T204**: Verify all LEARNINGS.md content extracted to CLAUDE.md "Development Learnings" section (already complete)
+- [x] **T205**: Delete `specs/001-rugby-animation-tool/LEARNINGS.md`
+- [x] **T206**: Update any references to LEARNINGS.md in other documents
 
 **Rationale**: LEARNINGS.md content is now integrated into CLAUDE.md for better discoverability. No need for duplicate documentation.
 
@@ -79,8 +79,8 @@ This plan implements User Story 10 (Share Animation Link) as a Tier 2 optional n
 **Estimated Effort**: 10 minutes
 
 **Tasks**:
-- [ ] **T207**: Move `public/ffmpeg-core` → `archive/ffmpeg-core`
-- [ ] **T208**: Document in archive/README.md: "FFmpeg.wasm exploration (Phase 2 video export attempt); blocked by CORS requirements; superseded by gif.js approach"
+- [x] **T207**: ~~Move `public/ffmpeg-core` → `archive/ffmpeg-core`~~ (directory never created; documented in archive/README.md instead)
+- [x] **T208**: Document in archive/README.md: "FFmpeg.wasm exploration (Phase 2 video export attempt); blocked by CORS requirements; superseded by gif.js approach"
 
 **Rationale**: FFmpeg.wasm was attempted for MP4 export but blocked by technical constraints. Archiving preserves investigation history without cluttering public directory.
 
