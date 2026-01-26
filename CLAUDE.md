@@ -1,6 +1,6 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-16
+Auto-generated from all feature plans. Last updated: 2026-01-26
 
 ## Active Technologies
 
@@ -54,10 +54,15 @@ All core animation features implemented and verified (T031-T044):
 
 ### Phase 4: User Story 2 - Save/Load ⏳ PENDING
 ### Phase 5: User Story 3 - Export Video (GIF) ⏳ IN PROGRESS (Spike complete, WhatsApp compatibility pending)
-### Phase 6: User Story 10 - Share Animation Link ⏳ PENDING (Tier 2 feature, requires backend setup)
+### Phase 6: User Story 10 - Share Animation Link 🔄 IN PROGRESS
+- ✅ Phase 3.1: Supabase Setup & API Infrastructure (2026-01-26)
+- ⏳ Phase 3.2: API Implementation (Pending)
+- ⏳ Phase 4: Frontend Integration (Pending)
+- ⏳ Phase 5: Deployment & Testing (Pending)
 
 ## Recent Changes
 
+- **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure established for link-sharing feature. Supabase PostgreSQL database configured with `shares` table, RLS policies, and 90-day retention. API stub handlers created. Dependencies installed: @supabase/supabase-js (v2.93.1), @vercel/node (v5.5.28). Existing offline features remain unchanged.
 - **Constitution v2.0.0 Ratified (2026-01-25)**: Amended Principle V from "Offline-First Privacy" to "Privacy-First Architecture" with tiered governance (Tier 1: Sacred Offline, Tier 2: Controlled Networked). Enables link-sharing feature while preserving offline-first core.
 - **Link-Sharing Architecture Approved**: Vercel Functions + Supabase PostgreSQL backend for read-only animation replay URLs (90-day retention, no authentication).
 - **Verified Phase 3**: Successfully resolved rendering blockers (Tailwind v4/react-konva mismatch/Layer nesting).

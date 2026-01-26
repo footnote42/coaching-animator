@@ -100,19 +100,25 @@ This plan implements User Story 10 (Share Animation Link) as a Tier 2 optional n
 
 **Objective**: Set up Supabase database and Vercel Functions infrastructure for share endpoints.
 
-**Status**: PENDING (requires Phase 2 completion + user approval)
+**Status**: IN PROGRESS (Phase 3.1 complete, Phase 3.2 pending)
 
-#### Sub-Phase 3.1: Supabase Project Setup
+#### Sub-Phase 3.1: Supabase Project Setup ✅ COMPLETE
 **Estimated Effort**: 30 minutes
+**Actual Time**: 40 minutes (2026-01-26)
 
 **Prerequisites**:
 - Supabase account (user will create during this phase)
 - Access to Supabase dashboard
 
 **Tasks**:
-- [ ] **T301**: Create new Supabase project (project name: `coaching-animator` or user preference)
-- [ ] **T302**: Copy Supabase project URL and anon key to local environment variables (`.env.local`)
-- [ ] **T303**: Execute database schema script to create `shares` table with RLS policies
+- [x] **T301**: Create new Supabase project (project name: `coaching-animator` or user preference)
+- [x] **T302**: Copy Supabase project URL and anon key to local environment variables (`.env.local`)
+- [x] **T303**: Execute database schema script to create `shares` table with RLS policies
+- [x] **T304**: Install backend dependencies (`@supabase/supabase-js`, `@vercel/node`)
+- [x] **T305**: Create API stub handlers (`api/share.ts`, `api/share/[id].ts`)
+- [x] **T306**: Update `.gitignore` for environment variables and Vercel
+- [x] **T307**: Create environment variable template (`.env.local.example`)
+- [x] **T308**: Create verification script and setup documentation
 
 **Database Schema** (`supabase-schema.sql`):
 ```sql
@@ -167,16 +173,27 @@ create policy "Allow public insert" on shares
    ```
 5. Run SQL schema script in Supabase SQL Editor
 
-#### Sub-Phase 3.2: Vercel Functions Implementation
+**Completion Artifacts**:
+- Supabase project created and verified (database connection successful)
+- `shares` table with RLS policies (verified via test queries)
+- `.env.local.example` template committed
+- `.env.local` configured locally (not committed)
+- API stub handlers created: `api/share.ts`, `api/share/[id].ts`
+- Dependencies installed: `@supabase/supabase-js@2.93.1`, `@vercel/node@5.5.28`
+- Verification script: `verify-phase-3.1.js` (all checks passing)
+- Setup documentation: `SUPABASE_SETUP_INSTRUCTIONS.md`
+
+#### Sub-Phase 3.2: Vercel Functions Implementation ⏳ PENDING
 **Estimated Effort**: 2 hours
 
 **Tasks**:
-- [ ] **T304**: Create `api/share.ts` - POST endpoint for creating shares
-- [ ] **T305**: Create `api/share/[id].ts` - GET endpoint for retrieving shares
-- [ ] **T306**: Install dependencies: `@supabase/supabase-js`, `@vercel/node`
-- [ ] **T307**: Configure CORS headers in both endpoints
-- [ ] **T308**: Implement payload validation (size check, version check)
-- [ ] **T309**: Test endpoints locally using Vercel CLI (`vercel dev`)
+- [ ] **T309**: Implement full POST handler in `api/share.ts` with Supabase client
+- [ ] **T310**: Implement full GET handler in `api/share/[id].ts` with Supabase client
+- [ ] **T311**: Add payload validation (size check, version check, schema validation)
+- [ ] **T312**: Configure CORS headers to restrict to frontend origin
+- [ ] **T313**: Install Vercel CLI and test endpoints locally (`vercel dev`)
+- [ ] **T314**: Implement error handling (invalid UUID, expired shares, oversized payloads)
+- [ ] **T315**: Update `last_accessed_at` timestamp on GET requests
 
 **File: `api/share.ts`** (POST endpoint):
 ```typescript
