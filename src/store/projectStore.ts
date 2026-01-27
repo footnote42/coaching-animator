@@ -13,6 +13,7 @@ import {
     PlaybackPosition,
     Entity
 } from '../types';
+import type { SharePayloadV1 } from '../types/share';
 import { DESIGN_TOKENS } from '../constants/design-tokens';
 import { VALIDATION } from '../constants/validation';
 import { validateHexColor, validateEntityLabel, validateProject } from '../utils/validation';
@@ -28,6 +29,7 @@ export interface ProjectStoreState {
 
     newProject: () => void;
     loadProject: (data: unknown) => LoadResult;
+    loadFromSharePayload: (payload: SharePayloadV1) => void;
     saveProject: () => string;
     updateProjectSettings: (updates: Partial<ProjectSettingsUpdate>) => void;
 
@@ -144,6 +146,97 @@ export const useProjectStore = create<ProjectStoreState>()(
 
                 return result;
             },
+
+            loadFromSharePayload: (payload: SharePayloadV1) => set((state) => {
+                const now = new Date().toISOString();
+                const projectId = crypto.randomUUID();
+
+                // Reconstruct frames
+                const frames = [];
+                let currentEntities: Record<string, Entity> = {};
+
+                // Initialize entities from payload (base state)
+                payload.entities.forEach(e => {
+                    currentEntities[e.id] = {
+                        id: e.id,
+                        type: e.type,
+                        team: e.team,
+                        // Default values for missing fields
+                        color: e.team === 'attack' ? DESIGN_TOKENS.colors.attack[0] : (e.team === 'defense' ? DESIGN_TOKENS.colors.defense[0] : '#ffffff'),
+                        label: '',
+                        x: e.x,
+                        y: e.y
+                    };
+                });
+
+                // Process frames
+                for (let i = 0; i < payload.frames.length; i++) {
+                    const frameData = payload.frames[i];
+                    const nextFrameData = payload.frames[i + 1];
+
+                    // Apply updates to current entities
+                    if (frameData.updates) {
+                        frameData.updates.forEach(u => {
+                            if (currentEntities[u.id]) {
+                                currentEntities[u.id] = { ...currentEntities[u.id], x: u.x, y: u.y };
+                            }
+                        });
+                    }
+
+                    // Calculate duration
+                    // If there is a next frame, duration is (next.t - current.t) * 1000
+                    // If last frame, default to 2000ms
+                    const duration = nextFrameData
+                        ? (nextFrameData.t - frameData.t) * 1000
+                        : 2000;
+
+                    frames.push({
+                        id: crypto.randomUUID(),
+                        index: i,
+                        duration,
+                        entities: { ...currentEntities }, // Clone entities state
+                        annotations: []
+                    });
+                }
+
+                // If no frames (edge case), create one
+                if (frames.length === 0) {
+                    frames.push({
+                        id: crypto.randomUUID(),
+                        index: 0,
+                        duration: 2000,
+                        entities: { ...currentEntities },
+                        annotations: []
+                    });
+                }
+
+                const project: Project = {
+                    version: '1.0',
+                    id: projectId,
+                    name: 'Shared Animation',
+                    sport: 'rugby-union', // Default or need to infer? inferred usually
+                    createdAt: now,
+                    updatedAt: now,
+                    frames,
+                    settings: {
+                        showGrid: false,
+                        gridSpacing: 50,
+                        defaultTransitionDuration: 1000,
+                        exportResolution: '720p'
+                    }
+                };
+
+                return {
+                    ...state,
+                    project,
+                    currentFrameIndex: 0,
+                    isPlaying: false,
+                    isDirty: false,
+                    playbackSpeed: 1,
+                    loopPlayback: true // Default to loop for shared views
+                };
+            }),
+
 
             saveProject: () => {
                 let jsonString = '';

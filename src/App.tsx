@@ -23,7 +23,9 @@ import { EntityContextMenu } from './components/ui/EntityContextMenu';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SportType } from './types';
 
-function App() {
+import { ReplayPage } from './components/Replay/ReplayPage';
+
+function Editor() {
     // Canvas dimensions
     const canvasWidth = 800;
     const canvasHeight = 600;
@@ -563,6 +565,23 @@ function App() {
             )}
         </div>
     );
+}
+
+function App() {
+    // Simple routing based on pathname
+    const path = window.location.pathname;
+
+    // Check for /replay/:id
+    if (path.startsWith('/replay/')) {
+        const segments = path.split('/');
+        const shareId = segments[segments.length - 1];
+
+        if (shareId && shareId !== 'replay') {
+            return <ReplayPage shareId={shareId} />;
+        }
+    }
+
+    return <Editor />;
 }
 
 export default App;

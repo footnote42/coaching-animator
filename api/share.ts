@@ -74,7 +74,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (error) {
-      console.error('[POST /api/share] Supabase insert failed:', error);
+      console.error('[POST /api/share] Supabase insert failed invididual props:', error.message, error.code, error.details, error.hint);
+      console.error('[POST /api/share] Full error object:', JSON.stringify(error, null, 2));
 
       const response: any = { error: 'Failed to create share' };
       if (process.env.NODE_ENV === 'development') {

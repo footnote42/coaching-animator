@@ -6,6 +6,7 @@ import { downloadJson, readJsonFile, generateProjectFilename } from '../../utils
 import { Button } from '../ui/button';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { SportSelector } from './SportSelector';
+import { ShareButton } from './ShareButton';
 import { SportType, ExportStatus } from '../../types';
 
 
@@ -205,6 +206,14 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     )}
                     Save
                 </Button>
+            </div>
+
+            {/* Share Section */}
+            <div>
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                    Share
+                </h3>
+                <ShareButton />
             </div>
 
             {/* Export Settings Section */}

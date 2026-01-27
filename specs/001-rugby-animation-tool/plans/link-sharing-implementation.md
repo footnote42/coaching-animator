@@ -100,7 +100,7 @@ This plan implements User Story 10 (Share Animation Link) as a Tier 2 optional n
 
 **Objective**: Set up Supabase database and Vercel Functions infrastructure for share endpoints.
 
-**Status**: IN PROGRESS (Phase 3.1 complete, Phase 3.2 pending)
+**Status**: COMPLETE (2026-01-27)
 
 #### Sub-Phase 3.1: Supabase Project Setup ✅ COMPLETE
 **Estimated Effort**: 30 minutes
@@ -183,17 +183,17 @@ create policy "Allow public insert" on shares
 - Verification script: `verify-phase-3.1.js` (all checks passing)
 - Setup documentation: `SUPABASE_SETUP_INSTRUCTIONS.md`
 
-#### Sub-Phase 3.2: Vercel Functions Implementation ⏳ PENDING
+#### Sub-Phase 3.2: Vercel Functions Implementation ✅ COMPLETE
 **Estimated Effort**: 2 hours
 
 **Tasks**:
-- [ ] **T309**: Implement full POST handler in `api/share.ts` with Supabase client
-- [ ] **T310**: Implement full GET handler in `api/share/[id].ts` with Supabase client
-- [ ] **T311**: Add payload validation (size check, version check, schema validation)
-- [ ] **T312**: Configure CORS headers to restrict to frontend origin
-- [ ] **T313**: Install Vercel CLI and test endpoints locally (`vercel dev`)
-- [ ] **T314**: Implement error handling (invalid UUID, expired shares, oversized payloads)
-- [ ] **T315**: Update `last_accessed_at` timestamp on GET requests
+- [x] **T309**: Implement full POST handler in `api/share.ts` with Supabase client
+- [x] **T310**: Implement full GET handler in `api/share/[id].ts` with Supabase client
+- [x] **T311**: Add payload validation (size check, version check, schema validation)
+- [x] **T312**: Configure CORS headers to restrict to frontend origin
+- [x] **T313**: Install Vercel CLI and test endpoints locally (`vercel dev`)
+- [x] **T314**: Implement error handling (invalid UUID, expired shares, oversized payloads)
+- [x] **T315**: Update `last_accessed_at` timestamp on GET requests
 
 **File: `api/share.ts`** (POST endpoint):
 ```typescript
@@ -325,14 +325,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 - CORS headers allow frontend origin
 - Local testing via `vercel dev` successful
 
-#### Sub-Phase 3.3: Vercel Deployment Configuration
+#### Sub-Phase 3.3: Vercel Deployment Configuration ✅ COMPLETE
 **Estimated Effort**: 30 minutes
 
 **Tasks**:
-- [ ] **T310**: Add Supabase environment variables to Vercel project settings
-- [ ] **T311**: Add `FRONTEND_URL` environment variable (production domain)
-- [ ] **T312**: Deploy to Vercel preview environment and test endpoints
-- [ ] **T313**: Verify environment variables are correctly injected
+- [x] **T310**: Add Supabase environment variables to Vercel project settings
+- [x] **T311**: Add `FRONTEND_URL` environment variable (production domain)
+- [x] **T312**: Deploy to Vercel preview environment and test endpoints
+- [x] **T313**: Verify environment variables are correctly injected
 
 **Acceptance Criteria**:
 - Environment variables configured in Vercel dashboard
@@ -351,15 +351,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 **Objective**: Implement share button, serialization logic, and clipboard copy UX.
 
-**Status**: PENDING (requires Phase 3 completion)
+**Status**: COMPLETE (2026-01-27)
 
 #### Sub-Phase 4.1: Share Payload Serialization
 **Estimated Effort**: 1.5 hours
 
 **Tasks**:
-- [ ] **T401**: Create `src/utils/serializeForShare.ts` - Convert Project to SharePayloadV1
-- [ ] **T402**: Create `src/types/share.ts` - TypeScript interfaces for SharePayloadV1
-- [ ] **T403**: Unit test serialization (extract entities, calculate frame timings)
+- [x] **T401**: Create `src/utils/serializeForShare.ts` - Convert Project to SharePayloadV1
+- [x] **T402**: Create `src/types/share.ts` - TypeScript interfaces for SharePayloadV1
+- [x] **T403**: Unit test serialization (extract entities, calculate frame timings)
 
 **File: `src/types/share.ts`**:
 ```typescript
@@ -443,12 +443,12 @@ export function serializeForShare(project: Project): SharePayloadV1 {
 **Estimated Effort**: 2 hours
 
 **Tasks**:
-- [ ] **T404**: Create `src/hooks/useShareAnimation.ts` - Hook for share API call
-- [ ] **T405**: Create `src/components/Sidebar/ShareButton.tsx` - Share button component
-- [ ] **T406**: Integrate ShareButton into `ProjectActions.tsx`
-- [ ] **T407**: Implement clipboard copy with success toast
-- [ ] **T408**: Implement offline detection and disabled state
-- [ ] **T409**: Add first-use privacy notice (localStorage flag)
+- [x] **T404**: Create `src/hooks/useShareAnimation.ts` - Hook for share API call
+- [x] **T405**: Create `src/components/Sidebar/ShareButton.tsx` - Share button component
+- [x] **T406**: Integrate ShareButton into `ProjectActions.tsx`
+- [x] **T407**: Implement clipboard copy with success toast
+- [x] **T408**: Implement offline detection and disabled state
+- [x] **T409**: Add first-use privacy notice (localStorage flag)
 
 **File: `src/hooks/useShareAnimation.ts`**:
 ```typescript
@@ -572,13 +572,13 @@ export function ShareButton() {
 **Estimated Effort**: 2.5 hours
 
 **Tasks**:
-- [ ] **T410**: Create `src/hooks/useSharePayload.ts` - Fetch shared payload by ID
-- [ ] **T411**: Create `src/components/Replay/ReplayPage.tsx` - Read-only replay view
-- [ ] **T412**: Add `/replay/:id` route to `App.tsx`
-- [ ] **T413**: Implement auto-play on load
-- [ ] **T414**: Disable all editing controls (entities not draggable)
-- [ ] **T415**: Add loading spinner and error states
-- [ ] **T416**: Test on mobile viewport (responsive design)
+- [x] **T410**: Create `src/hooks/useSharePayload.ts` - Fetch shared payload by ID
+- [x] **T411**: Create `src/components/Replay/ReplayPage.tsx` - Read-only replay view
+- [x] **T412**: Add `/replay/:id` route to `App.tsx`
+- [x] **T413**: Implement auto-play on load
+- [x] **T414**: Disable all editing controls (entities not draggable)
+- [x] **T415**: Add loading spinner and error states
+- [x] **T416**: Test on mobile viewport (responsive design)
 
 **File: `src/hooks/useSharePayload.ts`**:
 ```typescript

@@ -28,7 +28,13 @@
       "Bash(npm run dev:*)",
       "Bash(timeout /t 3)",
       "Bash(git push:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git mv:*)",
+      "Bash(git rm:*)",
+      "Bash(npm ls:*)",
+      "Bash(dir:*)",
+      "Bash(node verify-phase-3.1.js:*)",
+      "Bash(test:*)"
     ]
   }
 }
