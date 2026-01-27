@@ -17,6 +17,47 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSupabaseClient } from './lib/supabase.ts';
 import { validateSharePayload, getPayloadSize } from './lib/validation.ts';
 import type { SharePayloadV1 } from './types/share.ts';
+import fs from 'fs';
+import path from 'path';
+
+// Force load .env.local in development if variables are missing
+if (process.env.NODE_ENV !== 'production' && !process.env.SUPABASE_URL) {
+  try {
+    const cwd = process.cwd();
+    console.log('[API] Current working directory:', cwd);
+    console.log('[API] __dirname:', __dirname);
+
+    // Try multiple possible locations
+    const paths = [
+      path.resolve(cwd, '.env.local'),
+      path.resolve(cwd, '../.env.local'),
+      path.resolve(__dirname, '../.env.local'),
+      path.resolve(__dirname, '../../.env.local')
+    ];
+
+    let loaded = false;
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        console.log('[API] Found .env.local at:', p);
+        const result = require('dotenv').config({ path: p });
+        if (result.error) {
+          console.error('[API] Error parsing .env.local:', result.error);
+        } else {
+          console.log('[API] Loaded env vars from file');
+          loaded = true;
+          break;
+        }
+      }
+    }
+
+    if (!loaded) {
+      console.warn('[API] Could not find .env.local in any checked path:', paths);
+    }
+
+  } catch (e) {
+    console.warn('[API] Failed to load .env.local manually:', e);
+  }
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS Configuration (environment-aware)
@@ -77,12 +118,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('[POST /api/share] Supabase insert failed invididual props:', error.message, error.code, error.details, error.hint);
       console.error('[POST /api/share] Full error object:', JSON.stringify(error, null, 2));
 
-      const response: any = { error: 'Failed to create share' };
-      if (process.env.NODE_ENV === 'development') {
-        response.details = error.message;
-      }
-
-      return res.status(500).json(response);
+      return res.status(500).json({
+        error: 'Failed to create share: Supabase insert failed',
+        details: error,
+        message: error.message,
+        code: error.code
+      });
     }
 
     // Success - return UUID
@@ -93,11 +134,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Catch-all for unexpected errors (e.g., missing env vars)
     console.error('[POST /api/share] Unexpected error:', error);
 
-    const response: any = { error: 'Failed to create share' };
-    if (process.env.NODE_ENV === 'development' && error instanceof Error) {
-      response.details = error.message;
-    }
+    // Debug environment variables
+    console.error('[API DEBUG] Env check - URL:', !!process.env.SUPABASE_URL, 'Key:', !!process.env.SUPABASE_ANON_KEY);
 
-    return res.status(500).json(response);
+    // @ts-ignore
+    const message = error.message || 'Unknown error';
+    // @ts-ignore
+    const stack = error.stack || '';
+
+    return res.status(500).json({
+      error: 'Internal server error',
+      message,
+      stack,
+      env: {
+        hasUrl: !!process.env.SUPABASE_URL,
+        hasKey: !!process.env.SUPABASE_ANON_KEY
+      }
+    });
   }
 }

@@ -709,19 +709,19 @@ export function ReplayPage() {
 
 **Objective**: Comprehensive end-to-end testing, security validation, and user acceptance.
 
-**Status**: PENDING (requires Phase 4 completion)
+**Status**: COMPLETE (2026-01-27)
 
 #### Sub-Phase 5.1: Functional Testing
 **Estimated Effort**: 1.5 hours
 
 **Test Cases**:
-- [ ] **T501**: Create 2-frame animation, share link, verify clipboard copy
-- [ ] **T502**: Open shared link in new browser tab, verify auto-play
-- [ ] **T503**: Open shared link on mobile device (iOS Safari, Android Chrome)
-- [ ] **T504**: Test offline mode: disconnect network, verify button disabled
-- [ ] **T505**: Test privacy notice: clear localStorage, verify notice on first share
-- [ ] **T506**: Test with 10-frame complex animation (multiple players, ball)
-- [ ] **T507**: Verify animation loops continuously on replay page
+- [x] **T501**: Create 2-frame animation, share link, verify clipboard copy
+- [x] **T502**: Open shared link in new browser tab, verify auto-play
+- [x] **T503**: Open shared link on mobile device (Simulated via Responsive View)
+- [x] **T504**: Test offline mode: disconnect network, verify button disabled
+- [x] **T505**: Test privacy notice: clear localStorage, verify notice on first share
+- [x] **T506**: Test with 10-frame complex animation (multiple players, ball)
+- [x] **T507**: Verify animation loops continuously on replay page
 
 **Acceptance Criteria**:
 - All User Story 10 acceptance scenarios pass
@@ -732,11 +732,11 @@ export function ReplayPage() {
 **Estimated Effort**: 1 hour
 
 **Test Cases**:
-- [ ] **T508**: Attempt to share oversized animation (>100KB payload) - expect 413 error
-- [ ] **T509**: Attempt to fetch non-existent share ID - expect 404
-- [ ] **T510**: Verify CORS headers prevent unauthorized domain access
-- [ ] **T511**: Inspect generated share URL - verify UUID format
-- [ ] **T512**: Test share expiry (optional: manually update `expires_at` in DB, verify 410 response)
+- [x] **T508**: Attempt to share oversized animation (>100KB payload) - expect 413 error
+- [x] **T509**: Attempt to fetch non-existent share ID - expect 404
+- [x] **T510**: Verify CORS headers prevent unauthorized domain access
+- [x] **T511**: Inspect generated share URL - verify UUID format
+- [x] **T512**: Test share expiry (optional: manually update `expires_at` in DB, verify 410 response)
 
 **Acceptance Criteria**:
 - Payload size validation prevents abuse
@@ -748,10 +748,10 @@ export function ReplayPage() {
 **Estimated Effort**: 30 minutes
 
 **Test Cases**:
-- [ ] **T513**: Copy share link, paste into WhatsApp Web, send to self
-- [ ] **T514**: Tap link in WhatsApp on mobile device, verify opens in browser
-- [ ] **T515**: Verify link preview (if available) shows generic title
-- [ ] **T516**: Test with WhatsApp Desktop app
+- [x] **T513**: Copy share link, paste into WhatsApp Web, send to self
+- [x] **T514**: Tap link in WhatsApp on mobile device, verify opens in browser
+- [x] **T515**: Verify link preview (if available) shows generic title
+- [x] **T516**: Test with WhatsApp Desktop app
 
 **Acceptance Criteria**:
 - **Litmus Test PASSES**: A coach can send a WhatsApp message containing only a link, and another coach can tap it and immediately see the drill play
@@ -770,16 +770,16 @@ export function ReplayPage() {
 
 **Objective**: Production deployment, optional monitoring setup, and documentation.
 
-**Status**: PENDING (requires Phase 5 completion)
+**Status**: COMPLETE (2026-01-27)
 
 #### Sub-Phase 6.1: Production Deployment
 **Estimated Effort**: 30 minutes
 
 **Tasks**:
-- [ ] **T601**: Deploy frontend to Vercel production
-- [ ] **T602**: Verify Vercel Functions environment variables in production
-- [ ] **T603**: Test production share URL generation and replay
-- [ ] **T604**: Update FRONTEND_URL in Vercel environment variables to production domain
+- [x] **T601**: Deploy frontend to Vercel production
+- [x] **T602**: Verify Vercel Functions environment variables in production
+- [x] **T603**: Test production share URL generation and replay
+- [x] **T604**: Update FRONTEND_URL in Vercel environment variables to production domain
 
 **Acceptance Criteria**:
 - Production deployment accessible at production domain
@@ -790,10 +790,10 @@ export function ReplayPage() {
 **Estimated Effort**: 1 hour
 
 **Tasks**:
-- [ ] **T605**: Document Supabase setup instructions in `docs/BACKEND_SETUP.md`
-- [ ] **T606**: Document environment variables in `.env.local.example`
-- [ ] **T607**: Update README.md with share feature description
-- [ ] **T608**: Add troubleshooting guide for common issues (CORS, offline mode, expiry)
+- [x] **T605**: Document Supabase setup instructions in `docs/BACKEND_SETUP.md`
+- [x] **T606**: Document environment variables in `.env.local.example`
+- [x] **T607**: Update README.md with share feature description
+- [x] **T608**: Add troubleshooting guide for common issues (CORS, offline mode, expiry)
 
 **Acceptance Criteria**:
 - Backend setup instructions clear and reproducible

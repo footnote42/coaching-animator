@@ -24,6 +24,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SportType } from './types';
 
 import { ReplayPage } from './components/Replay/ReplayPage';
+import { Toaster } from 'sonner'; // Import Toaster
 
 function Editor() {
     // Canvas dimensions
@@ -563,6 +564,9 @@ function Editor() {
                     </button>
                 </div>
             )}
+
+            {/* Toast notifications */}
+            <Toaster position="bottom-right" />
         </div>
     );
 }

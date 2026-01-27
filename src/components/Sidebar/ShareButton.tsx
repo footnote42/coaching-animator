@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useShareAnimation } from '@/hooks/useShareAnimation';
 import { useProjectStore } from '@/store/projectStore';
 import { Share2, WifiOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 const PRIVACY_NOTICE_KEY = 'share_privacy_notice_shown';
 
@@ -30,15 +31,23 @@ export function ShareButton() {
         // Show privacy notice on first use
         const noticeShown = localStorage.getItem(PRIVACY_NOTICE_KEY);
         if (!noticeShown) {
-            alert('Privacy Notice: Shared animations are stored for 90 days. No user tracking.');
-            localStorage.setItem(PRIVACY_NOTICE_KEY, 'true');
+            // Use a long duration for the privacy notice or just info
+            // Ideally this should be a proper dialog or non-intrusive toast
+            // For now, mirroring the intent with a toast
+            // console.log('Privacy Notice shown'); 
+            // We can use a custom toast or just info
         }
 
         const url = await shareAnimation(project);
         if (url) {
-            alert('Link copied to clipboard! Paste into WhatsApp.');
+            toast.success('Link copied - paste into WhatsApp');
+            // Check if first use for privacy notice to bundle
+            if (!noticeShown) {
+                toast.info('Privacy Notice: Shared animations are stored for 90 days.');
+                localStorage.setItem(PRIVACY_NOTICE_KEY, 'true');
+            }
         } else if (error) {
-            alert(`Failed to share: ${error}`);
+            toast.error(`Failed to share: ${error}`);
         }
     };
 
