@@ -60,7 +60,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
     if (error) {
         return (
             <div className="flex h-screen items-center justify-center bg-tactical-mono-50">
-                <div className="max-w-md p-6 bg-white rounded-lg shadow-md border border-red-200 text-center">
+                <div className="max-w-md p-6 bg-white rounded-none shadow-md border border-red-200 text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                     <h2 className="text-lg font-bold text-gray-900 mb-2">Unable to Load Replay</h2>
                     <p className="text-gray-600 mb-6">{error}</p>
@@ -89,7 +89,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
             </div>
 
             {/* Canvas */}
-            <div className="border border-tactical-mono-300 bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="border border-tactical-mono-300 bg-white shadow-lg rounded-none overflow-hidden">
                 <Stage
                     ref={stageRef}
                     width={canvasWidth}
@@ -125,7 +125,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
             </div>
 
             {/* Controls */}
-            <div className="mt-6 w-[800px] bg-white rounded-lg shadow border border-tactical-mono-200 p-2">
+            <div className="mt-6 w-[800px] bg-white rounded-none shadow border border-tactical-mono-200 p-2">
                 <PlaybackControls
                     isPlaying={isPlaying}
                     speed={playbackSpeed}

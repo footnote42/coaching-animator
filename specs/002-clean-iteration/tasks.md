@@ -36,8 +36,8 @@
 
 **Independent Test**: Click Share Link with valid Supabase config; URL copied to clipboard
 
-- [ ] T006 [P] [US1] Add Supabase setup section to README.md with step-by-step instructions
-- [ ] T007 [US1] Improve error messaging in `api/share.ts` lines 133-153: distinguish missing env vs. network errors
+- [x] T006 [P] [US1] Add Supabase setup section to README.md with step-by-step instructions
+- [x] T007 [US1] Improve error messaging in `api/share.ts` lines 133-153: distinguish missing env vs. network errors
 - [ ] T008 [US1] Test share flow with valid `.env.local` configuration: verify URL creation and clipboard copy
 - [ ] T009 [US1] Test share flow without env vars: verify clear error message (not generic 500)
 - [ ] T010 [US1] Verify privacy notice toast appears on first share (localStorage check)
@@ -52,12 +52,12 @@
 
 **Independent Test**: Export at 1080p, verify output is 1920x1080 pixels
 
-- [ ] T011 [US2] Modify `src/hooks/useFrameCapture.ts` to accept resolution parameter in `captureFrames` function
-- [ ] T012 [US2] Update `EXPORT_SETTINGS` constant to accept dynamic width/height instead of hardcoded values
-- [ ] T013 [US2] Modify `src/hooks/useExport.ts` to read `project.settings.exportResolution` from store
-- [ ] T014 [US2] Map resolution string to dimensions using `VALIDATION.EXPORT.RESOLUTIONS` from `src/constants/validation.ts`
-- [ ] T015 [US2] Pass resolution dimensions to `captureFrames` function call in `useExport.ts`
-- [ ] T016 [US2] Update stage sizing logic in `useFrameCapture.ts` lines 208-212 to use dynamic dimensions
+- [x] T011 [US2] Modify `src/hooks/useFrameCapture.ts` to accept resolution parameter in `captureFrames` function
+- [x] T012 [US2] Update `EXPORT_SETTINGS` constant to accept dynamic width/height instead of hardcoded values
+- [x] T013 [US2] Modify `src/hooks/useExport.ts` to read `project.settings.exportResolution` from store
+- [x] T014 [US2] Map resolution string to dimensions using `VALIDATION.EXPORT.RESOLUTIONS` from `src/constants/validation.ts`
+- [x] T015 [US2] Pass resolution dimensions to `captureFrames` function call in `useExport.ts`
+- [x] T016 [US2] Update stage sizing logic in `useFrameCapture.ts` lines 208-212 to use dynamic dimensions
 - [ ] T017 [US2] Test export at 720p: verify output is 1280x720 pixels
 - [ ] T018 [US2] Test export at 1080p: verify output is 1920x1080 pixels
 - [ ] T019 [US2] Verify resolution selector UI in `src/components/Sidebar/ProjectActions.tsx` updates correctly
@@ -90,15 +90,15 @@
 
 **Independent Test**: Visual audit confirms color palette, typography, and border styling match Constitution
 
-- [ ] T023 [P] [US4] Audit `src/index.css`: verify `--color-primary: #1A3D1A` and `--color-background: #F8F9FA` are defined
-- [ ] T024 [P] [US4] Search for rounded corners: `grep -r "rounded-" src/components` and create fix list
-- [ ] T025 [P] [US4] Search for color usage: `grep -r "#1A3D1A\|#F8F9FA" src/` and verify consistency
-- [ ] T026 [P] [US4] Audit monospace font usage: verify timecodes, coordinates, frame counts use `font-mono` class
-- [ ] T027 [US4] Fix rounded corners in UI components: replace `rounded-*` classes with sharp corners (border-radius: 0)
-- [ ] T028 [US4] Fix color inconsistencies: ensure all primary surfaces use Pitch Green `#1A3D1A`
-- [ ] T029 [US4] Fix background inconsistencies: ensure all backgrounds use Tactics White `#F8F9FA`
-- [ ] T030 [US4] Fix typography: ensure all data displays (coordinates, timecodes) use monospace font
-- [ ] T031 [US4] Visual regression test: screenshot all major screens and verify Constitution compliance
+- [x] T023 [P] [US4] Audit `src/index.css`: verify `--color-primary: #1A3D1A` and `--color-background: #F8F9FA` are defined
+- [x] T024 [P] [US4] Search for rounded corners: `grep -r "rounded-" src/components` and create fix list
+- [x] T025 [P] [US4] Search for color usage: `grep -r "#1A3D1A\|#F8F9FA" src/` and verify consistency
+- [x] T026 [P] [US4] Audit monospace font usage: verify timecodes, coordinates, frame counts use `font-mono` class
+- [x] T027 [US4] Fix rounded corners in UI components: replace `rounded-*` classes with sharp corners (border-radius: 0)
+- [x] T028 [US4] Fix color inconsistencies: ensure all primary surfaces use Pitch Green `#1A3D1A`
+- [x] T029 [US4] Fix background inconsistencies: ensure all backgrounds use Tactics White `#F8F9FA`
+- [x] T030 [US4] Fix typography: ensure all data displays (coordinates, timecodes) use monospace font
+- [x] T031 [US4] Visual regression test: screenshot all major screens and verify Constitution compliance
 
 **Checkpoint**: ✅ 100% Constitution IV compliance achieved
 
@@ -114,9 +114,9 @@
 
 **Independent Test**: Create annotation, change Start Frame in properties panel, verify visibility updates
 
-- [ ] T032 [US5] Enable Start Frame selector in `src/components/Sidebar/EntityProperties.tsx` line 60: remove disabled state
-- [ ] T033 [US5] Implement `onValueChange` handler for Start Frame selector to update annotation
-- [ ] T034 [US5] Update `src/store/projectStore.ts` if annotation update logic needed (check `updateAnnotation` action)
+- [x] T032 [US5] Enable Start Frame selector in `src/components/Sidebar/EntityProperties.tsx` line 60: remove disabled state
+- [x] T033 [US5] Implement `onValueChange` handler for Start Frame selector to update annotation
+- [x] T034 [US5] Update `src/store/projectStore.ts` if annotation update logic needed (check `updateAnnotation` action)
 - [ ] T035 [US5] Test annotation visibility: create annotation, set start frame, verify it appears only from that frame onward
 - [ ] T036 [US5] Test annotation visibility across frame navigation: verify annotation respects start/end frame range
 
@@ -130,8 +130,8 @@
 
 **Independent Test**: Trigger edge cases, verify toast notifications appear (not console-only errors)
 
-- [ ] T037 [P] [EDGE] Add toast notification in `src/store/projectStore.ts` `addFrame` action when 50-frame limit reached
-- [ ] T038 [P] [EDGE] Add toast notification in `src/components/Sidebar/ProjectActions.tsx` `handleOpen` when invalid JSON loaded
+- [x] T037 [P] [EDGE] Add toast notification in `src/store/projectStore.ts` `addFrame` action when 50-frame limit reached
+- [x] T038 [P] [EDGE] Add toast notification in `src/components/Sidebar/ProjectActions.tsx` `handleOpen` when invalid JSON loaded
 - [ ] T039 [EDGE] Test 50-frame limit: attempt to add 51st frame, verify clear message appears
 - [ ] T040 [EDGE] Test invalid JSON load: load corrupted file, verify toast error (not just console error)
 - [ ] T041 [EDGE] Test export with 1 frame: verify graceful failure with clear message

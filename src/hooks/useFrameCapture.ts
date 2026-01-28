@@ -1,19 +1,23 @@
 import { useCallback, useRef, useState } from 'react';
 import Konva from 'konva';
 import { useProjectStore } from '../store/projectStore';
+import { VALIDATION } from '../constants/validation';
 
 /**
- * Export settings for MP4 video
+ * Export settings for MP4 video - dynamically configured based on resolution
  */
-export const EXPORT_SETTINGS = {
-    width: 1280,
-    height: 720,
-    fps: 30,
-    // CRF 22 for good quality/size balance
-    crf: 22,
-    // Keyframe every 1 second (30 frames at 30fps)
-    gopSize: 30,
-} as const;
+function getExportSettings(resolution: '720p' | '1080p') {
+    const dimensions = VALIDATION.EXPORT.RESOLUTIONS[resolution];
+    return {
+        width: dimensions.width,
+        height: dimensions.height,
+        fps: 30,
+        // CRF 22 for good quality/size balance
+        crf: 22,
+        // Keyframe every 1 second (30 frames at 30fps)
+        gopSize: 30,
+    } as const;
+}
 
 export interface FrameCaptureResult {
     frames: Blob[];
@@ -53,7 +57,7 @@ export function useFrameCapture(stageRef: React.RefObject<Konva.Stage | null>) {
      * Capture all animation frames by stepping through the animation manually.
      * This avoids real-time playback timing issues and provides consistent frame capture.
      */
-    const captureFrames = useCallback(async (): Promise<FrameCaptureResult | null> => {
+    const captureFrames = useCallback(async (resolution: '720p' | '1080p' = '720p'): Promise<FrameCaptureResult | null> => {
         if (!stageRef.current || !project) {
             setState(prev => ({ ...prev, error: 'Canvas or project not ready' }));
             return null;
@@ -67,10 +71,13 @@ export function useFrameCapture(stageRef: React.RefObject<Konva.Stage | null>) {
             return null;
         }
 
+        // Get export settings based on resolution
+        const exportSettings = getExportSettings(resolution);
+
         // Calculate total animation duration and frame count
         const totalDurationMs = frames.reduce((sum, frame) => sum + frame.duration, 0);
         const totalDurationSeconds = totalDurationMs / 1000;
-        const totalVideoFrames = Math.ceil(totalDurationSeconds * EXPORT_SETTINGS.fps);
+        const totalVideoFrames = Math.ceil(totalDurationSeconds * exportSettings.fps);
 
         // Reset state
         cancelledRef.current = false;
@@ -89,11 +96,11 @@ export function useFrameCapture(stageRef: React.RefObject<Konva.Stage | null>) {
 
         try {
             // Resize stage to export resolution
-            stage.width(EXPORT_SETTINGS.width);
-            stage.height(EXPORT_SETTINGS.height);
+            stage.width(exportSettings.width);
+            stage.height(exportSettings.height);
             stage.scale({
-                x: EXPORT_SETTINGS.width / 2000,
-                y: EXPORT_SETTINGS.height / 2000,
+                x: exportSettings.width / 2000,
+                y: exportSettings.height / 2000,
             });
 
             const capturedFrames: Blob[] = [];
@@ -105,7 +112,7 @@ export function useFrameCapture(stageRef: React.RefObject<Konva.Stage | null>) {
                 }
 
                 // Calculate current time in animation
-                const currentTimeMs = (videoFrame / EXPORT_SETTINGS.fps) * 1000;
+                const currentTimeMs = (videoFrame / exportSettings.fps) * 1000;
 
                 // Find which animation frame we're in and the interpolation progress
                 let accumulatedTime = 0;
@@ -176,9 +183,9 @@ export function useFrameCapture(stageRef: React.RefObject<Konva.Stage | null>) {
 
             return {
                 frames: capturedFrames,
-                fps: EXPORT_SETTINGS.fps,
-                width: EXPORT_SETTINGS.width,
-                height: EXPORT_SETTINGS.height,
+                fps: exportSettings.fps,
+                width: exportSettings.width,
+                height: exportSettings.height,
                 totalDuration: totalDurationSeconds,
             };
 

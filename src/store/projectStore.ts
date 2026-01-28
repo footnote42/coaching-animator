@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
+import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
 import {
     Project,
     ProjectSettingsUpdate,
@@ -314,8 +316,8 @@ export const useProjectStore = create<ProjectStoreState>()(
                 // Guard: Check 50-frame limit per FR-FRM-01 and Edge Case validation
                 if (state.project.frames.length >= VALIDATION.PROJECT.MAX_FRAMES) {
                     console.warn(`Maximum frames reached (${VALIDATION.PROJECT.MAX_FRAMES})`);
-                    // Show user-friendly message - using alert for now, can be upgraded to toast
-                    alert(`Maximum frames reached. You can have up to ${VALIDATION.PROJECT.MAX_FRAMES} frames in a project.`);
+                    // Show user-friendly toast message
+                    toast.error(`Maximum frames reached. You can have up to ${VALIDATION.PROJECT.MAX_FRAMES} frames in a project.`);
                     return state;
                 }
 
@@ -715,6 +717,7 @@ export const useProjectStore = create<ProjectStoreState>()(
                         ...annotation,
                         ...(updates.points !== undefined && { points: updates.points }),
                         ...(updates.color !== undefined && { color: updates.color }),
+                        ...(updates.startFrameId !== undefined && { startFrameId: updates.startFrameId }),
                         ...(updates.endFrameId !== undefined && { endFrameId: updates.endFrameId }),
                     };
                 });

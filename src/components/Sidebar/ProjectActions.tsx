@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { SportSelector } from './SportSelector';
 import { ShareButton } from './ShareButton';
 import { SportType, ExportStatus } from '../../types';
+import { toast } from 'sonner';
 
 
 /**
@@ -88,15 +89,15 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
             const result = loadProject(data);
 
             if (!result.success) {
-                // Show error dialog or toast
-                alert(`Failed to load project:\n${result.errors.join('\n')}`);
+                // Show error toast
+                toast.error(`Failed to load project:\n${result.errors.join('\n')}`);
             } else if (result.warnings.length > 0) {
                 // Show warnings
                 console.warn('Project loaded with warnings:', result.warnings);
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            alert(`Failed to load project: ${message}`);
+            toast.error(`Failed to load project: ${message}`);
         } finally {
             setLoadingState('load', false);
         }

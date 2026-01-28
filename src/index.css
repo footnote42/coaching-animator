@@ -1,15 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-    --color-pitch-green: #1a3d1a;
-    --color-tactics-white: #f8f9fa;
+    /* Constitution IV Design Tokens */
+    --color-primary: #1A3D1A;
+    --color-background: #F8F9FA;
+    --color-surface: #FFFFFF;
+    --color-border: #1A3D1A;
+    --color-text-primary: #1A3D1A;
+    --color-text-inverse: #F8F9FA;
 
+    /* Typography tokens */
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-heading: 'Inter', 'Helvetica Neue', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    /* Layout tokens */
+    --border-radius: 0px;
+    --border-width: 1px;
+    --spacing-unit: 4px;
+
+    /* Legacy aliases for compatibility */
+    --color-pitch-green: #1A3D1A;
+    --color-tactics-white: #F8F9FA;
+    --radius-default: 0px;
+    --border-width-default: 1px;
     --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
     --font-family-heading: 'Inter', 'Helvetica Neue', sans-serif;
     --font-family-body: 'Inter', system-ui, sans-serif;
-
-    --radius-default: 0px;
-    --border-width-default: 1px;
 }
 
 /* Additional Tailwind utilities for tactical mono colors */

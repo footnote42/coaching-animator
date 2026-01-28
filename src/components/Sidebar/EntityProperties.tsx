@@ -58,11 +58,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                     </label>
                     <Select
                         value={selectedAnnotation.startFrameId}
-                        onValueChange={() => {
-                            // Update via store - need to update the annotation in the frame
-                            // Since startFrameId isn't in AnnotationUpdate, we'll just show it as read-only for now
-                        }}
-                        disabled={true}
+                        onValueChange={(value) => updateAnnotation(selectedAnnotation.id, { startFrameId: value })}
                     >
                         <SelectTrigger className="font-mono">
                             <SelectValue />
@@ -75,7 +71,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                             ))}
                         </SelectContent>
                     </Select>
-                    <span className="text-xs text-tactical-mono-500">Created on current frame</span>
+                    <span className="text-xs text-tactical-mono-500">Annotation visible from this frame onward</span>
                 </div>
 
                 {/* End Frame */}

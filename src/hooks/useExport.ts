@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import Konva from 'konva';
 import { useProjectStore } from '../store/projectStore';
 import { useFrameCapture } from './useFrameCapture';
+import { VALIDATION } from '../constants/validation';
 
 export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
 
@@ -83,7 +84,8 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         }
 
         // Start frame capture for export
-        const captureResult = await frameCapture.captureFrames();
+        const resolution = project?.settings?.exportResolution || '720p';
+        const captureResult = await frameCapture.captureFrames(resolution);
         
         if (!captureResult) {
             setState({
@@ -205,10 +207,14 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         isExporting: state.status !== 'idle' && state.status !== 'complete' && state.status !== 'error',
 
         // Export settings info
-        exportSettings: {
-            width: 1280,
-            height: 720,
-            fps: 30,
+        get exportSettings() {
+            const currentResolution = project?.settings?.exportResolution || '720p';
+            const dimensions = VALIDATION.EXPORT.RESOLUTIONS[currentResolution as keyof typeof VALIDATION.EXPORT.RESOLUTIONS];
+            return {
+                width: dimensions.width,
+                height: dimensions.height,
+                fps: 30,
+            };
         },
     };
 }

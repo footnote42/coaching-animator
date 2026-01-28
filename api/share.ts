@@ -135,21 +135,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('[POST /api/share] Unexpected error:', error);
 
     // Debug environment variables
-    console.error('[API DEBUG] Env check - URL:', !!process.env.SUPABASE_URL, 'Key:', !!process.env.SUPABASE_ANON_KEY);
+    const hasUrl = !!process.env.SUPABASE_URL;
+    const hasKey = !!process.env.SUPABASE_ANON_KEY;
+    console.error('[API DEBUG] Env check - URL:', hasUrl, 'Key:', hasKey);
+
+    // Check for missing environment variables specifically
+    if (!hasUrl || !hasKey) {
+      return res.status(500).json({
+        error: 'Share Link feature not configured',
+        message: 'Supabase environment variables are missing. Please see README.md for setup instructions.',
+        setupRequired: true,
+        missingVars: {
+          SUPABASE_URL: hasUrl ? 'configured' : 'missing',
+          SUPABASE_ANON_KEY: hasKey ? 'configured' : 'missing'
+        }
+      });
+    }
 
     // @ts-ignore
     const message = error.message || 'Unknown error';
-    // @ts-ignore
-    const stack = error.stack || '';
-
+    
     return res.status(500).json({
-      error: 'Internal server error',
-      message,
-      stack,
-      env: {
-        hasUrl: !!process.env.SUPABASE_URL,
-        hasKey: !!process.env.SUPABASE_ANON_KEY
-      }
+      error: 'Failed to create share link',
+      message: process.env.NODE_ENV === 'development' ? message : 'An unexpected error occurred. Please try again.',
+      code: 'SHARE_CREATE_FAILED'
     });
   }
 }

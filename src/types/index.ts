@@ -280,7 +280,8 @@ export interface AnnotationCreate {
 }
 
 export interface AnnotationUpdate {
-    points: number[];
-    color: string;
-    endFrameId: string;
+    points?: number[];
+    color?: string;
+    startFrameId?: string;
+    endFrameId?: string;
 }
