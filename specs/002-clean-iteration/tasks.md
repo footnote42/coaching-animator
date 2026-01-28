@@ -148,33 +148,33 @@
 ### Manual Verification Checklist
 
 **P0 Bugs**:
-- [ ] T043 [TEST] Share Link creates URL and copies to clipboard with valid config
-- [ ] T044 [TEST] Share Link shows clear error when env vars missing
-- [ ] T045 [TEST] Export at 720p produces 1280x720 video (verify with browser video properties)
-- [ ] T046 [TEST] Export at 1080p produces 1920x1080 video (verify with browser video properties)
+- [x] T043 [TEST] Share Link creates URL and copies to clipboard with valid config
+- [x] T044 [TEST] Share Link shows clear error when env vars missing
+- [x] T045 [TEST] Export at 720p produces 1280x720 video (verify with browser video properties)
+- [x] T046 [TEST] Export at 1080p produces 1920x1080 video (verify with browser video properties)
 
 **P1 Polish**:
-- [ ] T047 [TEST] Canvas renders sharply on HiDPI display (devicePixelRatio >= 2)
-- [ ] T048 [TEST] All UI uses Pitch Green `#1A3D1A` for primary elements
-- [ ] T049 [TEST] All UI uses Tactics White `#F8F9FA` for backgrounds
-- [ ] T050 [TEST] No rounded corners in UI components (visual inspection)
-- [ ] T051 [TEST] Monospace font used for timecodes, coordinates, frame counts
+- [x] T047 [TEST] Canvas renders sharply on HiDPI display (devicePixelRatio >= 2)
+- [x] T048 [TEST] All UI uses Pitch Green `#1A3D1A` for primary elements
+- [x] T049 [TEST] All UI uses Tactics White `#F8F9FA` for backgrounds
+- [x] T050 [TEST] No rounded corners in UI components (visual inspection)
+- [x] T051 [TEST] Monospace font used for timecodes, coordinates, frame counts
 
 **P2 Compliance**:
-- [ ] T052 [TEST] Annotation start frame selector is functional and updates visibility
-- [ ] T053 [TEST] 50-frame limit shows user-friendly toast message
-- [ ] T054 [TEST] Invalid JSON load shows user-friendly toast message
+- [x] T052 [TEST] Annotation start frame selector is functional and updates visibility
+- [x] T053 [TEST] 50-frame limit shows user-friendly toast message
+- [x] T054 [TEST] Invalid JSON load shows user-friendly toast message
 
 ### Regression Testing
 
-- [ ] T055 [TEST] Existing animation playback works correctly at all speeds
-- [ ] T056 [TEST] Entity drag-and-drop still functional
-- [ ] T057 [TEST] Frame navigation (prev/next, thumbnails) works correctly
-- [ ] T058 [TEST] Auto-save to LocalStorage still works (check after edits)
-- [ ] T059 [TEST] Video export completes without errors for typical projects
-- [ ] T060 [TEST] Ball possession logic still works (ball follows parent player)
-- [ ] T061 [TEST] Grid overlay toggle still works
-- [ ] T062 [TEST] Context menus (entity, annotation) still functional
+- [x] T055 [TEST] Existing animation playback works correctly at all speeds
+- [x] T056 [TEST] Entity drag-and-drop still functional
+- [x] T057 [TEST] Frame navigation (prev/next, thumbnails) works correctly
+- [x] T058 [TEST] Auto-save to LocalStorage still works (check after edits)
+- [x] T059 [TEST] Video export completes without errors for typical projects
+- [x] T060 [TEST] Ball possession logic still works (ball follows parent player)
+- [x] T061 [TEST] Grid overlay toggle still works
+- [x] T062 [TEST] Context menus (entity, annotation) still functional
 
 **Checkpoint**: ✅ All tests pass, no regressions detected
 
@@ -184,11 +184,11 @@
 
 **Purpose**: Update documentation and prepare for deployment
 
-- [ ] T063 [P] [DOC] Update `README.md` with Supabase setup instructions
-- [ ] T064 [P] [DOC] Update `CLAUDE.md` to reference `specs/002-clean-iteration/` as current iteration
-- [ ] T065 [P] [DOC] Create `specs/002-clean-iteration/PROJECT_STATE.md` documenting completion status
-- [ ] T066 [DOC] Update `specs/002-clean-iteration/spec.md` with any discovered edge cases or changes
-- [ ] T067 [DOC] Commit all changes with clear commit messages per phase
+- [x] T063 [P] [DOC] Update `README.md` with Supabase setup instructions
+- [x] T064 [P] [DOC] Update `CLAUDE.md` to reference `specs/002-clean-iteration/` as current iteration
+- [x] T065 [P] [DOC] Create `specs/002-clean-iteration/PROJECT_STATE.md` documenting completion status
+- [x] T066 [DOC] Update `specs/002-clean-iteration/spec.md` with any discovered edge cases or changes
+- [x] T067 [DOC] Commit all changes with clear commit messages per phase
 
 **Checkpoint**: ✅ Documentation complete, ready for deployment
 

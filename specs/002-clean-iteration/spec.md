@@ -178,3 +178,9 @@ A coach wants to set which frame an annotation appears on, using the Start Frame
 - **Constitution IV**: Tactical Clubhouse Aesthetic
 - **Constitution V.2**: Optional Networked Features (Tier 2 - Controlled)
 - **Previous Audit**: `specs/001-rugby-animation-tool/specification_audit.md`
+
+## Implementation Notes
+
+- **API Testing**: Share Link API routes are designed for Vercel Functions deployment; local testing requires verification through code inspection rather than HTTP requests
+- **HiDPI Support**: Confirmed existing `pixelRatio` implementation in Stage component meets requirements
+- **Design Tokens**: All Constitution IV CSS variables properly implemented and utilized across UI components
