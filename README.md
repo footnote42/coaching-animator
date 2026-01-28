@@ -188,7 +188,51 @@ This project is part of a spec-driven development workflow. If you find bugs or 
 
 ---
 
-## 📄 License
+## � Share Link Setup (Optional)
+
+The Share Link feature allows you to create shareable URLs for your animations. This requires Supabase configuration.
+
+### Supabase Setup
+
+1. **Create Supabase Project**
+   - Go to [https://supabase.com](https://supabase.com)
+   - Click "Start your project" 
+   - Sign up/login and create a new project
+
+2. **Get Configuration Values**
+   - In Supabase Dashboard, go to Settings → API
+   - Copy the **Project URL** and **anon public** key
+
+3. **Configure Environment**
+   - Copy `.env.local.example` to `.env.local` (already done)
+   - Replace the placeholder values:
+     ```env
+     SUPABASE_URL=https://your-project-id.supabase.co
+     SUPABASE_ANON_KEY=your-anon-key
+     FRONTEND_URL=http://localhost:5173  # For local development
+     ```
+
+4. **Database Setup**
+   - The required `shares` table is created automatically on first use
+   - Shared animations expire after 90 days for privacy
+
+### Share Link Features
+
+- **Privacy-First**: No authentication required, URLs are public but not discoverable
+- **90-Day Expiry**: Links automatically expire to protect privacy
+- **Size Limit**: Maximum 100KB per animation
+- **Offline-First**: Core features work without any configuration
+
+### Troubleshooting
+
+If Share Link doesn't work:
+1. Verify `.env.local` contains correct Supabase URL and key
+2. Check browser console for error messages
+3. Ensure you're online when clicking "Share Link"
+
+---
+
+## �📄 License
 
 [Specify your license here]
 

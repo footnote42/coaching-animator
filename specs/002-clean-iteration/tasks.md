@@ -16,11 +16,11 @@
 
 **Purpose**: Establish baseline and prepare environment for bug fixes
 
-- [ ] T001 [P] [SETUP] Create `.env.local` from `.env.local.example` template (gitignored)
-- [ ] T002 [P] [SETUP] Document Supabase setup requirements in README.md or create SETUP.md
-- [ ] T003 [SETUP] Verify current export behavior: confirm 720p hardcoding by exporting video and checking dimensions
-- [ ] T004 [SETUP] Verify current share behavior: confirm missing env error by clicking Share Link without configuration
-- [ ] T005 [P] [SETUP] Create design token audit checklist: grep for color usage, rounded corners, font usage
+- [x] T001 [P] [SETUP] Create `.env.local` from `.env.local.example` template (gitignored)
+- [x] T002 [P] [SETUP] Document Supabase setup requirements in README.md or create SETUP.md
+- [x] T003 [SETUP] Verify current export behavior: confirm 720p hardcoding by exporting video and checking dimensions
+- [x] T004 [SETUP] Verify current share behavior: confirm missing env error by clicking Share Link without configuration
+- [x] T005 [P] [SETUP] Create design token audit checklist: grep for color usage, rounded corners, font usage
 
 **Checkpoint**: ✅ Baseline established - bugs confirmed, setup documented
 
