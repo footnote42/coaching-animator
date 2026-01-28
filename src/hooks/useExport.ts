@@ -1,15 +1,7 @@
 import { useCallback, useState } from 'react';
 import Konva from 'konva';
 import { useProjectStore } from '../store/projectStore';
-import { EXPORT_SETTINGS } from './useFrameCapture';
-
-// TODO: [GIF-MIGRATION] FFmpeg has been removed. Export is temporarily disabled.
-// Phase 2-4 of gif-export-plan.md will implement GIF export using gif.js.
-// This file will be updated in Phase 4 (useExport Integration) to use the new useGifExport hook.
-//
-// Original imports that were removed:
-// - import { useFrameCapture } from './useFrameCapture';
-// - import { useMp4Export } from './useMp4Export';
+import { useFrameCapture } from './useFrameCapture';
 
 export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
 
@@ -24,11 +16,8 @@ export interface ExportState {
 /**
  * Hook to manage animation export.
  *
- * TODO: [GIF-MIGRATION] Currently disabled during FFmpeg -> gif.js migration.
- * Phase 4 of gif-export-plan.md will integrate the new useGifExport hook here.
- *
- * Original: Exported animation as H.264 MP4 at 720p/30fps via FFmpeg.wasm
- * Future: Will export as GIF using gif.js for better browser compatibility.
+ * Exports animation as WebM video using MediaRecorder API.
+ * Provides progress tracking and error handling for the export process.
  */
 export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
     const [state, setState] = useState<ExportState>({
@@ -40,8 +29,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
 
     const project = useProjectStore((state) => state.project);
 
-    // TODO: [GIF-MIGRATION] Phase 4 will add:
-    // const gifExport = useGifExport(stageRef);
+    const frameCapture = useFrameCapture(stageRef);
 
     /**
      * Validate project before export
@@ -68,10 +56,8 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
 
     /**
      * Start the export process.
-     *
-     * TODO: [GIF-MIGRATION] This function is temporarily disabled.
-     * Phase 4 of gif-export-plan.md will implement: capture frames -> encode to GIF -> download
-     * Original flow was: capture frames -> encode to MP4 via FFmpeg -> download
+     * 
+     * Captures frames from the animation and exports as WebM video using MediaRecorder API.
      */
     const startExport = useCallback(async () => {
         // Validate project first
@@ -96,21 +82,102 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
             return;
         }
 
-        // TODO: [GIF-MIGRATION] Export temporarily disabled during migration.
-        // This entire block will be replaced with GIF export logic in Phase 4.
-        // The useGifExport hook will handle: frame capture -> GIF encoding -> download
-        setState({
-            status: 'error',
-            progress: 0,
-            error: 'Export temporarily unavailable. GIF export coming soon!',
-            phase: '',
-        });
-    }, [validateExport, stageRef]);
+        // Start frame capture for export
+        const captureResult = await frameCapture.captureFrames();
+        
+        if (!captureResult) {
+            setState({
+                status: 'error',
+                progress: 0,
+                error: 'Frame capture failed',
+                phase: '',
+            });
+            return;
+        }
+
+        // Export captured frames as WebM video
+        try {
+            // Create a canvas for video encoding
+            const canvas = document.createElement('canvas');
+            canvas.width = captureResult.width;
+            canvas.height = captureResult.height;
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+                throw new Error('Could not get canvas context');
+            }
+
+            // Create MediaRecorder for WebM export
+            const stream = canvas.captureStream(captureResult.fps);
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm',
+                videoBitsPerSecond: 2500000, // 2.5 Mbps
+            });
+
+            const chunks: Blob[] = [];
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
+            };
+
+            // Start recording and draw frames
+            mediaRecorder.start();
+            
+            for (let i = 0; i < captureResult.frames.length; i++) {
+                const frame = captureResult.frames[i];
+                const img = new Image();
+                
+                await new Promise<void>((resolve) => {
+                    img.onload = () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve();
+                    };
+                    img.src = URL.createObjectURL(frame);
+                });
+                
+                // Wait for frame duration (approximately)
+                await new Promise(resolve => setTimeout(resolve, 1000 / captureResult.fps));
+            }
+
+            // Stop recording and get the blob
+            await new Promise<void>((resolve) => {
+                mediaRecorder.onstop = () => resolve();
+                mediaRecorder.stop();
+            });
+
+            const videoBlob = new Blob(chunks, { type: 'video/webm' });
+            
+            // Download the video file
+            const url = URL.createObjectURL(videoBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `animation-${Date.now()}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            setState({
+                status: 'complete',
+                progress: 100,
+                error: null,
+                phase: 'Export complete',
+                fileSize: videoBlob.size,
+            });
+        } catch (error) {
+            setState({
+                status: 'error',
+                progress: 0,
+                error: error instanceof Error ? error.message : 'Export failed',
+                phase: '',
+            });
+        }
+    }, [validateExport, stageRef, frameCapture]);
 
     /**
      * Cancel an in-progress export
-     *
-     * TODO: [GIF-MIGRATION] Phase 4 will call gifExport.cancel() here
      */
     const cancelExport = useCallback(() => {
         setState({
@@ -137,7 +204,11 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         canExport: project !== null && project.frames.length >= 2,
         isExporting: state.status !== 'idle' && state.status !== 'complete' && state.status !== 'error',
 
-        // Export settings info (kept for Phase 4 compatibility)
-        exportSettings: EXPORT_SETTINGS,
+        // Export settings info
+        exportSettings: {
+            width: 1280,
+            height: 720,
+            fps: 30,
+        },
     };
 }
