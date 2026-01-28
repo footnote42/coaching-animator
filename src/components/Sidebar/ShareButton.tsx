@@ -31,23 +31,30 @@ export function ShareButton() {
         // Show privacy notice on first use
         const noticeShown = localStorage.getItem(PRIVACY_NOTICE_KEY);
         if (!noticeShown) {
-            // Use a long duration for the privacy notice or just info
-            // Ideally this should be a proper dialog or non-intrusive toast
-            // For now, mirroring the intent with a toast
-            // console.log('Privacy Notice shown'); 
-            // We can use a custom toast or just info
+            toast.info('Privacy Notice: Shared animations are stored for 90 days and may be accessed by anyone with the link.', {
+                duration: 6000, // Show for 6 seconds
+            });
+            localStorage.setItem(PRIVACY_NOTICE_KEY, 'true');
         }
 
         const url = await shareAnimation(project);
         if (url) {
-            toast.success('Link copied - paste into WhatsApp');
-            // Check if first use for privacy notice to bundle
-            if (!noticeShown) {
-                toast.info('Privacy Notice: Shared animations are stored for 90 days.');
-                localStorage.setItem(PRIVACY_NOTICE_KEY, 'true');
-            }
+            toast.success('Link copied! Ready to paste into WhatsApp or other apps.');
         } else if (error) {
-            toast.error(`Failed to share: ${error}`);
+            // Provide more specific error guidance
+            if (error.includes('development')) {
+                toast.error(error, {
+                    description: 'Deploy to Vercel or run the API server locally to enable sharing.',
+                    duration: 5000,
+                });
+            } else if (error.includes('Supabase')) {
+                toast.error(error, {
+                    description: 'Contact the administrator to complete the setup.',
+                    duration: 5000,
+                });
+            } else {
+                toast.error(error, { duration: 4000 });
+            }
         }
     };
 

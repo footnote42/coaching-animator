@@ -1,15 +1,17 @@
 /**
- * Design tokens for the Tactical Clubhouse aesthetic.
+ * Design tokens for the Warm Tactical Professionalism aesthetic.
  */
 
 export const DESIGN_TOKENS = {
     colors: {
-        primary: '#1A3D1A',       // Pitch Green
-        background: '#F8F9FA',    // Tactics White
+        primary: '#1A3D1A',           // Pitch Green
+        background: '#F8F9FA',        // Tactics White
         surface: '#FFFFFF',
+        surfaceWarm: '#F9FAFB',       // Warm surface alternative
         border: '#1A3D1A',
-        textPrimary: '#1A3D1A',
+        textPrimary: '#111827',       // Deep charcoal for enhanced contrast
         textInverse: '#F8F9FA',
+        accentWarm: '#D97706',        // Warm amber accent
 
         // Team colors
         attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],

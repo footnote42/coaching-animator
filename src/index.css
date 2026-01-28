@@ -1,13 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-    /* Constitution IV Design Tokens */
+    /* Constitution IV Design Tokens - Warm Tactical Professionalism */
     --color-primary: #1A3D1A;
     --color-background: #F8F9FA;
     --color-surface: #FFFFFF;
+    --color-surface-warm: #F9FAFB;
     --color-border: #1A3D1A;
-    --color-text-primary: #1A3D1A;
+    --color-text-primary: #111827;
     --color-text-inverse: #F8F9FA;
+    --color-accent-warm: #D97706;
 
     /* Typography tokens */
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;

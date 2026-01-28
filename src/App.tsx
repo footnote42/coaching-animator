@@ -421,9 +421,9 @@ function Editor() {
             {/* Center - Canvas and Timeline */}
             <main className="flex-1 flex flex-col">
                 {/* Canvas area */}
-                <div className="flex-1 flex items-center justify-center p-4 bg-tactical-mono-100">
+                <div className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]">
                     <ErrorBoundary fallbackTitle="Canvas Error">
-                        <div className="border border-tactical-mono-300 bg-white">
+                        <div className="border border-[var(--color-accent-warm)] bg-white">
                             <Stage
                                 ref={stageRef}
                                 width={canvasWidth}
@@ -476,7 +476,7 @@ function Editor() {
 
                 {/* Timeline footer */}
                 <ErrorBoundary fallbackTitle="Timeline Error">
-                    <footer className="border-t border-tactical-mono-300">
+                    <footer className="border-t border-[var(--color-accent-warm)]">
                         <PlaybackControls
                             isPlaying={isPlaying}
                             speed={playbackSpeed}

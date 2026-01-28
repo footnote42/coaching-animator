@@ -42,12 +42,12 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   const speedOptions: PlaybackSpeed[] = [0.5, 1, 2];
 
   return (
-    <div className="flex items-center gap-4 p-2 bg-tactical-mono-50 border-b border-tactical-mono-300">
+    <div className="flex items-center gap-4 p-2 bg-[var(--color-surface-warm)] border-b border-[var(--color-accent-warm)]">
       {/* Play/Pause/Reset controls */}
       <div className="flex items-center gap-1">
         <button
           onClick={isPlaying ? onPause : onPlay}
-          className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
+          className="p-2 hover:bg-[var(--color-accent-warm)] hover:text-white border border-[var(--color-accent-warm)] rounded"
           title={isPlaying ? 'Pause' : 'Play'}
           aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
         >
@@ -55,7 +55,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         </button>
         <button
           onClick={onReset}
-          className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
+          className="p-2 hover:bg-[var(--color-accent-warm)] hover:text-white border border-[var(--color-accent-warm)] rounded"
           title="Reset to frame 1"
           aria-label="Reset to frame 1"
         >
@@ -67,19 +67,19 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
       <div className="flex items-center gap-1">
         <button
           onClick={onPreviousFrame}
-          className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
+          className="p-2 hover:bg-[var(--color-accent-warm)] hover:text-white border border-[var(--color-accent-warm)] rounded"
           title="Previous frame"
           aria-label="Previous frame"
           disabled={currentFrame === 0}
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="font-mono text-sm px-2">
+        <span className="font-mono text-sm px-2 text-[var(--color-text-primary)]">
           {currentFrame + 1}/{totalFrames}
         </span>
         <button
           onClick={onNextFrame}
-          className="p-2 hover:bg-tactical-mono-200 border border-tactical-mono-300 rounded"
+          className="p-2 hover:bg-[var(--color-accent-warm)] hover:text-white border border-[var(--color-accent-warm)] rounded"
           title="Next frame"
           aria-label="Next frame"
           disabled={currentFrame >= totalFrames - 1}
@@ -90,7 +90,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
 
       {/* Speed control */}
       <div className="flex items-center gap-1">
-        <span className="font-mono text-xs text-tactical-mono-600">Speed:</span>
+        <span className="font-mono text-xs text-[var(--color-text-primary)]">Speed:</span>
         {speedOptions.map((s) => (
           <button
             key={s}
@@ -98,8 +98,8 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
             className={`
               px-2 py-1
               font-mono text-xs
-              border border-tactical-mono-300
-              ${speed === s ? 'bg-tactical-mono-300' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+              border border-[var(--color-accent-warm)]
+              ${speed === s ? 'bg-[var(--color-accent-warm)] text-white' : 'bg-[var(--color-surface)] hover:bg-[var(--color-accent-warm)] hover:text-white'}
             `}
             title={`${s}x speed`}
           >
@@ -113,9 +113,9 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         onClick={onLoopToggle}
         className={`
           p-2
-          border border-tactical-mono-300
+          border border-[var(--color-accent-warm)]
           rounded
-          ${loopEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+          ${loopEnabled ? 'bg-[var(--color-accent-warm)] text-white' : 'bg-[var(--color-surface)] hover:bg-[var(--color-accent-warm)] hover:text-white'}
         `}
         title={loopEnabled ? 'Loop enabled' : 'Loop disabled'}
         aria-label={loopEnabled ? 'Disable loop' : 'Enable loop'}
@@ -128,9 +128,9 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         onClick={onGhostToggle}
         className={`
           p-2
-          border border-tactical-mono-300
+          border border-[var(--color-accent-warm)]
           rounded-none
-          ${ghostEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+          ${ghostEnabled ? 'bg-[var(--color-accent-warm)] text-white' : 'bg-[var(--color-surface)] hover:bg-[var(--color-accent-warm)] hover:text-white'}
         `}
         title={ghostEnabled ? 'Ghost mode enabled' : 'Ghost mode disabled'}
         aria-label={ghostEnabled ? 'Disable ghost mode' : 'Enable ghost mode'}
@@ -143,9 +143,9 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         onClick={onGridToggle}
         className={`
           p-2
-          border border-tactical-mono-300
+          border border-[var(--color-accent-warm)]
           rounded-none
-          ${gridEnabled ? 'bg-pitch-green text-white' : 'bg-tactical-mono-100 hover:bg-tactical-mono-200'}
+          ${gridEnabled ? 'bg-[var(--color-accent-warm)] text-white' : 'bg-[var(--color-surface)] hover:bg-[var(--color-accent-warm)] hover:text-white'}
         `}
         title={gridEnabled ? 'Grid overlay enabled' : 'Grid overlay disabled'}
         aria-label={gridEnabled ? 'Disable grid overlay' : 'Enable grid overlay'}

@@ -23,7 +23,7 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
   onDurationChange,
 }) => {
   return (
-    <div className="flex items-center gap-2 p-2 bg-tactical-mono-50 border-t border-tactical-mono-300 overflow-x-auto">
+    <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-warm)] border-t border-[var(--color-accent-warm)] overflow-x-auto">
       {/* Frame thumbnails */}
       {frames.map((frame, index) => (
         <FrameThumbnail
@@ -44,9 +44,10 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
         className="
           flex items-center justify-center
           w-16 h-12
-          border border-tactical-mono-300
-          bg-tactical-mono-100
-          hover:bg-tactical-mono-200
+          border border-[var(--color-accent-warm)]
+          bg-[var(--color-surface)]
+          hover:bg-[var(--color-accent-warm)]
+          hover:text-white
           transition-colors
           font-mono text-xs
         "

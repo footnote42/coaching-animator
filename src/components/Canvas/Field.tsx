@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layer, Image as KonvaImage } from 'react-konva';
+import { Layer, Image as KonvaImage, Text } from 'react-konva';
 import { SportType } from '../../types';
 
 /**
@@ -21,28 +21,49 @@ export interface FieldProps {
  */
 export const Field: React.FC<FieldProps> = ({ sport, width, height }) => {
     const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
+    const [loadingError, setLoadingError] = useState<string | null>(null);
 
     useEffect(() => {
         // Load the appropriate SVG asset based on the sport
         const img = new window.Image();
 
-        // Path resolution depends on how Vite serves assets.
-        // Since we are in src/components/Canvas/Field.tsx, the asset is at src/assets/fields/
-        // We can use URL constructor or direct path if served from public, 
-        // but here we'll assume standard relative path which Vite's dev server handles.
-        const assetPath = `/src/assets/fields/${sport}.svg`;
+        // Path resolution for Vite asset serving
+        // Vite serves assets from the root, so we use the correct public path
+        const assetPath = `/assets/fields/${sport}.svg`;
 
         img.src = assetPath;
         img.onload = () => {
             setImage(img);
+            setLoadingError(null);
+        };
+        
+        img.onerror = () => {
+            setLoadingError(`Failed to load field asset: ${assetPath}`);
+            console.error(`Failed to load field asset: ${assetPath}`);
         };
 
         return () => {
             img.onload = null;
+            img.onerror = null;
         };
     }, [sport]);
 
-    // Return an empty Layer while loading to maintain consistent stage children
+    if (loadingError) {
+        return (
+            <Layer listening={false}>
+                <Text
+                    text={loadingError}
+                    x={width / 2}
+                    y={height / 2}
+                    fontSize={14}
+                    fill="red"
+                    align="center"
+                    offsetX={100}
+                />
+            </Layer>
+        );
+    }
+
     if (!image) {
         return <Layer listening={false} />;
     }

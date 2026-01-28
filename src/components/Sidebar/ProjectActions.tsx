@@ -147,7 +147,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
         <div className="flex flex-col gap-4 p-4 border-b border-[var(--color-border)]">
             {/* Field Settings Section */}
             <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Field Settings
                 </h3>
                 <SportSelector
@@ -158,7 +158,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
             {/* Project Actions Section */}
             <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Project
                 </h3>
 
@@ -194,7 +194,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     size="sm"
                     onClick={handleSave}
                     disabled={!project || isLoading.save}
-                    className="w-full"
+                    className="w-full bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white"
                 >
                     {isLoading.save ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -207,7 +207,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
             {/* Share Section */}
             <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Share
                 </h3>
                 <ShareButton />
@@ -215,13 +215,13 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
             {/* Export Settings Section */}
             <div>
-                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Export Settings
                 </h3>
 
                 {/* Resolution Selector */}
                 <div className="flex flex-col gap-1 mb-3">
-                    <label className="text-xs font-semibold text-tactical-mono-700">
+                    <label className="text-xs font-bold text-[var(--color-text-primary)]">
                         Export Resolution
                     </label>
                     <div className="flex gap-2">
@@ -230,7 +230,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             size="sm"
                             onClick={() => updateProjectSettings({ exportResolution: '720p' })}
                             disabled={!project}
-                            className="flex-1"
+                            className={`flex-1 ${project?.settings.exportResolution === '720p' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
                         >
                             {project?.settings.exportResolution === '720p' && '✓ '}720p
                         </Button>
@@ -239,7 +239,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             size="sm"
                             onClick={() => updateProjectSettings({ exportResolution: '1080p' })}
                             disabled={!project}
-                            className="flex-1"
+                            className={`flex-1 ${project?.settings.exportResolution === '1080p' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
                         >
                             {project?.settings.exportResolution === '1080p' && '✓ '}1080p
                         </Button>
@@ -260,8 +260,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
                 {/* Export progress indicator */}
                 {exportStatus !== 'idle' && (
-                    <div className="mt-2 p-2 bg-tactical-mono-100 border border-tactical-mono-300">
-                        <div className="text-xs font-mono text-tactical-mono-700 mb-1">
+                    <div className="mt-2 p-2 bg-[var(--color-surface-warm)] border border-[var(--color-accent-warm)]">
+                        <div className="text-xs font-mono text-[var(--color-text-primary)] mb-1">
                             {exportStatus === 'preparing' && 'Preparing...'}
                             {exportStatus === 'capturing' && 'Capturing frames...'}
                             {exportStatus === 'encoding' && 'Encoding video...'}
@@ -269,9 +269,9 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             {exportStatus === 'error' && '✗ Error'}
                         </div>
                         {exportStatus !== 'error' && (
-                            <div className="w-full h-2 bg-tactical-mono-200">
+                            <div className="w-full h-2 bg-[var(--color-surface)]">
                                 <div
-                                    className="h-full bg-pitch-green transition-all duration-300"
+                                    className="h-full bg-[var(--color-accent-warm)] transition-all duration-300"
                                     style={{ width: `${exportProgress}%` }}
                                 />
                             </div>

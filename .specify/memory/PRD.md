@@ -23,6 +23,8 @@ Commercial coaching animation tools like AnimationSlate require subscriptions, c
 
 While the tool operates offline-first, coaches need a frictionless way to share animated plays. File-based sharing (JSON/video downloads) requires manual file management. Optional link-sharing solves this by generating shareable URLs for WhatsApp/messaging apps while maintaining offline-first for core features.
 
+Current UI implementation feels too clinical and lacks the warmth expected in coaching tools, potentially reducing user trust and engagement.
+
 **User Needs:**
 
 - Create drag-and-drop tactical diagrams quickly
@@ -133,6 +135,7 @@ While the tool operates offline-first, coaches need a frictionless way to share 
 |F-EXP-04|Optional: Transcode to .mp4 via ffmpeg.wasm|P3|
 |F-EXP-05|Generate shareable replay link via POST to backend (Tier 2 feature)|P1|
 |F-EXP-06|Copy share URL to clipboard with privacy notice on first use|P1|
+|F-EXP-07|UI must convey warmth and professionalism to build coach confidence|P1|
 
 ### 5.6 Persistence System
 
@@ -590,7 +593,17 @@ interface ProjectStore {
 
 ## 9. User Interface Design
 
-### 9.1 Layout Structure
+### 9.1 Warm Tactical Professionalism
+
+The UI embodies a **Warm Tactical Professionalism** aesthetic that inspires confidence and builds trust. The design balances tactical precision with approachable warmth, making coaches feel supported and empowered.
+
+**Core Design Principles**:
+- **High Contrast**: Enhanced readability with deep charcoal text (#111827) on warm surfaces
+- **Warm Accents**: Amber (#D97706) for interactive elements and CTAs
+- **Surface Warmth**: Off-white backgrounds (#F9FAFB) instead of clinical pure white
+- **Visual Hierarchy**: Clear distinction between primary actions, secondary controls, and content areas
+
+### 9.2 Layout Structure
 
 ┌─────────────────────────────────────────────────────────────┐
 │  [Logo]  PlayCanvas          [New] [Save] [Load] [Export]   │
@@ -616,7 +629,7 @@ interface ProjectStore {
 │ Duration: [===●===] 2.0s                                    │
 └─────────────────────────────────────────────────────────────┘
 
-### 9.2 Key Interactions
+### 9.3 Key Interactions
 
 |Interaction|Behavior|
 |---|---|

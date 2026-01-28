@@ -20,25 +20,48 @@ export function useShareAnimation() {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to create share');
+                // Handle different error scenarios
+                if (response.status === 404) {
+                    throw new Error('Share feature not available in development. Please deploy to Vercel or run the API server locally.');
+                }
+                
+                if (response.status === 413) {
+                    throw new Error('Animation is too large to share. Try reducing the number of frames or removing complex elements.');
+                }
+
+                if (response.status === 500) {
+                    const errorData = await response.json().catch(() => ({}));
+                    if (errorData.setupRequired) {
+                        throw new Error('Share feature not configured. Please set up Supabase environment variables.');
+                    }
+                    throw new Error('Server error occurred. Please try again later.');
+                }
+
+                // Try to parse error response, fallback to generic message
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Failed to create share (${response.status})`);
             }
 
             const { id } = await response.json();
 
-            // Construct share URL
-            // Logic: If on localhost, use window.location.origin.
-            // In production, we might want to use the configured FRONTEND_URL if available, 
-            // but window.location.origin is usually safe IF the app usage flows from the same domain.
-            const shareUrl = `${window.location.origin}/replay/${id}`;
+            // Construct share URL with environment awareness
+            const baseUrl = window.location.origin;
+            const shareUrl = `${baseUrl}/replay/${id}`;
 
-            // Copy to clipboard
-            await navigator.clipboard.writeText(shareUrl);
+            // Copy to clipboard with error handling
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch (clipboardError) {
+                console.warn('Failed to copy to clipboard:', clipboardError);
+                // Still return the URL even if clipboard fails
+                return shareUrl;
+            }
 
             return shareUrl;
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Unknown error';
+            const message = err instanceof Error ? err.message : 'Unknown error occurred while sharing';
             setError(message);
+            console.error('Share animation error:', err);
             return null;
         } finally {
             setIsSharing(false);

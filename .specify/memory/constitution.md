@@ -79,14 +79,17 @@ Every interaction MUST minimize the steps between coach intent and on-screen res
 
 **Rationale**: Amateur coaches have limited time and technical patience. Friction leads to abandonment.
 
-### IV. Tactical Clubhouse Aesthetic
+### IV. Warm Tactical Professionalism
 
-The visual design MUST embody a focused, professional coaching environment.
+The visual design MUST embody a warm, professional coaching environment that inspires confidence and builds trust.
 
 - **Color Palette**:
   - Pitch Green `#1A3D1A` for primary surfaces, headers, and emphasis
   - Tactics White `#F8F9FA` for backgrounds, content areas, and contrast
-  - Accent colors MUST complement the primary palette
+  - Warm Accent `#D97706` for highlights, CTAs, and interactive elements
+  - Deep Charcoal `#111827` for primary text to enhance readability
+  - Surface Warmth `#F9FAFB` for main backgrounds (warmer than pure white)
+  - Accent colors MUST complement the primary palette with warm undertones
 - **Typography**:
   - Monospace fonts for data, statistics, coordinates, and timecodes
   - Bold sans-serif fonts for headings, labels, and navigation
@@ -99,7 +102,7 @@ The visual design MUST embody a focused, professional coaching environment.
   - Pitch diagrams, tactical arrows, and formation overlays
   - No stock photography or generic illustrations
 
-**Rationale**: The aesthetic establishes credibility and focus. A tactical, no-nonsense appearance reinforces the tool's purpose.
+**Rationale**: The warm, professional aesthetic establishes credibility and inspires confidence. A tactical yet approachable appearance reinforces the tool's purpose while making coaches feel supported and empowered.
 
 ### V. Privacy-First Architecture
 
@@ -126,6 +129,7 @@ The application adopts a **tiered feature architecture** that preserves offline-
 2. **Clear Visual Indication**: UI must distinguish networked features (e.g., "Share Link 🌐")
 3. **Graceful Degradation**: Network failures must not break core offline functionality
 4. **Privacy Disclosure**: First use must display privacy notice explaining data handling
+5. **Warm UX**: Networked features must maintain the warm, trustworthy aesthetic and provide helpful error states
 
 #### V.3 Data Retention & Privacy Policies
 
@@ -183,8 +187,10 @@ This section codifies the Design Tokens into enforceable standards.
 | `--color-primary` | `#1A3D1A` | Headers, buttons, emphasis |
 | `--color-background` | `#F8F9FA` | Page backgrounds, cards |
 | `--color-surface` | `#FFFFFF` | Input fields, content wells |
+| `--color-surface-warm` | `#F9FAFB` | Main backgrounds (warmer alternative) |
 | `--color-border` | `#1A3D1A` | Schematic borders, dividers |
-| `--color-text-primary` | `#1A3D1A` | Body text, labels |
+| `--color-accent-warm` | `#D97706` | CTAs, highlights, interactive elements |
+| `--color-text-primary` | `#111827` | Body text, labels (enhanced contrast) |
 | `--color-text-inverse` | `#F8F9FA` | Text on primary backgrounds |
 
 ### Typography Tokens
@@ -250,4 +256,4 @@ src/
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 2.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-25
+**Version**: 2.1.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-28
