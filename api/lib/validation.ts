@@ -4,13 +4,14 @@
  * Centralized validation functions for API request validation.
  * Used by both POST and GET handlers to ensure data integrity.
  */
+import { SharePayloadSchema } from './schema.ts';
 import { SharePayloadV1 } from '../types/share.ts';
 
 /**
  * Maximum allowed payload size in bytes (100KB)
  * Enforced to prevent database bloat and ensure fast serialization/deserialization
  */
-export const MAX_PAYLOAD_SIZE_BYTES = 100 * 1024; // 100KB
+export const MAX_PAYLOAD_SIZE_BYTES = 100000; // 100KB (Decimal)
 
 /**
  * UUID v4 format regex
@@ -41,92 +42,37 @@ export function getPayloadSize(payload: unknown): number {
 /**
  * Validates a SharePayloadV1 structure and size.
  *
- * This performs lightweight validation:
+ * This performs validation using Zod:
  * - Version check (must be 1)
  * - Size check (must be <= 100KB)
- * - Basic structure validation (required fields present and correct types)
- *
- * Database constraints provide additional safety (defense in depth).
+ * - Structural validation via Zod schema
  *
  * @param payload - The payload to validate
  * @returns Validation result with error message if invalid
  */
 export function validateSharePayload(payload: unknown): { valid: boolean; error?: string; size?: number } {
-  // Type guard: ensure payload is an object
-  if (!payload || typeof payload !== 'object') {
-    return { valid: false, error: 'Payload must be an object' };
-  }
-
-  const p = payload as Partial<SharePayloadV1>;
-
-  // Validate version
-  if (p.version !== 1) {
-    return { valid: false, error: 'Invalid payload version (expected: 1)' };
-  }
-
-  // Validate canvas structure
-  if (!p.canvas || typeof p.canvas !== 'object') {
-    return { valid: false, error: 'Invalid canvas structure' };
-  }
-  if (typeof p.canvas.width !== 'number' || typeof p.canvas.height !== 'number') {
-    return { valid: false, error: 'Invalid canvas dimensions (must be numbers)' };
-  }
-
-  // Validate entities array
-  if (!Array.isArray(p.entities)) {
-    return { valid: false, error: 'Invalid entities structure (must be array)' };
-  }
-  for (const entity of p.entities) {
-    if (!entity || typeof entity !== 'object') {
-      return { valid: false, error: 'Invalid entity structure' };
-    }
-    if (!entity.id || typeof entity.id !== 'string') {
-      return { valid: false, error: 'Invalid entity ID (must be string)' };
-    }
-    if (entity.type !== 'player' && entity.type !== 'ball') {
-      return { valid: false, error: 'Invalid entity type (must be "player" or "ball")' };
-    }
-    if (entity.team !== 'attack' && entity.team !== 'defence') {
-      return { valid: false, error: 'Invalid entity team (must be "attack" or "defence")' };
-    }
-    if (typeof entity.x !== 'number' || typeof entity.y !== 'number') {
-      return { valid: false, error: 'Invalid entity position (must be numbers)' };
-    }
-  }
-
-  // Validate frames array
-  if (!Array.isArray(p.frames)) {
-    return { valid: false, error: 'Invalid frames structure (must be array)' };
-  }
-  for (const frame of p.frames) {
-    if (!frame || typeof frame !== 'object') {
-      return { valid: false, error: 'Invalid frame structure' };
-    }
-    if (typeof frame.t !== 'number') {
-      return { valid: false, error: 'Invalid frame time (must be number)' };
-    }
-    if (!Array.isArray(frame.updates)) {
-      return { valid: false, error: 'Invalid frame updates (must be array)' };
-    }
-    for (const update of frame.updates) {
-      if (!update || typeof update !== 'object') {
-        return { valid: false, error: 'Invalid frame update structure' };
-      }
-      if (!update.id || typeof update.id !== 'string') {
-        return { valid: false, error: 'Invalid frame update ID (must be string)' };
-      }
-      if (typeof update.x !== 'number' || typeof update.y !== 'number') {
-        return { valid: false, error: 'Invalid frame update position (must be numbers)' };
-      }
-    }
-  }
-
-  // Validate size
+  // 1. Check Payload Size first
   const size = getPayloadSize(payload);
   if (size > MAX_PAYLOAD_SIZE_BYTES) {
     return {
       valid: false,
       error: `Payload too large: ${size.toLocaleString()} bytes (max: ${MAX_PAYLOAD_SIZE_BYTES.toLocaleString()} bytes)`,
+      size
+    };
+  }
+
+  // 2. Validate Structure with Zod
+  const result = SharePayloadSchema.safeParse(payload);
+
+  if (!result.success) {
+    // Format Zod errors into a readable string
+    const errorMsg = result.error.issues
+      .map(e => `${e.path.join('.')}: ${e.message}`)
+      .join('; ');
+
+    return {
+      valid: false,
+      error: `Validation failed: ${errorMsg}`,
       size
     };
   }

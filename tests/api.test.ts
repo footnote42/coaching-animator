@@ -96,6 +96,8 @@ describe('Link-Sharing API Handlers', () => {
         });
     });
 
+
+
     describe('GET /api/share/:id', () => {
         it('should retrieve a valid share', async () => {
             if (!devShareId) {
@@ -140,6 +142,13 @@ describe('Link-Sharing API Handlers', () => {
             expect(res.statusCode).toBe(400);
         });
 
+        it('should ensure response headers contain security and CORS settings', async () => {
+            const req: any = { method: 'OPTIONS' };
+            const res = createResponse();
+            await shareIdHandler(req, res);
+            expect(res.headers['Access-Control-Allow-Origin']).toBeDefined();
+        });
+
         it('should handle OPTIONS preflight', async () => {
             const req: any = { method: 'OPTIONS' };
             const res = createResponse();
@@ -148,6 +157,42 @@ describe('Link-Sharing API Handlers', () => {
 
             expect(res.statusCode).toBe(200);
             expect(res.headers['Access-Control-Allow-Methods']).toContain('GET');
+        });
+    });
+
+    describe('Edge Cases & Validation', () => {
+        it('should return 413 for oversized payloads', async () => {
+            const largeCanvas = new Array(150000).fill('a').join(''); // ~150KB string
+            const req: any = {
+                method: 'POST',
+                body: {
+                    version: 1,
+                    canvas: { width: 2000, height: 2000, extra: largeCanvas }, // Injected large data
+                    entities: [],
+                    frames: []
+                }
+            };
+            const res = createResponse();
+            await shareHandler(req, res);
+            // Expect 413
+            expect(res.statusCode).toBe(413);
+        });
+
+        it('should return 400 for malformed structure (Zod validation)', async () => {
+            const req: any = {
+                method: 'POST',
+                body: {
+                    version: 1,
+                    canvas: { width: "invalid_string", height: 2000 },
+                    entities: [],
+                    frames: []
+                }
+            };
+            const res = createResponse();
+            await shareHandler(req, res);
+            // Expect 400 and specific error message about canvas.width
+            expect(res.statusCode).toBe(400);
+            expect(res.body.error).toContain('canvas.width');
         });
     });
 });

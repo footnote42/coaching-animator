@@ -17,6 +17,7 @@ A browser-based tactical animation tool for rugby coaches. Features include drag
 | US1 | Create Basic Tactical Animation | ✅ COMPLETE | Basic positioning, frames, and playback. |
 | US2 | Save and Load Projects | ✅ COMPLETE | JSON file I/O and Auto-save implemented. |
 | US3 | Export Animation as Video | ✅ COMPLETE | MediaRecorder integration with progress UI. |
+| US10 | Share Animation via Link | ✅ COMPLETE | Backend sharing with Supabase, read-only replay page. |
 
 ### User Stories (P2 - Enhanced) - ✅ ALL COMPLETE
 | ID | Title | Status | Notes |
@@ -59,6 +60,14 @@ A browser-based tactical animation tool for rugby coaches. Features include drag
 | Context Menu Coverage (T127-T129) | ✅ | Context menus on players, annotations, ball |
 | Aesthetic Audit (T130-T132) | ✅ | Pitch Green, Tactics White, sharp corners verified |
 | Remaining Polish (T133-T140) | ✅ | Tooltips, Ctrl+S, Escape key, code cleanup, README |
+
+#### Phase 5: Link Sharing - ✅ COMPLETE
+| Task | Status | Resolution |
+|------|--------|------------|
+| API Implementation (T401-T404) | ✅ | Vercel Functions + Supabase with Zod validation |
+| Frontend UI (T405-T409) | ✅ | `ShareButton.tsx` with Toast notifications |
+| Replay Page (T410-T412) | ✅ | Read-only playback with looping |
+| Deployment (T601-T604) | ✅ | Verified on Vercel Preview (Production ready) |
 
 #### Phase 15: Validation & UAT - 📋 DOCUMENTATION COMPLETE
 | Task | Status | Documentation |
