@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { v4 as uuidv4 } from 'uuid';
+import { devtools } from 'zustand/middleware';
 import { toast } from 'sonner';
 import {
     Project,
