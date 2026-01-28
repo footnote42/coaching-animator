@@ -1,6 +1,14 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-27
+Auto-generated from all feature plans. Last updated: 2026-01-28
+
+## Current Iteration
+
+- **Spec Folder**: `specs/002-clean-iteration/`
+- **PRD**: `.specify/memory/PRD.md`
+- **Constitution**: `.specify/memory/constitution.md`
+- **Build Plan**: `specs/002-clean-iteration/plan.md`
+- **Tasks**: `specs/002-clean-iteration/tasks.md`
 
 ## Active Technologies
 
