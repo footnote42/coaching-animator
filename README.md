@@ -182,8 +182,8 @@ src/
 ## 🤝 Contributing
 
 This project is part of a spec-driven development workflow. If you find bugs or have feature requests:
-1. Check `/specs/001-rugby-animation-tool/spec.md` for the authoritative specification
-2. Review `/specs/001-rugby-animation-tool/tasks.md` for planned work
+1. Check `/specs/002-clean-iteration/spec.md` for the authoritative specification
+2. Review `/specs/002-clean-iteration/tasks.md` for planned work
 3. Submit issues with reference to specific Functional Requirements (e.g., FR-CAN-04)
 
 ---

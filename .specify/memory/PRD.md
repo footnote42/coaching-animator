@@ -829,4 +829,376 @@ export const VALIDATION = {
 
 ---
 
+## 16. User Accounts & Authentication
+
+### 16.1 Authentication Method
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Provider** | Supabase Auth |
+| **Method** | Email + Password only |
+| **Session** | JWT tokens with refresh |
+| **Storage** | Secure HTTP-only cookies |
+
+### 16.2 User Types
+
+| Type | Description | Capabilities |
+|------|-------------|--------------|
+| **Guest** | Unauthenticated visitor | View public gallery, create animations (max 10 frames), save locally only |
+| **Registered User** | Email-verified account | Full creation (50 frames), cloud storage (50 animations), upvote, manage gallery |
+| **Admin** | System administrator | User management, content moderation, analytics access |
+
+### 16.3 Functional Requirements
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| F-AUTH-01 | Email/password registration with email verification | P0 |
+| F-AUTH-02 | Email/password login with "Remember me" option | P0 |
+| F-AUTH-03 | Password reset via email link | P0 |
+| F-AUTH-04 | Logout from current session | P0 |
+| F-AUTH-05 | Guest mode with limited functionality (10 frames max) | P0 |
+| F-AUTH-06 | Session persistence across browser refreshes | P1 |
+| F-AUTH-07 | Account deletion (GDPR compliance) | P1 |
+| F-AUTH-08 | Admin role assignment (manual via Supabase) | P1 |
+
+### 16.4 User Profile Schema
+
+```typescript
+interface UserProfile {
+  id: string;              // References auth.users.id
+  display_name?: string;   // Optional public name
+  created_at: string;      // ISO 8601
+  animation_count: number; // Denormalized for quota checks
+  role: 'user' | 'admin';  // Default: 'user'
+  banned_at?: string;      // Set if user is banned
+  ban_reason?: string;
+}
+```
+
+---
+
+## 17. Cloud Storage & Gallery
+
+### 17.1 Storage Limits
+
+| Limit | Value | Rationale |
+|-------|-------|-----------|
+| **Animations per user** | 50 | Generous for free tier, scalable |
+| **Max duration** | 60 seconds | Balance between utility and storage |
+| **Max payload size** | 150KB | Sufficient for complex animations |
+| **Retention** | Indefinite (user-owned) | Unlike share links (90 days) |
+
+### 17.2 Visibility Options
+
+| Visibility | Description |
+|------------|-------------|
+| **Private** | Only owner can view (default) |
+| **Link-shared** | Anyone with URL can view, not discoverable |
+| **Public** | Discoverable in public gallery, searchable |
+
+### 17.3 Functional Requirements
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| F-GAL-01 | Save animation to cloud with metadata | P0 |
+| F-GAL-02 | List user's saved animations (personal gallery) | P0 |
+| F-GAL-03 | Delete saved animation | P0 |
+| F-GAL-04 | Edit animation metadata after save | P0 |
+| F-GAL-05 | Toggle visibility (private/link-shared/public) | P0 |
+| F-GAL-06 | List view with sorting (title, date, duration, type) | P0 |
+| F-GAL-07 | Thumbnail view for visual browsing | P1 |
+| F-GAL-08 | Public gallery with search and filters | P0 |
+| F-GAL-09 | Browse public gallery alphabetically or by date | P0 |
+| F-GAL-10 | Filter by metadata tags | P1 |
+| F-GAL-11 | Trending/favorites section (by upvotes) | P1 |
+| F-GAL-12 | Import JSON from local save | P0 |
+| F-GAL-13 | Offline viewing of cached animations (mobile) | P2 |
+| F-GAL-14 | Copy shareable link for link-shared/public animations | P0 |
+| F-GAL-15 | Allow registered users to clone public animations to their own library ("Remixing") | P1 |
+
+### 17.4 SavedAnimation Schema
+
+```typescript
+interface SavedAnimation {
+  id: string;                    // UUID
+  user_id: string;               // References auth.users.id
+  title: string;                 // Required, max 100 chars
+  description?: string;          // Optional, max 2000 chars
+  coaching_notes?: string;       // Optional, max 5000 chars
+  animation_type: AnimationType; // 'tactic' | 'skill' | 'game' | 'other'
+  tags: string[];                // Metadata tags (max 10)
+  payload: ProjectPayload;       // Full animation data (JSONB)
+  thumbnail_url?: string;        // Generated preview image
+  duration_ms: number;           // Calculated from frames
+  frame_count: number;           // Number of frames
+  visibility: Visibility;        // 'private' | 'link_shared' | 'public'
+  upvote_count: number;          // Denormalized for sorting
+  view_count: number;            // Analytics
+  created_at: string;            // ISO 8601
+  updated_at: string;            // ISO 8601
+}
+
+type AnimationType = 'tactic' | 'skill' | 'game' | 'other';
+type Visibility = 'private' | 'link_shared' | 'public';
+```
+
+---
+
+## 18. Metadata Schema
+
+### 18.1 Core Fields
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| **Title** | string | Yes | 1-100 characters |
+| **Description** | string | No | Max 2000 characters |
+| **Coaching Notes** | string | No | Max 5000 characters |
+| **Animation Type** | enum | Yes | tactic, skill, game, other |
+| **Tags** | string[] | No | Max 10 tags, 30 chars each |
+
+### 18.2 Predefined Tag Categories
+
+#### Rugby-Specific Tags
+
+| Category | Tags |
+|----------|------|
+| **Set Pieces** | lineout, scrum, kickoff, penalty, free-kick, 22-dropout |
+| **Attack Patterns** | phase-play, backline-move, pod-system, strike-play, wrap-around, switch, miss-pass |
+| **Defense Systems** | drift-defense, blitz-defense, umbrella, rush-defense, line-speed |
+| **Positions** | forwards, backs, halfback, flyhalf, centres, wings, fullback, hooker, props, locks, flankers, number-8 |
+| **Game Situations** | breakdown, ruck, maul, counter-attack, exit-strategy, territory |
+
+#### General Sports/Coaching Tags
+
+| Category | Tags |
+|----------|------|
+| **Skill Focus** | passing, catching, kicking, tackling, evasion, support-lines, decision-making |
+| **Training Type** | warm-up, drill, small-sided-game, full-contact, non-contact, walkthrough |
+| **Level** | beginner, intermediate, advanced, professional |
+| **Age Group** | under-12, under-14, under-16, under-18, senior, masters |
+| **Team Context** | attack-only, defense-only, full-team, unit-specific |
+
+### 18.3 Validation Rules
+
+```typescript
+const METADATA_VALIDATION = {
+  title: {
+    minLength: 1,
+    maxLength: 100,
+    pattern: /^[\w\s\-',.!?()]+$/,  // Alphanumeric + common punctuation
+  },
+  description: {
+    maxLength: 2000,
+  },
+  coachingNotes: {
+    maxLength: 5000,
+  },
+  tags: {
+    maxCount: 10,
+    maxTagLength: 30,
+    pattern: /^[a-z0-9\-]+$/,  // Lowercase, hyphens only
+  },
+};
+```
+
+---
+
+## 19. Content Moderation
+
+### 19.1 Moderation Approach
+
+| Component | Implementation |
+|-----------|----------------|
+| **Report System** | Flag button on public animations |
+| **Review Queue** | Admin dashboard for reported content |
+| **Actions** | Hide, remove, warn user, ban user |
+| **Terms of Service** | Required acceptance on registration |
+
+### 19.2 Functional Requirements
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| F-MOD-01 | Report button on public animations (logged-in users only) | P0 |
+| F-MOD-02 | Report reason selection (inappropriate, spam, copyright, other) | P0 |
+| F-MOD-03 | Admin queue showing reported animations | P0 |
+| F-MOD-04 | Admin action: dismiss report (false positive) | P0 |
+| F-MOD-05 | Admin action: hide animation (remove from public, owner notified) | P0 |
+| F-MOD-06 | Admin action: delete animation (permanent removal) | P1 |
+| F-MOD-07 | Admin action: warn user (email notification) | P1 |
+| F-MOD-08 | Admin action: ban user (prevent login, hide all content) | P1 |
+| F-MOD-09 | Terms of Service agreement on registration | P0 |
+| F-MOD-10 | Community guidelines page | P1 |
+
+### 19.3 ContentReport Schema
+
+```typescript
+interface ContentReport {
+  id: string;                    // UUID
+  animation_id: string;          // References saved_animations.id
+  reporter_id: string;           // References auth.users.id
+  reason: ReportReason;
+  details?: string;              // Optional explanation (max 500 chars)
+  status: ReportStatus;          // 'pending' | 'reviewed' | 'dismissed'
+  reviewed_by?: string;          // Admin user ID
+  reviewed_at?: string;
+  action_taken?: ModerationAction;
+  created_at: string;
+}
+
+type ReportReason = 'inappropriate' | 'spam' | 'copyright' | 'other';
+type ReportStatus = 'pending' | 'reviewed' | 'dismissed';
+type ModerationAction = 'none' | 'hidden' | 'deleted' | 'user_warned' | 'user_banned';
+```
+
+---
+
+## 20. Social Features
+
+### 20.1 Scope
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Upvoting** | In Scope (Phase 1) | Registered users, others' public animations |
+| **Following** | Foundation Only | Data model built, UI deferred to Phase 2 |
+| **Comments** | Out of Scope | Not planned |
+| **Direct Messaging** | Out of Scope | Not planned |
+
+### 20.2 Upvoting Requirements
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| F-SOC-01 | Upvote public animations (registered users only) | P0 |
+| F-SOC-02 | Cannot upvote own animations | P0 |
+| F-SOC-03 | Toggle upvote (upvote/remove upvote) | P0 |
+| F-SOC-04 | Display upvote count on animations | P0 |
+| F-SOC-05 | Sort gallery by upvote count (trending) | P1 |
+| F-SOC-06 | View "My Upvoted" animations list | P2 |
+
+### 20.3 Following (Phase 2 - Foundation Only)
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| F-SOC-10 | Follow/unfollow user accounts | P3 (Phase 2) |
+| F-SOC-11 | View followers/following counts | P3 (Phase 2) |
+| F-SOC-12 | "Following" feed of new animations | P3 (Phase 2) |
+
+### 20.4 Social Schemas
+
+```typescript
+// Upvotes
+interface Upvote {
+  user_id: string;       // References auth.users.id
+  animation_id: string;  // References saved_animations.id
+  created_at: string;
+  // Primary key: (user_id, animation_id)
+}
+
+// Following (Phase 2 foundation)
+interface Follow {
+  follower_id: string;   // User who follows
+  followed_id: string;   // User being followed
+  created_at: string;
+  // Primary key: (follower_id, followed_id)
+}
+```
+
+---
+
+## 21. Website Architecture & Security
+
+### 21.1 Page Structure
+
+| Route | Type | Auth Required | Purpose |
+|-------|------|---------------|---------|
+| `/` | Static/SSR | No | Landing page with hero, features, CTA |
+| `/login` | SSR | No | Email/password login |
+| `/register` | SSR | No | Sign up with email verification |
+| `/forgot-password` | SSR | No | Password reset request |
+| `/terms` | Static | No | Terms of Service |
+| `/privacy` | Static | No | Privacy Policy |
+| `/contact` | Static | No | Formspree contact form |
+| `/app` | SPA | No (guest mode) | Animation tool |
+| `/my-gallery` | SSR | Yes | User's saved animations |
+| `/gallery` | SSR | No | Public gallery with search |
+| `/gallery/:id` | SSR | No | Single animation detail |
+| `/replay/:id` | SSR | No | Minimal replay view |
+| `/admin` | SSR | Admin only | Admin dashboard |
+
+### 21.2 Security Headers
+
+```typescript
+const securityHeaders = [
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval'",  // Konva needs eval
+      "style-src 'self' 'unsafe-inline'", // Tailwind inline styles
+      "img-src 'self' data: blob: https:",
+      "font-src 'self'",
+      "connect-src 'self' https://*.supabase.co",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self' https://formspree.io",
+    ].join('; ')
+  },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+];
+```
+
+### 21.3 Rate Limiting
+
+| Endpoint | Limit | Window | Purpose |
+|----------|-------|--------|---------|
+| `POST /api/auth/*` | 5 requests | 15 min | Prevent brute force |
+| `POST /api/animations` | 10 requests | 1 hour | Prevent spam saves |
+| `POST /api/share` | 10 requests | 1 hour | Prevent link spam |
+| `POST /api/report` | 5 requests | 1 hour | Prevent report abuse |
+| `GET /api/*` | 100 requests | 1 min | General API protection |
+
+**Implementation**: Persistent rate limiting using a dedicated Supabase `rate_limits` table (or Vercel KV) to track IP/user usage across serverless instances. In-memory rate limiting is ineffective in serverless environments where each function invocation may run on a different instance.
+
+### 21.4 Input Validation Strategy
+
+| Layer | Tool | Purpose |
+|-------|------|---------|
+| **Client** | Zod schemas | Immediate feedback |
+| **API** | Zod schemas (shared) | Defense in depth |
+| **Database** | PostgreSQL constraints | Last line of defense |
+| **Sanitization** | DOMPurify | XSS prevention for user content |
+
+### 21.5 Secrets Management
+
+| Secret | Storage | Access |
+|--------|---------|--------|
+| `SUPABASE_URL` | Vercel env vars | Server + Client (public) |
+| `SUPABASE_ANON_KEY` | Vercel env vars | Server + Client (public) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Vercel env vars | Server only (never exposed) |
+
+---
+
+## 22. Updated Future Considerations
+
+### Now In-Scope (Tier 3 Features)
+
+- **User Accounts** - Email/password authentication via Supabase Auth
+- **Cloud Storage** - Persistent storage of animations with metadata
+- **Public Gallery** - Discoverable animations with search and filtering
+- **Upvoting** - Community curation of public content
+- **Content Moderation** - Reporting and admin review queue
+
+### Explicitly Out of Scope
+
+- **Comments/Discussions** - Not planned for this phase
+- **Real-time Collaborative Editing** - Complex, not aligned with use case
+- **Team/Organization Accounts** - Future consideration for paid tier
+- **Paid Subscription Tiers** - Future consideration
+- **Following Users** - Data model only, UI deferred to Phase 2
+- **Mobile App** - React Native port remains future consideration
+
+---
+
 Document End

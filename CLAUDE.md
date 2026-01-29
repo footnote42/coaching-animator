@@ -1,115 +1,163 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-28
+Auto-generated from all feature plans. Last updated: 2026-01-29
 
 ## Current Iteration
 
-- **Spec Folder**: `specs/002-clean-iteration/`
-- **PRD**: `.specify/memory/PRD.md`
-- **Constitution**: `.specify/memory/constitution.md`
-- **Build Plan**: `specs/002-clean-iteration/plan.md`
-- **Tasks**: `specs/002-clean-iteration/tasks.md`
+- **Spec Folder**: `specs/003-online-platform/`
+- **PRD**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform)
+- **Constitution**: `.specify/memory/constitution.md` (v3.0 with Tier 3 Authenticated)
+- **Migration Plan**: `specs/003-online-platform/MIGRATION_PLAN.md`
+- **Data Model**: `specs/003-online-platform/data-model.md`
+- **API Contracts**: `specs/003-online-platform/contracts/api-contracts.md`
 
 ## Active Technologies
 
-- TypeScript 5.x with React 18+ (001-rugby-animation-tool)
-- Vite + Tailwind CSS + shadcn/ui
+- TypeScript 5.x with React 18+
+- **Current**: Vite + Tailwind CSS + shadcn/ui
+- **Migration Target**: Next.js App Router + PWA (@serwist/next)
 - React-Konva for canvas rendering
 - Zustand for state management
-- **Backend (Tier 2)**: Vercel Functions + Supabase PostgreSQL (link-sharing feature)
+- **Backend**: Supabase PostgreSQL + Supabase Auth
+- **Hosting**: Vercel
 
 ## Project Structure
 
 ```text
-src/
+src/                          # Current Vite app (to be migrated)
 ├── components/
-│   ├── Canvas/         # Canvas rendering layers (Field, Stage, EntityLayer, etc.)
-│   ├── Timeline/       # Playback and frame controls
-│   ├── Sidebar/        # Entity palette and project actions
-│   └── UI/            # shadcn/ui components
-├── hooks/             # Custom React hooks (useAnimationLoop, useKeyboardShortcuts)
-├── store/             # Zustand stores (projectStore, uiStore)
-├── utils/             # Utilities (validation, sanitization, interpolation)
-├── types/             # TypeScript type definitions
-├── constants/         # Design tokens and validation constants
-└── assets/            # Field SVGs and other assets
-tests/
+│   ├── Canvas/              # Canvas rendering layers
+│   ├── Sidebar/             # Entity palette and project actions
+│   └── Replay/              # Shareable replay viewer
+├── hooks/                   # Custom React hooks
+├── store/                   # Zustand stores
+├── utils/                   # Utilities
+├── types/                   # TypeScript type definitions
+├── constants/               # Design tokens and validation
+└── assets/                  # Field SVGs
+
+specs/003-online-platform/   # Current iteration specs
+├── spec.md                  # 9 user stories, 40+ requirements
+├── MIGRATION_PLAN.md        # 8-phase migration approach
+├── data-model.md            # Database schemas
+├── research.md              # Technical decisions
+├── quickstart.md            # Dev setup guide
+└── contracts/
+    └── api-contracts.md     # API endpoint specs
 ```
 
 ## Commands
 
-- `npm run dev` - Start development server (port 5175)
+- `npm run dev` - Start Vite development server (port 5175)
 - `npm run build` - Production build
 - `npm test` - Run tests
 - `npm run lint` - Run ESLint
 
-## Code Style
-
-TypeScript 5.x with React 18+: Follow standard conventions
-
 ## Project Status
 
-### Phase 3: User Story 1 - Basic Animation ✅ COMPLETE & VERIFIED
+### Completed Iterations
 
-All core animation features implemented and verified (T031-T044):
-- Entity management (add, update, remove)
-- Frame management (add, navigate, duplicate, remove)
-- Smooth animation with interpolation (60fps)
-- Playback controls (play/pause/reset, speed control, loop)
-- Keyboard shortcuts (Space, Delete)
-- Entity selection and deselection
-- Responsive UI with sidebar and timeline
+#### 002-clean-iteration ✅ COMPLETE
+- Phase 3: Basic Animation (T031-T044)
+- Phase 4: Save/Load
+- Phase 5: Export Video
+- Phase 6: Share Animation Link (Tier 2)
 
-### Phase 4: User Story 2 - Save/Load ✅ COMPLETE
-### Phase 5: User Story 3 - Export Video ✅ COMPLETE
-### Phase 6: User Story 10 - Share Animation Link ✅ COMPLETE
-- ✅ Phase 3.1: Supabase Setup & API Infrastructure (2026-01-26)
-- ✅ Phase 3.2: Vercel Functions API Implementation (2026-01-27)
-- ✅ Phase 3.3: Vercel Deployment Configuration (Complete)
-- ✅ Phase 4: Frontend Integration (Complete)
-- ✅ Phase 5: Deployment & Testing (Complete)
+### Current Iteration: 003-online-platform
+
+**Goal**: Migrate to Next.js + add user accounts, cloud storage, galleries
+
+#### Planning Phase ✅ COMPLETE (2026-01-29)
+- ✅ Specification complete (`spec.md`)
+- ✅ Migration plan documented (`MIGRATION_PLAN.md`)
+- ✅ Research documented (`research.md`)
+- ✅ Data model designed (`data-model.md`)
+- ✅ API contracts defined (`contracts/api-contracts.md`)
+- ✅ Quickstart guide created (`quickstart.md`)
+
+#### Implementation Phases (Pending)
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Next.js Foundation + PWA + Landing Page | Pending |
+| 2 | Supabase Auth + Auth Pages | Pending |
+| 3 | Port Animation Tool to /app | Pending |
+| 4 | Database Schema + Cloud Save/Load | Pending |
+| 5 | Personal Gallery + Public Gallery | Pending |
+| 6 | Remix, Upvoting, Reporting | Pending |
+| 7 | Admin Dashboard | Pending |
+| 8 | Remove Vite, Cleanup, OG Images | Pending |
+
+**Estimated Total**: ~14 days development
 
 ## Recent Changes
 
-- **Phase 3.2: Vercel Functions API Implementation Complete (2026-01-27)**: Production-ready API handlers implemented for link-sharing feature. Created SharePayloadV1 type definitions, Supabase client singleton, and validation utilities. POST /api/share creates shareable links with 100KB size limit. GET /api/share/:id retrieves animations with expiry validation. Environment-aware CORS configuration. Local testing script with 10 automated tests. All TypeScript compilation passed. Full deployment complete.
-- **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure established for link-sharing feature. Supabase PostgreSQL database configured with `shares` table, RLS policies, and 90-day retention. API stub handlers created. Dependencies installed: @supabase/supabase-js (v2.93.1), @vercel/node (v5.5.28). Existing offline features remain unchanged.
-- **Constitution v2.0.0 Ratified (2026-01-25)**: Amended Principle V from "Offline-First Privacy" to "Privacy-First Architecture" with tiered governance (Tier 1: Sacred Offline, Tier 2: Controlled Networked). Enables link-sharing feature while preserving offline-first core.
-- **Link-Sharing Architecture Approved**: Vercel Functions + Supabase PostgreSQL backend for read-only animation replay URLs (90-day retention, no authentication).
-- **Verified Phase 3**: Successfully resolved rendering blockers (Tailwind v4/react-konva mismatch/Layer nesting).
-- Updated `tasks.md` with verified status and retrospective.
-- Updated `package.json`: Downgraded `react-konva` to v18 for compatibility.
-- Updated `index.css`: Migrated to Tailwind v4 CSS-based configuration.
-- Restructured Konva layers for correct Stage->Layer hierarchy.
-- Development server running at http://localhost:5175
+- **003-online-platform Planning Complete (2026-01-29)**: Completed planning phase for Next.js migration and online platform features. Created research.md (10 technical unknowns), data-model.md (6 database tables with RLS), api-contracts.md (20+ endpoints), and quickstart.md (dev setup guide). Constitution amended to v3.0 with Tier 3 (Authenticated) features.
+- **Constitution v3.0.0 (2026-01-29)**: Added Tier 3 (Authenticated Features) for user accounts, cloud storage, public gallery, upvoting, moderation. Email-only auth, minimal profile data, GDPR compliance. Tier 1 (offline core) remains sacred.
+- **Phase 3.2: Vercel Functions API Implementation Complete (2026-01-27)**: Production-ready API handlers for link-sharing feature.
+- **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure for link-sharing feature.
+
+## Key Constraints (from Constitution v3.0)
+
+- **Tier 1 (Sacred Offline)**: Animation creation, editing, local persistence, local export - MUST work without network
+- **Tier 2 (Controlled Networked)**: Link sharing, public gallery browsing - explicit consent required
+- **Tier 3 (Authenticated)**: Cloud storage, personal gallery, upvoting, moderation - email-only auth
+
+**Absolute Prohibitions**:
+- No telemetry, analytics, or tracking
+- No third-party identity providers (Google, Facebook, etc.)
+- No third-party analytics services
+- No advertising or sponsored content
+- No paywalls for core features
+
+## Database Tables (003-online-platform)
+
+| Table | Purpose |
+|-------|---------|
+| `user_profiles` | Extends auth.users, display name, role, quota |
+| `saved_animations` | User-owned animations with metadata, payload |
+| `upvotes` | User-animation upvote relationships |
+| `content_reports` | Moderation queue for reported animations |
+| `follows` | Phase 2 foundation (UI deferred) |
+| `rate_limits` | Persistent rate limiting |
+
+## API Endpoints (003-online-platform)
+
+| Endpoint | Auth | Purpose |
+|----------|------|---------|
+| `GET/POST /api/animations` | Required | List/create user animations |
+| `GET/PUT/DELETE /api/animations/[id]` | Varies | Single animation CRUD |
+| `GET /api/gallery` | Optional | Public gallery with search |
+| `POST /api/animations/[id]/upvote` | Required | Toggle upvote |
+| `POST /api/animations/[id]/remix` | Required | Clone to personal gallery |
+| `POST /api/report` | Required | Report animation |
+| `GET/POST /api/admin/reports` | Admin | Moderation queue |
 
 ## Development Learnings
 
-### Video Export Implementation (Phase 5)
-**Format**: WebM video via MediaRecorder API
-- **Performance**: 5-second animation: ~12s total (8s capture + 4s encoding) ✅ Meets P1 requirement (<90s)
-- **Memory**: Peak 245.32 MB (acceptable for desktop)
-- **File Size**: 2.1 MB for 5s; extrapolated 20s: ~8.4 MB ✅ Meets P2 requirement (<10 MB)
-- **Quality**: 4/5 (readable labels, smooth playback)
-- **Browser Support**: Chrome/Edge excellent, Firefox good, Safari limited
-
 ### React-Konva Rendering Patterns
-- **Critical**: Stage->Layer hierarchy must be correct; Layer cannot contain Layer
-- **Compatibility**: react-konva v18 required for Tailwind v4 compatibility
-- **Performance**: Transient Zustand updates for animation prevent re-renders
+- **Critical**: Stage->Layer hierarchy must be correct
+- **Next.js**: Wrap with `'use client'` and `next/dynamic` with `{ ssr: false }`
 
 ### Tailwind v4 Migration
-- **Configuration**: CSS-based configuration in `index.css` (no `tailwind.config.js`)
-- **Design Tokens**: Custom properties defined in CSS for Tactical Clubhouse aesthetic
-- **Compatibility**: Requires react-konva downgrade to v18
+- CSS-based configuration in `index.css`
+- Design tokens defined as CSS custom properties
+
+### Supabase Auth with Next.js
+- Use `@supabase/ssr` for cookie-based sessions
+- Server Components: `createServerClient()`
+- Client Components: `createBrowserClient()`
+- Middleware refreshes auth token
 
 ## Constitutional Compliance
 
 **Constitution Location**: `.specify/memory/constitution.md`
-**Current Version**: 2.0.0 (ratified 2026-01-16, amended 2026-01-25)
+**Current Version**: 3.0.0 (ratified 2026-01-16, amended 2026-01-29)
 
 **Tiered Architecture**:
-- **Tier 1 (Sacred Offline)**: Animation creation, editing, local persistence, local export - MUST remain 100% offline
-- **Tier 2 (Controlled Networked)**: Link sharing - MAY use network with explicit consent, clear UI indication, graceful degradation
+- **Tier 1 (Sacred Offline)**: Animation creation, editing, local persistence, local export
+- **Tier 2 (Controlled Networked)**: Link sharing, public gallery browsing
+- **Tier 3 (Authenticated)**: Cloud storage, personal gallery, upvoting, moderation
 
 **Governance**: All backend features require Necessity Test, Privacy Impact Assessment, and Constitutional Amendment approval.
 

@@ -2,41 +2,36 @@
 ================================================================================
 SYNC IMPACT REPORT
 ================================================================================
-Version change: 1.0.0 → 2.0.0 (MAJOR - Core Principle redefinition)
+Version change: 2.1.0 → 3.0.0 (MAJOR - User Accounts & Online Platform)
 
 Modified principles:
-- Principle V: "Offline-First Privacy" → "Privacy-First Architecture"
-  - Changed from absolute offline-only to tiered feature governance
-  - Added Tier 1 (Sacred Offline) and Tier 2 (Controlled Networked)
-  - Introduced privacy policies and governance framework for backend features
+- Principle V: Added Tier 3 (Authenticated Features) for user accounts and cloud storage
+- Principle V.6: Updated Absolute Prohibitions to permit email/password accounts while maintaining privacy safeguards
 
 Added sections:
-- V.1 Core Offline Features (Tier 1 - Sacred)
-- V.2 Optional Networked Features (Tier 2 - Controlled)
-- V.3 Data Retention & Privacy Policies
-- V.4 Security Baseline for Networked Features
-- V.5 Governance for Future Backend Features
-- V.6 Absolute Prohibitions (Unchanged)
+- V.2.1 User Account Features (Tier 3 - Authenticated)
+- VI. Grassroots Coach Advocacy (new core principle)
+- Website Design Tokens (new design system section)
 
 Removed sections:
-- Previous Principle V content (absolute offline-only mandate)
+- "No persistent user accounts" from V.6 Absolute Prohibitions
 
 Rationale for Amendment:
-- Link-sharing feature solves critical user need (WhatsApp distribution)
-- Absolute offline-first blocked this essential use case
-- Tiered architecture preserves core offline-first identity while enabling optional networked features
-- Privacy and governance safeguards ensure networked features remain user-controlled and privacy-respecting
+- Grassroots coaches need cloud storage to access animations across devices
+- Public gallery enables peer learning and community building
+- User accounts required for content ownership, moderation, and social features
+- Privacy safeguards maintained: email-only auth, minimal profile data, GDPR compliance
+- Tier 1 (offline core) remains sacred and unaffected
 
 Templates requiring updates:
-- ✅ plan-template.md - Compatible (Constitution Check section supports tiered architecture)
-- ✅ spec-template.md - Compatible (requirements structure supports Tier 1/Tier 2 distinction)
-- ✅ tasks-template.md - Compatible (phase structure supports incremental backend features)
+- ✅ plan-template.md - Compatible (supports tiered architecture)
+- ✅ spec-template.md - Compatible (supports authenticated features)
+- ✅ tasks-template.md - Compatible (supports phased implementation)
 
 Follow-up TODOs:
-- Update PRD.md Section 2 (Problem Statement) and Section 5.5 (Export System)
-- Update spec.md Section 5 (Requirements) to reflect tiered privacy model
-- Update animation-share-spec.md with constitutional references
-- Update CLAUDE.md Active Technologies section
+- Update PRD.md with new sections (16-21) for accounts, gallery, hosting, security
+- Create MIGRATION_PLAN.md for Next.js migration
+- Implement database schema for users, animations, upvotes, reports
 ================================================================================
 -->
 
@@ -122,7 +117,7 @@ The application adopts a **tiered feature architecture** that preserves offline-
 
 **MAY utilize network connectivity under strict conditions:**
 - Link sharing (read-only replay URLs)
-- Future: Cloud backup (optional), template libraries (read-only)
+- Public gallery browsing (read-only)
 
 **Mandatory Safeguards**:
 1. **Explicit User Consent**: Network features require user-initiated action (button click)
@@ -130,6 +125,23 @@ The application adopts a **tiered feature architecture** that preserves offline-
 3. **Graceful Degradation**: Network failures must not break core offline functionality
 4. **Privacy Disclosure**: First use must display privacy notice explaining data handling
 5. **Warm UX**: Networked features must maintain the warm, trustworthy aesthetic and provide helpful error states
+
+#### V.2.1 User Account Features (Tier 3 - Authenticated)
+
+**MAY require user authentication under strict conditions:**
+- Cloud storage of user-created animations
+- Personal gallery management
+- Public gallery participation (publishing, upvoting)
+- Content moderation (reporting)
+
+**Mandatory Safeguards**:
+1. **Email-only Authentication**: No social login, no third-party identity providers
+2. **Minimal Profile Data**: Only email, optional display name, no additional PII collection
+3. **User Data Ownership**: Full export and deletion rights (GDPR-style compliance)
+4. **Transparent Storage**: Clear disclosure of what data is stored and where
+5. **Privacy by Default**: All content private unless explicitly published by user
+6. **Account Deletion**: Complete data removal within 30 days of request
+7. **Offline Core Preserved**: Tier 1 features must work without authentication
 
 #### V.3 Data Retention & Privacy Policies
 
@@ -166,15 +178,18 @@ The application adopts a **tiered feature architecture** that preserves offline-
 - Features sending telemetry to third parties (violates "No Telemetry")
 - Features with indefinite data retention (violates retention limits)
 
-#### V.6 Absolute Prohibitions (Unchanged)
+#### V.6 Absolute Prohibitions (Updated v3.0)
 
 **STRICTLY FORBIDDEN regardless of tier:**
 - No telemetry, analytics, tracking, or user behavior monitoring
-- No third-party services (Google Analytics, Sentry, Mixpanel, etc.)
-- No persistent user accounts (MVP scope)
-- No paywalls
+- No third-party identity providers (Google, Facebook, Apple login)
+- No third-party analytics services (Google Analytics, Sentry, Mixpanel, etc.)
+- No sale or sharing of user data with third parties
+- No mandatory accounts for core offline features (Tier 1 remains sacred)
+- No paywalls (free tier must always provide genuine value)
+- No advertising or sponsored content
 
-**Rationale**: Coaches store team strategies and player information. Privacy remains non-negotiable for trust. The tiered architecture preserves the offline-first core while solving critical sharing needs (WhatsApp distribution) under strict privacy governance.
+**Rationale**: Coaches store team strategies and player information. Privacy remains non-negotiable for trust. User accounts are permitted solely to enable cloud storage and community features, with strict privacy safeguards. The tiered architecture preserves the offline-first core while enabling online platform features under governance.
 
 ## Design System
 
@@ -192,6 +207,18 @@ This section codifies the Design Tokens into enforceable standards.
 | `--color-accent-warm` | `#D97706` | CTAs, highlights, interactive elements |
 | `--color-text-primary` | `#111827` | Body text, labels (enhanced contrast) |
 | `--color-text-inverse` | `#F8F9FA` | Text on primary backgrounds |
+
+### Website Design Tokens
+
+| Token Name | Value | Usage |
+|------------|-------|-------|
+| `--color-hero-gradient-start` | `#1A3D1A` | Landing page hero backgrounds |
+| `--color-hero-gradient-end` | `#2D5A2D` | Subtle gradient variation |
+| `--color-cta-primary` | `#D97706` | Primary call-to-action buttons |
+| `--color-cta-hover` | `#B45309` | CTA hover state |
+| `--color-success` | `#059669` | Success messages, confirmations |
+| `--color-error` | `#DC2626` | Error states, warnings |
+| `--color-info` | `#2563EB` | Informational messages |
 
 ### Typography Tokens
 
@@ -235,6 +262,32 @@ src/
 ├── types/            # Shared TypeScript interfaces
 └── constants/        # Static configuration values
 
+### VI. Grassroots Coach Advocacy
+
+The application exists to **empower grassroots sports coaches** - volunteers, parents, club coaches, and school teachers who give their time to develop players.
+
+#### VI.1 Target Audience Principles
+
+- **Accessibility**: Free tier must provide genuine value, not a crippled demo
+- **Simplicity**: Features must be usable without technical expertise
+- **Respect**: Coaches' time is volunteered; don't waste it with complexity
+- **Community**: Enable sharing and learning between coaches
+- **Inclusion**: Support coaches at all levels, from minis to senior amateur
+
+#### VI.2 Content Philosophy
+
+- **Educational Focus**: Animations are teaching tools, not entertainment
+- **Coach-to-Coach**: Community features serve peer learning, not social networking
+- **Quality over Quantity**: Encourage thoughtful, useful content over volume
+
+#### VI.3 Commercial Boundaries
+
+- **No Advertising**: Never display third-party advertisements
+- **No Data Monetization**: User data is never sold or used for profiling
+- **Sustainable Model**: Future paid tiers for power features only, never for basic coaching needs
+
+**Rationale**: Grassroots coaches are the heart of amateur sport. They deserve tools that respect their mission, their time, and their privacy. This principle ensures the platform serves coaches, not exploits them.
+
 ## Governance
 
 ### Amendment Procedure
@@ -256,4 +309,4 @@ src/
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 2.1.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-28
+**Version**: 3.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-29
