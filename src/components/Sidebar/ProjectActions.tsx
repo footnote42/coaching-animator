@@ -25,6 +25,8 @@ export interface ProjectActionsProps {
     exportProgress?: number;
     exportError?: string | null;
     canExport?: boolean;
+    isAuthenticated?: boolean;
+    onSaveToCloud?: () => void;
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
@@ -35,6 +37,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     exportProgress = 0,
     exportError = null,
     canExport = false,
+    isAuthenticated: _isAuthenticated = false,
+    onSaveToCloud: _onSaveToCloud,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 

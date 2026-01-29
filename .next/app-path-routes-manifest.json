@@ -1,0 +1,16 @@
+{
+  "/(auth)/forgot-password/page": "/forgot-password",
+  "/(auth)/login/page": "/login",
+  "/(auth)/register/page": "/register",
+  "/(auth)/reset-password/page": "/reset-password",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/animations/[id]/route": "/api/animations/[id]",
+  "/api/animations/route": "/api/animations",
+  "/api/auth/callback/route": "/api/auth/callback",
+  "/api/user/account/route": "/api/user/account",
+  "/api/user/profile/route": "/api/user/profile",
+  "/app/page": "/app",
+  "/offline/page": "/offline",
+  "/page": "/"
+}

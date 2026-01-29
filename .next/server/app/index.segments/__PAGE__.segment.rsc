@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[97367,["/_next/static/chunks/2f236954d6a65e12.js"],"OutletBoundary"]
+3:"$Sreact.suspense"
+0:{"buildId":"YpVzKZaPOhyoTkS112jw9","rsc":["$","$1","c",{"children":[["$","main",null,{"className":"flex min-h-screen flex-col items-center justify-center p-8","children":["$","div",null,{"className":"text-center","children":[["$","h1",null,{"className":"text-4xl font-bold text-primary mb-4","children":"Coaching Animator"}],["$","p",null,{"className":"text-lg text-text-primary mb-8","children":"Rugby Play Visualization Tool"}],["$","div",null,{"className":"flex gap-4 justify-center","children":[["$","a",null,{"href":"/app","className":"px-6 py-3 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity","children":"Open Editor"}],["$","a",null,{"href":"/gallery","className":"px-6 py-3 border border-primary text-primary font-medium hover:bg-primary hover:text-text-inverse transition-colors","children":"Browse Gallery"}]]}]]}]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"loading":null,"isPartial":false}
+4:null
