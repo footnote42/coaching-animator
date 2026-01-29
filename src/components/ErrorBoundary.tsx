@@ -66,16 +66,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                             <h2 className="text-2xl font-heading font-bold text-pitch-green mb-2">
                                 {fallbackTitle}
                             </h2>
-                            <p className="text-tactical-mono-700 mb-4">
+                            <p className="text-[var(--color-text-primary)] mb-4">
                                 Something went wrong in this section of the application.
                             </p>
 
                             {error && (
                                 <details className="mb-4">
-                                    <summary className="cursor-pointer text-sm font-mono text-tactical-mono-600 hover:text-pitch-green">
+                                    <summary className="cursor-pointer text-sm font-mono text-[var(--color-text-primary)] opacity-75 hover:text-pitch-green">
                                         Technical Details
                                     </summary>
-                                    <pre className="mt-2 p-4 bg-tactical-mono-100 text-xs font-mono overflow-auto">
+                                    <pre className="mt-2 p-4 bg-[var(--color-surface-warm)] text-xs font-mono overflow-auto">
                                         {error.message}
                                         {error.stack && `\n\n${error.stack}`}
                                     </pre>
@@ -84,7 +84,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-sm text-tactical-mono-600 mb-4">
+                            <p className="text-sm text-[var(--color-text-primary)] opacity-75 mb-4">
                                 You can try refreshing the page or starting a new project to recover.
                             </p>
 

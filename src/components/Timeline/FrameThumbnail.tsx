@@ -60,11 +60,11 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
           w-16 h-12
           border
           ${isActive ? 'border-2' : 'border'}
-          ${isActive ? 'border-pitch-green' : 'border-tactical-mono-300'}
-          bg-tactical-mono-50
+          ${isActive ? 'border-pitch-green' : 'border-[var(--color-border)]'}
+          bg-[var(--color-surface-warm)]
           flex items-center justify-center
           font-mono text-sm
-          hover:bg-tactical-mono-100
+          hover:bg-[var(--color-surface)]
           transition-colors
           relative
         `}
@@ -74,14 +74,14 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
         }}
         onClick={onClick}
       >
-        <span className="font-mono text-xs text-tactical-mono-700 select-none">
+        <span className="font-mono text-xs text-[var(--color-text-primary)] select-none">
           {displayIndex}
         </span>
       </div>
 
       {/* Frame info & Slider */}
       <div className="flex flex-col items-center w-full gap-1 px-1">
-        <span className="font-mono text-[10px] text-tactical-mono-600 tabular-nums">
+        <span className="font-mono text-[10px] text-[var(--color-text-primary)] tabular-nums opacity-75">
           {durationValue.toFixed(1)}s
         </span>
         <div className="w-full px-1" onClick={(e) => e.stopPropagation()}>
@@ -101,7 +101,7 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
         <div className="absolute top-0 right-0 flex gap-1 p-0.5">
           <button
             onClick={handleDuplicate}
-            className="p-0.5 bg-tactical-mono-100 hover:bg-tactical-mono-200 border border-tactical-mono-300"
+            className="p-0.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-warm)] border border-[var(--color-border)]"
             style={{ borderRadius: 0 }}
             title="Duplicate frame"
           >
@@ -109,7 +109,7 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
           </button>
           <button
             onClick={handleDelete}
-            className="p-0.5 bg-tactical-mono-100 hover:bg-red-100 border border-tactical-mono-300"
+            className="p-0.5 bg-[var(--color-surface)] hover:bg-red-50 border border-[var(--color-border)]"
             style={{ borderRadius: 0 }}
             title="Delete frame"
           >

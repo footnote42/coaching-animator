@@ -48,10 +48,10 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
 
     if (isFetching) {
         return (
-            <div className="flex h-screen items-center justify-center bg-tactical-mono-50">
+            <div className="flex h-screen items-center justify-center bg-[var(--color-surface-warm)]">
                 <div className="text-center">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-pitch-green mb-4" />
-                    <p className="text-tactical-mono-900">Loading animation...</p>
+                    <p className="text-[var(--color-text-primary)]">Loading animation...</p>
                 </div>
             </div>
         );
@@ -59,7 +59,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
 
     if (error) {
         return (
-            <div className="flex h-screen items-center justify-center bg-tactical-mono-50">
+            <div className="flex h-screen items-center justify-center bg-[var(--color-surface-warm)]">
                 <div className="max-w-md p-6 bg-white rounded-none shadow-md border border-red-200 text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                     <h2 className="text-lg font-bold text-gray-900 mb-2">Unable to Load Replay</h2>
@@ -80,7 +80,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
     const canvasHeight = 600;
 
     return (
-        <div className="flex flex-col h-screen bg-tactical-mono-50 items-center justify-center">
+        <div className="flex flex-col h-screen bg-[var(--color-surface-warm)] items-center justify-center">
             {/* Header / Meta */}
             <div className="absolute top-4 left-4 z-10">
                 <Button onClick={() => window.location.href = '/'} variant="outline" size="sm">
@@ -89,7 +89,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
             </div>
 
             {/* Canvas */}
-            <div className="border border-tactical-mono-300 bg-white shadow-lg rounded-none overflow-hidden">
+            <div className="border border-[var(--color-border)] bg-white shadow-lg rounded-none overflow-hidden">
                 <Stage
                     ref={stageRef}
                     width={canvasWidth}
@@ -125,7 +125,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
             </div>
 
             {/* Controls */}
-            <div className="mt-6 w-[800px] bg-white rounded-none shadow border border-tactical-mono-200 p-2">
+            <div className="mt-6 w-[800px] bg-white rounded-none shadow border border-[var(--color-surface-warm)] p-2">
                 <PlaybackControls
                     isPlaying={isPlaying}
                     speed={playbackSpeed}

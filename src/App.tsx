@@ -377,9 +377,9 @@ function Editor() {
     };
 
     return (
-        <div className="flex h-screen bg-tactical-mono-50">
+        <div className="flex h-screen bg-[var(--color-surface-warm)]">
             {/* Left sidebar - Entity palette and Project actions */}
-            <aside className="w-64 border-r border-tactical-mono-300 bg-pitch-green flex flex-col">
+            <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
                 <div className="p-4">
                     <h1 className="text-xl font-heading font-bold text-tactics-white mb-6">
                         Rugby Animation Tool
@@ -543,7 +543,7 @@ function Editor() {
             {/* Annotation context menu */}
             {annotationContextMenu && (
                 <div
-                    className="absolute z-50 border border-tactical-mono-300 bg-white shadow-lg"
+                    className="absolute z-50 border border-[var(--color-border)] bg-white shadow-lg"
                     style={{
                         left: annotationContextMenu.position.x,
                         top: annotationContextMenu.position.y,
@@ -551,7 +551,7 @@ function Editor() {
                     onMouseLeave={() => setAnnotationContextMenu(null)}
                 >
                     <button
-                        className="block w-full px-4 py-2 text-left hover:bg-tactical-mono-100 text-sm"
+                        className="block w-full px-4 py-2 text-left hover:bg-[var(--color-surface-warm)] text-sm"
                         onClick={handleAnnotationContextMenuDelete}
                     >
                         Delete

@@ -46,7 +46,7 @@ export function EntityPalette({
   };
 
   return (
-    <div className="p-4 border-b border-tactical-mono-200">
+    <div className="p-4 border-b border-[var(--color-surface-warm)]">
       <h3 className="text-sm font-semibold text-pitch-green mb-2">Entities</h3>
       <div className="flex flex-col gap-2">
         <Button
@@ -118,7 +118,7 @@ export function EntityPalette({
         </Button>
       </div>
       {drawingMode !== 'none' && (
-        <p className="text-xs text-tactical-mono-500 mt-2 font-mono">
+        <p className="text-xs text-[var(--color-text-primary)] opacity-60 mt-2 font-mono">
           Click and drag on canvas to draw
         </p>
       )}

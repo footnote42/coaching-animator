@@ -23,11 +23,11 @@ Based on comprehensive audit findings, this roadmap addresses three critical are
 **Files**: `src/index.css`, `src/constants/design-tokens.ts`
 
 **Tasks**:
-- [ ] Add warm accent color `#D97706` to CSS variables
-- [ ] Add deep charcoal text `#111827` for enhanced contrast  
-- [ ] Add surface warmth `#F9FAFB` for main backgrounds
-- [ ] Update DESIGN_TOKENS with new warm color palette
-- [ ] Remove cold gray utilities (`tactical-mono-*`)
+- [x] Add warm accent color `#D97706` to CSS variables
+- [x] Add deep charcoal text `#111827` for enhanced contrast  
+- [x] Add surface warmth `#F9FAFB` for main backgrounds
+- [x] Update DESIGN_TOKENS with new warm color palette
+- [x] Remove cold gray utilities (`tactical-mono-*`)
 
 **Expected Outcome**: Warmer, more inviting color scheme with improved readability
 
@@ -35,9 +35,9 @@ Based on comprehensive audit findings, this roadmap addresses three critical are
 **File**: `src/App.tsx` (line 424)
 
 **Tasks**:
-- [ ] Change `bg-tactical-mono-100` to `bg-[var(--color-surface-warm)]`
-- [ ] Update canvas container border to use warm accent
-- [ ] Ensure proper contrast between canvas and surroundings
+- [x] Change `bg-tactical-mono-100` to `bg-[var(--color-surface-warm)]`
+- [x] Update canvas container border to use warm accent
+- [x] Ensure proper contrast between canvas and surroundings
 
 **Expected Outcome**: Eliminates washed-out gray background, provides warm canvas context
 
@@ -53,9 +53,10 @@ Based on comprehensive audit findings, this roadmap addresses three critical are
 **Expected Outcome**: Clear visual hierarchy with warm, inviting interactive elements
 
 ### A.4 Typography & Spacing Improvements
-**Files**: `src/index.css`, `src/components/Sidebar/ProjectActions.tsx`
+**Files**: `src/index.css`, `src/components/Sidebar/ProjectActions.tsx`, `src/components/Replay/ReplayPage.tsx`
 
 **Tasks**:
+- [x] Update loading screen text contrast (tactical-mono-600 → tactical-mono-900)
 - [ ] Increase heading font weights for better visual hierarchy
 - [ ] Update text colors to use deep charcoal (`#111827`)
 - [ ] Add warm undertones to text selection states

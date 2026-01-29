@@ -61,7 +61,7 @@ export function EntityContextMenu({
     return (
         <div
             ref={menuRef}
-            className="fixed z-50 w-48 bg-white border border-tactical-mono-300 shadow-lg"
+            className="fixed z-50 w-48 bg-white border border-[var(--color-border)] shadow-lg"
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
@@ -72,7 +72,7 @@ export function EntityContextMenu({
                     onEditLabel();
                     onClose();
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-pitch-green hover:text-tactics-white transition-colors border-b border-tactical-mono-200"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-pitch-green hover:text-tactics-white transition-colors border-b border-[var(--color-surface-warm)]"
             >
                 Edit Label
             </button>
@@ -81,7 +81,7 @@ export function EntityContextMenu({
                     onDuplicate();
                     onClose();
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-pitch-green hover:text-tactics-white transition-colors border-b border-tactical-mono-200"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-pitch-green hover:text-tactics-white transition-colors border-b border-[var(--color-surface-warm)]"
             >
                 Duplicate
             </button>

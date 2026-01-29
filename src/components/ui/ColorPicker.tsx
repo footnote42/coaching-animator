@@ -26,7 +26,7 @@ export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
     return (
         <div className="flex flex-col gap-2">
             {label && (
-                <label className="text-xs font-semibold text-tactical-mono-700">
+                <label className="text-xs font-semibold text-[var(--color-text-primary)]">
                     {label}
                 </label>
             )}
