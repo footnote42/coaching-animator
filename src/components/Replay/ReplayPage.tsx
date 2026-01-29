@@ -51,7 +51,7 @@ export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
             <div className="flex h-screen items-center justify-center bg-tactical-mono-50">
                 <div className="text-center">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-pitch-green mb-4" />
-                    <p className="text-tactical-mono-600">Loading animation...</p>
+                    <p className="text-tactical-mono-900">Loading animation...</p>
                 </div>
             </div>
         );
