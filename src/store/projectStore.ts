@@ -12,7 +12,8 @@ import {
     AnnotationUpdate,
     PlaybackSpeed,
     PlaybackPosition,
-    Entity
+    Entity,
+    TeamType
 } from '../types';
 import type { SharePayloadV1 } from '../types/share';
 import { DESIGN_TOKENS } from '../constants/design-tokens';
@@ -161,9 +162,9 @@ export const useProjectStore = create<ProjectStoreState>()(
                     currentEntities[e.id] = {
                         id: e.id,
                         type: e.type,
-                        team: e.team,
+                        team: e.team === 'defence' ? 'defense' : e.team as TeamType,
                         // Default values for missing fields
-                        color: e.team === 'attack' ? DESIGN_TOKENS.colors.attack[0] : (e.team === 'defense' ? DESIGN_TOKENS.colors.defense[0] : '#ffffff'),
+                        color: e.team === 'attack' ? DESIGN_TOKENS.colors.attack[0] : (e.team === 'defence' ? DESIGN_TOKENS.colors.defense[0] : '#ffffff'),
                         label: '',
                         x: e.x,
                         y: e.y

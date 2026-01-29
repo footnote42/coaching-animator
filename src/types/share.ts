@@ -7,7 +7,7 @@ export interface SharePayloadV1 {
     entities: Array<{
         id: string;
         type: 'player' | 'ball';
-        team: 'attack' | 'defense';
+        team: 'attack' | 'defence';
         x: number;
         y: number;
     }>;

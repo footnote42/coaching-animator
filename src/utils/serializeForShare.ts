@@ -43,7 +43,7 @@ export function serializeForShare(project: Project): SharePayloadV1 {
         .map(e => ({
             id: e.id,
             type: e.type as 'player' | 'ball',
-            team: e.team as 'attack' | 'defense', // definitions in TeamType might include 'neutral', need casting care or check
+            team: e.team === 'defense' ? 'defence' : e.team as 'attack' | 'defence', // definitions in TeamType might include 'neutral', need casting care or check
             x: e.x,
             y: e.y
         }));
