@@ -1,6 +1,6 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-29
+Auto-generated from all feature plans. Last updated: 2026-01-30
 
 ## Current Iteration
 
@@ -14,8 +14,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-29
 ## Active Technologies
 
 - TypeScript 5.x with React 18+
-- **Current**: Vite + Tailwind CSS + shadcn/ui
-- **Migration Target**: Next.js App Router + PWA (@serwist/next)
+- **Current**: Next.js 14 App Router + PWA (@serwist/next)
+- **Previous**: Vite (migrated to Next.js)
 - React-Konva for canvas rendering
 - Zustand for state management
 - **Backend**: Supabase PostgreSQL + Supabase Auth
@@ -24,11 +24,32 @@ Auto-generated from all feature plans. Last updated: 2026-01-29
 ## Project Structure
 
 ```text
-src/                          # Current Vite app (to be migrated)
-├── components/
-│   ├── Canvas/              # Canvas rendering layers
-│   ├── Sidebar/             # Entity palette and project actions
-│   └── Replay/              # Shareable replay viewer
+app/                         # Next.js App Router pages and API routes
+├── (auth)/                  # Authentication pages (login, register, etc.)
+├── (legal)/                 # Legal pages (terms, privacy, contact)
+├── admin/                   # Admin dashboard
+├── api/                     # API endpoints
+│   ├── admin/              # Admin-only endpoints
+│   ├── animations/         # Animation CRUD operations
+│   └── auth/               # Authentication endpoints
+├── gallery/                 # Public gallery pages
+├── my-gallery/              # Personal gallery page
+├── profile/                 # User profile page
+├── replay/                  # Animation replay pages
+├── app/                     # Animation tool (main application)
+├── globals.css              # Global styles
+├── layout.tsx               # Root layout
+├── page.tsx                 # Landing page
+└── sitemap.ts               # SEO sitemap
+
+components/                  # React components (shared)
+├── AnimationCard.tsx        # Gallery animation card
+├── Editor.tsx               # Main animation editor
+├── SaveToCloudModal.tsx     # Cloud save dialog
+└── [other components]
+
+src/                         # Core animation components (from Vite)
+├── components/              # Canvas, Sidebar, Timeline components
 ├── hooks/                   # Custom React hooks
 ├── store/                   # Zustand stores
 ├── utils/                   # Utilities
@@ -36,22 +57,28 @@ src/                          # Current Vite app (to be migrated)
 ├── constants/               # Design tokens and validation
 └── assets/                  # Field SVGs
 
+lib/                         # Shared utilities and Supabase clients
+├── auth.ts                  # Authentication helpers
+├── supabase/                # Supabase client configurations
+└── schemas/                 # Database schemas
+
 specs/003-online-platform/   # Current iteration specs
 ├── spec.md                  # 9 user stories, 40+ requirements
-├── MIGRATION_PLAN.md        # 8-phase migration approach
+├── tasks.md                 # 111 completed development tasks
+├── PROGRESS.md              # Implementation progress log
 ├── data-model.md            # Database schemas
 ├── research.md              # Technical decisions
-├── quickstart.md            # Dev setup guide
 └── contracts/
     └── api-contracts.md     # API endpoint specs
 ```
 
 ## Commands
 
-- `npm run dev` - Start Vite development server (port 5175)
-- `npm run build` - Production build
-- `npm test` - Run tests
+- `npm run dev` - Start Next.js development server (port 3000)
+- `npm run build` - Production build (currently has static generation issues)
+- `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm test` - Run tests
 
 ## Project Status
 
@@ -75,24 +102,26 @@ specs/003-online-platform/   # Current iteration specs
 - ✅ API contracts defined (`contracts/api-contracts.md`)
 - ✅ Quickstart guide created (`quickstart.md`)
 
-#### Implementation Phases (Pending)
+#### Implementation Phases ✅ COMPLETE (2026-01-30)
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Next.js Foundation + PWA + Landing Page | Pending |
-| 2 | Supabase Auth + Auth Pages | Pending |
-| 3 | Port Animation Tool to /app | Pending |
-| 4 | Database Schema + Cloud Save/Load | Pending |
-| 5 | Personal Gallery + Public Gallery | Pending |
-| 6 | Remix, Upvoting, Reporting | Pending |
-| 7 | Admin Dashboard | Pending |
-| 8 | Remove Vite, Cleanup, OG Images | Pending |
+| 1 | Next.js Foundation + PWA + Landing Page | ✅ Complete |
+| 2 | Supabase Auth + Auth Pages | ✅ Complete |
+| 3 | Port Animation Tool to /app | ✅ Complete |
+| 4 | Database Schema + Cloud Save/Load | ✅ Complete |
+| 5 | Personal Gallery + Public Gallery | ✅ Complete |
+| 6 | Remix, Upvoting, Reporting | ✅ Complete |
+| 7 | Admin Dashboard | ✅ Complete |
+| 8 | Remove Vite, Cleanup, OG Images | ✅ Complete |
 
-**Estimated Total**: ~14 days development
+**Development Status**: 111/111 tasks complete (~95% of total project)
+**Current Phase**: Phase 13 - Production Deployment (25 remaining tasks)
 
 ## Recent Changes
 
-- **003-online-platform Planning Complete (2026-01-29)**: Completed planning phase for Next.js migration and online platform features. Created research.md (10 technical unknowns), data-model.md (6 database tables with RLS), api-contracts.md (20+ endpoints), and quickstart.md (dev setup guide). Constitution amended to v3.0 with Tier 3 (Authenticated) features.
+- **003-online-platform Development Complete (2026-01-30)**: All 111 development tasks completed across 9 user stories. Full Next.js migration with user accounts, cloud storage, public gallery, upvoting, moderation, and admin dashboard implemented.
+- **Production Deployment Phase Started (2026-01-30)**: Phase 13 initiated with 25 remaining deployment tasks. Current build issues with static generation need resolution.
 - **Constitution v3.0.0 (2026-01-29)**: Added Tier 3 (Authenticated Features) for user accounts, cloud storage, public gallery, upvoting, moderation. Email-only auth, minimal profile data, GDPR compliance. Tier 1 (offline core) remains sacred.
 - **Phase 3.2: Vercel Functions API Implementation Complete (2026-01-27)**: Production-ready API handlers for link-sharing feature.
 - **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure for link-sharing feature.

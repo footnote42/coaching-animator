@@ -1,0 +1,85 @@
+# Development Environment Configuration
+env: dev
+
+# Base URLs
+base_url: "http://localhost:3000"
+api_url: "http://localhost:3000/api"
+
+# Browser Configuration
+browser: chrome
+headless: false
+slow_mo: 100
+viewport:
+  width: 1920
+  height: 1088
+
+# Timeouts (in milliseconds)
+timeouts:
+  default: 30000
+  navigation: 60000
+  element: 10000
+  response: 30000
+
+# Output Configuration
+output:
+  screenshots: true
+  screenshots_path: "./test-results/screenshots"
+  traces: true
+  traces_path: "./test-results/traces"
+  videos: true
+  videos_path: "./test-results/videos"
+  html: true
+  html_path: "./test-results/html"
+
+# Test Data
+test_data:
+  users:
+    admin:
+      email: "admin@test.com"
+      password: "AdminPassword123!"
+      role: "admin"
+    coach:
+      email: "testcoach@example.com"
+      password: "TestPassword123!"
+      role: "user"
+    guest:
+      email: ""
+      password: ""
+      role: "guest"
+
+  animations:
+    basic:
+      title: "Test Lineout Play"
+      description: "Basic lineout animation for testing"
+      type: "tactic"
+      tags: ["lineout", "testing"]
+      frames: 3
+    complex:
+      title: "Complex Backline Move"
+      description: "Multi-phase backline attack pattern"
+      type: "strategy"
+      tags: ["backline", "attack", "complex"]
+      frames: 8
+
+# Feature Flags
+features:
+  guest_mode: true
+  social_features: true
+  admin_panel: true
+  video_export: true
+  annotations: true
+
+# Performance Thresholds
+performance:
+  page_load_max: 3000
+  animation_render_max: 1000
+  api_response_max: 2000
+  memory_usage_max: 512
+
+# Accessibility Requirements
+accessibility:
+  wcag_level: "AA"
+  color_contrast: true
+  keyboard_navigation: true
+  screen_reader: true
+  focus_management: true

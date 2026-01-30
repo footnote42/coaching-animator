@@ -1,0 +1,64 @@
+# Production Environment Configuration
+env: production
+
+# Base URLs
+base_url: "https://coaching-animator.com"
+api_url: "https://coaching-animator.com/api"
+
+# Browser Configuration
+browser: chrome
+headless: true
+slow_mo: 0
+viewport:
+  width: 1920
+  height: 1088
+
+# Timeouts (in milliseconds)
+timeouts:
+  default: 15000
+  navigation: 30000
+  element: 5000
+  response: 15000
+
+# Output Configuration (minimal for production)
+output:
+  screenshots: true
+  screenshots_path: "./test-results/production/screenshots"
+  traces: false
+  videos: false
+  html: false
+
+# Test Data (use real test accounts)
+test_data:
+  users:
+    admin:
+      email: "admin@coaching-animator.com"
+      password: "ProdAdminSecure123!"
+      role: "admin"
+    coach:
+      email: "testuser@coaching-animator.com"
+      password: "ProdTestUser123!"
+      role: "user"
+
+# Feature Flags (production features)
+features:
+  guest_mode: true
+  social_features: true
+  admin_panel: true
+  video_export: true
+  annotations: true
+
+# Performance Thresholds (strictest for production)
+performance:
+  page_load_max: 2000
+  animation_render_max: 600
+  api_response_max: 1000
+  memory_usage_max: 300
+
+# Accessibility Requirements
+accessibility:
+  wcag_level: "AA"
+  color_contrast: true
+  keyboard_navigation: true
+  screen_reader: true
+  focus_management: true

@@ -1,0 +1,154 @@
+# Common Test Steps and Utilities
+# These can be included in other test files using the "include" syntax
+
+# Authentication Steps
+login:
+  steps:
+    - "Navigate to /login"
+    - "Fill email field with {{user.email}}"
+    - "Fill password field with {{user.password}}"
+    - "Click login button"
+    - "Wait for dashboard to load"
+    - "Verify user is logged in"
+
+logout:
+  steps:
+    - "Click user profile menu"
+    - "Click logout button"
+    - "Wait for redirect to homepage"
+    - "Verify user is logged out"
+
+register:
+  steps:
+    - "Navigate to /register"
+    - "Fill email field with {{user.email}}"
+    - "Fill password field with {{user.password}}"
+    - "Confirm password field with {{user.password}}"
+    - "Accept Terms of Service checkbox"
+    - "Click register button"
+    - "Wait for verification message or redirect"
+
+# Animation Creation Steps
+create_basic_animation:
+  steps:
+    - "Navigate to /app"
+    - "Wait for canvas to load"
+    - "Click 'Attack Player' button"
+    - "Drag player to field position"
+    - "Add player label"
+    - "Add 2 frames to timeline"
+    - "Create simple movement pattern"
+    - "Test playback"
+
+save_animation_to_cloud:
+  steps:
+    - "Click 'Save to Cloud' button"
+    - "Fill title field with '{{animation.title}}'"
+    - "Fill description field with '{{animation.description}}'"
+    - "Select animation type: {{animation.type}}"
+    - "Add tags: {{animation.tags}}"
+    - "Click save button"
+    - "Wait for save confirmation"
+
+# Navigation Steps
+navigate_to_gallery:
+  steps:
+    - "Navigate to /my-gallery"
+    - "Wait for gallery to load"
+    - "Verify gallery displays animations"
+
+navigate_to_public_gallery:
+  steps:
+    - "Navigate to /gallery"
+    - "Wait for public gallery to load"
+    - "Verify public animations are displayed"
+
+# Verification Steps
+verify_animation_saved:
+  steps:
+    - "Navigate to /my-gallery"
+    - "Search for '{{animation.title}}'"
+    - "Verify animation appears in results"
+    - "Verify metadata matches saved data"
+
+verify_public_access:
+  steps:
+    - "Logout from current session"
+    - "Navigate to /gallery"
+    - "Search for '{{animation.title}}'"
+    - "Click on animation"
+    - "Verify animation plays without login"
+
+# Mobile Testing Steps
+test_mobile_responsive:
+  steps:
+    - "Set viewport to 375x812"
+    - "Refresh page"
+    - "Verify mobile navigation works"
+    - "Test touch interactions"
+    - "Verify content is readable"
+
+# Performance Checks
+check_page_performance:
+  steps:
+    - "Measure page load time"
+    - "Verify load time is under {{performance.page_load_max}}ms"
+    - "Check for console errors"
+    - "Verify memory usage is acceptable"
+
+# Accessibility Checks
+check_accessibility:
+  steps:
+    - "Test keyboard navigation"
+    - "Check color contrast"
+    - "Verify ARIA labels"
+    - "Test screen reader compatibility"
+
+# Error Handling Steps
+handle_form_errors:
+  steps:
+    - "Submit form with invalid data"
+    - "Verify error messages appear"
+    - "Verify error messages are helpful"
+    - "Verify form fields are highlighted"
+    - "Fix errors and resubmit"
+
+# Social Feature Steps
+test_upvote:
+  steps:
+    - "Navigate to animation detail page"
+    - "Click upvote button"
+    - "Verify upvote count increases"
+    - "Click upvote button again"
+    - "Verify upvote is removed (toggle)"
+
+test_share:
+  steps:
+    - "Click share button"
+    - "Verify share modal opens"
+    - "Test copy link functionality"
+    - "Test social media sharing options"
+
+test_remix:
+  steps:
+    - "Click remix button"
+    - "Verify remix confirmation appears"
+    - "Confirm remix"
+    - "Navigate to personal gallery"
+    - "Verify remixed animation appears"
+
+# Admin Steps
+access_admin_panel:
+  steps:
+    - "Login with admin credentials"
+    - "Navigate to /admin"
+    - "Verify admin dashboard loads"
+    - "Verify moderation queue is visible"
+
+moderate_content:
+  steps:
+    - "Select reported content"
+    - "Review content details"
+    - "Choose moderation action"
+    - "Confirm action"
+    - "Verify action is applied"

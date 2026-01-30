@@ -1,0 +1,337 @@
+# Coaching Animator - User Acceptance Test Suite
+# Converted from auto-uat.md for Playwright MCP
+
+tags:
+  - uat
+  - smoke
+  - regression
+  - all-features
+
+env: dev
+
+# Test Environment Configuration
+setup:
+  url: "http://localhost:3000"
+  browser: chrome
+  viewport: { width: 1920, height: 1080 }
+  timeout: 30000
+  screenshots: true
+  traces: true
+
+# Test Data
+data:
+  user:
+    email: "testcoach@example.com"
+    password: "TestPassword123!"
+    name: "Test Coach"
+  
+  animation:
+    title: "Test Lineout Play"
+    description: "Basic lineout animation for testing"
+    type: "tactic"
+    tags: ["lineout", "testing"]
+
+# Global Test Steps (run before each test)
+beforeEach:
+  - "Clear browser cookies and storage"
+  - "Set viewport to 1920x1080"
+  - "Navigate to base URL"
+
+# Global Cleanup (run after each test)
+afterEach:
+  - "Take final screenshot"
+  - "Save trace file"
+
+---
+# Phase 1: First-Time User Experience
+name: "Phase 1 - Landing Page & First Impressions"
+tags: ["landing", "ux", "critical"]
+
+steps:
+  - "Navigate to homepage"
+  - "Screenshot: Landing page hero section"
+  - "Wait for page to fully load"
+  - "Identify and document all CTAs (Get Started, Learn More, etc.)"
+  - "Verify value proposition is visible within 5 seconds"
+  - "Test mobile responsiveness (resize to 375x812)"
+  - "Screenshot: Mobile landing page"
+  - "Click 'Get Started' button"
+  - "Document destination URL and page content"
+  - "Verify navigation flow is intuitive"
+
+assertions:
+  - "Page loads in under 3 seconds"
+  - "Hero section is visible and clear"
+  - "CTA buttons are prominent and clickable"
+  - "Mobile layout is responsive"
+  - "Navigation leads to expected destination"
+
+---
+# Phase 2: Authentication Flow
+name: "Phase 2 - User Registration & Login"
+tags: ["auth", "critical", "security"]
+
+steps:
+  - "Navigate to registration page"
+  - "Screenshot: Registration form"
+  - "Test form validation (submit empty form)"
+  - "Screenshot: Validation error states"
+  - "Fill registration form with test data"
+  - "Screenshot: Filled registration form"
+  - "Accept Terms of Service checkbox"
+  - "Submit registration"
+  - "Document email verification flow"
+  - "Check for email verification message"
+  - "Navigate to login page"
+  - "Fill login credentials"
+  - "Submit login form"
+  - "Screenshot: User dashboard/profile"
+  - "Verify successful authentication"
+
+assertions:
+  - "Form validation works correctly"
+  - "Registration completes successfully"
+  - "Email verification process is clear"
+  - "Login flow works without errors"
+  - "User is properly authenticated"
+
+---
+# Phase 3: Core Animation Tool
+name: "Phase 3 - Animation Creation Workflow"
+tags: ["animation", "core", "critical"]
+
+steps:
+  - "Navigate to /app"
+  - "Screenshot: Full animation tool interface"
+  - "Wait for canvas to load"
+  - "Test player entity creation"
+  - "Click 'Attack Player' button"
+  - "Screenshot: Entity palette"
+  - "Drag player to field position"
+  - "Screenshot: Positioned player"
+  - "Add player label (double-click player)"
+  - "Test multi-frame animation"
+  - "Add 3 frames to timeline"
+  - "Create simple passing play across frames"
+  - "Screenshot: Each frame setup"
+  - "Test playback controls"
+  - "Play animation"
+  - "Screenshot: Playback in progress"
+  - "Test speed controls"
+  - "Test annotations"
+  - "Draw arrow for movement"
+  - "Screenshot: Annotation tools"
+  - "Screenshot: Final annotated play"
+  - "Test export functionality"
+  - "Click 'Export Video'"
+  - "Document export options"
+  - "Screenshot: Export dialog"
+
+assertions:
+  - "Canvas loads and is interactive"
+  - "Entity creation works smoothly"
+  - "Multi-frame animation functions correctly"
+  - "Playback controls are responsive"
+  - "Annotations can be added and edited"
+  - "Export options are available"
+
+---
+# Phase 4: Cloud Storage & Gallery
+name: "Phase 4 - Save to Cloud & Personal Gallery"
+tags: ["storage", "gallery", "critical"]
+
+steps:
+  - "Save animation to cloud"
+  - "Click 'Save to Cloud' button"
+  - "Screenshot: Save modal"
+  - "Fill metadata with test data"
+  - "Screenshot: Filled save form"
+  - "Submit save operation"
+  - "Document save confirmation"
+  - "Navigate to personal gallery /my-gallery"
+  - "Screenshot: Gallery view"
+  - "Verify saved animation appears in list"
+  - "Test sorting options (title, date, duration)"
+  - "Screenshot: Sorting controls"
+  - "Test animation management"
+  - "Click edit metadata on saved animation"
+  - "Screenshot: Edit modal"
+  - "Test visibility change (Private → Public)"
+  - "Screenshot: Visibility options"
+  - "Test delete functionality"
+  - "Screenshot: Delete confirmation"
+
+assertions:
+  - "Save to cloud completes successfully"
+  - "Animation appears in personal gallery"
+  - "Sorting and filtering work correctly"
+  - "Metadata editing functions properly"
+  - "Visibility controls work as expected"
+  - "Delete confirmation prevents accidental deletion"
+
+---
+# Phase 5: Public Gallery & Social Features
+name: "Phase 5 - Public Gallery & Community Features"
+tags: ["gallery", "social", "public"]
+
+steps:
+  - "Navigate to public gallery /gallery"
+  - "Screenshot: Public gallery"
+  - "Test search functionality"
+  - "Search for 'lineout'"
+  - "Screenshot: Search results"
+  - "Test filter by animation type"
+  - "Screenshot: Filter controls"
+  - "Test animation viewing"
+  - "Click on public animation"
+  - "Screenshot: Detail page"
+  - "Test playback on detail page"
+  - "Screenshot: Playback controls"
+  - "Test social features"
+  - "Test upvote button (if logged in)"
+  - "Screenshot: Upvote interaction"
+  - "Test share functionality"
+  - "Screenshot: Share options"
+  - "Test remix feature"
+  - "Screenshot: Remix confirmation"
+  - "Test content reporting"
+  - "Click report button"
+  - "Screenshot: Report modal"
+  - "Test reason selection"
+  - "Document report flow"
+
+assertions:
+  - "Public gallery loads and displays content"
+  - "Search and filter functions work correctly"
+  - "Animation detail pages are informative"
+  - "Social features are discoverable and functional"
+  - "Content reporting is accessible"
+
+---
+# Phase 6: Guest Mode & Limitations
+name: "Phase 6 - Guest User Experience"
+tags: ["guest", "limitations", "conversion"]
+
+steps:
+  - "Logout from current account"
+  - "Navigate to /app as guest"
+  - "Screenshot: Guest mode interface"
+  - "Create animation with 10 frames"
+  - "Screenshot: 10-frame limit indicator"
+  - "Test upgrade prompts"
+  - "Attempt to add 11th frame"
+  - "Screenshot: Registration prompt"
+  - "Test 'Save to Cloud' as guest"
+  - "Screenshot: Upgrade prompt"
+  - "Test local download functionality"
+  - "Screenshot: Download options"
+  - "Verify guest limitations are clearly communicated"
+
+assertions:
+  - "Guest mode allows basic tool usage"
+  - "Frame limits are enforced and communicated"
+  - "Upgrade prompts are clear and compelling"
+  - "Local download remains available"
+  - "Limitations encourage registration"
+
+---
+# Phase 7: Admin & Moderation
+name: "Phase 7 - Admin Dashboard & Content Moderation"
+tags: ["admin", "moderation", "security"]
+
+setup:
+  user: "admin"
+
+steps:
+  - "Login with admin credentials"
+  - "Navigate to /admin"
+  - "Screenshot: Admin dashboard"
+  - "Screenshot: Moderation queue"
+  - "Test report review interface"
+  - "Screenshot: Report details"
+  - "Test moderation actions"
+  - "Test dismiss report action"
+  - "Test hide content action"
+  - "Document admin workflow efficiency"
+  - "Verify action confirmations prevent mistakes"
+
+assertions:
+  - "Admin dashboard is accessible to admins only"
+  - "Moderation queue displays reported content"
+  - "Moderation actions work correctly"
+  - "Action confirmations prevent accidental changes"
+
+---
+# Phase 8: Mobile Responsiveness
+name: "Phase 8 - Mobile Experience Testing"
+tags: ["mobile", "responsive", "ux"]
+
+setup:
+  viewport: { width: 375, height: 812 }
+
+steps:
+  - "Test mobile landing page"
+  - "Screenshot: Mobile navigation"
+  - "Test mobile registration flow"
+  - "Test mobile animation tool"
+  - "Screenshot: Mobile canvas"
+  - "Test touch interactions"
+  - "Document mobile usability issues"
+  - "Test mobile gallery browsing"
+  - "Screenshot: Mobile gallery view"
+  - "Test mobile social features"
+  - "Verify touch targets are appropriately sized"
+
+assertions:
+  - "Mobile layout is fully responsive"
+  - "Touch interactions work smoothly"
+  - "Mobile navigation is intuitive"
+  - "Content remains readable on small screens"
+  - "Feature parity with desktop is maintained"
+
+---
+# Phase 9: Performance & Accessibility
+name: "Phase 9 - Performance & Accessibility Checks"
+tags: ["performance", "accessibility", "compliance"]
+
+steps:
+  - "Performance testing"
+  - "Document page load times for all major pages"
+  - "Test animation rendering performance"
+  - "Check for memory leaks during extended use"
+  - "Accessibility testing"
+  - "Test keyboard navigation (Tab through interface)"
+  - "Test screen reader compatibility"
+  - "Check color contrast compliance"
+  - "Document accessibility issues"
+  - "Verify ARIA labels and semantic HTML"
+
+assertions:
+  - "Page load times meet performance targets"
+  - "Animation rendering is smooth"
+  - "No significant memory leaks detected"
+  - "Keyboard navigation is complete"
+  - "Color contrast meets WCAG AA standards"
+  - "Screen reader compatibility is maintained"
+
+---
+# Cross-Browser Compatibility
+name: "Phase 10 - Cross-Browser Testing"
+tags: ["cross-browser", "compatibility", "regression"]
+
+setup:
+  browsers: ["chrome", "edge", "firefox"]
+
+steps:
+  - "Test core functionality in Chrome"
+  - "Test core functionality in Edge"
+  - "Test core functionality in Firefox"
+  - "Document browser-specific issues"
+  - "Test video export compatibility"
+  - "Verify fallbacks for unsupported features"
+
+assertions:
+  - "Core functionality works across browsers"
+  - "Video export works in Chrome/Edge"
+  - "Graceful degradation for unsupported features"
+  - "Consistent user experience across browsers"
