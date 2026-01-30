@@ -56,8 +56,8 @@ export default function AnimationToolPage() {
           return res.json();
         })
         .then(data => {
-          if (data.content) {
-            const result = loadProject(data.content);
+          if (data.payload) {
+            const result = loadProject(data.payload);
             if (!result.success) {
               console.error('Failed to load project:', result.errors);
               toast.error('Failed to load animation');
