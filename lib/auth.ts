@@ -46,3 +46,28 @@ export async function requireAdmin() {
 export function isAuthError(result: unknown): result is NextResponse {
   return result instanceof NextResponse;
 }
+
+export async function checkBanned(userId: string): Promise<{ banned: boolean; reason?: string }> {
+  const supabase = await createSupabaseServerClient();
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('banned_at, ban_reason')
+    .eq('id', userId)
+    .single();
+
+  if (profile?.banned_at) {
+    return { banned: true, reason: profile.ban_reason || 'Account suspended' };
+  }
+  return { banned: false };
+}
+
+export async function requireNotBanned(userId: string) {
+  const banStatus = await checkBanned(userId);
+  if (banStatus.banned) {
+    return NextResponse.json(
+      { error: { code: 'ACCOUNT_BANNED', message: banStatus.reason || 'Your account has been suspended' } },
+      { status: 403 }
+    );
+  }
+  return null;
+}

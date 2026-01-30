@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ThumbsUp, Share2, Flag, ArrowLeft, Check, Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ThumbsUp, Share2, Flag, ArrowLeft, Check, Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { createSupabaseBrowserClient } from '../../../lib/supabase/client';
 import { ReportModal } from '../../../components/ReportModal';
 
@@ -68,6 +68,7 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
   const [isUpvoting, setIsUpvoting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isRemixing, setIsRemixing] = useState(false);
 
   // Playback state
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
@@ -157,6 +158,32 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
     setShowReportModal(true);
   };
 
+  const handleRemix = async () => {
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=/gallery/${animation.id}`);
+      return;
+    }
+
+    setIsRemixing(true);
+    try {
+      const response = await fetch(`/api/animations/${animation.id}/remix`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        router.push('/my-gallery');
+      } else {
+        const data = await response.json();
+        alert(data.error?.message || 'Failed to remix animation');
+      }
+    } catch (err) {
+      console.error('Failed to remix:', err);
+      alert('Failed to remix animation');
+    } finally {
+      setIsRemixing(false);
+    }
+  };
+
   const togglePlay = () => {
     if (currentFrameIndex >= frames.length - 1) {
       setCurrentFrameIndex(0);
@@ -223,6 +250,17 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
                 {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
                 {copied ? 'Copied!' : 'Share'}
               </button>
+
+              {!isOwner && (
+                <button
+                  onClick={handleRemix}
+                  disabled={isRemixing}
+                  className="flex items-center gap-2 px-4 py-2 border border-border hover:border-primary transition-colors disabled:opacity-50"
+                >
+                  <Copy className="w-4 h-4" />
+                  {isRemixing ? 'Remixing...' : 'Remix'}
+                </button>
+              )}
 
               <button
                 onClick={handleReport}

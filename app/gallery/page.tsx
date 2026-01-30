@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
+import { SkeletonGrid } from '@/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -257,9 +258,7 @@ function GalleryContent() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 pb-8">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <SkeletonGrid count={8} />
         ) : error ? (
           <div className="text-center py-20">
             <p className="text-red-600 mb-4">{error}</p>

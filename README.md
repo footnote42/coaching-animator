@@ -205,7 +205,7 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 │   ├── Sidebar/      # Editor sidebar components
 │   └── Timeline/     # Timeline and playback components
 ├── lib/              # Shared utilities and Supabase clients
-├── src/              # Legacy Vite components (being migrated)
+├── src/              # Core animation components
 ├── specs/            # Feature specifications and tasks
 └── supabase/         # Database migrations
 ```
@@ -216,10 +216,11 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 
 This project follows a spec-driven development workflow. Current work focuses on the online platform migration:
 
-**Current Status**: 85 of 111 tasks complete (~77%)
+**Current Status**: 105 of 111 tasks complete (~95%)
 - ✅ All P1 stories complete (US1-US3: Auth, Save, Public Gallery)
-- ✅ All P2 stories complete except Remix (US4-US7: Guest Mode, Upvotes, Reports, Landing)
-- 🔄 In Progress: Admin moderation (US8) and Remix features (US9)
+- ✅ All P2 stories complete (US4-US7: Guest Mode, Upvotes, Reports, Landing)
+- ✅ P3 stories complete (US8-US9: Admin moderation and Remix)
+- 🔄 In Progress: Final polish and verification
 
 **Development Documents**:
 1. Check `/specs/003-online-platform/spec.md` for current feature specifications
@@ -251,7 +252,7 @@ The Share Link feature allows you to create shareable URLs for your animations. 
      ```env
      SUPABASE_URL=https://your-project-id.supabase.co
      SUPABASE_ANON_KEY=your-anon-key
-     FRONTEND_URL=http://localhost:5173  # For local development
+     FRONTEND_URL=http://localhost:3000  # For local development
      ```
 
 4. **Database Setup**

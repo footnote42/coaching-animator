@@ -34,7 +34,7 @@
 - [x] T003 [P] Create root layout in `app/layout.tsx` with providers and global styles
 - [x] T004 [P] Create `app/globals.css` importing existing Tailwind and design tokens from `src/index.css`
 
-**Sub-Checkpoint 1a**: ✅ `npm run dev` starts Next.js, basic page renders
+**Sub-Checkpoint 1a**: `npm run dev` starts Next.js, basic page renders
 
 ### Sub-Phase 1b: PWA Configuration
 
@@ -42,7 +42,7 @@
 - [x] T006 [P] Create `public/manifest.json` with PWA metadata (theme: Pitch Green #1A3D1A)
 - [x] T007 Configure `@serwist/next` service worker in `next.config.js` for offline-first
 
-**Checkpoint 1**: ✅ `npm run dev` starts Next.js, Tailwind works, PWA manifest accessible at `/manifest.json`
+**Checkpoint 1**: `npm run dev` starts Next.js, Tailwind works, PWA manifest accessible at `/manifest.json`
 
 ---
 
@@ -63,7 +63,7 @@
 - [x] T014 [P] Create `rate_limits` table for persistent rate limiting
 - [x] T015 Implement all RLS policies from data-model.md for all tables
 
-**Sub-Checkpoint 2a**: ✅ Migration file created with all tables, triggers, and RLS policies
+**Sub-Checkpoint 2a**: Migration file created with all tables, triggers, and RLS policies
 
 ### Sub-Phase 2b: Supabase Client Setup
 
@@ -72,7 +72,7 @@
 - [x] T018 [P] Create `lib/supabase/middleware.ts` for session refresh
 - [x] T019 Create middleware `middleware.ts` at project root to refresh auth tokens
 
-**Sub-Checkpoint 2b**: ✅ Supabase clients created, middleware active
+**Sub-Checkpoint 2b**: Supabase clients created, middleware active
 
 ### Sub-Phase 2c: Shared Utilities
 
@@ -84,11 +84,11 @@
 - [x] T025 [P] Create `lib/rate-limit.ts` with rate limiting helpers using Supabase table
 - [x] T026 Create `app/api/auth/callback/route.ts` to handle OAuth code exchange
 
-**Checkpoint 2**: ✅ Foundation ready - `npm run build` passes, Supabase clients working, middleware active
+**Checkpoint 2**: Foundation ready - `npm run build` passes, Supabase clients working, middleware active
 
 ---
 
-## Phase 3: User Story 1 - Coach Creates Account and Saves Animation (Priority: P1) 🎯 MVP
+## Phase 3: User Story 1 - Coach Creates Account and Saves Animation (Priority: P1) MVP
 
 **Goal**: User can register, login, create animation, save to cloud, access from gallery
 
@@ -102,7 +102,7 @@
 - [x] T030 [P] [US1] Create `app/(auth)/reset-password/page.tsx` for password reset from email link
 - [x] T031 [US1] Create `app/(auth)/layout.tsx` with centered auth card layout
 
-**Sub-Checkpoint 3a**: ✅ Login and register pages render, forms submit to Supabase Auth
+**Sub-Checkpoint 3a**: Login and register pages render, forms submit to Supabase Auth
 
 ### Sub-Phase 3b: Animation Tool Migration
 
@@ -111,7 +111,7 @@
 - [x] T034 [US1] Add auth state detection to Editor - detect logged-in vs guest
 - [x] T035 [US1] Verify Konva canvas, drag/drop, timeline, playback all work in Next.js
 
-**Sub-Checkpoint 3b**: ✅ Canvas renders at /app, Editor dynamically loaded with SSR disabled
+**Sub-Checkpoint 3b**: Canvas renders at /app, Editor dynamically loaded with SSR disabled
 
 ### Sub-Phase 3c: Cloud Save API
 
@@ -121,7 +121,7 @@
 - [x] T046 [US1] Create `app/api/user/profile/route.ts` with GET and PUT handlers
 - [x] T047 [P] [US1] Create `app/api/user/account/route.ts` with DELETE handler (GDPR)
 
-**Sub-Checkpoint 3c**: ✅ API routes created with full validation, auth, rate limiting
+**Sub-Checkpoint 3c**: API routes created with full validation, auth, rate limiting
 
 ### Sub-Phase 3d: Personal Gallery UI
 
@@ -298,26 +298,26 @@
 
 ### Sub-Phase 10a: Admin API
 
-- [ ] **TOKEN_CHECK_10A**: Verify token usage < 110K before starting Phase 10
-- [ ] T086 [US8] Create `app/api/admin/reports/route.ts` with GET handler (admin only)
-- [ ] T087 [US8] Create `app/api/admin/reports/[id]/action/route.ts` with POST handler
+- [x] **TOKEN_CHECK_10A**: Verify token usage < 110K before starting Phase 10
+- [x] T086 [US8] Create `app/api/admin/reports/route.ts` with GET handler (admin only)
+- [x] T087 [US8] Create `app/api/admin/reports/[id]/action/route.ts` with POST handler
 
 **Sub-Checkpoint 10a**: Admin API functional - MANDATORY HANDOFF
 
 ### Sub-Phase 10b: Admin Dashboard UI
 
-- [ ] **TOKEN_CHECK_10B**: Verify token usage < 110K before continuing
-- [ ] T088 [US8] Create `app/admin/page.tsx` (protected, admin-only) with moderation queue
-- [ ] T089 [US8] Display report details: animation, reporter, reason, date
-- [ ] T090 [US8] Add action buttons: Dismiss, Hide, Delete, Warn User, Ban User
+- [x] **TOKEN_CHECK_10B**: Verify token usage < 110K before continuing
+- [x] T088 [US8] Create `app/admin/page.tsx` (protected, admin-only) with moderation queue
+- [x] T089 [US8] Display report details: animation, reporter, reason, date
+- [x] T090 [US8] Add action buttons: Dismiss, Hide, Delete, Warn User, Ban User
 
 **Sub-Checkpoint 10b**: Admin UI complete - MANDATORY HANDOFF
 
 ### Sub-Phase 10c: Moderation Actions
 
-- [ ] **TOKEN_CHECK_10C**: Verify token usage < 110K before continuing
-- [ ] T091 [US8] Implement hide action: set `hidden_at` on animation, remove from public view
-- [ ] T092 [US8] Implement user warning/ban: update `user_profiles.banned_at`
+- [x] **TOKEN_CHECK_10C**: Verify token usage < 110K before continuing
+- [x] T091 [US8] Implement hide action: set `hidden_at` on animation, remove from public view
+- [x] T092 [US8] Implement user warning/ban: update `user_profiles.banned_at`
 
 **Checkpoint 10**: User Story 8 functional - admins can moderate content
 
@@ -331,18 +331,18 @@
 
 ### Sub-Phase 11a: Remix API
 
-- [ ] **TOKEN_CHECK_11A**: Verify token usage < 110K before starting Phase 11
-- [ ] T093 [US9] Create `app/api/animations/[id]/remix/route.ts` with POST handler
-- [ ] T094 [US9] Implement remix: copy animation, append "(Remix)" to title, set private
+- [x] **TOKEN_CHECK_11A**: Verify token usage < 110K before starting Phase 11
+- [x] T093 [US9] Create `app/api/animations/[id]/remix/route.ts` with POST handler
+- [x] T094 [US9] Implement remix: copy animation, append "(Remix)" to title, set private
 
 **Sub-Checkpoint 11a**: Remix API functional - MANDATORY HANDOFF
 
 ### Sub-Phase 11b: Remix UI
 
-- [ ] **TOKEN_CHECK_11B**: Verify token usage < 110K before continuing
-- [ ] T095 [US9] Add "Remix to Playbook" button to gallery detail page (logged-in users)
-- [ ] T096 [US9] Show login prompt when guest clicks remix button
-- [ ] T097 [US9] Redirect to personal gallery after successful remix
+- [x] **TOKEN_CHECK_11B**: Verify token usage < 110K before continuing
+- [x] T095 [US9] Add "Remix to Playbook" button to gallery detail page (logged-in users)
+- [x] T096 [US9] Show login prompt when guest clicks remix button
+- [x] T097 [US9] Redirect to personal gallery after successful remix
 
 **Checkpoint 11**: User Story 9 functional - remix creates copy in user's gallery
 
@@ -354,35 +354,101 @@
 
 ### Sub-Phase 12a: Security Hardening
 
-- [ ] **TOKEN_CHECK_12A**: Verify token usage < 110K before starting Phase 12
-- [ ] T098 [P] Configure CSP headers in `next.config.js` per FR-SEC-01
-- [ ] T099 [P] Verify all API routes validate input server-side per FR-SEC-03
-- [ ] T100 Audit for secret exposure - ensure no sensitive data in client bundles
+- [x] **TOKEN_CHECK_12A**: Verify token usage < 110K before starting Phase 12
+- [x] T098 [P] Configure CSP headers in `next.config.js` per FR-SEC-01
+- [x] T099 [P] Verify all API routes validate input server-side per FR-SEC-03
+- [x] T100 Audit for secret exposure - ensure no sensitive data in client bundles
 
 **Sub-Checkpoint 12a**: Security hardened - MANDATORY HANDOFF
 
 ### Sub-Phase 12b: Performance & UX
 
-- [ ] **TOKEN_CHECK_12B**: Verify token usage < 110K before continuing
-- [ ] T101 [P] Add loading states/skeletons to gallery pages
-- [ ] T102 [P] Verify SSR/ISR for public gallery pages (SEO)
-- [ ] T103 Configure sitemap.xml generation for public pages
-- [ ] T104 [P] Create "Coach's Clipboard" empty state illustration for personal gallery (FR-UI-01)
-- [ ] T105 [P] Create empty state for public gallery (no results found)
+- [x] **TOKEN_CHECK_12B**: Verify token usage < 110K before continuing
+- [x] T101 [P] Add loading states/skeletons to gallery pages
+- [x] T102 [P] Verify SSR/ISR for public gallery pages (SEO)
+- [x] T103 Configure sitemap.xml generation for public pages
+- [x] T104 [P] Create "Coach's Clipboard" empty state illustration for personal gallery (FR-UI-01)
+- [x] T105 [P] Create empty state for public gallery (no results found)
 
 **Sub-Checkpoint 12b**: UX polished - MANDATORY HANDOFF
 
 ### Sub-Phase 12c: Cleanup & Verification
 
-- [ ] **TOKEN_CHECK_12C**: Verify token usage < 110K before continuing
-- [ ] T106 Remove Vite: uninstall `vite`, `@vitejs/plugin-react`, delete `vite.config.ts`
-- [ ] T107 Update README.md with new development commands and deployment instructions
-- [ ] T108 Run full quickstart.md validation (all user stories)
-- [ ] T109 Verify GIF export works in Next.js environment (R-007)
-- [ ] T110 Verify offline mode works per Constitution V.1 (PWA service worker)
-- [ ] T111 Verify Zustand hydration has no SSR mismatches (R-008)
+- [x] **TOKEN_CHECK_12C**: Verify token usage < 110K before continuing
+- [x] T106 Remove Vite: uninstall `vite`, `@vitejs/plugin-react`, delete `vite.config.ts`
+- [x] T107 Update README.md with new development commands and deployment instructions
+- [x] T108 Run full quickstart.md validation (all user stories)
+- [x] T109 Verify GIF export works in Next.js environment (R-007)
+- [x] T110 Verify offline mode works per Constitution V.1 (PWA service worker)
+- [x] T111 Verify Zustand hydration has no SSR mismatches (R-008)
 
 **Checkpoint 12**: Production ready - all stories functional, security hardened, cleaned up
+
+---
+
+## Phase 13: Production Deployment
+
+**Purpose**: Deploy to production with Supabase backend and verify all features work end-to-end
+
+**Prerequisites**: All Phase 1-12 tasks complete, Supabase account created
+
+### Sub-Phase 13a: Supabase Setup
+
+- [x] **TOKEN_CHECK_13A**: Verify token usage < 110K before starting Phase 13
+- [x] T112 Create Supabase project at supabase.com
+- [x] T113 Run migration: Execute `supabase/migrations/001_online_platform.sql` in Supabase SQL Editor
+- [x] T114 Verify all tables created: `user_profiles`, `saved_animations`, `upvotes`, `content_reports`, `follows`, `rate_limits`
+- [x] T115 Configure Auth settings: Enable email provider, set redirect URLs, configure email templates
+- [x] T116 Test auth flow locally: Register → Confirm email → Login → Verify session
+
+**Sub-Checkpoint 13a**: Supabase configured, auth working locally
+
+### Sub-Phase 13b: Environment & Deployment
+
+- [ ] **TOKEN_CHECK_13B**: Verify token usage < 110K before continuing
+- [ ] T117 Create Vercel project linked to repository
+- [ ] T118 Configure environment variables in Vercel:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+  - `NEXT_PUBLIC_SITE_URL` (production URL)
+- [ ] T119 Deploy to Vercel and verify build succeeds
+- [ ] T120 Verify production site loads at deployment URL
+
+**Sub-Checkpoint 13b**: Site deployed, accessible at production URL
+
+### Sub-Phase 13c: Admin Setup & Verification
+
+- [ ] **TOKEN_CHECK_13C**: Verify token usage < 110K before continuing
+- [ ] T121 Register admin account on production
+- [ ] T122 Manually set admin role: `UPDATE user_profiles SET role = 'admin' WHERE id = '<admin-user-id>'`
+- [ ] T123 Verify admin dashboard accessible at `/admin`
+
+**Sub-Checkpoint 13c**: Admin account configured
+
+### Sub-Phase 13d: End-to-End Testing
+
+- [ ] **TOKEN_CHECK_13D**: Verify token usage < 110K before continuing
+- [ ] T124 [US1] Test: Register → Create animation → Save to cloud → Logout → Login → Verify in gallery
+- [ ] T125 [US2] Test: Set animation to public → Copy share link → Open in incognito → Verify viewable
+- [ ] T126 [US3] Test: Browse public gallery → Filter by type → Sort by upvotes → View animation detail
+- [ ] T127 [US4] Test: Open /app as guest → Create animation → Hit 10-frame limit → See upgrade prompt
+- [ ] T128 [US5] Test: Login → Upvote animation → Verify count increases → Upvote again → Verify toggle
+- [ ] T129 [US6] Test: Report animation → Verify in admin queue → Take action → Verify status updates
+- [ ] T130 [US7] Test: Visit landing page → Verify hero, features, CTA → Click "Start Creating"
+- [ ] T131 [US8] Test: Admin dashboard → List reports → Dismiss/Hide/Ban actions work
+- [ ] T132 [US9] Test: View public animation → Click Remix → Verify copy in personal gallery
+
+**Sub-Checkpoint 13d**: All user stories verified on production
+
+### Sub-Phase 13e: Final Verification
+
+- [ ] T133 Verify PWA: Install app on mobile → Go offline → Verify offline page shows
+- [ ] T134 Verify SEO: Check sitemap.xml accessible → Check OG meta tags on share pages
+- [ ] T135 Verify security: Check CSP headers in browser dev tools → Verify no console errors
+- [ ] T136 Create backup: Document admin credentials securely → Export Supabase schema
+
+**Checkpoint 13**: Production deployment complete - all features verified, ready for users
 
 ---
 

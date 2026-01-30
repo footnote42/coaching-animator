@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../lib/supabase/server';
-import { getUser, requireAuth, isAuthError } from '../../../../lib/auth';
+import { getUser, requireAuth, isAuthError, requireNotBanned } from '../../../../lib/auth';
 import { UpdateAnimationSchema } from '../../../../lib/schemas/animations';
 import { validateAnimationContent } from '../../../../lib/moderation';
 
@@ -81,6 +81,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
+
+  // Check if user is banned
+  const banCheck = await requireNotBanned(user.id);
+  if (banCheck) return banCheck;
 
   const supabase = await createSupabaseServerClient();
 

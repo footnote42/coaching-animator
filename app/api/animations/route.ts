@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
-import { requireAuth, isAuthError } from '../../../lib/auth';
+import { requireAuth, isAuthError, requireNotBanned } from '../../../lib/auth';
 import { CreateAnimationSchema, MyAnimationsQuerySchema } from '../../../lib/schemas/animations';
 import { checkQuota } from '../../../lib/quota';
 import { validateAnimationContent } from '../../../lib/moderation';
@@ -49,6 +49,10 @@ export async function POST(request: NextRequest) {
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
+
+  // Check if user is banned
+  const banCheck = await requireNotBanned(user.id);
+  if (banCheck) return banCheck;
 
   // Rate limiting
   const rateLimit = await checkRateLimit(`user:${user.id}`, 'create_animation');

@@ -1,6 +1,1 @@
-{
-  "version": 1,
-  "functions": {
-    "/api/og/[id]": {}
-  }
-}
+{"version":1,"functions":{"/api/og/[id]":{},"/privacy":{},"/terms":{}}}
