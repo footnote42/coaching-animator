@@ -127,13 +127,16 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
         method: 'POST',
       });
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         setHasUpvoted(data.upvoted);
         setUpvoteCount(data.upvote_count);
+      } else {
+        alert(data.error?.message || 'Failed to upvote');
       }
     } catch (err) {
       console.error('Failed to upvote:', err);
+      alert('Failed to upvote: Network error');
     } finally {
       setIsUpvoting(false);
     }

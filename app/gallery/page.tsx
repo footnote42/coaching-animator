@@ -147,11 +147,15 @@ function GalleryContent() {
       const response = await fetch(`/api/animations/${id}/upvote`, {
         method: 'POST',
       });
+      const data = await response.json();
       if (response.ok) {
-        return await response.json();
+        return data;
+      } else {
+        alert(data.error?.message || 'Failed to upvote');
       }
     } catch (err) {
       console.error('Failed to upvote:', err);
+      alert('Failed to upvote: Network error');
     }
     return null;
   };

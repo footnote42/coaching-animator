@@ -113,13 +113,16 @@ export default function MyGalleryPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete animation');
+        const data = await response.json();
+        throw new Error(data.error?.message || 'Failed to delete animation');
       }
 
       setDeletingId(null);
       await fetchAnimations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete');
+      const message = err instanceof Error ? err.message : 'Failed to delete';
+      setError(message);
+      alert(message);
     } finally {
       setIsDeleting(false);
     }
