@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/client';
 import { SaveToCloudModal } from '../../components/SaveToCloudModal';
 import { useProjectStore } from '../../src/store/projectStore';
@@ -23,11 +23,14 @@ const Editor = dynamic(() => import('../../components/Editor'), {
 
 export default function AnimationToolPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const loadId = searchParams.get('load');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSaveModal, setShowSaveModal] = useState(false);
 
   const project = useProjectStore((state) => state.project);
+  const loadProject = useProjectStore((state) => state.loadProject);
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
@@ -43,6 +46,34 @@ export default function AnimationToolPage() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Load animation from cloud if URL parameter is present
+  useEffect(() => {
+    if (loadId && !project) {
+      fetch(`/api/animations/${loadId}`, { credentials: 'include' })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to load animation');
+          return res.json();
+        })
+        .then(data => {
+          if (data.content) {
+            const result = loadProject(data.content);
+            if (!result.success) {
+              console.error('Failed to load project:', result.errors);
+              toast.error('Failed to load animation');
+            } else {
+              // Clear autosave to prevent confusion
+              localStorage.removeItem('rugby_animator_autosave');
+              localStorage.removeItem('rugby_animator_autosave_timestamp');
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load animation from cloud:', err);
+          toast.error('Failed to load animation');
+        });
+    }
+  }, [loadId, project, loadProject]);
 
   const handleSaveToCloud = useCallback(() => {
     if (!user) {
@@ -84,7 +115,7 @@ export default function AnimationToolPage() {
 
   return (
     <>
-      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} />
+      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} />
       {showSaveModal && payload && (
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}
