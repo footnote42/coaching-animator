@@ -5,7 +5,6 @@
  * Used by both POST and GET handlers to ensure data integrity.
  */
 import { SharePayloadSchema } from './schema.ts';
-import { SharePayloadV1 } from '../types/share.ts';
 
 /**
  * Maximum allowed payload size in bytes (100KB)

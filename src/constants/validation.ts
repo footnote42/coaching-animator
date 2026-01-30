@@ -6,6 +6,7 @@ export const VALIDATION = {
     PROJECT: {
         NAME_MAX_LENGTH: 100,
         MAX_FRAMES: 50,
+        GUEST_MAX_FRAMES: 10,
         SUPPORTED_VERSIONS: ['1.0'] as const,
     },
     ENTITY: {
