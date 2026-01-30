@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/client';
 import { SaveToCloudModal } from '../../components/SaveToCloudModal';
@@ -21,7 +21,26 @@ const Editor = dynamic(() => import('../../components/Editor'), {
   ),
 });
 
+function LoadingSpinner() {
+  return (
+    <div className="flex h-screen items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+        <p className="text-text-primary">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
 export default function AnimationToolPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AnimationToolPageContent />
+    </Suspense>
+  );
+}
+
+function AnimationToolPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadId = searchParams.get('load');
