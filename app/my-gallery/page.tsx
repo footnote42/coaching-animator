@@ -110,11 +110,13 @@ export default function MyGalleryPage() {
     try {
       const response = await fetch(`/api/animations/${deletingId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error?.message || 'Failed to delete animation');
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+        throw new Error(data.error?.message || `Failed to delete animation (${response.status})`);
       }
 
       setDeletingId(null);

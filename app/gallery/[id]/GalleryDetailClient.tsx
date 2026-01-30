@@ -125,18 +125,21 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
     try {
       const response = await fetch(`/api/animations/${animation.id}/upvote`, {
         method: 'POST',
+        credentials: 'include',
       });
 
-      const data = await response.json();
       if (response.ok) {
+        const data = await response.json();
         setHasUpvoted(data.upvoted);
         setUpvoteCount(data.upvote_count);
       } else {
-        alert(data.error?.message || 'Failed to upvote');
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+        alert(data.error?.message || `Failed to upvote (${response.status})`);
       }
     } catch (err) {
       console.error('Failed to upvote:', err);
-      alert('Failed to upvote: Network error');
+      alert(`Failed to upvote: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsUpvoting(false);
     }
@@ -171,17 +174,19 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
     try {
       const response = await fetch(`/api/animations/${animation.id}/remix`, {
         method: 'POST',
+        credentials: 'include',
       });
 
       if (response.ok) {
         router.push('/my-gallery');
       } else {
-        const data = await response.json();
-        alert(data.error?.message || 'Failed to remix animation');
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+        alert(data.error?.message || `Failed to remix animation (${response.status})`);
       }
     } catch (err) {
       console.error('Failed to remix:', err);
-      alert('Failed to remix animation');
+      alert(`Failed to remix: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsRemixing(false);
     }
