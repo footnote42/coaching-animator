@@ -222,9 +222,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     .eq('id', id);
 
   if (deleteError) {
-    console.error('Database error:', deleteError);
+    console.error('Animation delete error:', deleteError);
     return NextResponse.json(
-      { error: { code: 'DB_ERROR', message: 'Failed to delete animation' } },
+      { error: { code: 'DB_ERROR', message: `Failed to delete animation: ${deleteError.message}` } },
       { status: 500 }
     );
   }

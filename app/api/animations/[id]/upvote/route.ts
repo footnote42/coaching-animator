@@ -65,9 +65,9 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       .eq('user_id', user.id);
 
     if (deleteError) {
-      console.error('Database error:', deleteError);
+      console.error('Upvote delete error:', deleteError);
       return NextResponse.json(
-        { error: { code: 'DB_ERROR', message: 'Failed to remove upvote' } },
+        { error: { code: 'DB_ERROR', message: `Failed to remove upvote: ${deleteError.message}` } },
         { status: 500 }
       );
     }
@@ -81,9 +81,9 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       .insert({ animation_id: id, user_id: user.id });
 
     if (insertError) {
-      console.error('Database error:', insertError);
+      console.error('Upvote insert error:', insertError);
       return NextResponse.json(
-        { error: { code: 'DB_ERROR', message: 'Failed to add upvote' } },
+        { error: { code: 'DB_ERROR', message: `Failed to add upvote: ${insertError.message}` } },
         { status: 500 }
       );
     }

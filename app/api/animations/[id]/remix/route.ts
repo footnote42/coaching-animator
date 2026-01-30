@@ -67,7 +67,7 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
   if (insertError) {
     console.error('Remix insert error:', insertError);
     return NextResponse.json(
-      { error: { code: 'DB_ERROR', message: 'Failed to create remix' } },
+      { error: { code: 'DB_ERROR', message: `Failed to create remix: ${insertError.message}` } },
       { status: 500 }
     );
   }
