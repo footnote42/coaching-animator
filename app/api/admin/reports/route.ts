@@ -25,24 +25,10 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createSupabaseServerClient();
 
+  // Fetch reports without FK joins (Vercel compatibility)
   const { data: reports, error, count } = await supabase
     .from('content_reports')
-    .select(`
-      id,
-      reason,
-      details,
-      status,
-      created_at,
-      animation:saved_animations!animation_id (
-        id,
-        title,
-        user_id
-      ),
-      reporter:user_profiles!reporter_id (
-        id,
-        display_name
-      )
-    `, { count: 'exact' })
+    .select('id, animation_id, reporter_id, reason, details, status, created_at', { count: 'exact' })
     .eq('status', query.data.status)
     .order('created_at', { ascending: false })
     .range(query.data.offset, query.data.offset + query.data.limit - 1);
@@ -55,26 +41,51 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Fetch animations separately
+  const animationIds = [...new Set((reports || []).map(r => r.animation_id).filter(Boolean))];
+  const animationsMap = new Map<string, { id: string; title: string; user_id: string }>();
+  
+  if (animationIds.length > 0) {
+    const { data: animations } = await supabase
+      .from('saved_animations')
+      .select('id, title, user_id')
+      .in('id', animationIds);
+    
+    animations?.forEach(a => animationsMap.set(a.id, a));
+  }
+
+  // Fetch all user profiles (reporters + animation authors)
+  const allUserIds = [...new Set([
+    ...(reports || []).map(r => r.reporter_id).filter(Boolean),
+    ...Array.from(animationsMap.values()).map(a => a.user_id).filter(Boolean)
+  ])];
+  
+  const profilesMap = new Map<string, string | null>();
+  
+  if (allUserIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('user_profiles')
+      .select('id, display_name')
+      .in('id', allUserIds);
+    
+    profiles?.forEach(p => profilesMap.set(p.id, p.display_name));
+  }
+
   // Transform to match API contract format
   const transformedReports = (reports || []).map((report: any) => {
-    // Get animation author display name
-    let authorDisplayName = null;
-    if (report.animation?.user_id) {
-      // We need a separate query for the animation author
-      // For now, we'll include user_id and let the UI resolve it if needed
-    }
-
+    const animation = animationsMap.get(report.animation_id);
+    
     return {
       id: report.id,
-      animation: report.animation ? {
-        id: report.animation.id,
-        title: report.animation.title,
-        user_id: report.animation.user_id,
-        author_display_name: authorDisplayName,
+      animation: animation ? {
+        id: animation.id,
+        title: animation.title,
+        user_id: animation.user_id,
+        author_display_name: profilesMap.get(animation.user_id) || null,
       } : null,
-      reporter: report.reporter ? {
-        id: report.reporter.id,
-        display_name: report.reporter.display_name,
+      reporter: report.reporter_id ? {
+        id: report.reporter_id,
+        display_name: profilesMap.get(report.reporter_id) || null,
       } : null,
       reason: report.reason,
       details: report.details,
@@ -82,26 +93,6 @@ export async function GET(request: NextRequest) {
       created_at: report.created_at,
     };
   });
-
-  // Fetch author display names for animations
-  const userIds = [...new Set(transformedReports
-    .filter(r => r.animation?.user_id)
-    .map(r => r.animation!.user_id))];
-
-  if (userIds.length > 0) {
-    const { data: profiles } = await supabase
-      .from('user_profiles')
-      .select('id, display_name')
-      .in('id', userIds);
-
-    const profileMap = new Map(profiles?.map(p => [p.id, p.display_name]) || []);
-
-    transformedReports.forEach(report => {
-      if (report.animation?.user_id) {
-        report.animation.author_display_name = profileMap.get(report.animation.user_id) || null;
-      }
-    });
-  }
 
   return NextResponse.json({
     reports: transformedReports,

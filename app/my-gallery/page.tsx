@@ -156,13 +156,21 @@ export default function MyGalleryPage() {
             </p>
           </div>
           
-          <a
-            href="/app"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            New Animation
-          </a>
+          <div className="flex items-center gap-3">
+            <a
+              href="/profile"
+              className="text-sm text-text-primary/70 hover:text-primary transition-colors"
+            >
+              Profile
+            </a>
+            <a
+              href="/app"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              New Animation
+            </a>
+          </div>
         </div>
       </header>
 
