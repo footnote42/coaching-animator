@@ -9,5 +9,13 @@
     "app/api/**/*.tsx": {
       "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/animations/:id", "destination": "/api/animations/:id" },
+    { "source": "/api/animations/:id/upvote", "destination": "/api/animations/:id/upvote" },
+    { "source": "/api/animations/:id/remix", "destination": "/api/animations/:id/remix" },
+    { "source": "/api/og/:id", "destination": "/api/og/:id" },
+    { "source": "/api/admin/reports/:id/action", "destination": "/api/admin/reports/:id/action" },
+    { "source": "/api/test-dynamic/:id", "destination": "/api/test-dynamic/:id" }
+  ]
 }
