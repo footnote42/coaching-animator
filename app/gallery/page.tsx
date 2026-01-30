@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
 import { AnimationType } from '@/lib/schemas/animations';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 interface PublicAnimation {
   id: string;
@@ -16,6 +17,7 @@ interface PublicAnimation {
   frame_count: number;
   upvote_count: number;
   created_at: string;
+  user_id?: string;
   author: {
     display_name: string | null;
   };
@@ -47,10 +49,21 @@ function GalleryContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [type, setType] = useState<AnimationType | ''>(
     (searchParams.get('type') as AnimationType) || ''
   );
+
+  // Check auth status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
+    };
+    checkAuth();
+  }, []);
   const [sort, setSort] = useState<SortField>(
     (searchParams.get('sort') as SortField) || 'created_at'
   );
@@ -126,6 +139,24 @@ function GalleryContent() {
 
   const handleView = (id: string) => {
     router.push(`/gallery/${id}`);
+  };
+
+  const handleUpvote = async (id: string): Promise<{ upvoted: boolean; upvote_count: number } | null> => {
+    try {
+      const response = await fetch(`/api/animations/${id}/upvote`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (err) {
+      console.error('Failed to upvote:', err);
+    }
+    return null;
+  };
+
+  const handleLoginRequired = () => {
+    router.push('/login?redirect=/gallery');
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -249,6 +280,9 @@ function GalleryContent() {
                   key={animation.id}
                   animation={animation}
                   onView={handleView}
+                  currentUserId={currentUserId}
+                  onUpvote={handleUpvote}
+                  onLoginRequired={handleLoginRequired}
                 />
               ))}
             </div>

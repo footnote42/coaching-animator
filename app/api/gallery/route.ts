@@ -97,6 +97,7 @@ export async function GET(request: NextRequest) {
     frame_count: animation.frame_count,
     upvote_count: animation.upvote_count,
     created_at: animation.created_at,
+    user_id: animation.user_id,
     author: {
       display_name: (animation.user_profiles as unknown as { display_name: string | null } | null)?.display_name ?? null,
     },

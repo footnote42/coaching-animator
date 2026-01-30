@@ -11,6 +11,9 @@ export interface FrameStripProps {
   onRemoveFrame: (frameId: string) => void;
   onDuplicateFrame: (frameId: string) => void;
   onDurationChange: (frameId: string, durationMs: number) => void;
+  maxFrames?: number;
+  isAuthenticated?: boolean;
+  onShowGuestLimitModal?: () => void;
 }
 
 export const FrameStrip: React.FC<FrameStripProps> = ({
@@ -21,7 +24,12 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
   onRemoveFrame,
   onDuplicateFrame,
   onDurationChange,
+  maxFrames = 50,
+  isAuthenticated = false,
+  onShowGuestLimitModal,
 }) => {
+  const isAtLimit = frames.length >= maxFrames;
+  const showLimitWarning = isAtLimit && !isAuthenticated;
   return (
     <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-warm)] border-t border-[var(--color-accent-warm)] overflow-x-auto">
       {/* Frame thumbnails */}
@@ -41,21 +49,33 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
       {/* Add Frame button */}
       <button
         onClick={onAddFrame}
-        className="
+        className={`
           flex items-center justify-center
           w-16 h-12
           border border-[var(--color-accent-warm)]
-          bg-[var(--color-surface)]
-          hover:bg-[var(--color-accent-warm)]
-          hover:text-white
           transition-colors
           font-mono text-xs
-        "
-        title="Add frame"
-        aria-label="Add new frame"
+          ${isAtLimit 
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+            : 'bg-[var(--color-surface)] hover:bg-[var(--color-accent-warm)] hover:text-white'}
+        `}
+        title={isAtLimit 
+          ? (isAuthenticated ? 'Maximum frames reached' : 'Register for more frames') 
+          : 'Add frame'}
+        aria-label={isAtLimit ? 'Frame limit reached' : 'Add new frame'}
       >
         <Plus size={16} />
       </button>
+
+      {/* Guest limit indicator */}
+      {showLimitWarning && (
+        <button
+          onClick={onShowGuestLimitModal}
+          className="ml-2 px-3 py-1 text-xs bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)]/90 transition-colors"
+        >
+          Unlock more frames
+        </button>
+      )}
     </div>
   );
 };

@@ -1,9 +1,10 @@
 # Rugby Animation Tool
 
-A browser-based tactical animation tool for rugby coaches to create and share play diagrams.
+A web-based tactical animation tool for rugby coaches to create, save, and share animated play diagrams. Now with online features including cloud storage, public gallery, and community features.
 
 ## ✨ Features
 
+### Core Animation Tools
 - **Position Players**: Drag players, balls, cones, and markers onto a rugby field
 - **Multi-Frame Animation**: Create smooth animations by adding multiple frames
 - **Video Export**: Export your animations as .webm video files to share via WhatsApp or email
@@ -13,6 +14,15 @@ A browser-based tactical animation tool for rugby coaches to create and share pl
 - **Ghost Mode**: See previous frame positions while setting up the next frame
 - **Auto-Save**: Automatic crash recovery with 30-second auto-save
 - **Offline-First**: No account needed, all data stays on your device
+
+### Online Platform Features
+- **User Accounts**: Free registration with 50 animation storage limit
+- **Cloud Storage**: Save animations to the cloud and access from any device
+- **Public Gallery**: Browse and discover animations shared by coaches worldwide
+- **Social Features**: Upvote animations, share links, and community interaction
+- **Guest Mode**: Try the tool instantly with 10-frame limit (no signup required)
+- **Content Reporting**: Help keep the community safe with reporting tools
+- **Mobile Responsive**: Works seamlessly on desktop and mobile devices
 
 ---
 
@@ -37,7 +47,21 @@ npm install
 npm run dev
 ```
 
-The application will open at http://localhost:5173/
+The application will open at http://localhost:3000/
+
+### Online Platform Setup (Optional)
+For cloud features, create a Supabase project and configure environment variables:
+```bash
+# Copy environment template
+cp .env.local.example .env.local
+
+# Add your Supabase credentials
+# SUPABASE_URL=https://your-project.supabase.co
+# SUPABASE_ANON_KEY=your-anon-key
+# FRONTEND_URL=http://localhost:3000
+```
+
+The core animation tool works fully offline. Online features require Supabase configuration.
 
 ---
 
@@ -160,31 +184,49 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 ## 🛠️ Technical Details
 
 ### Built With
+- **Next.js 16** - React framework with App Router
 - **React 18** + TypeScript
 - **Konva** - HTML5 Canvas library for smooth rendering
 - **Zustand** - Lightweight state management
-- **Tailwind CSS v4** - Modern utility-first styling
-- **Vite** - Lightning-fast build tool
+- **Tailwind CSS** - Modern utility-first styling
+- **Supabase** - Authentication, database, and storage
+- **Serwist** - PWA service worker for offline support
 
 ### Project Structure
 ```
-src/
-├── components/       # UI components (Canvas, Sidebar, Timeline)
-├── hooks/           # Custom React hooks (animation, export, auto-save)
-├── store/           # Zustand state management
-├── types/           # TypeScript definitions
-├── constants/       # Design tokens, validation rules
-└── utils/           # Helper functions
+├── app/              # Next.js App Router pages and API routes
+│   ├── (auth)/       # Authentication pages
+│   ├── (legal)/      # Legal pages (Terms, Privacy, Contact)
+│   ├── api/          # API endpoints
+│   ├── gallery/      # Public gallery pages
+│   └── my-gallery/   # Personal gallery page
+├── components/       # React components
+│   ├── Canvas/       # Animation canvas components
+│   ├── Sidebar/      # Editor sidebar components
+│   └── Timeline/     # Timeline and playback components
+├── lib/              # Shared utilities and Supabase clients
+├── src/              # Legacy Vite components (being migrated)
+├── specs/            # Feature specifications and tasks
+└── supabase/         # Database migrations
 ```
 
 ---
 
 ## 🤝 Contributing
 
-This project is part of a spec-driven development workflow. If you find bugs or have feature requests:
-1. Check `/specs/002-clean-iteration/spec.md` for the authoritative specification
-2. Review `/specs/002-clean-iteration/tasks.md` for planned work
-3. Submit issues with reference to specific Functional Requirements (e.g., FR-CAN-04)
+This project follows a spec-driven development workflow. Current work focuses on the online platform migration:
+
+**Current Status**: 85 of 111 tasks complete (~77%)
+- ✅ All P1 stories complete (US1-US3: Auth, Save, Public Gallery)
+- ✅ All P2 stories complete except Remix (US4-US7: Guest Mode, Upvotes, Reports, Landing)
+- 🔄 In Progress: Admin moderation (US8) and Remix features (US9)
+
+**Development Documents**:
+1. Check `/specs/003-online-platform/spec.md` for current feature specifications
+2. Review `/specs/003-online-platform/tasks.md` for implementation progress
+3. See `/specs/003-online-platform/PROGRESS.md` for session history
+
+**Submit Issues**: Reference specific User Stories (US1-US9) or Task IDs (T001-T111) when reporting bugs.
 
 ---
 

@@ -19,6 +19,7 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { useProjectStore } from '@/store/projectStore';
 import { useUIStore } from '@/store/uiStore';
 import { DESIGN_TOKENS } from '@/constants/design-tokens';
+import { VALIDATION } from '@/constants/validation';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/components/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -154,6 +155,23 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
     setShowRecoveryDialog(false);
     setRecoveredProject(null);
     newProject();
+  };
+
+  const [showGuestLimitModal, setShowGuestLimitModal] = useState(false);
+
+  const maxFrames = isAuthenticated
+    ? VALIDATION.PROJECT.MAX_FRAMES
+    : VALIDATION.PROJECT.GUEST_MAX_FRAMES;
+
+  const handleAddFrame = () => {
+    if (!project) return;
+    if (project.frames.length >= maxFrames) {
+      if (!isAuthenticated) {
+        setShowGuestLimitModal(true);
+      }
+      return;
+    }
+    addFrame();
   };
 
   const handleAddAttackPlayer = () => {
@@ -465,10 +483,13 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
               frames={project?.frames ?? []}
               currentFrameIndex={currentFrameIndex}
               onFrameSelect={setCurrentFrame}
-              onAddFrame={addFrame}
+              onAddFrame={handleAddFrame}
               onRemoveFrame={removeFrame}
               onDuplicateFrame={duplicateFrame}
               onDurationChange={handleFrameDurationChange}
+              maxFrames={maxFrames}
+              isAuthenticated={isAuthenticated}
+              onShowGuestLimitModal={() => setShowGuestLimitModal(true)}
             />
           </footer>
         </ErrorBoundary>
@@ -521,6 +542,21 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
       )}
 
       <Toaster position="bottom-right" />
+
+      {/* Guest Frame Limit Modal */}
+      <ConfirmDialog
+        open={showGuestLimitModal}
+        onConfirm={() => {
+          setShowGuestLimitModal(false);
+          window.location.href = '/register?redirect=/app';
+        }}
+        onCancel={() => setShowGuestLimitModal(false)}
+        title="Frame Limit Reached"
+        description={`Guest users can create up to ${VALIDATION.PROJECT.GUEST_MAX_FRAMES} frames. Create a free account to unlock up to ${VALIDATION.PROJECT.MAX_FRAMES} frames and save your animations to the cloud.`}
+        confirmLabel="Create Free Account"
+        cancelLabel="Continue Editing"
+        variant="default"
+      />
     </div>
   );
 }

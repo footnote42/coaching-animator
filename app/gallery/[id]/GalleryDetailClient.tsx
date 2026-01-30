@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThumbsUp, Share2, Flag, ArrowLeft, Check, Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { createSupabaseBrowserClient } from '../../../lib/supabase/client';
+import { ReportModal } from '../../../components/ReportModal';
 
 interface Animation {
   id: string;
@@ -61,10 +62,12 @@ interface GalleryDetailClientProps {
 export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(animation.upvote_count);
   const [isUpvoting, setIsUpvoting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Playback state
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
@@ -78,6 +81,7 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
       const supabase = createSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);
+      setCurrentUserId(user?.id ?? null);
 
       if (user) {
         // Check if user has upvoted
@@ -90,6 +94,8 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
     };
     checkAuth();
   }, [animation.id]);
+
+  const isOwner = currentUserId === animation.user_id;
 
   const nextFrame = useCallback(() => {
     setCurrentFrameIndex((prev) => {
@@ -148,8 +154,7 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
       router.push(`/login?redirect=/gallery/${animation.id}`);
       return;
     }
-    // TODO: Implement report modal
-    alert('Report functionality coming soon');
+    setShowReportModal(true);
   };
 
   const togglePlay = () => {
@@ -191,18 +196,25 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleUpvote}
-                disabled={isUpvoting}
-                className={`flex items-center gap-2 px-4 py-2 border transition-colors ${
-                  hasUpvoted
-                    ? 'bg-primary text-text-inverse border-primary'
-                    : 'border-border hover:border-primary'
-                }`}
-              >
-                <ThumbsUp className={`w-4 h-4 ${hasUpvoted ? 'fill-current' : ''}`} />
-                <span>{upvoteCount}</span>
-              </button>
+              {!isOwner ? (
+                <button
+                  onClick={handleUpvote}
+                  disabled={isUpvoting}
+                  className={`flex items-center gap-2 px-4 py-2 border transition-colors ${
+                    hasUpvoted
+                      ? 'bg-primary text-text-inverse border-primary'
+                      : 'border-border hover:border-primary'
+                  }`}
+                >
+                  <ThumbsUp className={`w-4 h-4 ${hasUpvoted ? 'fill-current' : ''}`} />
+                  <span>{upvoteCount}</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 px-4 py-2 border border-border text-text-primary/70">
+                  <ThumbsUp className="w-4 h-4" />
+                  <span>{upvoteCount}</span>
+                </div>
+              )}
 
               <button
                 onClick={handleShare}
@@ -412,6 +424,13 @@ export function GalleryDetailClient({ animation }: GalleryDetailClientProps) {
           </a>
         </div>
       </footer>
+
+      {/* Report Modal */}
+      <ReportModal
+        animationId={animation.id}
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+      />
     </div>
   );
 }

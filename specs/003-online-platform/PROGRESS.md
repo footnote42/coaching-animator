@@ -8,14 +8,76 @@
 
 ## Current Status
 
-**Phase**: 6 - User Story 4  
-**Sub-Phase**: Guest Mode Enforcement  
-**Next Task**: T064  
+**Phase**: 10 - User Story 8  
+**Sub-Phase**: Admin API  
+**Next Task**: T086  
 **Build Status**: ✅ Passing
 
 ---
 
 ## Session History
+
+## Session 3 - 2026-01-30
+
+**Sub-Phase**: Phase 6-9 (US4-US7: Guest Mode, Upvotes, Reports, Landing)
+**Completed Tasks**: T064-T067 (Phase 6), T068-T073 (Phase 7), T074-T078 (Phase 8), T079-T085 (Phase 9)
+**Status**: ✅ Phases 6, 7, 8, 9 complete - US4, US5, US6, US7 fully functional
+**Token Usage**: ~108K at handoff (approaching 110K soft limit)
+
+**Verification**:
+- [x] `npm run build` passes
+- [x] Checkpoint test: 10-frame guest limit enforced in Editor
+- [x] Checkpoint test: Registration prompt modal shows when limit reached
+- [x] Checkpoint test: "Unlock more frames" button appears in FrameStrip
+- [x] Checkpoint test: Guests see "Sign in to Save" instead of "Save to Cloud"
+- [x] Checkpoint test: Local JSON download always available
+- [x] Checkpoint test: Upvote API toggles votes correctly
+- [x] Checkpoint test: Upvote button works in PublicAnimationCard and GalleryDetailClient
+- [x] Checkpoint test: Own animations show non-interactive upvote count
+- [x] Checkpoint test: Guests redirected to login when clicking upvote
+
+**Key Changes**:
+
+**Phase 6 (Guest Mode)**:
+- Added `GUEST_MAX_FRAMES: 10` constant to `src/constants/validation.ts`
+- Updated `components/Editor.tsx` with frame limit logic and guest limit modal
+- Updated `src/components/Timeline/FrameStrip.tsx` with limit indicators and "Unlock more frames" button
+- T066/T067 were already implemented in previous sessions
+
+**Phase 7 (Upvotes)**:
+- Created `app/api/animations/[id]/upvote/route.ts` with POST toggle handler
+- T069 (user_has_upvoted field) was already implemented in previous sessions
+- Updated `components/PublicAnimationCard.tsx` with interactive upvote button, owner check, login redirect
+- Updated `app/gallery/page.tsx` to pass upvote handlers to cards
+- Updated `app/gallery/[id]/GalleryDetailClient.tsx` with owner check for upvote button
+- Updated `app/api/gallery/route.ts` to include user_id in response
+
+**Phase 8 (Reports)**:
+- Created `app/api/report/route.ts` with POST handler and rate limiting (5/hour)
+- Created `components/ReportModal.tsx` with reason dropdown and details field
+- Integrated ReportModal into GalleryDetailClient
+- Report button shows for logged-in users, redirects guests to login
+
+**Phase 9 (Landing Page)**:
+- Replaced `app/page.tsx` with full marketing landing page
+- Hero section, feature highlights (6 features with icons), "How it works" section, CTA
+- Mobile responsive with flex/grid layouts
+- Created `app/(legal)/layout.tsx` with shared navigation/footer
+- Created `app/(legal)/terms/page.tsx` with Terms of Service content
+- Created `app/(legal)/privacy/page.tsx` with Privacy Policy content
+- Created `app/(legal)/contact/page.tsx` with contact form (Formspree placeholder)
+
+**Issues/Blockers**: None
+
+**RESUME AT**: T086 (Phase 10: User Story 8 - Admin API)
+
+**Context for Next Session**:
+- Phases 6-9 complete: Guest mode, Upvotes, Reports, Landing Page functional
+- All P1 and P2 stories (US1-US7) complete except Admin (US8) and Remix (US9)
+- Ready for Admin moderation features (US8, P3)
+- 20 static pages now building successfully
+
+---
 
 ## Session 2 - 2026-01-30
 
@@ -170,10 +232,10 @@ Use the template below for each session.
 - [x] Phase 3: US1 - Auth + Save (T027-T047)
 - [x] Phase 4: US2 - Public Share (T048-T052)
 - [x] Phase 5: US3 - Public Gallery (T053-T063)
-- [ ] Phase 6: US4 - Guest Mode (T064-T067)
-- [ ] Phase 7: US5 - Upvotes (T068-T073)
-- [ ] Phase 8: US6 - Reports (T074-T078)
-- [ ] Phase 9: US7 - Landing (T079-T085)
+- [x] Phase 6: US4 - Guest Mode (T064-T067)
+- [x] Phase 7: US5 - Upvotes (T068-T073)
+- [x] Phase 8: US6 - Reports (T074-T078)
+- [x] Phase 9: US7 - Landing (T079-T085)
 - [ ] Phase 10: US8 - Admin (T086-T092)
 - [ ] Phase 11: US9 - Remix (T093-T097)
 - [ ] Phase 12: Polish (T098-T111)

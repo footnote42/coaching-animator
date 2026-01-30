@@ -194,14 +194,21 @@
 
 **Independent Test**: Visit /app as guest → Create animation → Try 11th frame → See registration prompt
 
-### Guest Mode Enforcement
+### Sub-Phase 6a: Frame Limit Enforcement
 
-- [ ] T064 [US4] Implement 10-frame limit check in Editor for unauthenticated users
-- [ ] T065 [US4] Show registration prompt modal when guest tries to add 11th frame
-- [ ] T066 [US4] Disable "Save to Cloud" button for guests, show "Register to Save" prompt
-- [ ] T067 [US4] Keep local JSON download available for guests
+- [x] **TOKEN_CHECK_6A**: Verify token usage < 110K before starting Phase 6
+- [x] T064 [US4] Implement 10-frame limit check in Editor for unauthenticated users
+- [x] T065 [US4] Show registration prompt modal when guest tries to add 11th frame
 
-**Checkpoint**: User Story 4 functional - guest limits enforced, registration prompts shown
+**Sub-Checkpoint 6a**: Frame limit enforced, registration prompt shown - MANDATORY HANDOFF
+
+### Sub-Phase 6b: Save Restrictions
+
+- [x] **TOKEN_CHECK_6B**: Verify token usage < 110K before continuing
+- [x] T066 [US4] Disable "Save to Cloud" button for guests, show "Register to Save" prompt
+- [x] T067 [US4] Keep local JSON download available for guests
+
+**Checkpoint 6**: User Story 4 functional - guest limits enforced, registration prompts shown
 
 ---
 
@@ -211,19 +218,23 @@
 
 **Independent Test**: Login → View public animation (not own) → Click upvote → Count increases → Click again → Removed
 
-### Upvote API
+### Sub-Phase 7a: Upvote API
 
-- [ ] T068 [US5] Create `app/api/animations/[id]/upvote/route.ts` with POST handler (toggle)
-- [ ] T069 [US5] Add `user_has_upvoted` field to GET /api/animations/[id] and /api/gallery responses
+- [x] **TOKEN_CHECK_7A**: Verify token usage < 110K before starting Phase 7
+- [x] T068 [US5] Create `app/api/animations/[id]/upvote/route.ts` with POST handler (toggle)
+- [x] T069 [US5] Add `user_has_upvoted` field to GET /api/animations/[id] and /api/gallery responses
 
-### Upvote UI
+**Sub-Checkpoint 7a**: Upvote API functional - MANDATORY HANDOFF
 
-- [ ] T070 [US5] Add upvote button to AnimationCard component (public gallery)
-- [ ] T071 [US5] Add upvote button to gallery detail page
-- [ ] T072 [US5] Disable/hide upvote button for own animations
-- [ ] T073 [US5] Show login prompt when guest clicks upvote
+### Sub-Phase 7b: Upvote UI
 
-**Checkpoint**: User Story 5 functional - upvoting works, counts update, toggle behavior correct
+- [x] **TOKEN_CHECK_7B**: Verify token usage < 110K before continuing
+- [x] T070 [US5] Add upvote button to AnimationCard component (public gallery)
+- [x] T071 [US5] Add upvote button to gallery detail page
+- [x] T072 [US5] Disable/hide upvote button for own animations
+- [x] T073 [US5] Show login prompt when guest clicks upvote
+
+**Checkpoint 7**: User Story 5 functional - upvoting works, counts update, toggle behavior correct
 
 ---
 
@@ -233,18 +244,22 @@
 
 **Independent Test**: Login → View public animation → Click Report → Select reason → Submit → See confirmation
 
-### Report API
+### Sub-Phase 8a: Report API
 
-- [ ] T074 [US6] Create `app/api/report/route.ts` with POST handler
-- [ ] T075 [US6] Implement rate limiting (5 reports/hour) on report endpoint
+- [x] **TOKEN_CHECK_8A**: Verify token usage < 110K before starting Phase 8
+- [x] T074 [US6] Create `app/api/report/route.ts` with POST handler
+- [x] T075 [US6] Implement rate limiting (5 reports/hour) on report endpoint
 
-### Report UI
+**Sub-Checkpoint 8a**: Report API functional - MANDATORY HANDOFF
 
-- [ ] T076 [US6] Add "Report" button to gallery detail page (logged-in users only)
-- [ ] T077 [US6] Create report modal with reason dropdown and optional details
-- [ ] T078 [US6] Show success confirmation after report submission
+### Sub-Phase 8b: Report UI
 
-**Checkpoint**: User Story 6 functional - reports submitted, stored in content_reports table
+- [x] **TOKEN_CHECK_8B**: Verify token usage < 110K before continuing
+- [x] T076 [US6] Add "Report" button to gallery detail page (logged-in users only)
+- [x] T077 [US6] Create report modal with reason dropdown and optional details
+- [x] T078 [US6] Show success confirmation after report submission
+
+**Checkpoint 8**: User Story 6 functional - reports submitted, stored in content_reports table
 
 ---
 
@@ -254,20 +269,24 @@
 
 **Independent Test**: Visit / → See hero, features, CTA → Click "Get Started" → Navigate to register/tool
 
-### Landing Page
+### Sub-Phase 9a: Landing Page
 
-- [ ] T079 [US7] Create `app/page.tsx` as landing page with hero section
-- [ ] T080 [US7] Add feature highlights section with visuals/icons to landing page
-- [ ] T081 [US7] Add "Get Started" CTA button linking to /register or /app
-- [ ] T082 [US7] Ensure landing page is mobile responsive
+- [x] **TOKEN_CHECK_9A**: Verify token usage < 110K before starting Phase 9
+- [x] T079 [US7] Create `app/page.tsx` as landing page with hero section
+- [x] T080 [US7] Add feature highlights section with visuals/icons to landing page
+- [x] T081 [US7] Add "Get Started" CTA button linking to /register or /app
+- [x] T082 [US7] Ensure landing page is mobile responsive
 
-### Legal Pages
+**Sub-Checkpoint 9a**: Landing page complete - MANDATORY HANDOFF
 
-- [ ] T083 [P] [US7] Create `app/(legal)/terms/page.tsx` with Terms of Service content
-- [ ] T084 [P] [US7] Create `app/(legal)/privacy/page.tsx` with Privacy Policy content
-- [ ] T085 [P] [US7] Create `app/(legal)/contact/page.tsx` with Formspree form integration
+### Sub-Phase 9b: Legal Pages
 
-**Checkpoint**: User Story 7 functional - landing page complete, legal pages accessible
+- [x] **TOKEN_CHECK_9B**: Verify token usage < 110K before continuing
+- [x] T083 [P] [US7] Create `app/(legal)/terms/page.tsx` with Terms of Service content
+- [x] T084 [P] [US7] Create `app/(legal)/privacy/page.tsx` with Privacy Policy content
+- [x] T085 [P] [US7] Create `app/(legal)/contact/page.tsx` with Formspree form integration
+
+**Checkpoint 9**: User Story 7 functional - landing page complete, legal pages accessible
 
 ---
 
@@ -277,20 +296,30 @@
 
 **Independent Test**: Login as admin → View /admin → See pending reports → Take action → Report resolved
 
-### Admin API
+### Sub-Phase 10a: Admin API
 
+- [ ] **TOKEN_CHECK_10A**: Verify token usage < 110K before starting Phase 10
 - [ ] T086 [US8] Create `app/api/admin/reports/route.ts` with GET handler (admin only)
 - [ ] T087 [US8] Create `app/api/admin/reports/[id]/action/route.ts` with POST handler
 
-### Admin Dashboard
+**Sub-Checkpoint 10a**: Admin API functional - MANDATORY HANDOFF
 
+### Sub-Phase 10b: Admin Dashboard UI
+
+- [ ] **TOKEN_CHECK_10B**: Verify token usage < 110K before continuing
 - [ ] T088 [US8] Create `app/admin/page.tsx` (protected, admin-only) with moderation queue
 - [ ] T089 [US8] Display report details: animation, reporter, reason, date
 - [ ] T090 [US8] Add action buttons: Dismiss, Hide, Delete, Warn User, Ban User
+
+**Sub-Checkpoint 10b**: Admin UI complete - MANDATORY HANDOFF
+
+### Sub-Phase 10c: Moderation Actions
+
+- [ ] **TOKEN_CHECK_10C**: Verify token usage < 110K before continuing
 - [ ] T091 [US8] Implement hide action: set `hidden_at` on animation, remove from public view
 - [ ] T092 [US8] Implement user warning/ban: update `user_profiles.banned_at`
 
-**Checkpoint**: User Story 8 functional - admins can moderate content
+**Checkpoint 10**: User Story 8 functional - admins can moderate content
 
 ---
 
@@ -300,18 +329,22 @@
 
 **Independent Test**: Login → View public animation → Click "Remix to Playbook" → Copy in personal gallery
 
-### Remix API
+### Sub-Phase 11a: Remix API
 
+- [ ] **TOKEN_CHECK_11A**: Verify token usage < 110K before starting Phase 11
 - [ ] T093 [US9] Create `app/api/animations/[id]/remix/route.ts` with POST handler
 - [ ] T094 [US9] Implement remix: copy animation, append "(Remix)" to title, set private
 
-### Remix UI
+**Sub-Checkpoint 11a**: Remix API functional - MANDATORY HANDOFF
 
+### Sub-Phase 11b: Remix UI
+
+- [ ] **TOKEN_CHECK_11B**: Verify token usage < 110K before continuing
 - [ ] T095 [US9] Add "Remix to Playbook" button to gallery detail page (logged-in users)
 - [ ] T096 [US9] Show login prompt when guest clicks remix button
 - [ ] T097 [US9] Redirect to personal gallery after successful remix
 
-**Checkpoint**: User Story 9 functional - remix creates copy in user's gallery
+**Checkpoint 11**: User Story 9 functional - remix creates copy in user's gallery
 
 ---
 
@@ -319,36 +352,37 @@
 
 **Purpose**: Improvements affecting multiple user stories, cleanup, deployment
 
-### Security
+### Sub-Phase 12a: Security Hardening
 
+- [ ] **TOKEN_CHECK_12A**: Verify token usage < 110K before starting Phase 12
 - [ ] T098 [P] Configure CSP headers in `next.config.js` per FR-SEC-01
 - [ ] T099 [P] Verify all API routes validate input server-side per FR-SEC-03
 - [ ] T100 Audit for secret exposure - ensure no sensitive data in client bundles
 
-### Performance & SEO
+**Sub-Checkpoint 12a**: Security hardened - MANDATORY HANDOFF
 
+### Sub-Phase 12b: Performance & UX
+
+- [ ] **TOKEN_CHECK_12B**: Verify token usage < 110K before continuing
 - [ ] T101 [P] Add loading states/skeletons to gallery pages
 - [ ] T102 [P] Verify SSR/ISR for public gallery pages (SEO)
 - [ ] T103 Configure sitemap.xml generation for public pages
-
-### Empty States
-
 - [ ] T104 [P] Create "Coach's Clipboard" empty state illustration for personal gallery (FR-UI-01)
 - [ ] T105 [P] Create empty state for public gallery (no results found)
 
-### Cleanup
+**Sub-Checkpoint 12b**: UX polished - MANDATORY HANDOFF
 
+### Sub-Phase 12c: Cleanup & Verification
+
+- [ ] **TOKEN_CHECK_12C**: Verify token usage < 110K before continuing
 - [ ] T106 Remove Vite: uninstall `vite`, `@vitejs/plugin-react`, delete `vite.config.ts`
 - [ ] T107 Update README.md with new development commands and deployment instructions
 - [ ] T108 Run full quickstart.md validation (all user stories)
-
-### Verification
-
 - [ ] T109 Verify GIF export works in Next.js environment (R-007)
 - [ ] T110 Verify offline mode works per Constitution V.1 (PWA service worker)
 - [ ] T111 Verify Zustand hydration has no SSR mismatches (R-008)
 
-**Checkpoint**: Production ready - all stories functional, security hardened, cleaned up
+**Checkpoint 12**: Production ready - all stories functional, security hardened, cleaned up
 
 ---
 

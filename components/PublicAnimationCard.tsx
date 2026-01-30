@@ -14,6 +14,7 @@ interface PublicAnimation {
   frame_count: number;
   upvote_count: number;
   created_at: string;
+  user_id?: string;
   author: {
     display_name: string | null;
   };
@@ -23,6 +24,9 @@ interface PublicAnimation {
 interface PublicAnimationCardProps {
   animation: PublicAnimation;
   onView: (id: string) => void;
+  currentUserId?: string | null;
+  onUpvote?: (id: string) => Promise<{ upvoted: boolean; upvote_count: number } | null>;
+  onLoginRequired?: () => void;
 }
 
 const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
@@ -51,8 +55,35 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function PublicAnimationCard({ animation, onView }: PublicAnimationCardProps) {
+export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote, onLoginRequired }: PublicAnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [hasUpvoted, setHasUpvoted] = useState(animation.user_has_upvoted);
+  const [upvoteCount, setUpvoteCount] = useState(animation.upvote_count);
+  const [isUpvoting, setIsUpvoting] = useState(false);
+
+  const isOwner = currentUserId && animation.user_id === currentUserId;
+
+  const handleUpvoteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!currentUserId) {
+      onLoginRequired?.();
+      return;
+    }
+
+    if (isOwner || !onUpvote) return;
+
+    setIsUpvoting(true);
+    try {
+      const result = await onUpvote(animation.id);
+      if (result) {
+        setHasUpvoted(result.upvoted);
+        setUpvoteCount(result.upvote_count);
+      }
+    } finally {
+      setIsUpvoting(false);
+    }
+  };
 
   return (
     <div
@@ -77,11 +108,28 @@ export function PublicAnimationCard({ animation, onView }: PublicAnimationCardPr
           {ANIMATION_TYPE_LABELS[animation.animation_type]}
         </div>
 
-        {/* Upvote count */}
-        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium">
-          <ThumbsUp className={`w-3.5 h-3.5 ${animation.user_has_upvoted ? 'fill-primary text-primary' : ''}`} />
-          <span>{animation.upvote_count}</span>
-        </div>
+        {/* Upvote button */}
+        {!isOwner && (
+          <button
+            onClick={handleUpvoteClick}
+            disabled={isUpvoting}
+            className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${
+              hasUpvoted
+                ? 'bg-primary text-text-inverse'
+                : 'bg-surface/90 hover:bg-surface'
+            }`}
+            title={currentUserId ? (hasUpvoted ? 'Remove upvote' : 'Upvote') : 'Sign in to upvote'}
+          >
+            <ThumbsUp className={`w-3.5 h-3.5 ${hasUpvoted ? 'fill-current' : ''}`} />
+            <span>{upvoteCount}</span>
+          </button>
+        )}
+        {isOwner && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium">
+            <ThumbsUp className="w-3.5 h-3.5" />
+            <span>{upvoteCount}</span>
+          </div>
+        )}
       </div>
 
       {/* Card content */}

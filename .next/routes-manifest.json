@@ -53,6 +53,14 @@
       "namedRegex": "^/api/animations/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/animations/[id]/upvote",
+      "regex": "^/api/animations/([^/]+?)/upvote(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/animations/(?<nxtPid>[^/]+?)/upvote(?:/)?$"
+    },
+    {
       "page": "/api/og/[id]",
       "regex": "^/api/og/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -115,6 +123,12 @@
       "namedRegex": "^/api/gallery(?:/)?$"
     },
     {
+      "page": "/api/report",
+      "regex": "^/api/report(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/report(?:/)?$"
+    },
+    {
       "page": "/api/user/account",
       "regex": "^/api/user/account(?:/)?$",
       "routeKeys": {},
@@ -131,6 +145,12 @@
       "regex": "^/app(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/app(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
     },
     {
       "page": "/forgot-password",
@@ -163,6 +183,12 @@
       "namedRegex": "^/offline(?:/)?$"
     },
     {
+      "page": "/privacy",
+      "regex": "^/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy(?:/)?$"
+    },
+    {
       "page": "/register",
       "regex": "^/register(?:/)?$",
       "routeKeys": {},
@@ -173,6 +199,12 @@
       "regex": "^/reset\\-password(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/reset\\-password(?:/)?$"
+    },
+    {
+      "page": "/terms",
+      "regex": "^/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms(?:/)?$"
     }
   ],
   "dataRoutes": [],
