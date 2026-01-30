@@ -21,3 +21,6 @@ node_modules
 # Vercel
 .vercel
 .env*.local
+
+# Next.js build output
+.next/
