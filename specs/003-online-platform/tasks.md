@@ -125,13 +125,13 @@
 
 ### Sub-Phase 3d: Personal Gallery UI
 
-- [ ] T039 [US1] Create `app/my-gallery/page.tsx` (protected route) listing user's animations
-- [ ] T040 [US1] Add sorting controls (title, date, duration, type) to personal gallery
-- [ ] T041 [US1] Create animation card component in `components/AnimationCard.tsx` with thumbnail
-- [ ] T042 [US1] Add edit metadata modal to personal gallery items
-- [ ] T043 [US1] Add delete confirmation dialog to personal gallery items
-- [ ] T044 [US1] Create "Save to Cloud" button/modal in Editor with title/description/type/tags inputs
-- [ ] T045 [US1] Integrate save flow: validate → POST /api/animations → show success/redirect to gallery
+- [x] T039 [US1] Create `app/my-gallery/page.tsx` (protected route) listing user's animations
+- [x] T040 [US1] Add sorting controls (title, date, duration, type) to personal gallery
+- [x] T041 [US1] Create animation card component in `components/AnimationCard.tsx` with thumbnail
+- [x] T042 [US1] Add edit metadata modal to personal gallery items
+- [x] T043 [US1] Add delete confirmation dialog to personal gallery items
+- [x] T044 [US1] Create "Save to Cloud" button/modal in Editor with title/description/type/tags inputs
+- [x] T045 [US1] Integrate save flow: validate → POST /api/animations → show success/redirect to gallery
 
 **Checkpoint 3**: User Story 1 fully functional - register → login → create animation → save → view in gallery
 
@@ -145,14 +145,14 @@
 
 ### Visibility Controls
 
-- [ ] T048 [US2] Add visibility toggle (private/link_shared/public) to edit metadata modal
-- [ ] T049 [US2] Update PUT /api/animations/[id] to handle visibility changes
-- [ ] T050 [US2] Add visibility badge to AnimationCard component
+- [x] T048 [US2] Add visibility toggle (private/link_shared/public) to edit metadata modal
+- [x] T049 [US2] Update PUT /api/animations/[id] to handle visibility changes
+- [x] T050 [US2] Add visibility badge to AnimationCard component
 
 ### Shareable Links
 
-- [ ] T051 [US2] Create "Copy Link" button for link_shared and public animations
-- [ ] T052 [US2] Create `app/replay/[id]/page.tsx` for public replay viewing
+- [x] T051 [US2] Create "Copy Link" button for link_shared and public animations
+- [x] T052 [US2] Create `app/replay/[id]/page.tsx` for public replay viewing
 
 **Checkpoint**: User Story 2 functional - visibility controls work, public animations discoverable
 
@@ -166,23 +166,23 @@
 
 ### Public Gallery Page
 
-- [ ] T053 [US3] Create `app/gallery/page.tsx` (SSR for SEO) with public animation list
-- [ ] T054 [US3] Create `app/api/gallery/route.ts` with search, filter, sort, pagination
-- [ ] T055 [US3] Add search input (title + description full-text search) to gallery page
-- [ ] T056 [US3] Add filter dropdowns (animation_type, tags) to gallery page
-- [ ] T057 [US3] Add sort controls (newest, most upvoted) to gallery page
-- [ ] T058 [US3] Implement pagination or infinite scroll for gallery
+- [x] T053 [US3] Create `app/gallery/page.tsx` (SSR for SEO) with public animation list
+- [x] T054 [US3] Create `app/api/gallery/route.ts` with search, filter, sort, pagination
+- [x] T055 [US3] Add search input (title + description full-text search) to gallery page
+- [x] T056 [US3] Add filter dropdowns (animation_type, tags) to gallery page
+- [x] T057 [US3] Add sort controls (newest, most upvoted) to gallery page
+- [x] T058 [US3] Implement pagination or infinite scroll for gallery
 
 ### Animation Detail Page
 
-- [ ] T059 [US3] Create `app/gallery/[id]/page.tsx` with full animation replay
-- [ ] T060 [US3] Display metadata: title, description, author, tags, upvote count, created date
-- [ ] T061 [US3] Add SEO meta tags (title, description, OG tags) to detail page
+- [x] T059 [US3] Create `app/gallery/[id]/page.tsx` with full animation replay
+- [x] T060 [US3] Display metadata: title, description, author, tags, upvote count, created date
+- [x] T061 [US3] Add SEO meta tags (title, description, OG tags) to detail page
 
 ### Dynamic OG Images
 
-- [ ] T062 [US3] Create `app/api/og/[id]/route.tsx` using @vercel/og for dynamic preview images
-- [ ] T063 [US3] Configure OG image URL in gallery detail page meta tags
+- [x] T062 [US3] Create `app/api/og/[id]/route.tsx` using @vercel/og for dynamic preview images
+- [x] T063 [US3] Configure OG image URL in gallery detail page meta tags
 
 **Checkpoint**: User Story 3 functional - public gallery browsable, searchable, filterable; animation details viewable
 

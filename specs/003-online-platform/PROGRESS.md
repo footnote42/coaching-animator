@@ -8,14 +8,69 @@
 
 ## Current Status
 
-**Phase**: 3 - User Story 1  
-**Sub-Phase**: 3d (Personal Gallery UI)  
-**Next Task**: T039  
+**Phase**: 6 - User Story 4  
+**Sub-Phase**: Guest Mode Enforcement  
+**Next Task**: T064  
 **Build Status**: ✅ Passing
 
 ---
 
 ## Session History
+
+## Session 2 - 2026-01-30
+
+**Sub-Phase**: 3d → Phase 5 (Personal Gallery → Public Gallery)
+**Completed Tasks**: T039-T045 (Phase 3d), T048-T052 (Phase 4), T053-T063 (Phase 5)
+**Status**: ✅ Phases 3, 4, 5 complete - US1, US2, US3 fully functional
+
+**Verification**:
+- [x] `npm run build` passes
+- [x] Checkpoint test: All Phase 3d components created and integrated
+- [x] Checkpoint test: Public gallery at /gallery works with search/filter/sort
+- [x] Checkpoint test: Gallery detail pages with SEO meta and OG images
+- [x] Checkpoint test: Replay pages at /replay/[id] for shared animations
+
+**Key Changes**:
+
+**Phase 3d (Personal Gallery UI)**:
+- Created `app/my-gallery/page.tsx` - protected gallery page with auth check
+- Created `components/AnimationCard.tsx` - card component with visibility badges, play overlay
+- Created `components/EditMetadataModal.tsx` - modal for editing title, type, visibility
+- Created `components/DeleteConfirmDialog.tsx` - confirmation dialog for deletion
+- Created `components/SaveToCloudModal.tsx` - full save form with title, description, type, tags, visibility
+- Updated `app/app/page.tsx` - integrated SaveToCloudModal with project store
+- Updated `src/components/Sidebar/ProjectActions.tsx` - added "Save to Cloud" button for auth users, "Sign in to Save" for guests
+- Added sorting controls (title, date, duration, type) to my-gallery page
+- Updated `tsconfig.json` to support both `./src/*` and `./*` path aliases
+
+**Phase 4 (US2 - Public Share)**:
+- Visibility toggle already in EditMetadataModal (T048)
+- PUT /api/animations/[id] already handles visibility (T049)
+- AnimationCard already has visibility badges (T050)
+- Added Copy Link button to AnimationCard for shared animations (T051)
+- Created `app/replay/[id]/page.tsx` - public replay viewer (T052)
+- Created `app/replay/[id]/ReplayViewer.tsx` - client-side animation player
+
+**Phase 5 (US3 - Public Gallery)**:
+- Created `app/api/gallery/route.ts` - search, filter, sort, pagination (T054)
+- Created `app/gallery/page.tsx` - public gallery with Suspense wrapper (T053, T055-T058)
+- Created `components/PublicAnimationCard.tsx` - card for public gallery
+- Created `app/gallery/[id]/page.tsx` - SSR detail page with SEO meta (T059-T061)
+- Created `app/gallery/[id]/GalleryDetailClient.tsx` - interactive viewer with upvote/share
+- Created `app/api/og/[id]/route.tsx` - dynamic OG image generation (T062-T063)
+
+**Issues/Blockers**: None
+
+**RESUME AT**: T064 (Phase 6: User Story 4 - Guest Mode Enforcement)
+
+**Context for Next Session**:
+- All P1 user stories complete: US1, US2, US3
+- Public gallery at /gallery with search, filter, sort, pagination
+- Gallery detail pages with SEO meta tags and OG images
+- Replay pages at /replay/[id] for shared animations
+- Ready for P2 stories starting with Guest Mode (US4)
+
+---
 
 ## Session 1 - 2026-01-29
 
@@ -110,11 +165,11 @@ Use the template below for each session.
 
 ## Completed Phases
 
-- [ ] Phase 1: Setup (T001-T007)
-- [ ] Phase 2: Foundational (T008-T026)
-- [ ] Phase 3: US1 - Auth + Save (T027-T047)
-- [ ] Phase 4: US2 - Public Share (T048-T052)
-- [ ] Phase 5: US3 - Public Gallery (T053-T063)
+- [x] Phase 1: Setup (T001-T007)
+- [x] Phase 2: Foundational (T008-T026)
+- [x] Phase 3: US1 - Auth + Save (T027-T047)
+- [x] Phase 4: US2 - Public Share (T048-T052)
+- [x] Phase 5: US3 - Public Gallery (T053-T063)
 - [ ] Phase 6: US4 - Guest Mode (T064-T067)
 - [ ] Phase 7: US5 - Upvotes (T068-T073)
 - [ ] Phase 8: US6 - Reports (T074-T078)

@@ -8,9 +8,15 @@
   "/api/animations/[id]/route": "/api/animations/[id]",
   "/api/animations/route": "/api/animations",
   "/api/auth/callback/route": "/api/auth/callback",
+  "/api/gallery/route": "/api/gallery",
+  "/api/og/[id]/route": "/api/og/[id]",
   "/api/user/account/route": "/api/user/account",
   "/api/user/profile/route": "/api/user/profile",
   "/app/page": "/app",
+  "/gallery/[id]/page": "/gallery/[id]",
+  "/gallery/page": "/gallery",
+  "/my-gallery/page": "/my-gallery",
   "/offline/page": "/offline",
-  "/page": "/"
+  "/page": "/",
+  "/replay/[id]/page": "/replay/[id]"
 }

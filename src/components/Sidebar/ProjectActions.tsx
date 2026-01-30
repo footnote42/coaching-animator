@@ -1,4 +1,4 @@
-import { Save, FolderOpen, FilePlus, Video, Loader2 } from 'lucide-react';
+import { Save, FolderOpen, FilePlus, Video, Loader2, Cloud } from 'lucide-react';
 import { useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
@@ -37,8 +37,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     exportProgress = 0,
     exportError = null,
     canExport = false,
-    isAuthenticated: _isAuthenticated = false,
-    onSaveToCloud: _onSaveToCloud,
+    isAuthenticated = false,
+    onSaveToCloud,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -205,8 +205,31 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     ) : (
                         <Save className="w-4 h-4 mr-2" />
                     )}
-                    Save
+                    Save Local
                 </Button>
+
+                {isAuthenticated && onSaveToCloud && (
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={onSaveToCloud}
+                        disabled={!project}
+                        className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-white mt-2"
+                    >
+                        <Cloud className="w-4 h-4 mr-2" />
+                        Save to Cloud
+                    </Button>
+                )}
+
+                {!isAuthenticated && (
+                    <a
+                        href="/login?redirect=/app"
+                        className="w-full mt-2 inline-flex items-center justify-center px-3 py-2 text-sm font-medium border border-[var(--color-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-warm)] transition-colors"
+                    >
+                        <Cloud className="w-4 h-4 mr-2" />
+                        Sign in to Save
+                    </a>
+                )}
             </div>
 
             {/* Share Section */}

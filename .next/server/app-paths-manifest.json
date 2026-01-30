@@ -8,9 +8,15 @@
   "/api/animations/[id]/route": "app/api/animations/[id]/route.js",
   "/api/animations/route": "app/api/animations/route.js",
   "/api/auth/callback/route": "app/api/auth/callback/route.js",
+  "/api/gallery/route": "app/api/gallery/route.js",
+  "/api/og/[id]/route": "app-edge-has-no-entrypoint",
   "/api/user/account/route": "app/api/user/account/route.js",
   "/api/user/profile/route": "app/api/user/profile/route.js",
   "/app/page": "app/app/page.js",
+  "/gallery/[id]/page": "app/gallery/[id]/page.js",
+  "/gallery/page": "app/gallery/page.js",
+  "/my-gallery/page": "app/my-gallery/page.js",
   "/offline/page": "app/offline/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/replay/[id]/page": "app/replay/[id]/page.js"
 }

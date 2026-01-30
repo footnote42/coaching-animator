@@ -51,6 +51,30 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/animations/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/og/[id]",
+      "regex": "^/api/og/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/og/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/gallery/[id]",
+      "regex": "^/gallery/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/gallery/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/replay/[id]",
+      "regex": "^/replay/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/replay/(?<nxtPid>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -85,6 +109,12 @@
       "namedRegex": "^/api/auth/callback(?:/)?$"
     },
     {
+      "page": "/api/gallery",
+      "regex": "^/api/gallery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/gallery(?:/)?$"
+    },
+    {
       "page": "/api/user/account",
       "regex": "^/api/user/account(?:/)?$",
       "routeKeys": {},
@@ -109,10 +139,22 @@
       "namedRegex": "^/forgot\\-password(?:/)?$"
     },
     {
+      "page": "/gallery",
+      "regex": "^/gallery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/gallery(?:/)?$"
+    },
+    {
       "page": "/login",
       "regex": "^/login(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/my-gallery",
+      "regex": "^/my\\-gallery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/my\\-gallery(?:/)?$"
     },
     {
       "page": "/offline",

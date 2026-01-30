@@ -1,9 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../../lib/supabase/client';
+import { SaveToCloudModal } from '../../components/SaveToCloudModal';
+import { useProjectStore } from '../../src/store/projectStore';
 import type { User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 const Editor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
@@ -18,8 +22,12 @@ const Editor = dynamic(() => import('../../components/Editor'), {
 });
 
 export default function AnimationToolPage() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  const project = useProjectStore((state) => state.project);
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
@@ -36,10 +44,30 @@ export default function AnimationToolPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSaveToCloud = () => {
-    // TODO: Implement save to cloud modal in Phase 3d
-    console.log('Save to cloud clicked');
-  };
+  const handleSaveToCloud = useCallback(() => {
+    if (!user) {
+      router.push('/login?redirect=/app');
+      return;
+    }
+    setShowSaveModal(true);
+  }, [user, router]);
+
+  const handleSaveSuccess = useCallback((id: string) => {
+    setShowSaveModal(false);
+    toast.success('Animation saved to cloud!');
+    console.log('Saved animation ID:', id);
+  }, []);
+
+  const getPayload = useCallback(() => {
+    if (!project) return null;
+    return {
+      version: '1.0',
+      name: project.name,
+      sport: project.sport,
+      frames: project.frames,
+      settings: project.settings,
+    };
+  }, [project]);
 
   if (loading) {
     return (
@@ -52,5 +80,19 @@ export default function AnimationToolPage() {
     );
   }
 
-  return <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} />;
+  const payload = getPayload();
+
+  return (
+    <>
+      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} />
+      {showSaveModal && payload && (
+        <SaveToCloudModal
+          projectName={project?.name || 'Untitled Animation'}
+          payload={payload}
+          onClose={() => setShowSaveModal(false)}
+          onSuccess={handleSaveSuccess}
+        />
+      )}
+    </>
+  );
 }

@@ -23,8 +23,20 @@ Execute the implementation tasks from the current iteration's task list, working
 2. Read `specs/003-online-platform/tasks.md` for the current phase only
 3. Work through tasks sequentially unless marked [P] for parallel
 4. Check off tasks as you complete them by updating tasks.md with `[x]`
-5. **Stop at sub-phase checkpoints** to verify before continuing
-6. Follow Constitution principles (Sacred Offline, Modular Architecture, Rugby-Centric Design)
+5. **Monitor token usage after each task** - Stop if threshold reached
+6. **Stop at sub-phase checkpoints** to verify before continuing
+7. Follow Constitution principles (Sacred Offline, Modular Architecture, Rugby-Centric Design)
+
+## EXECUTION LOOP (per task)
+
+For each task in the current sub-phase:
+1. **Check token usage** - If > 130K tokens, proceed immediately to handoff
+2. **Assess remaining capacity** - If 110K-130K tokens, complete current task only then handoff
+3. **Read task requirements** from tasks.md
+4. **Implement task** following Constitution principles
+5. **Mark complete** with [x] in tasks.md
+6. **Verify** - Test the change works
+7. **Repeat** OR handoff if checkpoint/threshold reached
 
 # SUCCESS CRITERIA
 - Next.js app boots and existing animation tool works
@@ -78,15 +90,32 @@ Large phases are divided into sub-phases with verification checkpoints:
 - Each user story phase = 1 session max
 - Stop at phase checkpoint before continuing
 
-## MID-PHASE HANDOFF TRIGGERS
+## TOKEN USAGE MONITORING
 
-The agent **SHOULD** initiate an early handoff if ANY of these occur:
+**CRITICAL**: Token monitoring is mandatory to prevent context rot and ensure quality handoffs.
 
-1. **Unexpected Complexity**: A single task requires >3 files modified or >200 lines changed
-2. **Error Loop**: Same error encountered 3+ times without resolution
-3. **Scope Creep**: Task reveals missing dependencies not in the plan
-4. **Context Pressure**: Agent senses degraded recall of earlier work in session
-5. **Build Failure**: `npm run build` fails and fix is non-obvious
+**Decision Points**:
+- **< 110K tokens**: Continue normally with next task
+- **110K-130K tokens**: Complete current task only, then initiate handoff
+- **> 130K tokens**: Stop immediately and initiate handoff (do not start new tasks)
+
+**Philosophy**: The two-thirds threshold (130K of 200K) preserves enough "fresh" context to:
+- Write a coherent PROGRESS.md update
+- Explain current state clearly to next session
+- Complete graceful handoff without degraded recall
+
+**Never continue past 130K tokens** even if a sub-phase is incomplete.
+
+## MANDATORY HANDOFF TRIGGERS
+
+The agent **MUST** initiate handoff if ANY of these occur:
+
+1. **Context Threshold**: Token usage reaches 130K (66% of 200K context)
+2. **Sub-Phase Checkpoint**: Current sub-phase tasks are complete
+3. **Unexpected Complexity**: A single task requires >3 files modified or >200 lines changed
+4. **Error Loop**: Same error encountered 3+ times without resolution
+5. **Scope Creep**: Task reveals missing dependencies not in the plan
+6. **Build Failure**: `npm run build` fails and fix is non-obvious
 
 When triggering early handoff:
 1. Complete current task OR revert to last working state
