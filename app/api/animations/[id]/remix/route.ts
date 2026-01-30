@@ -4,10 +4,11 @@ import { requireAuth, isAuthError, requireNotBanned } from '../../../../../lib/a
 import { checkQuota } from '../../../../../lib/quota';
 
 interface RouteParams {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export async function POST(_request: NextRequest, { params }: RouteParams) {
+  const { id } = params;
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
@@ -15,8 +16,6 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
   // Check if user is banned
   const banCheck = await requireNotBanned(user.id);
   if (banCheck) return banCheck;
-
-  const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
   // Fetch the original animation (must be public)

@@ -5,11 +5,11 @@ import { UpdateAnimationSchema } from '../../../../lib/schemas/animations';
 import { validateAnimationContent } from '../../../../lib/moderation';
 
 interface RouteParams {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export async function GET(_request: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
+  const { id } = params;
   const user = await getUser();
   const supabase = await createSupabaseServerClient();
 
@@ -82,7 +82,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
+  const { id } = params;
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
@@ -188,7 +188,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
+  const { id } = params;
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;

@@ -9,15 +9,14 @@ const ReportActionSchema = z.object({
 });
 
 interface RouteParams {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
+  const { id: reportId } = params;
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) return authResult;
   const admin = authResult;
-
-  const { id: reportId } = await params;
 
   let body;
   try {

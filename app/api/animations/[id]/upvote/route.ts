@@ -3,11 +3,11 @@ import { createSupabaseServerClient } from '../../../../../lib/supabase/server';
 import { requireAuth, isAuthError } from '../../../../../lib/auth';
 
 interface RouteParams {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export async function POST(_request: NextRequest, { params }: RouteParams) {
-  const { id } = await params;
+  const { id } = params;
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
