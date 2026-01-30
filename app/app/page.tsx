@@ -76,7 +76,14 @@ function AnimationToolPageContent() {
         })
         .then(data => {
           if (data.payload) {
-            const result = loadProject(data.payload);
+            // Add required project fields that aren't stored in payload
+            const projectData = {
+              ...data.payload,
+              id: data.id || crypto.randomUUID(),
+              createdAt: data.created_at || new Date().toISOString(),
+              updatedAt: data.updated_at || new Date().toISOString(),
+            };
+            const result = loadProject(projectData);
             if (!result.success) {
               console.error('Failed to load project:', result.errors);
               toast.error('Failed to load animation');
