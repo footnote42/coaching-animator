@@ -4,6 +4,9 @@ import { getUser, requireAuth, isAuthError, requireNotBanned } from '../../../..
 import { UpdateAnimationSchema } from '../../../../lib/schemas/animations';
 import { validateAnimationContent } from '../../../../lib/moderation';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface RouteParams {
   params: { id: string };
 }

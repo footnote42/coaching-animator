@@ -3,6 +3,9 @@ import { createSupabaseServerClient } from '../../../../../lib/supabase/server';
 import { requireAuth, isAuthError, requireNotBanned } from '../../../../../lib/auth';
 import { checkQuota } from '../../../../../lib/quota';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface RouteParams {
   params: { id: string };
 }

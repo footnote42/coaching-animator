@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../lib/supabase/server';
 import { requireAuth, isAuthError } from '../../../../../lib/auth';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface RouteParams {
   params: { id: string };
 }
