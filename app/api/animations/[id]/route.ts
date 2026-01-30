@@ -13,15 +13,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const user = await getUser();
   const supabase = await createSupabaseServerClient();
 
-  // Fetch animation with author info
+  // Fetch animation
   const { data: animation, error } = await supabase
     .from('saved_animations')
-    .select(`
-      *,
-      user_profiles!saved_animations_user_id_fkey (
-        display_name
-      )
-    `)
+    .select('*')
     .eq('id', id)
     .is('hidden_at', null)
     .single();
@@ -31,6 +26,17 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       { error: { code: 'NOT_FOUND', message: 'Animation not found' } },
       { status: 404 }
     );
+  }
+
+  // Fetch author display name separately
+  let authorDisplayName: string | null = null;
+  if (animation.user_id) {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('display_name')
+      .eq('id', animation.user_id)
+      .single();
+    authorDisplayName = profile?.display_name ?? null;
   }
 
   // Check access permissions
@@ -68,11 +74,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   return NextResponse.json({
     ...animation,
     author: {
-      display_name: animation.user_profiles?.display_name ?? null,
+      display_name: authorDisplayName,
     },
     user_has_upvoted: userHasUpvoted,
     is_owner: isOwner,
-    user_profiles: undefined,
   });
 }
 

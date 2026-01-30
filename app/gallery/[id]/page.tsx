@@ -66,10 +66,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
       upvote_count,
       view_count,
       created_at,
-      user_id,
-      user_profiles!saved_animations_user_id_fkey (
-        display_name
-      )
+      user_id
     `)
     .eq('id', id)
     .is('hidden_at', null)
@@ -80,13 +77,22 @@ export default async function GalleryDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // Fetch author display name separately
+  let authorName = 'Anonymous Coach';
+  if (animation.user_id) {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('display_name')
+      .eq('id', animation.user_id)
+      .single();
+    authorName = profile?.display_name || 'Anonymous Coach';
+  }
+
   // Increment view count
   await supabase
     .from('saved_animations')
     .update({ view_count: (animation.view_count || 0) + 1 })
     .eq('id', id);
-
-  const authorName = (animation.user_profiles as unknown as { display_name: string | null } | null)?.display_name || 'Anonymous Coach';
 
   return (
     <GalleryDetailClient
