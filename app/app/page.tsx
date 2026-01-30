@@ -47,6 +47,7 @@ function AnimationToolPageContent() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [lastLoadedId, setLastLoadedId] = useState<string | null>(null);
 
   const project = useProjectStore((state) => state.project);
   const loadProject = useProjectStore((state) => state.loadProject);
@@ -66,9 +67,11 @@ function AnimationToolPageContent() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load animation from cloud if URL parameter is present
+  // Load animation from cloud if URL parameter is present or changed
   useEffect(() => {
-    if (loadId && !project) {
+    // Only load if we have a loadId and it's different from last loaded
+    if (loadId && loadId !== lastLoadedId) {
+      setLastLoadedId(loadId);
       fetch(`/api/animations/${loadId}`, { credentials: 'include' })
         .then(res => {
           if (!res.ok) throw new Error('Failed to load animation');
@@ -99,7 +102,7 @@ function AnimationToolPageContent() {
           toast.error('Failed to load animation');
         });
     }
-  }, [loadId, project, loadProject]);
+  }, [loadId, lastLoadedId, loadProject]);
 
   const handleSaveToCloud = useCallback(() => {
     if (!user) {
