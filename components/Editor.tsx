@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Konva from 'konva';
 import { Stage } from '@/components/Canvas/Stage';
 import { Field } from '@/components/Canvas/Field';
@@ -98,6 +99,10 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
     position: { x: number; y: number };
   } | null>(null);
 
+  const searchParams = useSearchParams();
+  const loadId = searchParams.get('load');
+  const [isLoadingFromCloud, setIsLoadingFromCloud] = useState(false);
+
   useAnimationLoop();
   useKeyboardShortcuts();
   useAutoSave();
@@ -114,8 +119,41 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  // Load animation from cloud if URL parameter is present
   useEffect(() => {
-    if (!project) {
+    if (loadId && !project && !isLoadingFromCloud) {
+      setIsLoadingFromCloud(true);
+      fetch(`/api/animations/${loadId}`, { credentials: 'include' })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to load animation');
+          return res.json();
+        })
+        .then(data => {
+          if (data.content) {
+            const result = loadProject(data.content);
+            if (!result.success) {
+              console.error('Failed to load project:', result.errors);
+              newProject();
+            }
+            // Clear autosave to prevent confusion
+            localStorage.removeItem('rugby_animator_autosave');
+            localStorage.removeItem('rugby_animator_autosave_timestamp');
+          } else {
+            newProject();
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load animation from cloud:', err);
+          newProject();
+        })
+        .finally(() => setIsLoadingFromCloud(false));
+      return;
+    }
+  }, [loadId, project, isLoadingFromCloud, loadProject, newProject]);
+
+  // Autosave recovery - only if not loading from URL
+  useEffect(() => {
+    if (!project && !loadId && !isLoadingFromCloud) {
       const autosaveData = localStorage.getItem('rugby_animator_autosave');
       const autosaveTimestamp = localStorage.getItem('rugby_animator_autosave_timestamp');
 
@@ -137,7 +175,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud }: EditorProps) 
       }
       newProject();
     }
-  }, [project, newProject]);
+  }, [project, newProject, loadId, isLoadingFromCloud]);
 
   const handleRecoverProject = () => {
     if (recoveredProject) {
