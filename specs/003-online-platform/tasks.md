@@ -405,24 +405,24 @@
 
 ### Sub-Phase 13b: Environment & Deployment
 
-- [ ] **TOKEN_CHECK_13B**: Verify token usage < 110K before continuing
-- [ ] T117 Create Vercel project linked to repository
-- [ ] T118 Configure environment variables in Vercel:
+- [x] **TOKEN_CHECK_13B**: Verify token usage < 110K before continuing
+- [x] T117 Create Vercel project linked to repository
+- [x] T118 Configure environment variables in Vercel:
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY` (server-only)
   - `NEXT_PUBLIC_SITE_URL` (production URL)
-- [ ] T119 Deploy to Vercel and verify build succeeds
-- [ ] T120 Verify production site loads at deployment URL
+- [x] T119 Deploy to Vercel and verify build succeeds
+- [x] T120 Verify production site loads at deployment URL
 
 **Sub-Checkpoint 13b**: Site deployed, accessible at production URL
 
 ### Sub-Phase 13c: Admin Setup & Verification
 
-- [ ] **TOKEN_CHECK_13C**: Verify token usage < 110K before continuing
-- [ ] T121 Register admin account on production
-- [ ] T122 Manually set admin role: `UPDATE user_profiles SET role = 'admin' WHERE id = '<admin-user-id>'`
-- [ ] T123 Verify admin dashboard accessible at `/admin`
+- [x] **TOKEN_CHECK_13C**: Verify token usage < 110K before continuing
+- [x] T121 Register admin account on production
+- [x] T122 Manually set admin role: `UPDATE user_profiles SET role = 'admin' WHERE id = '<admin-user-id>'`
+- [x] T123 Verify admin dashboard accessible at `/admin`
 
 **Sub-Checkpoint 13c**: Admin account configured
 

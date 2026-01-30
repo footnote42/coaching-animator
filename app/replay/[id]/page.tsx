@@ -55,15 +55,23 @@ export default async function ReplayPage({ params }: PageProps) {
       upvote_count,
       view_count,
       created_at,
-      user_id,
-      user_profiles!saved_animations_user_id_fkey (
-        display_name
-      )
+      user_id
     `)
     .eq('id', id)
     .is('hidden_at', null)
     .in('visibility', ['public', 'link_shared'])
     .single();
+  
+  // Fetch author display name separately
+  let authorDisplayName: string | null = null;
+  if (animation?.user_id) {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('display_name')
+      .eq('id', animation.user_id)
+      .single();
+    authorDisplayName = profile?.display_name ?? null;
+  }
 
   if (error || !animation) {
     notFound();
@@ -87,7 +95,7 @@ export default async function ReplayPage({ params }: PageProps) {
             {animation.title}
           </h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-text-primary/70">
-            <span>By {(animation.user_profiles as unknown as { display_name: string | null } | null)?.display_name || 'Anonymous Coach'}</span>
+            <span>By {authorDisplayName || 'Anonymous Coach'}</span>
             <span>•</span>
             <span className="capitalize">{animation.animation_type}</span>
             <span>•</span>

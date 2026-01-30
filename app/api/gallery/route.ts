@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
       frame_count,
       upvote_count,
       created_at,
-      user_id,
-      user_profiles!saved_animations_user_id_fkey (
-        display_name
-      )
+      user_id
     `, { count: 'exact' })
     .eq('visibility', 'public')
     .is('hidden_at', null);
@@ -86,6 +83,18 @@ export async function GET(request: NextRequest) {
     upvotedIds = new Set(upvotes?.map(u => u.animation_id) || []);
   }
 
+  // Fetch author display names
+  let authorNames: Map<string, string | null> = new Map();
+  if (data && data.length > 0) {
+    const userIds = [...new Set(data.map(a => a.user_id))];
+    const { data: profiles } = await supabase
+      .from('user_profiles')
+      .select('id, display_name')
+      .in('id', userIds);
+    
+    profiles?.forEach(p => authorNames.set(p.id, p.display_name));
+  }
+
   // Transform response
   const animations = data?.map(animation => ({
     id: animation.id,
@@ -99,7 +108,7 @@ export async function GET(request: NextRequest) {
     created_at: animation.created_at,
     user_id: animation.user_id,
     author: {
-      display_name: (animation.user_profiles as unknown as { display_name: string | null } | null)?.display_name ?? null,
+      display_name: authorNames.get(animation.user_id) ?? null,
     },
     user_has_upvoted: upvotedIds.has(animation.id),
   })) || [];
