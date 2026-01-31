@@ -33,7 +33,7 @@ describe('Field Component', () => {
     });
 
     it('renders with rugby-union by default if provided as prop', async () => {
-        const { queryByTestId } = render(
+        render(
             <Field sport="rugby-union" width={2000} height={1400} />
         );
 
