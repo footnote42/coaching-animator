@@ -78,7 +78,9 @@ specs/003-online-platform/   # Current iteration specs
 - `npm run build` - Production build (currently has static generation issues)
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
-- `npm test` - Run tests
+- `npx tsc --noEmit` - Run Type Check
+- `npm test` - Run unit tests
+- `npm run e2e` - Run Playwright tests
 
 ## Project Status
 
@@ -193,6 +195,14 @@ specs/003-online-platform/   # Current iteration specs
 - **Tier 3 (Admin)**: Moderation and user management
 
 **Governance**: All backend features require Necessity Test, Privacy Impact Assessment, and Constitutional Amendment approval.
+
+## Quality & Stability Guardrails
+
+- **Shift Left Testing**: Always run `npm run lint` and `npx tsc --noEmit` locally before pushing to catch build blockers early.
+- **Diagnostic Logging**: Prioritize structured logging (e.g., `[Gallery API] Error: details`) over generic error messages to aid production debugging.
+- **Infrastructure Safety**: Use the `staging` branch for high-risk changes (Auth, Middleware, DB Schema) to verify CI/CD health before merging to `main`.
+- **SSR Awareness**: Next.js App Router relies on browser/server cookie sync. Always use the provided Supabase clients (`lib/supabase/`) to prevent session drift.
+- **Auth Resilience**: Use a 15s timeout for auth initialization in `UserContext` to account for mobile/network latency.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
