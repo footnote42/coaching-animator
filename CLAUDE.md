@@ -128,9 +128,12 @@ specs/003-online-platform/   # Current iteration specs
 
 ## Key Constraints (from Constitution v3.0)
 
-- **Tier 1 (Sacred Offline)**: Animation creation, editing, local persistence, local export - MUST work without network
-- **Tier 2 (Controlled Networked)**: Link sharing, public gallery browsing - explicit consent required
-- **Tier 3 (Authenticated)**: Cloud storage, personal gallery, upvoting, moderation - email-only auth
+**Architecture Pivot (2026-01-31)**: Tool now operates in cloud-first model. Local editing UI for UX, but all persistence requires Supabase backend.
+
+- **Tier 0 (Guest)**: 10-frame local editing, JSON download only, no cloud persistence
+- **Tier 1 (Authenticated)**: Cloud storage, personal gallery, unlimited animations (50 max per user quota)
+- **Tier 2 (Public/Link-Shared)**: Link sharing (read-only replay), public gallery browsing, upvoting
+- **Tier 3 (Admin)**: Moderation, user management
 
 **Absolute Prohibitions**:
 - No telemetry, analytics, or tracking
@@ -181,12 +184,13 @@ specs/003-online-platform/   # Current iteration specs
 ## Constitutional Compliance
 
 **Constitution Location**: `.specify/memory/constitution.md`
-**Current Version**: 3.0.0 (ratified 2026-01-16, amended 2026-01-29)
+**Current Version**: 3.0.1 (ratified 2026-01-16, amended 2026-01-29, architecture updated 2026-01-31)
 
-**Tiered Architecture**:
-- **Tier 1 (Sacred Offline)**: Animation creation, editing, local persistence, local export
-- **Tier 2 (Controlled Networked)**: Link sharing, public gallery browsing
-- **Tier 3 (Authenticated)**: Cloud storage, personal gallery, upvoting, moderation
+**Tiered Architecture (Cloud-First Model)**:
+- **Tier 0 (Guest)**: 10-frame local editor UI, JSON export only (no cloud)
+- **Tier 1 (Authenticated)**: Cloud persistence, personal gallery, up to 50 animations per user
+- **Tier 2 (Public/Link-Shared)**: Link sharing, public gallery browsing, upvoting
+- **Tier 3 (Admin)**: Moderation and user management
 
 **Governance**: All backend features require Necessity Test, Privacy Impact Assessment, and Constitutional Amendment approval.
 

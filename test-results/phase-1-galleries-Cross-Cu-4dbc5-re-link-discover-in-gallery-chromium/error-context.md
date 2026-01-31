@@ -1,0 +1,140 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Guest Mode
+      - generic [ref=e6]: •
+      - generic [ref=e7]: Limited to 10 frames and local storage only.
+    - link "Create Free Account" [ref=e8] [cursor=pointer]:
+      - /url: /register
+  - generic [ref=e9]:
+    - complementary [ref=e10]:
+      - generic [ref=e11]:
+        - link "🏉 Coaching Animator" [ref=e12] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e13]: 🏉
+          - generic [ref=e14]: Coaching Animator
+        - heading "Animation Editor" [level=1] [ref=e15]
+        - link "Public Gallery" [ref=e17] [cursor=pointer]:
+          - /url: /gallery
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - heading "Field Settings" [level=3] [ref=e21]
+            - generic [ref=e22]:
+              - generic [ref=e23]: Field Type
+              - combobox "Field Type" [ref=e24]:
+                - option "Rugby Union" [selected]
+                - option "Rugby League"
+                - option "Soccer"
+                - option "American Football"
+            - generic [ref=e25]:
+              - generic [ref=e26]: Layout
+              - generic [ref=e27]:
+                - button "Standard" [ref=e28]
+                - button "Attack" [ref=e29]
+                - button "Defence" [ref=e30]
+                - button "Training" [ref=e31]
+          - generic [ref=e32]:
+            - heading "Project" [level=3] [ref=e33]
+            - generic [ref=e34]:
+              - button "New" [ref=e35]:
+                - img
+                - text: New
+              - button "Open" [ref=e36]:
+                - img
+                - text: Open
+            - button "Save Local" [ref=e37]:
+              - img
+              - text: Save Local
+            - link "Sign in to Save" [ref=e38] [cursor=pointer]:
+              - /url: /login?redirect=/app
+              - img [ref=e39]
+              - text: Sign in to Save
+          - generic [ref=e41]:
+            - heading "Share" [level=3] [ref=e42]
+            - button "Share Link" [ref=e43]:
+              - img
+              - text: Share Link
+          - generic [ref=e44]:
+            - heading "Export Settings" [level=3] [ref=e45]
+            - generic [ref=e46]:
+              - generic [ref=e47]: Export Resolution
+              - generic [ref=e48]:
+                - button "✓ 720p" [ref=e49]
+                - button "1080p" [ref=e50]
+            - generic [ref=e51]:
+              - generic [ref=e52]: Export Format
+              - generic [ref=e53]:
+                - button "★ WebM" [disabled]
+                - button "GIF" [disabled]
+              - paragraph [ref=e54]: WebM provides good quality and file size.
+            - button "Export (WEBM)" [disabled]:
+              - img
+              - text: Export (WEBM)
+        - generic [ref=e55]:
+          - heading "Entities" [level=3] [ref=e56]
+          - generic [ref=e57]:
+            - button "Add attack player" [ref=e58]: + Attack Player
+            - button "Add defense player" [ref=e59]: + Defense Player
+            - button "Add ball" [ref=e60]: + Ball
+            - button "Add cone" [ref=e61]: + Cone
+          - heading "Equipment" [level=3] [ref=e62]
+          - generic [ref=e63]:
+            - button "Add tackle shield" [ref=e64]: + Tackle Shield
+            - button "Add tackle bag" [ref=e65]: + Tackle Bag
+          - heading "Annotations" [level=3] [ref=e66]
+          - generic [ref=e67]:
+            - button "Enable arrow drawing" [ref=e68]: Arrow →
+            - button "Enable line drawing" [ref=e69]: Line —
+        - generic [ref=e70]: No entity selected
+    - main [ref=e71]:
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - button "Play animation" [ref=e82]:
+              - img [ref=e83]
+            - button "Reset to frame 1" [ref=e85]:
+              - img [ref=e86]
+          - generic [ref=e89]:
+            - button "Previous frame" [disabled] [ref=e90]:
+              - img [ref=e91]
+            - generic [ref=e93]: 1/1
+            - button "Next frame" [disabled] [ref=e94]:
+              - img [ref=e95]
+          - generic [ref=e97]:
+            - generic [ref=e98]: "Speed:"
+            - button "0.5x" [ref=e99]
+            - button "1x" [ref=e100]
+            - button "2x" [ref=e101]
+          - button "Enable loop" [ref=e102]:
+            - img [ref=e103]
+          - button "Enable ghost mode" [ref=e108]:
+            - img [ref=e109]
+          - button "Enable grid overlay" [ref=e111]:
+            - img [ref=e112]
+        - generic [ref=e114]:
+          - generic [ref=e115] [cursor=pointer]:
+            - generic [ref=e117]: "1"
+            - generic [ref=e118]:
+              - generic [ref=e119]: 2.0s
+              - slider [ref=e125]
+          - button "Add new frame" [ref=e126]:
+            - img [ref=e127]
+    - region "Notifications alt+T"
+  - generic [ref=e129]:
+    - button "Close tutorial" [ref=e136]:
+      - img [ref=e137]
+    - generic [ref=e140]:
+      - generic [ref=e141]: 👋
+      - heading "Welcome to Coaching Animator" [level=2] [ref=e142]
+      - paragraph [ref=e143]: Create professional rugby animations in minutes. Here's a quick guide to get you started.
+    - generic [ref=e144]:
+      - button "Back" [disabled]
+      - button "Next" [ref=e145]:
+        - text: Next
+        - img
+```

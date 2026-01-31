@@ -99,97 +99,119 @@ The visual design MUST embody a warm, professional coaching environment that ins
 
 **Rationale**: The warm, professional aesthetic establishes credibility and inspires confidence. A tactical yet approachable appearance reinforces the tool's purpose while making coaches feel supported and empowered.
 
-### V. Privacy-First Architecture
+### V. Privacy-First Cloud Architecture
 
-The application adopts a **tiered feature architecture** that preserves offline-first as the sacred core while enabling optional networked features under strict governance.
+The application adopts a **tiered feature architecture** with cloud-first persistence while maintaining user privacy and data minimization principles.
 
-#### V.1 Core Offline Features (Tier 1 - Sacred)
+**Architecture Note (2026-01-31)**: Following user pivot, all persistent storage uses Supabase backend. Guest mode provides local editor UI for UX continuity, but animations must be downloaded/exported locally. Authenticated users get cloud persistence with strict privacy safeguards.
 
-**MUST remain 100% offline with zero network dependencies:**
-- Animation creation & editing
-- Local persistence (LocalStorage, JSON file downloads)
-- Local export (GIF generation, video rendering)
-- Application bootstrap and all UI interactions
+#### V.1 Guest Mode (Tier 0 - Limited Local)
 
-**Enforcement**: No network calls permitted in Tier 1 code paths.
+**Local editor UI with no cloud persistence:**
+- Animation creation & editing (10-frame limit)
+- Local JSON export/download
+- Application bootstrap and UI interactions
+- Session data stored in browser LocalStorage only
 
-#### V.2 Optional Networked Features (Tier 2 - Controlled)
+**Enforcement**: No cloud storage, no account required, optional account promotion after 10 frames.
 
-**MAY utilize network connectivity under strict conditions:**
-- Link sharing (read-only replay URLs)
-- Public gallery browsing (read-only)
+#### V.2 Authenticated Cloud Features (Tier 1)
 
-**Mandatory Safeguards**:
-1. **Explicit User Consent**: Network features require user-initiated action (button click)
-2. **Clear Visual Indication**: UI must distinguish networked features (e.g., "Share Link 🌐")
-3. **Graceful Degradation**: Network failures must not break core offline functionality
-4. **Privacy Disclosure**: First use must display privacy notice explaining data handling
-5. **Warm UX**: Networked features must maintain the warm, trustworthy aesthetic and provide helpful error states
-
-#### V.2.1 User Account Features (Tier 3 - Authenticated)
-
-**MAY require user authentication under strict conditions:**
-- Cloud storage of user-created animations
+**MUST require email authentication for persistence:**
+- Cloud storage of user animations (Supabase PostgreSQL)
 - Personal gallery management
-- Public gallery participation (publishing, upvoting)
-- Content moderation (reporting)
+- Unlimited animations within user quota (50 max per user)
+- Animation history and versioning
 
 **Mandatory Safeguards**:
-1. **Email-only Authentication**: No social login, no third-party identity providers
+1. **Email-Only Authentication**: No social login, no third-party identity providers
 2. **Minimal Profile Data**: Only email, optional display name, no additional PII collection
 3. **User Data Ownership**: Full export and deletion rights (GDPR-style compliance)
 4. **Transparent Storage**: Clear disclosure of what data is stored and where
-5. **Privacy by Default**: All content private unless explicitly published by user
+5. **Privacy by Default**: All content private by default unless explicitly published
 6. **Account Deletion**: Complete data removal within 30 days of request
-7. **Offline Core Preserved**: Tier 1 features must work without authentication
+
+#### V.2.1 Link Sharing & Public Gallery (Tier 2 - Public/Link-Shared)
+
+**MAY be accessed with or without authentication:**
+- Link sharing (read-only replay URLs, no login required)
+- Public gallery browsing (read-only)
+- Upvoting public animations (requires auth)
+- Reporting inappropriate content (requires auth)
+
+**Mandatory Safeguards**:
+1. **Explicit User Consent**: Publishing requires user-initiated action (visibility toggle)
+2. **Clear Visual Indication**: UI distinguishes private vs link_shared vs public
+3. **Privacy Disclosure**: First publish prompts privacy notice explaining data handling
+4. **Warm UX**: Features maintain warm, trustworthy aesthetic with helpful error states
+
+#### V.2.2 Admin Moderation (Tier 3 - Admin Only)
+
+**Admin-only features for content governance:**
+- Viewing content reports and moderation queue
+- Hiding or deleting inappropriate animations
+- Banning users from creating new animations
+- Setting user roles and permissions
+
+**Mandatory Safeguards**:
+1. **Role-Based Access Control**: Only users with admin role can access moderation tools
+2. **Audit Trail**: Admin actions logged for transparency
+3. **Transparent Policies**: Community guidelines explain what content gets moderated
 
 #### V.3 Data Retention & Privacy Policies
 
-**All networked features must adhere to:**
-- **Data Minimization**: Transmit only required data (animation payload, no metadata)
-- **No Telemetry**: No user identity, device fingerprints, or usage analytics
-- **Retention Limits**: 90-day automatic expiration from last access
-- **Right to Deletion**: Users must be able to delete shared animations (future: deletion link)
-- **Security by Obscurity (MVP)**: UUID/nanoid provides baseline privacy without authentication
+**All cloud features must adhere to:**
+- **Data Minimization**: Store only essential user data (email, display name, animation payload)
+- **No Telemetry**: No user identity tracking, device fingerprints, or usage analytics
+- **User Deletions**: Users can delete animations and export all personal data anytime
+- **Account Deletion**: Complete data removal within 30 days of user request
+- **Retention Default**: Animations retained indefinitely unless user deletes; link-shared animations permanent unless owner unpublishes
+- **Right to Deletion**: Users can immediately delete or unpublish any animation they created
 
-#### V.4 Security Baseline for Networked Features
+#### V.4 Security Baseline for Cloud Features
 
 **All backend endpoints must implement:**
-- JSON schema validation
-- Maximum payload size enforcement (100KB)
-- Rate limiting (POST /api/share: 10/hour, GET /api/share/:id: 100/hour)
-- Generic error messages (no sensitive information)
-- Strict CORS policy (no wildcard)
+- JSON schema validation on all inputs
+- Maximum payload size enforcement (validated in POST /api/animations)
+- Rate limiting (POST /api/animations: 10/hour per user, POST /api/report: 5/hour per user)
+- Generic error messages (no sensitive information leakage)
+- Strict CORS policy (domain-specific, no wildcard)
+- Row-level security (RLS) on all database tables
+- Content blocklist validation on titles/descriptions
 
-**MVP Limitations (Acknowledged)**:
-- No authentication/authorization (UUID obscurity is the security model)
-- No DDoS protection beyond basic rate limiting
-- No data encryption at rest
+**Security Measures**:
+- Supabase Auth for session management
+- PostgreSQL RLS for data isolation
+- User quotas (50 animations per user, configurable)
+- Ban/rate-limit enforcement on users
 
 #### V.5 Governance for Future Backend Features
 
 **Any proposed backend feature must pass:**
-1. **Necessity Test**: Can this be implemented offline-first? (If yes, mandatory)
-2. **Privacy Impact Assessment**: What data is transmitted? How long retained? Who accesses?
-3. **Amendment Approval**: Document in constitution.md with version bump
+1. **Privacy Impact Assessment**: What user data is collected/transmitted? Who accesses it? How long retained?
+2. **User Consent Check**: Does the feature require explicit user opt-in? Is consent documented?
+3. **Tier Alignment Check**: Which tier does this belong to? Does it respect tier boundaries?
+4. **Amendment Approval**: If feature changes core principles, requires constitutional amendment with version bump
 
 **Rejection Criteria (Automatic Disqualification)**:
-- Features requiring persistent user accounts (violates "No Accounts" unless amended)
 - Features sending telemetry to third parties (violates "No Telemetry")
-- Features with indefinite data retention (violates retention limits)
+- Features with indefinite retention of PII beyond user request
+- Features requiring third-party identity providers (violates "Email-only Auth")
+- Features monetizing user data or requiring paid access to core features
 
-#### V.6 Absolute Prohibitions (Updated v3.0)
+#### V.6 Absolute Prohibitions (Updated v3.1 - Cloud-First Model)
 
 **STRICTLY FORBIDDEN regardless of tier:**
 - No telemetry, analytics, tracking, or user behavior monitoring
 - No third-party identity providers (Google, Facebook, Apple login)
 - No third-party analytics services (Google Analytics, Sentry, Mixpanel, etc.)
 - No sale or sharing of user data with third parties
-- No mandatory accounts for core offline features (Tier 1 remains sacred)
-- No paywalls (free tier must always provide genuine value)
+- No paywalls (free tier must always provide genuine value, including cloud storage)
 - No advertising or sponsored content
+- No cryptocurrency, NFTs, or blockchain integration
+- No harvesting or selling coaching content without explicit coach consent
 
-**Rationale**: Coaches store team strategies and player information. Privacy remains non-negotiable for trust. User accounts are permitted solely to enable cloud storage and community features, with strict privacy safeguards. The tiered architecture preserves the offline-first core while enabling online platform features under governance.
+**Rationale**: Coaches store sensitive team strategies and player information. Privacy remains non-negotiable for trust. The cloud-first architecture maintains privacy through minimal data collection, email-only auth, and transparent data handling. Guest mode (Tier 0) provides local editor UI for immediate use without registration. Tier 1 (authenticated) enables cloud persistence with full user control over data deletion. The tiered architecture prioritizes coach autonomy and privacy above all else.
 
 ## Design System
 
@@ -309,4 +331,4 @@ The application exists to **empower grassroots sports coaches** - volunteers, pa
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 3.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-29
+**Version**: 3.1.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-31 (Architecture Pivot to Cloud-First Model)

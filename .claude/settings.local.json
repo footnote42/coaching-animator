@@ -41,7 +41,12 @@
       "Bash(npx eslint:*)",
       "Bash([ -f .eslintignore ])",
       "Bash(npx next lint:*)",
-      "Bash(npm run lint:fix:*)"
+      "Bash(npm run lint:fix:*)",
+      "Bash(npm run e2e:*)",
+      "Bash(tee:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(set BASE_URL=https://coaching-animator.vercel.app)",
+      "Bash(npx playwright test:*)"
     ]
   }
 }
