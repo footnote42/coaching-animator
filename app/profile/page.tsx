@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -16,11 +16,7 @@ export default function ProfilePage() {
   const [animationCount, setAnimationCount] = useState(0);
   const [maxAnimations, setMaxAnimations] = useState(50);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -44,7 +40,11 @@ export default function ProfilePage() {
     }
 
     setLoading(false);
-  };
+  }, [router]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +86,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <header className="bg-surface border-b border-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                 <span className="font-medium">{animationCount} / {maxAnimations}</span>
               </div>
               <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-emerald-600 h-2 rounded-full transition-all"
                   style={{ width: `${Math.min((animationCount / maxAnimations) * 100, 100)}%` }}
                 />
@@ -169,14 +169,14 @@ export default function ProfilePage() {
         <div className="mt-6 bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h2>
           <div className="space-y-2">
-            <a 
-              href="/my-gallery" 
+            <a
+              href="/my-gallery"
               className="block text-emerald-600 hover:text-emerald-700"
             >
               My Playbook →
             </a>
-            <a 
-              href="/gallery" 
+            <a
+              href="/gallery"
               className="block text-emerald-600 hover:text-emerald-700"
             >
               Public Gallery →

@@ -153,17 +153,6 @@ function AnimationToolPageContent() {
     };
   }, [project]);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-text-primary">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   const payload = getPayload();
 
   // Onboarding Tutorial Logic
@@ -182,6 +171,17 @@ function AnimationToolPageContent() {
     localStorage.setItem('has_seen_tutorial', 'true');
     setShowTutorial(false);
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-text-primary">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
@@ -36,18 +36,10 @@ export default function AdminPage() {
   const [actionReason, setActionReason] = useState('');
   const [showReasonModal, setShowReasonModal] = useState<{ reportId: string; action: ReportAction } | null>(null);
 
-  useEffect(() => {
-    checkAdminAccess();
-  }, []);
-
-  useEffect(() => {
-    fetchReports();
-  }, [statusFilter]);
-
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       router.push('/login');
       return;
@@ -63,9 +55,13 @@ export default function AdminPage() {
       router.push('/app');
       return;
     }
-  };
+  }, [router]);
 
-  const fetchReports = async () => {
+  useEffect(() => {
+    checkAdminAccess();
+  }, [checkAdminAccess]);
+
+  const fetchReports = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -92,7 +88,11 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, router]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   const handleAction = async (reportId: string, action: ReportAction, reason?: string) => {
     if (['hide', 'warn_user', 'ban_user'].includes(action) && !reason) {
@@ -150,7 +150,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <header className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <h1 className="text-2xl font-bold text-text-primary">Admin Dashboard</h1>
@@ -169,11 +169,10 @@ export default function AdminPage() {
                   <button
                     key={status}
                     onClick={() => setStatusFilter(status)}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                      statusFilter === status
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${statusFilter === status
                         ? 'bg-emerald-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
                   </button>
