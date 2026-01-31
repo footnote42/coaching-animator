@@ -50,11 +50,11 @@ export default defineConfig({
   // Web server for local testing (skip if testing production)
   webServer: process.env.BASE_URL?.includes('localhost')
     ? {
-        command: 'npm run dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-        timeout: 120 * 1000,
-      }
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    }
     : undefined,
 
   // Reporter configurations
@@ -66,5 +66,5 @@ export default defineConfig({
   ],
 
   // Output folder for artifacts (screenshots, videos, traces)
-  outputFolder: 'test-results/artifacts',
+  outputDir: 'test-results/artifacts',
 })

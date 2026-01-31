@@ -187,7 +187,7 @@ test.describe('US1: Cloud Save & Personal Gallery', () => {
     expect(bodyContent?.length ?? 0).toBeGreaterThan(100)
 
     // Look for any animation cards or UI elements
-    const allText = await page.textContent()
+    const allText = await page.textContent('body')
     expect(allText?.length ?? 0).toBeGreaterThan(0)
   })
 
@@ -393,8 +393,6 @@ test.describe('US3: Public Gallery Search & Discovery', () => {
     expect(page.url()).toContain('/gallery')
 
     // Verify animation cards are visible
-    const cards = page.locator('[data-testid="animation-card"], [class*="gallery"], [class*="card"]')
-
     // Gallery should have content (at minimum, we can scroll and interact)
     const bodyContent = await page.locator('body').textContent()
     expect(bodyContent?.length ?? 0).toBeGreaterThan(100)
@@ -570,7 +568,6 @@ test.describe('US3: Public Gallery Search & Discovery', () => {
 test.describe('Cross-Cutting: Full Workflow (US1 + US2 + US3)', () => {
   test('complete flow: save animation, share link, discover in gallery', async ({
     page,
-    context,
   }) => {
     // 1. Create and save animation (US1)
     await page.goto('/app')
@@ -611,7 +608,6 @@ test.describe('Cross-Cutting: Full Workflow (US1 + US2 + US3)', () => {
     await page.waitForSelector('[role="dialog"]')
 
     // Change to public
-    const visSelect = page.locator('select').first()
     await page.selectOption('select', 'public')
 
     const saveMeta = page.locator('[role="dialog"] button:has-text("Save")')

@@ -183,7 +183,6 @@ export async function saveAnimationToCloud(page: Page, metadata: AnimationMetada
   if (metadata.animation_type) {
     const typeSelect = page.locator('select').first()
     if (await typeSelect.count() > 0) {
-      const typeLabel = metadata.animation_type.charAt(0).toUpperCase() + metadata.animation_type.slice(1)
       await page.selectOption('select', metadata.animation_type)
     }
   }
@@ -259,7 +258,6 @@ export async function setAnimationVisibility(
   // Change visibility
   const visSelect = page.locator('select').first()
   if (await visSelect.count() > 0) {
-    const visibilityLabel = visibility === 'link_shared' ? 'Link Shared' : visibility.charAt(0).toUpperCase() + visibility.slice(1)
     await page.selectOption('select', visibility)
   }
 
@@ -338,7 +336,6 @@ export async function sortGallery(page: Page, sortBy: 'newest' | 'popular'): Pro
   const sortSelect = page.locator('select').first()
 
   if (await sortSelect.count() > 0) {
-    const sortValue = sortBy === 'popular' ? 'upvotes' : 'created_at'
     await page.selectOption('select', { label: sortBy === 'popular' ? 'Most Popular' : 'Newest' })
     await page.waitForTimeout(1000)
   }
