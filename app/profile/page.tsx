@@ -23,10 +23,16 @@ export default function ProfilePage() {
 
   // Redirect if not logged in after auth finishes
   useEffect(() => {
+    // Add a grace period to allow auth state to stabilize
+    // This prevents premature redirects during AbortError recovery
     if (!authLoading && !user) {
-      router.push('/login?redirect=/profile');
+      const timer = setTimeout(() => {
+        router.push('/login?redirect=/profile');
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [user, authLoading, router]);
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

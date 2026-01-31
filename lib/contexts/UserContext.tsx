@@ -45,6 +45,14 @@ export function UserProvider({ children }: UserProviderProps) {
         .single();
 
       if (error) {
+        // Ignore AbortErrors - these happen during navigation/unmount
+        const isAbortError = error.message?.includes('abort') ||
+          error.message?.includes('AbortError') ||
+          (error as unknown as Error).name === 'AbortError';
+        if (isAbortError) {
+          return; // Silent return, don't set fallback profile
+        }
+
         // Log but don't hang - provide a default profile if missing
         console.warn('Error loading user profile:', error);
         setProfile({
@@ -57,6 +65,7 @@ export function UserProvider({ children }: UserProviderProps) {
         return;
       }
 
+
       if (data) {
         setProfile({
           id: data.id,
@@ -67,6 +76,11 @@ export function UserProvider({ children }: UserProviderProps) {
         });
       }
     } catch (err) {
+      // Ignore AbortErrors - these happen during navigation/unmount
+      if (err instanceof Error && (err.name === 'AbortError' || err.message.includes('abort'))) {
+        return; // Silent return
+      }
+
       console.error('Unexpected error loading profile:', err);
       // Ensure we don't leave the user without a profile object if possible
       setProfile({
@@ -77,6 +91,7 @@ export function UserProvider({ children }: UserProviderProps) {
         max_animations: 50,
       });
     }
+
   };
 
   const refreshProfile = async () => {
