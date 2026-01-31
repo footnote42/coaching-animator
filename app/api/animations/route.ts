@@ -22,200 +22,216 @@ function dataUrlToBlob(dataUrl: string): Blob {
 }
 
 export async function GET(request: NextRequest) {
-  const authResult = await requireAuth();
-  if (isAuthError(authResult)) return authResult;
-  const user = authResult;
+  try {
+    const authResult = await requireAuth();
+    if (isAuthError(authResult)) return authResult;
+    const user = authResult;
 
-  const searchParams = Object.fromEntries(request.nextUrl.searchParams);
-  const query = MyAnimationsQuerySchema.safeParse(searchParams);
+    const searchParams = Object.fromEntries(request.nextUrl.searchParams);
+    const query = MyAnimationsQuerySchema.safeParse(searchParams);
 
-  if (!query.success) {
+    if (!query.success) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_PARAMS', message: query.error.message } },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createSupabaseServerClient();
+    const { data, error, count } = await supabase
+      .from('saved_animations')
+      .select('id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at', { count: 'exact' })
+      .eq('user_id', user.id)
+      .order(query.data.sort, { ascending: query.data.order === 'asc' })
+      .range(query.data.offset, query.data.offset + query.data.limit - 1);
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { error: { code: 'DB_ERROR', message: 'Failed to fetch animations' } },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      animations: data,
+      total: count ?? 0,
+      limit: query.data.limit,
+      offset: query.data.offset,
+    });
+  } catch (err) {
+    console.error('[Animations API] Fatal GET Error:', err);
     return NextResponse.json(
-      { error: { code: 'INVALID_PARAMS', message: query.error.message } },
-      { status: 400 }
-    );
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { data, error, count } = await supabase
-    .from('saved_animations')
-    .select('id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at', { count: 'exact' })
-    .eq('user_id', user.id)
-    .order(query.data.sort, { ascending: query.data.order === 'asc' })
-    .range(query.data.offset, query.data.offset + query.data.limit - 1);
-
-  if (error) {
-    console.error('Database error:', error);
-    return NextResponse.json(
-      { error: { code: 'DB_ERROR', message: 'Failed to fetch animations' } },
+      { error: { code: 'INTERNAL_ERROR', message: err instanceof Error ? err.message : 'An unexpected error occurred' } },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({
-    animations: data,
-    total: count ?? 0,
-    limit: query.data.limit,
-    offset: query.data.offset,
-  });
 }
 
 export async function POST(request: NextRequest) {
-  const authResult = await requireAuth();
-  if (isAuthError(authResult)) return authResult;
-  const user = authResult;
-
-  // Check if user is banned
-  const banCheck = await requireNotBanned(user.id);
-  if (banCheck) return banCheck;
-
-  // Rate limiting
-  const rateLimit = await checkRateLimit(`user:${user.id}`, 'create_animation');
-  if (!rateLimit.allowed) {
-    return NextResponse.json(
-      { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
-      { status: 429, headers: getRateLimitHeaders(rateLimit) }
-    );
-  }
-
-  // Parse and validate request body
-  let body;
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { error: { code: 'INVALID_JSON', message: 'Invalid JSON body' } },
-      { status: 400 }
-    );
-  }
+    const authResult = await requireAuth();
+    if (isAuthError(authResult)) return authResult;
+    const user = authResult;
 
-  // Validate payload size first (before schema validation)
-  if (body.payload) {
-    const sizeCheck = validatePayloadSize(body.payload);
-    if (!sizeCheck.valid) {
+    // Check if user is banned
+    const banCheck = await requireNotBanned(user.id);
+    if (banCheck) return banCheck;
+
+    // Rate limiting
+    const rateLimit = await checkRateLimit(`user:${user.id}`, 'create_animation');
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: { code: 'PAYLOAD_TOO_LARGE', message: sizeCheck.error } },
-        { status: 413 }
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimit) }
       );
     }
-  }
 
-  const parsed = CreateAnimationSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: { code: 'VALIDATION_ERROR', message: parsed.error.message } },
-      { status: 400 }
-    );
-  }
-
-  const data = parsed.data;
-
-  // Check content moderation
-  const moderation = await validateAnimationContent({
-    title: data.title,
-    description: data.description,
-    coaching_notes: data.coaching_notes,
-  });
-
-  if (!moderation.passed) {
-    return NextResponse.json(
-      { error: { code: 'CONTENT_VIOLATION', message: `Content contains inappropriate language: ${moderation.flaggedWords.join(', ')}` } },
-      { status: 400 }
-    );
-  }
-
-  // Calculate duration and frame count from payload
-  const frameCount = data.payload.frames?.length ?? 0;
-  const durationMs = data.payload.frames?.reduce((sum: number, frame: { duration?: number }) => sum + (frame.duration ?? 1000), 0) ?? 0;
-
-  // Validate limits
-  if (frameCount > 50) {
-    return NextResponse.json(
-      { error: { code: 'FRAME_LIMIT', message: 'Animation cannot have more than 50 frames' } },
-      { status: 400 }
-    );
-  }
-
-  if (durationMs > 60000) {
-    return NextResponse.json(
-      { error: { code: 'DURATION_LIMIT', message: 'Animation cannot be longer than 60 seconds' } },
-      { status: 400 }
-    );
-  }
-
-  // Check quota
-  const quota = await checkQuota(user.id);
-  if (!quota.allowed) {
-    return NextResponse.json(
-      { error: { code: 'QUOTA_EXCEEDED', message: `You have reached the maximum of ${quota.max} animations. Delete some to create more.` } },
-      { status: 403 }
-    );
-  }
-
-  const supabase = await createSupabaseServerClient();
-
-  // Handle thumbnail upload if provided
-  let thumbnailUrl: string | null = null;
-  if (data.thumbnail && data.thumbnail.startsWith('data:image/')) {
+    // Parse and validate request body
+    let body;
     try {
-      // Convert data URL to blob
-      const thumbnailBlob = dataUrlToBlob(data.thumbnail);
-      const thumbnailPath = `thumbnails/${user.id}/${Date.now()}.png`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('animations')
-        .upload(thumbnailPath, thumbnailBlob, {
-          contentType: 'image/png',
-          upsert: false,
-        });
-
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage
-          .from('animations')
-          .getPublicUrl(thumbnailPath);
-        thumbnailUrl = urlData.publicUrl;
-      } else {
-        console.warn('Failed to upload thumbnail:', uploadError);
-      }
-    } catch (thumbError) {
-      console.warn('Thumbnail processing error:', thumbError);
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: { code: 'INVALID_JSON', message: 'Invalid JSON body' } },
+        { status: 400 }
+      );
     }
-  }
 
-  // Insert into database
-  const { data: animation, error } = await supabase
-    .from('saved_animations')
-    .insert({
-      user_id: user.id,
+    // Validate payload size first (before schema validation)
+    if (body.payload) {
+      const sizeCheck = validatePayloadSize(body.payload);
+      if (!sizeCheck.valid) {
+        return NextResponse.json(
+          { error: { code: 'PAYLOAD_TOO_LARGE', message: sizeCheck.error } },
+          { status: 413 }
+        );
+      }
+    }
+
+    const parsed = CreateAnimationSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: { code: 'VALIDATION_ERROR', message: parsed.error.message } },
+        { status: 400 }
+      );
+    }
+
+    const data = parsed.data;
+
+    // Check content moderation
+    const moderation = await validateAnimationContent({
       title: data.title,
-      description: data.description ?? null,
-      coaching_notes: data.coaching_notes ?? null,
-      animation_type: data.animation_type,
-      tags: data.tags ?? [],
-      payload: data.payload,
-      duration_ms: durationMs,
-      frame_count: frameCount,
-      visibility: data.visibility,
-      thumbnail_url: thumbnailUrl,
-    })
-    .select('id, created_at, thumbnail_url')
-    .single();
+      description: data.description,
+      coaching_notes: data.coaching_notes,
+    });
 
-  if (error) {
-    console.error('Database error:', error);
+    if (!moderation.passed) {
+      return NextResponse.json(
+        { error: { code: 'CONTENT_VIOLATION', message: `Content contains inappropriate language: ${moderation.flaggedWords.join(', ')}` } },
+        { status: 400 }
+      );
+    }
+
+    // Calculate duration and frame count from payload
+    const frameCount = data.payload.frames?.length ?? 0;
+    const durationMs = data.payload.frames?.reduce((sum: number, frame: { duration?: number }) => sum + (frame.duration ?? 1000), 0) ?? 0;
+
+    // Validate limits
+    if (frameCount > 50) {
+      return NextResponse.json(
+        { error: { code: 'FRAME_LIMIT', message: 'Animation cannot have more than 50 frames' } },
+        { status: 400 }
+      );
+    }
+
+    if (durationMs > 60000) {
+      return NextResponse.json(
+        { error: { code: 'DURATION_LIMIT', message: 'Animation cannot be longer than 60 seconds' } },
+        { status: 400 }
+      );
+    }
+
+    // Check quota
+    const quota = await checkQuota(user.id);
+    if (!quota.allowed) {
+      return NextResponse.json(
+        { error: { code: 'QUOTA_EXCEEDED', message: `You have reached the maximum of ${quota.max} animations. Delete some to create more.` } },
+        { status: 403 }
+      );
+    }
+
+    const supabase = await createSupabaseServerClient();
+
+    // Handle thumbnail upload if provided
+    let thumbnailUrl: string | null = null;
+    if (data.thumbnail && data.thumbnail.startsWith('data:image/')) {
+      try {
+        // Convert data URL to blob
+        const thumbnailBlob = dataUrlToBlob(data.thumbnail);
+        const thumbnailPath = `thumbnails/${user.id}/${Date.now()}.png`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('animations')
+          .upload(thumbnailPath, thumbnailBlob, {
+            contentType: 'image/png',
+            upsert: false,
+          });
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('animations')
+            .getPublicUrl(thumbnailPath);
+          thumbnailUrl = urlData.publicUrl;
+        } else {
+          console.warn('Failed to upload thumbnail:', uploadError);
+        }
+      } catch (thumbError) {
+        console.warn('Thumbnail processing error:', thumbError);
+      }
+    }
+
+    // Insert into database
+    const { data: animation, error } = await supabase
+      .from('saved_animations')
+      .insert({
+        user_id: user.id,
+        title: data.title,
+        description: data.description ?? null,
+        coaching_notes: data.coaching_notes ?? null,
+        animation_type: data.animation_type,
+        tags: data.tags ?? [],
+        payload: data.payload,
+        duration_ms: durationMs,
+        frame_count: frameCount,
+        visibility: data.visibility,
+        thumbnail_url: thumbnailUrl,
+      })
+      .select('id, created_at, thumbnail_url')
+      .single();
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { error: { code: 'DB_ERROR', message: 'Failed to save animation' } },
+        { status: 500 }
+      );
+    }
+
+    // Add cache invalidation headers to ensure client refreshes lists
+    return NextResponse.json(animation, {
+      status: 201,
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
+  } catch (err) {
+    console.error('[Animations API] Fatal POST Error:', err);
     return NextResponse.json(
-      { error: { code: 'DB_ERROR', message: 'Failed to save animation' } },
+      { error: { code: 'INTERNAL_ERROR', message: err instanceof Error ? err.message : 'An unexpected error occurred' } },
       { status: 500 }
     );
   }
-
-  // Add cache invalidation headers to ensure client refreshes lists
-  return NextResponse.json(animation, {
-    status: 201,
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-    },
-  });
 }

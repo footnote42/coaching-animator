@@ -161,11 +161,16 @@ export function UserProvider({ children }: UserProviderProps) {
   }, []);
 
   const signOut = async () => {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    window.location.href = '/';
+    try {
+      const supabase = createSupabaseBrowserClient();
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('[Auth] Sign out error:', err);
+    } finally {
+      setUser(null);
+      setProfile(null);
+      window.location.href = '/';
+    }
   };
 
   const value: UserContextValue = {

@@ -5,7 +5,6 @@ import Konva from 'konva';
 import { Stage } from '@/components/Canvas/Stage';
 import { Field } from '@/components/Canvas/Field';
 import { FieldLayoutOverlay } from '@/components/Canvas/FieldLayoutOverlay';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { GridOverlay } from '@/components/Canvas/GridOverlay';
 import { EntityLayer } from '@/components/Canvas/EntityLayer';
 import { InlineEditor } from '@/components/Canvas/InlineEditor';
@@ -18,6 +17,7 @@ import { ProjectActions } from '@/components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from '@/components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts, useExport } from '@/hooks';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { useUser } from '@/lib/contexts/UserContext';
 import { useProjectStore } from '@/store/projectStore';
 import { useUIStore } from '@/store/uiStore';
 import { DESIGN_TOKENS } from '@/constants/design-tokens';
@@ -39,6 +39,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const canvasHeight = 600;
 
   const stageRef = useRef<Konva.Stage>(null);
+  const { signOut } = useUser();
 
   const {
     project,
@@ -412,10 +413,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                 </a>
                 <span className="text-tactics-white/40">•</span>
                 <button
-                  onClick={() => {
-                    const supabase = createSupabaseBrowserClient();
-                    supabase.auth.signOut().then(() => window.location.href = '/');
-                  }}
+                  onClick={() => signOut()}
                   className="text-tactics-white/70 hover:text-tactics-white transition-colors"
                 >
                   Sign Out

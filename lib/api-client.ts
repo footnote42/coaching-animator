@@ -104,7 +104,13 @@ export async function postWithRetry<T>(
       retryOptions
     );
 
-    const responseData = await response.json().catch(() => null);
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const responseData = isJson ? await response.json().catch(() => null) : null;
+
+    if (!isJson && !response.ok) {
+      const text = await response.text().catch(() => 'Could not read response body');
+      console.error(`[API] Expected JSON from ${url} but got non-JSON response (${response.status}):`, text.substring(0, 200));
+    }
 
     if (!response.ok) {
       return {
@@ -133,7 +139,13 @@ export async function getWithRetry<T>(
 ): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
   try {
     const response = await fetchWithRetry(url, { method: 'GET' }, retryOptions);
-    const responseData = await response.json().catch(() => null);
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const responseData = isJson ? await response.json().catch(() => null) : null;
+
+    if (!isJson && !response.ok) {
+      const text = await response.text().catch(() => 'Could not read response body');
+      console.error(`[API] Expected JSON from ${url} but got non-JSON response (${response.status}):`, text.substring(0, 200));
+    }
 
     if (!response.ok) {
       return {
@@ -172,7 +184,13 @@ export async function putWithRetry<T>(
       retryOptions
     );
 
-    const responseData = await response.json().catch(() => null);
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const responseData = isJson ? await response.json().catch(() => null) : null;
+
+    if (!isJson && !response.ok) {
+      const text = await response.text().catch(() => 'Could not read response body');
+      console.error(`[API] Expected JSON from ${url} but got non-JSON response (${response.status}):`, text.substring(0, 200));
+    }
 
     if (!response.ok) {
       return {
@@ -203,7 +221,13 @@ export async function deleteWithRetry(
     const response = await fetchWithRetry(url, { method: 'DELETE' }, retryOptions);
 
     if (!response.ok) {
-      const responseData = await response.json().catch(() => null);
+      const isJson = response.headers.get('content-type')?.includes('application/json');
+      const responseData = isJson ? await response.json().catch(() => null) : null;
+
+      if (!isJson) {
+        const text = await response.text().catch(() => 'Could not read response body');
+        console.error(`[API] Expected JSON from ${url} but got non-JSON response (${response.status}):`, text.substring(0, 200));
+      }
       return {
         ok: false,
         status: response.status,
