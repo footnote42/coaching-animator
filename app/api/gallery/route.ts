@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     created_at: animation.created_at,
     user_id: animation.user_id,
     author: {
-      display_name: animation.user_profiles?.display_name ?? null,
+      display_name: animation.user_profiles?.[0]?.display_name ?? animation.user_profiles?.display_name ?? null,
     },
     user_has_upvoted: upvotedIds.has(animation.id),
   })) || [];

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 
@@ -77,7 +78,7 @@ export function AnimationCard({
   const [copied, setCopied] = useState(false);
 
   const canCopyLink = animation.visibility !== 'private';
-  
+
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const url = `${window.location.origin}/replay/${animation.id}`;
@@ -102,24 +103,26 @@ export function AnimationCard({
         onClick={() => onPlay?.(animation.id)}
       >
         {animation.thumbnail_url ? (
-          <img
+          <Image
             src={animation.thumbnail_url}
             alt={animation.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            unoptimized // External dynamic URL from Supabase
             onError={(e) => {
               // Fallback to placeholder on image error
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
-              target.nextElementSibling?.classList.remove('hidden');
+              target.parentElement?.querySelector('.fallback-placeholder')?.classList.remove('hidden');
             }}
           />
         ) : null}
-        
+
         {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
-        <div className={`${animation.thumbnail_url ? 'hidden' : ''} text-text-primary/30 text-sm font-mono`}>
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder text-text-primary/30 text-sm font-mono`}>
           {animation.frame_count} frames
         </div>
-        
+
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-primary/80 flex items-center justify-center transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <Play className="w-12 h-12 text-text-inverse fill-current" />
@@ -154,7 +157,7 @@ export function AnimationCard({
 
         <div className="flex items-center justify-between text-xs text-text-primary/50">
           <span>{formatDate(animation.created_at)}</span>
-          
+
           <div className="flex items-center gap-1">
             {showCopyLink && canCopyLink && (
               <button

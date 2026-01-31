@@ -1,50 +1,31 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useUser } from '@/lib/contexts/UserContext';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user, profile, loading: authLoading, refreshProfile } = useUser();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
-  const [animationCount, setAnimationCount] = useState(0);
-  const [maxAnimations, setMaxAnimations] = useState(50);
 
-  const loadProfile = useCallback(async () => {
-    const supabase = createSupabaseBrowserClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.push('/login?redirect=/profile');
-      return;
-    }
-
-    setEmail(user.email || '');
-
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('display_name, animation_count, max_animations')
-      .eq('id', user.id)
-      .single();
-
+  // Sync local display name with profile once loaded
+  useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || '');
-      setAnimationCount(profile.animation_count || 0);
-      setMaxAnimations(profile.max_animations || 50);
     }
+  }, [profile]);
 
-    setLoading(false);
-  }, [router]);
-
+  // Redirect if not logged in after auth finishes
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    if (!authLoading && !user) {
+      router.push('/login?redirect=/profile');
+    }
+  }, [user, authLoading, router]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +47,7 @@ export default function ProfilePage() {
         throw new Error(data.error?.message || 'Failed to update profile');
       }
 
+      await refreshProfile(); // Update global state
       setSuccess('Profile updated successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
@@ -75,13 +57,18 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
+
+  if (!user) return null; // Wait for redirect
+
+  const animationCount = profile?.animation_count || 0;
+  const maxAnimations = profile?.max_animations || 50;
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,7 +102,7 @@ export default function ProfilePage() {
               <input
                 type="email"
                 id="email"
-                value={email}
+                value={user.email || ''}
                 disabled
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
               />

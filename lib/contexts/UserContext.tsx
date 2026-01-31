@@ -45,7 +45,15 @@ export function UserProvider({ children }: UserProviderProps) {
         .single();
 
       if (error) {
+        // Log but don't hang - provide a default profile if missing
         console.warn('Error loading user profile:', error);
+        setProfile({
+          id: userId,
+          display_name: null,
+          role: 'user',
+          animation_count: 0,
+          max_animations: 50,
+        });
         return;
       }
 
@@ -60,6 +68,14 @@ export function UserProvider({ children }: UserProviderProps) {
       }
     } catch (err) {
       console.error('Unexpected error loading profile:', err);
+      // Ensure we don't leave the user without a profile object if possible
+      setProfile({
+        id: userId,
+        display_name: null,
+        role: 'user',
+        animation_count: 0,
+        max_animations: 50,
+      });
     }
   };
 
@@ -77,14 +93,20 @@ export function UserProvider({ children }: UserProviderProps) {
       try {
         if (!isSubscribed) return;
 
-        const authResult = await supabase.auth.getUser();
-        const user = authResult.data?.user;
+        // Add a timeout fallback for getUser to prevent infinite loading
+        const authPromise = supabase.auth.getUser();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth timeout')), 5000)
+        );
+
+        const authResult = await Promise.race([authPromise, timeoutPromise]) as any;
+        const currentUser = authResult.data?.user;
 
         if (!isSubscribed) return;
-        setUser(user ?? null);
+        setUser(currentUser ?? null);
 
-        if (user && isSubscribed) {
-          await loadProfile(user.id);
+        if (currentUser && isSubscribed) {
+          await loadProfile(currentUser.id);
         }
       } catch (err) {
         // Ignore AbortErrors during cleanup
@@ -108,9 +130,13 @@ export function UserProvider({ children }: UserProviderProps) {
       setUser(newUser);
 
       if (newUser) {
+        setLoading(true); // Re-set loading while fetching new profile
         await loadProfile(newUser.id);
+        setLoading(false);
       } else {
         setProfile(null);
+        // Only trigger loading change if not already done in initAuth
+        setLoading(false);
       }
     });
 

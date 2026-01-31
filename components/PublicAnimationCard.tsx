@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Clock, Layers, ThumbsUp, Play, User } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
 
@@ -66,7 +67,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
 
   const handleUpvoteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     if (!currentUserId) {
       onLoginRequired?.();
       return;
@@ -96,24 +97,26 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
       {/* Thumbnail with play overlay */}
       <div className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center">
         {animation.thumbnail_url ? (
-          <img
+          <Image
             src={animation.thumbnail_url}
             alt={animation.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            unoptimized // External dynamic URL from Supabase
             onError={(e) => {
               // Fallback to placeholder on image error
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
-              target.nextElementSibling?.classList.remove('hidden');
+              target.parentElement?.querySelector('.fallback-placeholder')?.classList.remove('hidden');
             }}
           />
         ) : null}
-        
+
         {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
-        <div className={`${animation.thumbnail_url ? 'hidden' : ''} text-text-primary/30 text-sm font-mono`}>
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder text-text-primary/30 text-sm font-mono`}>
           {animation.frame_count} frames
         </div>
-        
+
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-primary/80 flex items-center justify-center transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <Play className="w-12 h-12 text-text-inverse fill-current" />
@@ -129,11 +132,10 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           <button
             onClick={handleUpvoteClick}
             disabled={isUpvoting}
-            className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${
-              hasUpvoted
-                ? 'bg-primary text-text-inverse'
-                : 'bg-surface/90 hover:bg-surface'
-            }`}
+            className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${hasUpvoted
+              ? 'bg-primary text-text-inverse'
+              : 'bg-surface/90 hover:bg-surface'
+              }`}
             title={currentUserId ? (hasUpvoted ? 'Remove upvote' : 'Upvote') : 'Sign in to upvote'}
           >
             <ThumbsUp className={`w-3.5 h-3.5 ${hasUpvoted ? 'fill-current' : ''}`} />
