@@ -184,6 +184,7 @@ export default function HomePage() {
               <a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a>
               <a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
               <a href="/contact" className="hover:text-primary transition-colors">Contact</a>
+              <a href="/sitemap-page" className="hover:text-primary transition-colors">Site Map</a>
             </div>
             <p className="text-sm text-text-primary/50">
               © {new Date().getFullYear()} Coaching Animator
