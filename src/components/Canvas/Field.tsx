@@ -27,6 +27,9 @@ export const Field: React.FC<FieldProps> = ({ sport, width, height, layout = 'st
     const [loadingError, setLoadingError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Reset image state when sport or layout changes
+        setImage(undefined);
+
         // Load the appropriate SVG asset based on the sport and layout
         const img = new window.Image();
 
@@ -37,16 +40,17 @@ export const Field: React.FC<FieldProps> = ({ sport, width, height, layout = 'st
             ? `/assets/fields/${sport}.svg`
             : `/assets/fields/${sport}-${layout}.svg`;
 
-        img.src = assetPath;
         img.onload = () => {
             setImage(img);
             setLoadingError(null);
         };
-        
+
         img.onerror = () => {
             setLoadingError(`Failed to load field asset: ${assetPath}`);
             console.error(`Failed to load field asset: ${assetPath}`);
         };
+
+        img.src = assetPath;
 
         return () => {
             img.onload = null;
