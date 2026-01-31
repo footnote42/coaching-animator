@@ -155,7 +155,7 @@ export const useProjectStore = create<ProjectStoreState>()(
 
                 // Reconstruct frames
                 const frames = [];
-                let currentEntities: Record<string, Entity> = {};
+                const currentEntities: Record<string, Entity> = {};
 
                 // Initialize entities from payload (base state)
                 payload.entities.forEach(e => {
@@ -636,7 +636,7 @@ export const useProjectStore = create<ProjectStoreState>()(
                 if (!currentFrame.entities[entityId]) return state;
 
                 // Remove entity from current frame (destructuring pattern)
-                const { [entityId]: removed, ...remainingEntities } = currentFrame.entities;
+                const { [entityId]: _removed, ...remainingEntities } = currentFrame.entities;
 
                 // Return updated state
                 return {

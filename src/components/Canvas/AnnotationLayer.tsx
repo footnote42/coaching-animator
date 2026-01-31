@@ -53,7 +53,7 @@ export const AnnotationLayer: React.FC<AnnotationLayerProps> = ({
     });
 
     // Handle right-click context menu
-    const handleContextMenu = (annotationId: string, e: any) => {
+    const handleContextMenu = (annotationId: string, e: { evt: MouseEvent; target: { getStage: () => { getPointerPosition: () => { x: number; y: number } } } }) => {
         e.evt.preventDefault();
         const stage = e.target.getStage();
         const pointerPosition = stage.getPointerPosition();

@@ -54,7 +54,7 @@ export function serializeForShare(project: Project): SharePayloadV1 {
             width: 2000,
             height: 2000 // Standard coordinate space
         },
-        entities: entities as any, // Cast to avoid strict type issues if TeamType has extra values
+        entities: entities as SharePayloadV1['entities'], // Cast to avoid strict type issues if TeamType has extra values
         frames
     };
 }

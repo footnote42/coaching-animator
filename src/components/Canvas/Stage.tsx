@@ -30,7 +30,7 @@ export const Stage = React.forwardRef<Konva.Stage, StageProps>(({
     onCanvasClick,
     children
 }, ref) => {
-    const handleStageClick = (e: any) => {
+    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
         // Check if the click was on the stage background (not on any shape)
         const clickedOnEmpty = e.target === e.target.getStage();
 
@@ -55,3 +55,5 @@ export const Stage = React.forwardRef<Konva.Stage, StageProps>(({
         </KonvaStage>
     );
 });
+
+Stage.displayName = 'Stage';

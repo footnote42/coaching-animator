@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Group, Circle, Ellipse, Rect, Text } from 'react-konva';
+import Konva from 'konva';
 import { Entity, EntityOrientation } from '../../types';
 import { DESIGN_TOKENS } from '../../constants/design-tokens';
 
@@ -46,7 +47,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     onContextMenu,
     opacity = 1.0
 }) => {
-    const groupRef = useRef<any>(null);
+    const groupRef = useRef<Konva.Group>(null);
     const lastClickTimeRef = useRef<number>(0);
     const lastClickPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -114,7 +115,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle drag end with position clamping
-    const handleDragEnd = (e: any) => {
+    const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
         const node = e.target;
         const x = node.x();
         const y = node.y();
@@ -134,7 +135,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle click with custom double-click detection and drag threshold
-    const handleClick = (e: any) => {
+    const handleClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
         const now = Date.now();
         const timeSinceLastClick = now - lastClickTimeRef.current;
 
@@ -166,7 +167,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle right-click context menu
-    const handleContextMenu = (e: any) => {
+    const handleContextMenu = (e: Konva.KonvaEventObject<MouseEvent>) => {
         e.evt.preventDefault();
         const stage = e.target.getStage();
         const pointerPosition = stage.getPointerPosition();

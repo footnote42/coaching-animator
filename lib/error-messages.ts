@@ -53,7 +53,7 @@ export function getFriendlyErrorMessage(error: unknown): string {
     }
 
     // Handle objects with code/message properties (like Supabase errors)
-    const errObj = error as any;
+    const errObj = error as { code?: string; message?: string };
     if (errObj.code && ERROR_MAPPINGS[errObj.code]) {
         return ERROR_MAPPINGS[errObj.code];
     }

@@ -5,7 +5,7 @@ export interface OfflineQueueItem {
     type: 'create' | 'update' | 'delete';
     endpoint: string;
     method: 'POST' | 'PUT' | 'DELETE';
-    payload: any;
+    payload: Record<string, unknown>;
     timestamp: number;
     retryCount: number;
 }

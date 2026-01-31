@@ -223,7 +223,7 @@ export default function AdminPage() {
 
                       {report.details && (
                         <p className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
-                          "{report.details}"
+                          &quot;{report.details}&quot;
                         </p>
                       )}
 

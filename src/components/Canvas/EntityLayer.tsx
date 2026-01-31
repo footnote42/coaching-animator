@@ -55,7 +55,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
      * Entities with a parentId (e.g., ball with possession) will inherit
      * their parent's x/y coordinates.
      */
-    const applyParentRelativePositioning = (entitiesToProcess: any[]) => {
+    const applyParentRelativePositioning = (entitiesToProcess: Array<Entity & { opacity: number }>) => {
         return entitiesToProcess.map(entity => {
             // Check if this entity has a parent (ball possession)
             if (entity.parentId) {
@@ -136,7 +136,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
 
     return (
         <Layer listening={interactive}>
-            {interpolatedEntities.map((entity: any) => (
+            {interpolatedEntities.map((entity: Entity & { opacity: number }) => (
                 <PlayerToken
                     key={entity.id}
                     entity={entity}

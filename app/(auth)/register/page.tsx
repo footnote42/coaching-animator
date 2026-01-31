@@ -104,7 +104,7 @@ export default function RegisterPage() {
         <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm">
           <p>{successMessage}</p>
           <p className="mt-2 text-xs">
-            Didn't receive the email?{' '}
+            Didn&apos;t receive the email?{' '}
             <button
               type="button"
               onClick={handleResendVerification}

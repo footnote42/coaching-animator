@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import Konva from 'konva';
 import { Stage } from '../Canvas/Stage';
 import { Field } from '../Canvas/Field';
 import { EntityLayer } from '../Canvas/EntityLayer';
@@ -16,7 +17,7 @@ interface ReplayPageProps {
 }
 
 export const ReplayPage: React.FC<ReplayPageProps> = ({ shareId }) => {
-    const stageRef = useRef<any>(null);
+    const stageRef = useRef<Konva.Stage>(null);
     const { payload, isLoading: isFetching, error } = useSharePayload(shareId);
 
     const {

@@ -82,8 +82,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const animation = Array.isArray(animationData) ? animationData[0] : animationData;
 
   // Execute action
-  let actionTaken = action;
-  let newStatus: 'reviewed' | 'dismissed' = action === 'dismiss' ? 'dismissed' : 'reviewed';
+  const newStatus: 'reviewed' | 'dismissed' = action === 'dismiss' ? 'dismissed' : 'reviewed';
 
   try {
     switch (action) {
