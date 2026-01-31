@@ -11,7 +11,7 @@ export default function AuthLayout({
       <div className="flex items-center justify-center p-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <p className="text-sm text-text-primary/70">Rugby Play Visualization</p>
+            <p className="text-sm text-text-primary/70">Rugby Play Visualisation</p>
           </div>
           <div className="bg-surface border border-border p-6">
             {children}

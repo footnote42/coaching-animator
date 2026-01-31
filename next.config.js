@@ -84,13 +84,13 @@ const nextConfig = {
     if (isServer) {
       config.externals = [...(config.externals || []), 'canvas'];
     }
-    
+
     // Ensure konva uses browser build
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
     };
-    
+
     return config;
   },
 };

@@ -3,12 +3,11 @@
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createSupabaseBrowserClient } from '../../lib/supabase/client';
 import { SaveToCloudModal } from '../../components/SaveToCloudModal';
 import { OnboardingTutorial } from '../../components/OnboardingTutorial';
 import { useProjectStore } from '../../src/store/projectStore';
-import type { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { useUser } from '../../lib/contexts/UserContext';
 
 const Editor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
@@ -45,8 +44,7 @@ function AnimationToolPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadId = searchParams.get('load');
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUser();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastLoadedId, setLastLoadedId] = useState<string | null>(null);
 
@@ -69,20 +67,7 @@ function AnimationToolPageContent() {
     }
   }, [loadProject]);
 
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  // No local auth state management needed, handled by UserContext
 
   // Load animation from cloud if URL parameter is present or changed
   useEffect(() => {

@@ -273,6 +273,7 @@ This project follows a spec-driven development workflow. Current work focuses on
 - **Static Generation**: Current build has issues with static generation - use dynamic rendering for now
 - **Video Export**: Requires Chrome/Edge for best compatibility
 - **Mobile Safari**: Limited video export support
+- **Supabase AbortError (Console Warning)**: You may see `AbortError: signal is aborted without reason` in the browser console during auth initialization. This is a known, harmless issue in the `@supabase/ssr` package that doesn't affect functionality. The error can be safely ignored.
 
 ---
 

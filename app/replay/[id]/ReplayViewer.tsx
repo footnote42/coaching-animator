@@ -41,7 +41,7 @@ interface ReplayViewerProps {
 }
 
 const DESIGN_TOKENS = {
-  colors: {
+  colours: {
     primary: '#1A3D1A',
     textInverse: '#F8F9FA',
     attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],
@@ -102,22 +102,22 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
     if (!isPlaying || !currentFrame) return;
 
     const duration = currentFrame.duration || 1000;
-    
+
     const animate = (timestamp: number) => {
       if (!lastFrameTimeRef.current) {
         lastFrameTimeRef.current = timestamp;
       }
-      
+
       const elapsed = timestamp - lastFrameTimeRef.current;
-      
+
       if (elapsed >= duration) {
         lastFrameTimeRef.current = timestamp;
         nextFrame();
       }
-      
+
       animationRef.current = requestAnimationFrame(animate);
     };
-    
+
     animationRef.current = requestAnimationFrame(animate);
 
     return () => {
@@ -142,23 +142,23 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
   // Get entity color matching editor logic
   const getEntityColor = (entity: Entity): string => {
     if (entity.color) return entity.color;
-    
+
     switch (entity.type) {
       case 'ball':
         return '#854D0E';
       case 'cone':
         return '#EA580C';
       case 'marker':
-        return DESIGN_TOKENS.colors.primary;
+        return DESIGN_TOKENS.colours.primary;
       case 'player':
         const teamColors = {
-          attack: DESIGN_TOKENS.colors.attack[0],
-          defense: DESIGN_TOKENS.colors.defense[0],
-          neutral: DESIGN_TOKENS.colors.neutral[0]
+          attack: DESIGN_TOKENS.colours.attack[0],
+          defense: DESIGN_TOKENS.colours.defense[0],
+          neutral: DESIGN_TOKENS.colours.neutral[0]
         };
-        return teamColors[entity.team] || DESIGN_TOKENS.colors.primary;
+        return teamColors[entity.team] || DESIGN_TOKENS.colours.primary;
       default:
-        return DESIGN_TOKENS.colors.primary;
+        return DESIGN_TOKENS.colours.primary;
     }
   };
 
@@ -212,7 +212,7 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
             {entities.map((entity) => {
               const color = getEntityColor(entity);
               const radius = getEntityRadius(entity.type);
-              
+
               return (
                 <Group key={entity.id} x={entity.x} y={entity.y}>
                   {entity.type === 'ball' ? (
@@ -234,7 +234,7 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
                       text={entity.label}
                       fontSize={14}
                       fontFamily="Inter, system-ui, sans-serif"
-                      fill={DESIGN_TOKENS.colors.textInverse}
+                      fill={DESIGN_TOKENS.colours.textInverse}
                       align="center"
                       verticalAlign="middle"
                       width={radius * 2}
@@ -301,11 +301,10 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
               setCurrentFrameIndex(index);
               setIsPlaying(false);
             }}
-            className={`w-8 h-8 flex-shrink-0 border transition-colors ${
-              index === currentFrameIndex
+            className={`w-8 h-8 flex-shrink-0 border transition-colors ${index === currentFrameIndex
                 ? 'bg-primary text-text-inverse border-primary'
                 : 'bg-surface border-border hover:border-primary'
-            }`}
+              }`}
           >
             {index + 1}
           </button>

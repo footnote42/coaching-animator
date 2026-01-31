@@ -41,7 +41,7 @@ export const GridOverlay: React.FC<GridOverlayProps> = ({
             <Line
                 key={`v-${x}`}
                 points={[x, 0, x, height]}
-                stroke={DESIGN_TOKENS.colors.background} // Tactics White
+                stroke={DESIGN_TOKENS.colours.background} // Tactics White
                 strokeWidth={1}
                 opacity={0.3}
                 listening={false}
@@ -55,7 +55,7 @@ export const GridOverlay: React.FC<GridOverlayProps> = ({
             <Line
                 key={`h-${y}`}
                 points={[0, y, width, y]}
-                stroke={DESIGN_TOKENS.colors.background} // Tactics White
+                stroke={DESIGN_TOKENS.colours.background} // Tactics White
                 strokeWidth={1}
                 opacity={0.3}
                 listening={false}

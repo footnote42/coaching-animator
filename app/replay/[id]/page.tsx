@@ -11,7 +11,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
-  
+
   const { data: animation } = await supabase
     .from('saved_animations')
     .select('title, description, animation_type')
@@ -62,7 +62,7 @@ export default async function ReplayPage({ params }: PageProps) {
     .is('hidden_at', null)
     .in('visibility', ['public', 'link_shared'])
     .single();
-  
+
   // Fetch author display name separately
   let authorDisplayName: string | null = null;
   if (animation?.user_id) {
@@ -87,7 +87,7 @@ export default async function ReplayPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-[var(--color-surface-warm)]">
       <Navigation />
-      
+
       {/* Animation Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-5xl mx-auto px-4 py-4">
@@ -137,7 +137,7 @@ export default async function ReplayPage({ params }: PageProps) {
           <p className="text-sm text-text-primary/70">
             Created with{' '}
             <a href="/" className="text-primary hover:underline">
-              Coaching Animator
+              Visualise Your Own Play
             </a>
           </p>
           <p className="mt-2">

@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { useUser } from '@/lib/contexts/UserContext';
 
 interface NavigationProps {
   /** Simplified variant for auth pages - just logo, no navigation links */
@@ -13,51 +11,14 @@ interface NavigationProps {
   className?: string;
 }
 
-interface UserProfile {
-  role: 'user' | 'admin' | null;
-}
 
 export function Navigation({ variant = 'full', className = '' }: NavigationProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<UserProfile['role']>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-
-    const loadUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        setUserRole(profile?.role ?? 'user');
-      }
-
-      setLoading(false);
-    };
-
-    loadUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        setUserRole(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, profile, loading, signOut } = useUser();
+  const userRole = profile?.role;
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
-    window.location.href = '/';
+    await signOut();
   };
 
   const isActive = (path: string) => pathname === path;
@@ -89,13 +50,12 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
         <div className="flex items-center gap-4">
           <Link
             href="/gallery"
-            className={`text-sm transition-colors ${
-              isActive('/gallery')
-                ? 'text-primary font-medium'
-                : 'text-text-primary hover:text-primary'
-            }`}
+            className={`text-sm transition-colors ${isActive('/gallery')
+              ? 'text-primary font-medium'
+              : 'text-text-primary hover:text-primary'
+              }`}
           >
-            Gallery
+            Public Gallery
           </Link>
 
           {loading ? (
@@ -104,22 +64,20 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             <>
               <Link
                 href="/my-gallery"
-                className={`text-sm transition-colors ${
-                  isActive('/my-gallery')
-                    ? 'text-primary font-medium'
-                    : 'text-text-primary hover:text-primary'
-                }`}
+                className={`text-sm transition-colors ${isActive('/my-gallery')
+                  ? 'text-primary font-medium'
+                  : 'text-text-primary hover:text-primary'
+                  }`}
               >
                 My Playbook
               </Link>
 
               <Link
                 href="/profile"
-                className={`text-sm transition-colors ${
-                  isActive('/profile')
-                    ? 'text-primary font-medium'
-                    : 'text-text-primary hover:text-primary'
-                }`}
+                className={`text-sm transition-colors ${isActive('/profile')
+                  ? 'text-primary font-medium'
+                  : 'text-text-primary hover:text-primary'
+                  }`}
               >
                 Profile
               </Link>
@@ -127,11 +85,10 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               {userRole === 'admin' && (
                 <Link
                   href="/admin"
-                  className={`text-sm transition-colors ${
-                    isActive('/admin')
-                      ? 'text-accent-warm font-medium'
-                      : 'text-accent-warm/80 hover:text-accent-warm'
-                  }`}
+                  className={`text-sm transition-colors ${isActive('/admin')
+                    ? 'text-accent-warm font-medium'
+                    : 'text-accent-warm/80 hover:text-accent-warm'
+                    }`}
                 >
                   Admin
                 </Link>
@@ -162,7 +119,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
               <Link
                 href="/register"
-                className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
               >
                 Get Started
               </Link>

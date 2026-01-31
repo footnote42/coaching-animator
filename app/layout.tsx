@@ -4,11 +4,11 @@ import { UserProvider } from '@/lib/contexts/UserContext';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Coaching Animator - Rugby Play Visualization',
+    default: 'Coaching Animator - Rugby Play Visualisation',
     template: '%s | Coaching Animator',
   },
   description: 'Create and share animated rugby plays. Visualize tactics, demonstrate formations, and share with your team.',
-  keywords: ['rugby', 'coaching', 'animation', 'plays', 'tactics', 'visualization'],
+  keywords: ['rugby', 'coaching', 'animation', 'plays', 'tactics', 'visualisation'],
   authors: [{ name: 'Coaching Animator' }],
   creator: 'Coaching Animator',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Coaching Animator',
-    title: 'Coaching Animator - Rugby Play Visualization',
-    description: 'Create and share animated rugby plays. Visualize tactics, demonstrate formations, and share with your team.',
+    title: 'Coaching Animator - Rugby Play Visualisation',
+    description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   },
   twitter: {
     card: 'summary_large_image',

@@ -17,10 +17,10 @@ export interface ColorPickerProps {
  */
 export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
     // Flatten all team colors into a single palette
+    const teamColors = [...DESIGN_TOKENS.colours.attack, ...DESIGN_TOKENS.colours.defense];
     const colorPalette = [
-        ...DESIGN_TOKENS.colors.attack,
-        ...DESIGN_TOKENS.colors.defense,
-        ...DESIGN_TOKENS.colors.neutral,
+        ...teamColors,
+        ...DESIGN_TOKENS.colours.neutral,
     ];
 
     return (
@@ -39,7 +39,7 @@ export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
                         className="w-8 h-8 border-2 transition-all hover:scale-110"
                         style={{
                             backgroundColor: color,
-                            borderColor: value === color ? DESIGN_TOKENS.colors.primary : '#E5E7EB',
+                            borderColor: value === color ? DESIGN_TOKENS.colours.primary : '#E5E7EB',
                             borderWidth: value === color ? '3px' : '1px',
                         }}
                         title={color}

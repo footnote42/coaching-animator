@@ -169,7 +169,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'attack',
-            color: DESIGN_TOKENS.colors.attack[0],
+            color: DESIGN_TOKENS.colours.attack[0],
             label: '',
         });
     };
@@ -180,7 +180,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'defense',
-            color: DESIGN_TOKENS.colors.defense[0],
+            color: DESIGN_TOKENS.colours.defense[0],
             label: '',
         });
     };
@@ -191,7 +191,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: DESIGN_TOKENS.colors.neutral[0],
+            color: DESIGN_TOKENS.colours.neutral[0],
             label: '',
         });
     };
@@ -202,7 +202,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: DESIGN_TOKENS.colors.neutral[1],
+            color: DESIGN_TOKENS.colours.neutral[1],
             label: '',
         });
     };
@@ -381,7 +381,7 @@ function Editor() {
         addAnnotation({
             type,
             points,
-            color: DESIGN_TOKENS.colors.annotation,
+            color: DESIGN_TOKENS.colours.annotation,
         });
         // Exit drawing mode after completing an annotation
         setDrawingMode('none');
@@ -477,7 +477,7 @@ function Editor() {
                                 />
                                 <AnnotationDrawingLayer
                                     drawingMode={drawingMode}
-                                    defaultColor={DESIGN_TOKENS.colors.annotation}
+                                    defaultColor={DESIGN_TOKENS.colours.annotation}
                                     onDrawingComplete={handleDrawingComplete}
                                     interactive={!isPlaying}
                                     width={canvasWidth}

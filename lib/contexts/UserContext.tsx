@@ -36,21 +36,30 @@ export function UserProvider({ children }: UserProviderProps) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (userId: string) => {
-    const supabase = createSupabaseBrowserClient();
-    const { data } = await supabase
-      .from('user_profiles')
-      .select('id, display_name, role, animation_count, max_animations')
-      .eq('id', userId)
-      .single();
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, display_name, role, animation_count, max_animations')
+        .eq('id', userId)
+        .single();
 
-    if (data) {
-      setProfile({
-        id: data.id,
-        display_name: data.display_name,
-        role: data.role || 'user',
-        animation_count: data.animation_count || 0,
-        max_animations: data.max_animations || 50,
-      });
+      if (error) {
+        console.warn('Error loading user profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfile({
+          id: data.id,
+          display_name: data.display_name,
+          role: data.role || 'user',
+          animation_count: data.animation_count || 0,
+          max_animations: data.max_animations || 50,
+        });
+      }
+    } catch (err) {
+      console.error('Unexpected error loading profile:', err);
     }
   };
 
@@ -62,21 +71,39 @@ export function UserProvider({ children }: UserProviderProps) {
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
+    let isSubscribed = true;
 
     const initAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        if (!isSubscribed) return;
 
-      if (user) {
-        await loadProfile(user.id);
+        const authResult = await supabase.auth.getUser();
+        const user = authResult.data?.user;
+
+        if (!isSubscribed) return;
+        setUser(user ?? null);
+
+        if (user && isSubscribed) {
+          await loadProfile(user.id);
+        }
+      } catch (err) {
+        // Ignore AbortErrors during cleanup
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
+        console.error('Error initializing auth:', err);
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
       }
-
-      setLoading(false);
     };
 
     initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!isSubscribed) return;
+
       const newUser = session?.user ?? null;
       setUser(newUser);
 
@@ -87,7 +114,10 @@ export function UserProvider({ children }: UserProviderProps) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
@@ -123,4 +153,4 @@ export function useUser() {
   return context;
 }
 
-export default UserContext;
+

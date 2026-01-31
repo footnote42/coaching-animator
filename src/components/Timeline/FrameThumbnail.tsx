@@ -69,7 +69,7 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
           relative
         `}
         style={{
-          borderColor: isActive ? DESIGN_TOKENS.colors.primary : undefined,
+          borderColor: isActive ? DESIGN_TOKENS.colours.primary : undefined,
           borderRadius: 0, // Sharp corners
         }}
         onClick={onClick}

@@ -164,7 +164,7 @@ export const useProjectStore = create<ProjectStoreState>()(
                         type: e.type,
                         team: e.team === 'defence' ? 'defense' : e.team as TeamType,
                         // Default values for missing fields
-                        color: e.team === 'attack' ? DESIGN_TOKENS.colors.attack[0] : (e.team === 'defence' ? DESIGN_TOKENS.colors.defense[0] : '#ffffff'),
+                        color: e.team === 'attack' ? DESIGN_TOKENS.colours.attack[0] : (e.team === 'defence' ? DESIGN_TOKENS.colours.defense[0] : '#ffffff'),
                         label: '',
                         x: e.x,
                         y: e.y
@@ -476,8 +476,8 @@ export const useProjectStore = create<ProjectStoreState>()(
 
                     // Apply defaults
                     const team = entity.team ?? 'neutral';
-                    const color = entity.color ?? DESIGN_TOKENS.colors[team][0];
-                    
+                    const color = entity.color ?? DESIGN_TOKENS.colours[team][0];
+
                     // Generate default label for players (Att 01, Def 01, etc.)
                     let label = entity.label ?? '';
                     if (entity.type === 'player' && !entity.label) {

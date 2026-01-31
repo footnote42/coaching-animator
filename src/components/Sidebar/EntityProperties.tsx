@@ -101,9 +101,8 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                     <span className="text-xs text-[var(--color-text-primary)] opacity-60">Annotation visible from start to end frame</span>
                 </div>
 
-                {/* Color */}
                 <ColorPicker
-                    label="Color"
+                    label="Colour"
                     value={selectedAnnotation.color || '#FACC15'}
                     onChange={(color) => updateAnnotation(selectedAnnotation.id, { color })}
                 />
@@ -216,9 +215,9 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                 </div>
             )}
 
-            {/* Color */}
+            {/* Colour */}
             <ColorPicker
-                label="Color"
+                label="Colour"
                 value={entity.color || '#1A3D1A'}
                 onChange={(color) => onUpdate({ color })}
             />

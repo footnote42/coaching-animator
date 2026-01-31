@@ -96,7 +96,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             case 'cone':
                 return '#EA580C'; // Orange
             case 'marker':
-                return DESIGN_TOKENS.colors.primary; // Pitch green
+                return DESIGN_TOKENS.colours.primary; // Pitch green
             case 'tackle-shield':
                 return '#1E40AF'; // Deep blue
             case 'tackle-bag':
@@ -104,13 +104,13 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             case 'player':
                 // Use team-based default colors
                 const teamColors = {
-                    attack: DESIGN_TOKENS.colors.attack[0],
-                    defense: DESIGN_TOKENS.colors.defense[0],
-                    neutral: DESIGN_TOKENS.colors.neutral[0]
+                    attack: DESIGN_TOKENS.colours.attack[0],
+                    defense: DESIGN_TOKENS.colours.defense[0],
+                    neutral: DESIGN_TOKENS.colours.neutral[0]
                 };
-                return teamColors[entity.team] || DESIGN_TOKENS.colors.primary;
+                return teamColors[entity.team] || DESIGN_TOKENS.colours.primary;
             default:
-                return DESIGN_TOKENS.colors.primary;
+                return DESIGN_TOKENS.colours.primary;
         }
     };
 
@@ -206,7 +206,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     radiusX={14}
                     radiusY={9}
                     fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : '#1A3D1A'}
                     strokeWidth={isSelected ? 2 : 1}
                     shadowEnabled={false}
                     opacity={opacity}
@@ -226,7 +226,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                 <Circle
                     radius={radius}
                     fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
+                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : undefined}
                     strokeWidth={isSelected ? 2 : 0}
                     shadowEnabled={false}
                     opacity={opacity}
@@ -240,7 +240,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     offsetY={8}
                     cornerRadius={4}
                     fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : '#1A3D1A'}
                     strokeWidth={isSelected ? 2 : 1}
                     rotation={getRotationAngle(entity.orientation)}
                     shadowEnabled={false}
@@ -252,7 +252,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     radiusX={10}
                     radiusY={20}
                     fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : '#1A3D1A'}
                     strokeWidth={isSelected ? 2 : 1}
                     shadowEnabled={false}
                     opacity={opacity}
@@ -262,7 +262,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                 <Circle
                     radius={radius}
                     fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
+                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : undefined}
                     strokeWidth={isSelected ? 2 : 0}
                     shadowEnabled={false}
                     opacity={opacity}
@@ -275,7 +275,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     text={entity.label}
                     fontSize={11}
                     fontFamily={DESIGN_TOKENS.typography.fontBody}
-                    fill={DESIGN_TOKENS.colors.textInverse}
+                    fill={DESIGN_TOKENS.colours.textInverse}
                     align="center"
                     verticalAlign="middle"
                     width={radius * 2}

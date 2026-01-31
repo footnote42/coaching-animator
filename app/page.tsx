@@ -46,7 +46,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6">
-              Visualize Rugby Plays Like Never Before
+              Visualise Rugby Plays Like Never Before
             </h1>
             <p className="text-lg md:text-xl text-text-inverse/80 mb-8 max-w-2xl">
               Create animated rugby tactics, share with your team, and explore plays from coaches around the world. Free, offline-capable, and built for coaches.

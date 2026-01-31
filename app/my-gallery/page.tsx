@@ -7,8 +7,8 @@ import { Navigation } from '@/components/Navigation';
 import { AnimationCard, AnimationSummary } from '@/components/AnimationCard';
 import { EditMetadataModal } from '@/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { MyAnimationsQuery } from '@/lib/schemas/animations';
+import { useUser } from '@/lib/contexts/UserContext';
 
 type SortField = MyAnimationsQuery['sort'];
 type SortOrder = MyAnimationsQuery['order'];
@@ -24,6 +24,7 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
 
 export default function MyGalleryPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useUser();
   const [animations, setAnimations] = useState<AnimationSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,20 +71,15 @@ export default function MyGalleryPage() {
   }, [sort, order, page, router]);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+    if (authLoading) return;
 
-      if (!user) {
-        router.push('/login?redirect=/my-gallery');
-        return;
-      }
+    if (!user) {
+      router.push('/login?redirect=/my-gallery');
+      return;
+    }
 
-      fetchAnimations();
-    };
-
-    checkAuth();
-  }, [fetchAnimations, router]);
+    fetchAnimations();
+  }, [authLoading, user, fetchAnimations, router]);
 
   const handleSortChange = (newSort: SortField) => {
     if (newSort === sort) {

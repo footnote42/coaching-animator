@@ -5,6 +5,7 @@ import Konva from 'konva';
 import { Stage } from '@/components/Canvas/Stage';
 import { Field } from '@/components/Canvas/Field';
 import { FieldLayoutOverlay } from '@/components/Canvas/FieldLayoutOverlay';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { GridOverlay } from '@/components/Canvas/GridOverlay';
 import { EntityLayer } from '@/components/Canvas/EntityLayer';
 import { InlineEditor } from '@/components/Canvas/InlineEditor';
@@ -183,7 +184,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'attack',
-      color: DESIGN_TOKENS.colors.attack[0],
+      color: DESIGN_TOKENS.colours.attack[0],
       label: '',
     });
   };
@@ -194,7 +195,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'defense',
-      color: DESIGN_TOKENS.colors.defense[0],
+      color: DESIGN_TOKENS.colours.defense[0],
       label: '',
     });
   };
@@ -205,7 +206,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: DESIGN_TOKENS.colors.neutral[0],
+      color: DESIGN_TOKENS.colours.neutral[0],
       label: '',
     });
   };
@@ -216,7 +217,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: DESIGN_TOKENS.colors.neutral[1],
+      color: DESIGN_TOKENS.colours.neutral[1],
       label: '',
     });
   };
@@ -379,7 +380,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     addAnnotation({
       type,
       points,
-      color: DESIGN_TOKENS.colors.annotation,
+      color: DESIGN_TOKENS.colours.annotation,
     });
     setDrawingMode('none');
   };
@@ -397,7 +398,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           </h1>
           <div className="flex flex-wrap gap-2 text-xs">
             <a href="/gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
-              Gallery
+              Public Gallery
             </a>
             {isAuthenticated && (
               <>
@@ -405,6 +406,20 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                 <a href="/my-gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
                   My Playbook
                 </a>
+                <span className="text-tactics-white/40">•</span>
+                <a href="/profile" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
+                  Profile
+                </a>
+                <span className="text-tactics-white/40">•</span>
+                <button
+                  onClick={() => {
+                    const supabase = createSupabaseBrowserClient();
+                    supabase.auth.signOut().then(() => window.location.href = '/');
+                  }}
+                  className="text-tactics-white/70 hover:text-tactics-white transition-colors"
+                >
+                  Sign Out
+                </button>
               </>
             )}
           </div>
@@ -504,7 +519,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                 />
                 <AnnotationDrawingLayer
                   drawingMode={drawingMode}
-                  defaultColor={DESIGN_TOKENS.colors.annotation}
+                  defaultColor={DESIGN_TOKENS.colours.annotation}
                   onDrawingComplete={handleDrawingComplete}
                   interactive={!isPlaying}
                   width={canvasWidth}
