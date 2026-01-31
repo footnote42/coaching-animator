@@ -82,8 +82,7 @@ jobs:
       - name: Start Supabase local instance
         run: supabase start
 
-      - name: Run migrations
-        run: supabase db push
+
 
       - name: Verify migrations
         run: |
