@@ -117,25 +117,32 @@ export async function GET(request: NextRequest) {
     upvote_count: number;
     created_at: string;
     user_id: string;
-    user_profiles: { display_name: string | null } | { display_name: string | null }[] | null;
+    user_profiles: { display_name: string | null } | null;
   }
 
-  const animations = (data as unknown as AnimationRow[])?.map((animation) => ({
-    id: animation.id,
-    title: animation.title,
-    description: animation.description,
-    animation_type: animation.animation_type,
-    tags: animation.tags,
-    duration_ms: animation.duration_ms,
-    frame_count: animation.frame_count,
-    upvote_count: animation.upvote_count,
-    created_at: animation.created_at,
-    user_id: animation.user_id,
-    author: {
-      display_name: animation.user_profiles?.[0]?.display_name ?? animation.user_profiles?.display_name ?? 'Anonymous',
-    },
-    user_has_upvoted: upvotedIds.has(animation.id),
-  })) || [];
+  const animations = (data as unknown as AnimationRow[])?.map((animation) => {
+    // Handle the case where user_profiles might be returned as an array or object
+    const profiles = animation.user_profiles;
+    const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+    const authorName = profile?.display_name ?? 'Anonymous';
+
+    return {
+      id: animation.id,
+      title: animation.title,
+      description: animation.description,
+      animation_type: animation.animation_type,
+      tags: animation.tags,
+      duration_ms: animation.duration_ms,
+      frame_count: animation.frame_count,
+      upvote_count: animation.upvote_count,
+      created_at: animation.created_at,
+      user_id: animation.user_id,
+      author: {
+        display_name: authorName,
+      },
+      user_has_upvoted: upvotedIds.has(animation.id),
+    };
+  }) || [];
 
   return NextResponse.json({
     animations,
