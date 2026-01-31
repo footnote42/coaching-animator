@@ -7,7 +7,7 @@ import { Navigation } from '@/components/Navigation';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
 import { SkeletonGrid } from '@/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
-import { fetchWithRetry } from '@/lib/api-client';
+import { getWithRetry } from '@/lib/api-client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 import { useUser } from '@/lib/contexts/UserContext';
 
@@ -81,15 +81,18 @@ function GalleryContent() {
       params.set('limit', String(limit));
       params.set('offset', String(offset));
 
-      const response = await fetchWithRetry(`/api/gallery?${params}`);
-      const data = await response.json();
+      const { ok, data, status, error: apiError } = await getWithRetry<{ animations: PublicAnimation[]; total: number }>(
+        `/api/gallery?${params}`
+      );
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to fetch gallery');
+      if (!ok) {
+        throw new Error(apiError || `Failed to fetch gallery (${status})`);
       }
 
-      setAnimations(data.animations);
-      setTotal(data.total);
+      if (data) {
+        setAnimations(data.animations);
+        setTotal(data.total);
+      }
     } catch (err) {
       setError(getFriendlyErrorMessage(err));
     } finally {

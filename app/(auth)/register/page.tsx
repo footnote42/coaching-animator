@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '../../../lib/supabase/client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
+import { postWithRetry } from '@/lib/api-client';
 
 export default function RegisterPage() {
 
@@ -69,16 +70,10 @@ export default function RegisterPage() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+      const { ok, status, error: apiError } = await postWithRetry('/api/auth/resend-verification', { email });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrorMessage(data.error?.message || 'Failed to resend verification email');
+      if (!ok) {
+        setErrorMessage(apiError || `Failed to resend verification email (${status})`);
         return;
       }
 

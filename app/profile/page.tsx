@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { useUser } from '@/lib/contexts/UserContext';
+import { putWithRetry } from '@/lib/api-client';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -34,17 +35,13 @@ export default function ProfilePage() {
     setSuccess(null);
 
     try {
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ display_name: displayName.trim() || null }),
-      });
+      const { ok, status, error: apiError } = await putWithRetry(
+        '/api/user/profile',
+        { display_name: displayName.trim() || null }
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to update profile');
+      if (!ok) {
+        throw new Error(apiError || `Failed to update profile (${status})`);
       }
 
       await refreshProfile(); // Update global state

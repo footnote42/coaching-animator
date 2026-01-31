@@ -8,6 +8,7 @@ import { OnboardingTutorial } from '../../components/OnboardingTutorial';
 import { useProjectStore } from '../../src/store/projectStore';
 import { toast } from 'sonner';
 import { useUser } from '../../lib/contexts/UserContext';
+import { getWithRetry } from '../../lib/api-client';
 
 const Editor = dynamic(() => import('../../components/Editor'), {
   ssr: false,
@@ -74,13 +75,10 @@ function AnimationToolPageContent() {
     // Only load if we have a loadId and it's different from last loaded
     if (loadId && loadId !== lastLoadedId) {
       setLastLoadedId(loadId);
-      fetch(`/api/animations/${loadId}`, { credentials: 'include' })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to load animation');
-          return res.json();
-        })
-        .then(data => {
-          if (data.payload) {
+      getWithRetry<any>(`/api/animations/${loadId}`)
+        .then(({ ok, data, status, error: apiError }) => {
+          if (!ok) throw new Error(apiError || `Failed to load animation (${status})`);
+          if (data && data.payload) {
             // Add required project fields that aren't stored in payload
             const projectData = {
               ...data.payload,
@@ -91,7 +89,7 @@ function AnimationToolPageContent() {
             const result = loadProject(projectData);
             if (!result.success) {
               console.error('Failed to load project:', result.errors);
-              toast.error('Failed to load animation');
+              toast.error('Failed to load animation data');
             } else {
               // Clear autosave to prevent confusion
               localStorage.removeItem('rugby_animator_autosave');
@@ -101,7 +99,7 @@ function AnimationToolPageContent() {
         })
         .catch(err => {
           console.error('Failed to load animation from cloud:', err);
-          toast.error('Failed to load animation');
+          toast.error(err instanceof Error ? err.message : 'Failed to load animation');
         });
     }
   }, [loadId, lastLoadedId, loadProject]);

@@ -8,6 +8,7 @@ import { AnimationCard, AnimationSummary } from '@/components/AnimationCard';
 import { EditMetadataModal } from '@/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
 import { MyAnimationsQuery } from '@/lib/schemas/animations';
+import { getWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { useUser } from '@/lib/contexts/UserContext';
 
 type SortField = MyAnimationsQuery['sort'];
@@ -50,19 +51,22 @@ export default function MyGalleryPage() {
         offset: String((page - 1) * LIMIT),
       });
 
-      const response = await fetch(`/api/animations?${params}`);
+      const { ok, data, status, error: apiError } = await getWithRetry<{ animations: AnimationSummary[]; total: number }>(
+        `/api/animations?${params}`
+      );
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!ok) {
+        if (status === 401) {
           router.push('/login?redirect=/my-gallery');
           return;
         }
-        throw new Error('Failed to fetch animations');
+        throw new Error(apiError || `Failed to fetch animations (${status})`);
       }
 
-      const data = await response.json();
-      setAnimations(data.animations);
-      setTotal(data.total);
+      if (data) {
+        setAnimations(data.animations);
+        setTotal(data.total);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -108,15 +112,10 @@ export default function MyGalleryPage() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/animations/${deletingId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const { ok, status, error: apiError } = await deleteWithRetry(`/api/animations/${deletingId}`);
 
-      if (!response.ok) {
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
-        throw new Error(data.error?.message || `Failed to delete animation (${response.status})`);
+      if (!ok) {
+        throw new Error(apiError || `Failed to delete animation (${status})`);
       }
 
       setDeletingId(null);
