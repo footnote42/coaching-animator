@@ -13,12 +13,13 @@ CREATE TABLE IF NOT EXISTS moderation_blocklist (
 );
 
 -- Create index for fast lookups
-CREATE INDEX idx_moderation_blocklist_word ON moderation_blocklist(word) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_moderation_blocklist_word ON moderation_blocklist(word) WHERE is_active = TRUE;
 
 -- Add RLS policies (only admins can manage blocklist)
 ALTER TABLE moderation_blocklist ENABLE ROW LEVEL SECURITY;
 
 -- Admins can read all words
+DROP POLICY IF EXISTS "Admins can read all blocklist words" ON moderation_blocklist;
 CREATE POLICY "Admins can read all blocklist words"
   ON moderation_blocklist
   FOR SELECT
@@ -32,6 +33,7 @@ CREATE POLICY "Admins can read all blocklist words"
   );
 
 -- Admins can insert new words
+DROP POLICY IF EXISTS "Admins can insert blocklist words" ON moderation_blocklist;
 CREATE POLICY "Admins can insert blocklist words"
   ON moderation_blocklist
   FOR INSERT
@@ -45,6 +47,7 @@ CREATE POLICY "Admins can insert blocklist words"
   );
 
 -- Admins can update words
+DROP POLICY IF EXISTS "Admins can update blocklist words" ON moderation_blocklist;
 CREATE POLICY "Admins can update blocklist words"
   ON moderation_blocklist
   FOR UPDATE
@@ -58,6 +61,7 @@ CREATE POLICY "Admins can update blocklist words"
   );
 
 -- Admins can delete words
+DROP POLICY IF EXISTS "Admins can delete blocklist words" ON moderation_blocklist;
 CREATE POLICY "Admins can delete blocklist words"
   ON moderation_blocklist
   FOR DELETE
