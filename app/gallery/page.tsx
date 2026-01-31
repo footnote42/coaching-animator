@@ -3,10 +3,13 @@
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
 import { SkeletonGrid } from '@/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { fetchWithRetry } from '@/lib/api-client';
+import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 interface PublicAnimation {
   id: string;
@@ -87,7 +90,7 @@ function GalleryContent() {
       params.set('limit', String(limit));
       params.set('offset', String(offset));
 
-      const response = await fetch(`/api/gallery?${params}`);
+      const response = await fetchWithRetry(`/api/gallery?${params}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch gallery');
@@ -97,7 +100,7 @@ function GalleryContent() {
       setAnimations(data.animations);
       setTotal(data.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
@@ -172,7 +175,9 @@ function GalleryContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      <Navigation />
+      
+      {/* Page Header */}
       <header className="border-b border-border bg-primary text-text-inverse">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-heading font-bold mb-2">

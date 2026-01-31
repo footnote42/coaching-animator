@@ -1,0 +1,62 @@
+# Smoke Tests - Quick Health Checks
+# Run these tests to verify basic functionality is working
+
+tags:
+  - smoke
+  - health-check
+  - critical
+
+env: dev
+
+# Quick smoke test for core functionality
+name: "Smoke Test - Core Functionality"
+
+steps:
+  - "Navigate to homepage"
+  - "Verify page loads without errors"
+  - "Check for console errors"
+  - "Navigate to /app"
+  - "Verify animation tool loads"
+  - "Test basic canvas interaction"
+  - "Navigate to /gallery"
+  - "Verify public gallery loads"
+  - "Check API endpoints are responding"
+
+assertions:
+  - "Homepage loads successfully"
+  - "No console errors on any page"
+  - "Animation tool canvas is interactive"
+  - "Public gallery displays content"
+  - "API endpoints respond correctly"
+
+---
+# Authentication Smoke Test
+name: "Smoke Test - Authentication"
+
+steps:
+  - "Navigate to /login"
+  - "Verify login form loads"
+  - "Navigate to /register"
+  - "Verify registration form loads"
+  - "Test form validation"
+  - "Verify error messages appear"
+
+assertions:
+  - "Auth pages load correctly"
+  - "Form validation works"
+  - "Error messages are displayed"
+
+---
+# Database Connectivity Test
+name: "Smoke Test - Database"
+
+steps:
+  - "Navigate to /gallery"
+  - "Verify animations are loaded from database"
+  - "Check if data is populated"
+  - "Verify pagination works"
+
+assertions:
+  - "Database connection is working"
+  - "Data is being retrieved correctly"
+  - "Pagination functions properly"

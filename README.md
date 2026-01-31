@@ -184,7 +184,7 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 ## 🛠️ Technical Details
 
 ### Built With
-- **Next.js 16** - React framework with App Router
+- **Next.js 14** - React framework with App Router
 - **React 18** + TypeScript
 - **Konva** - HTML5 Canvas library for smooth rendering
 - **Zustand** - Lightweight state management
@@ -197,15 +197,20 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 ├── app/              # Next.js App Router pages and API routes
 │   ├── (auth)/       # Authentication pages
 │   ├── (legal)/      # Legal pages (Terms, Privacy, Contact)
+│   ├── admin/        # Admin dashboard
 │   ├── api/          # API endpoints
 │   ├── gallery/      # Public gallery pages
-│   └── my-gallery/   # Personal gallery page
+│   ├── my-gallery/   # Personal gallery page
+│   ├── app/          # Animation tool (main application)
+│   ├── page.tsx      # Landing page
+│   └── layout.tsx    # Root layout
 ├── components/       # React components
-│   ├── Canvas/       # Animation canvas components
-│   ├── Sidebar/      # Editor sidebar components
-│   └── Timeline/     # Timeline and playback components
+│   ├── AnimationCard.tsx
+│   ├── Editor.tsx
+│   ├── SaveToCloudModal.tsx
+│   └── [other components]
 ├── lib/              # Shared utilities and Supabase clients
-├── src/              # Core animation components
+├── src/              # Core animation components (from Vite)
 ├── specs/            # Feature specifications and tasks
 └── supabase/         # Database migrations
 ```
@@ -216,11 +221,11 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 
 This project follows a spec-driven development workflow. Current work focuses on the online platform migration:
 
-**Current Status**: 105 of 111 tasks complete (~95%)
+**Current Status**: Development complete (111/111 tasks)
 - ✅ All P1 stories complete (US1-US3: Auth, Save, Public Gallery)
 - ✅ All P2 stories complete (US4-US7: Guest Mode, Upvotes, Reports, Landing)
 - ✅ P3 stories complete (US8-US9: Admin moderation and Remix)
-- 🔄 In Progress: Final polish and verification
+- 🔄 In Progress: Production deployment (Phase 13 - 25 remaining tasks)
 
 **Development Documents**:
 1. Check `/specs/003-online-platform/spec.md` for current feature specifications
@@ -231,51 +236,47 @@ This project follows a spec-driven development workflow. Current work focuses on
 
 ---
 
-## � Share Link Setup (Optional)
+## 🚀 Deployment
 
-The Share Link feature allows you to create shareable URLs for your animations. This requires Supabase configuration.
+### Prerequisites
+- Node.js 18+ installed
+- Supabase project (for online features)
+- Vercel account (recommended for hosting)
 
-### Supabase Setup
+### Production Setup
 
-1. **Create Supabase Project**
-   - Go to [https://supabase.com](https://supabase.com)
-   - Click "Start your project" 
-   - Sign up/login and create a new project
+1. **Environment Variables**
+   ```bash
+   # Required for production
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   FRONTEND_URL=https://your-domain.com
+   ```
 
-2. **Get Configuration Values**
-   - In Supabase Dashboard, go to Settings → API
-   - Copy the **Project URL** and **anon public** key
+2. **Build and Deploy**
+   ```bash
+   # Build for production
+   npm run build
+   
+   # Deploy to Vercel (recommended)
+   npx vercel
+   ```
 
-3. **Configure Environment**
-   - Copy `.env.local.example` to `.env.local` (already done)
-   - Replace the placeholder values:
-     ```env
-     SUPABASE_URL=https://your-project-id.supabase.co
-     SUPABASE_ANON_KEY=your-anon-key
-     FRONTEND_URL=http://localhost:3000  # For local development
-     ```
+3. **Database Setup**
+   - Run migrations in Supabase dashboard
+   - Set up Row Level Security policies
+   - Configure authentication providers
 
-4. **Database Setup**
-   - The required `shares` table is created automatically on first use
-   - Shared animations expire after 90 days for privacy
+### Known Issues
 
-### Share Link Features
-
-- **Privacy-First**: No authentication required, URLs are public but not discoverable
-- **90-Day Expiry**: Links automatically expire to protect privacy
-- **Size Limit**: Maximum 100KB per animation
-- **Offline-First**: Core features work without any configuration
-
-### Troubleshooting
-
-If Share Link doesn't work:
-1. Verify `.env.local` contains correct Supabase URL and key
-2. Check browser console for error messages
-3. Ensure you're online when clicking "Share Link"
+- **Static Generation**: Current build has issues with static generation - use dynamic rendering for now
+- **Video Export**: Requires Chrome/Edge for best compatibility
+- **Mobile Safari**: Limited video export support
 
 ---
 
-## �📄 License
+## 📄 License
 
 [Specify your license here]
 

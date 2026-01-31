@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layer, Image as KonvaImage, Text } from 'react-konva';
-import { SportType } from '../../types';
+import { SportType, PitchLayout } from '../../types';
 
 /**
  * Props for the Field component
@@ -12,41 +12,51 @@ export interface FieldProps {
     width: number;
     /** Canvas height for scaling */
     height: number;
+    /** Pitch layout variant (defaults to 'standard') */
+    layout?: PitchLayout;
 }
 
 
 /**
  * Field background layer rendering sport-specific pitch markings.
  * Uses SVG assets from src/assets/fields/
+ * Supports layout variants: standard (default), attack, defence, training
  */
-export const Field: React.FC<FieldProps> = ({ sport, width, height }) => {
+export const Field: React.FC<FieldProps> = ({ sport, width, height, layout = 'standard' }) => {
     const [image, setImage] = useState<HTMLImageElement | undefined>(undefined);
     const [loadingError, setLoadingError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Load the appropriate SVG asset based on the sport
+        // Reset image state when sport or layout changes
+        setImage(undefined);
+
+        // Load the appropriate SVG asset based on the sport and layout
         const img = new window.Image();
 
-        // Path resolution for Vite asset serving
-        // Vite serves assets from the root, so we use the correct public path
-        const assetPath = `/assets/fields/${sport}.svg`;
+        // Path resolution for asset serving
+        // For non-standard layouts, use layout-specific assets (e.g., rugby-union-attack.svg)
+        // For standard layout, use the base asset (e.g., rugby-union.svg)
+        const assetPath = layout === 'standard'
+            ? `/assets/fields/${sport}.svg`
+            : `/assets/fields/${sport}-${layout}.svg`;
 
-        img.src = assetPath;
         img.onload = () => {
             setImage(img);
             setLoadingError(null);
         };
-        
+
         img.onerror = () => {
             setLoadingError(`Failed to load field asset: ${assetPath}`);
             console.error(`Failed to load field asset: ${assetPath}`);
         };
 
+        img.src = assetPath;
+
         return () => {
             img.onload = null;
             img.onerror = null;
         };
-    }, [sport]);
+    }, [sport, layout]);
 
     if (loadingError) {
         return (

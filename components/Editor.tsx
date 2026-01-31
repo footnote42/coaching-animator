@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import Konva from 'konva';
 import { Stage } from '@/components/Canvas/Stage';
 import { Field } from '@/components/Canvas/Field';
+import { FieldLayoutOverlay } from '@/components/Canvas/FieldLayoutOverlay';
 import { GridOverlay } from '@/components/Canvas/GridOverlay';
 import { EntityLayer } from '@/components/Canvas/EntityLayer';
 import { InlineEditor } from '@/components/Canvas/InlineEditor';
@@ -24,7 +25,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/components/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SportType } from '@/types';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 
 interface EditorProps {
   isAuthenticated?: boolean;
@@ -78,7 +79,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     setDrawingMode,
   } = useUIStore();
 
-  const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
+  const { exportStatus, exportProgress, exportError, startExport, canExport, recommendedFormat, formatReason } = useExport(stageRef);
 
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
@@ -145,7 +146,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     if (recoveredProject) {
       const result = loadProject(recoveredProject);
       if (!result.success) {
-        alert(`Failed to recover project:\n${result.errors.join('\n')}`);
+        toast.error(`Failed to recover project:\n${result.errors.join('\n')}`);
         newProject();
       }
     }
@@ -220,13 +221,24 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     });
   };
 
-  const handleAddMarker = () => {
+  const handleAddTackleShield = () => {
     addEntity({
-      type: 'marker',
+      type: 'tackle-shield',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: DESIGN_TOKENS.colors.neutral[2],
+      color: '#1E40AF',
+      label: '',
+    });
+  };
+
+  const handleAddTackleBag = () => {
+    addEntity({
+      type: 'tackle-bag',
+      x: canvasWidth / 2,
+      y: canvasHeight / 2,
+      team: 'neutral',
+      color: '#7C3AED',
       label: '',
     });
   };
@@ -376,9 +388,26 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     <div className="flex h-screen bg-[var(--color-surface-warm)]">
       <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
         <div className="p-4">
-          <h1 className="text-xl font-heading font-bold text-tactics-white mb-6">
-            Rugby Animation Tool
+          <a href="/" className="flex items-center gap-2 mb-2 hover:opacity-80 transition-opacity">
+            <span className="text-lg">🏉</span>
+            <span className="text-sm font-medium text-tactics-white">Coaching Animator</span>
+          </a>
+          <h1 className="text-xl font-heading font-bold text-tactics-white mb-4">
+            Animation Editor
           </h1>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <a href="/gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
+              Gallery
+            </a>
+            {isAuthenticated && (
+              <>
+                <span className="text-tactics-white/40">•</span>
+                <a href="/my-gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
+                  My Playbook
+                </a>
+              </>
+            )}
+          </div>
         </div>
 
         <ErrorBoundary fallbackTitle="Sidebar Error">
@@ -393,13 +422,16 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
               canExport={canExport}
               isAuthenticated={isAuthenticated}
               onSaveToCloud={onSaveToCloud}
+              recommendedFormat={recommendedFormat}
+              formatReason={formatReason}
             />
             <EntityPalette
               onAddAttackPlayer={handleAddAttackPlayer}
               onAddDefensePlayer={handleAddDefensePlayer}
               onAddBall={handleAddBall}
               onAddCone={handleAddCone}
-              onAddMarker={handleAddMarker}
+              onAddTackleShield={handleAddTackleShield}
+              onAddTackleBag={handleAddTackleBag}
               drawingMode={drawingMode}
               onDrawingModeChange={setDrawingMode}
             />
@@ -416,16 +448,38 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       </aside>
 
       <main className="flex-1 flex flex-col">
-        <div className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]">
+        <div
+          className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(0, 0, 0, 0.02) 10px,
+              rgba(0, 0, 0, 0.02) 20px
+            )`
+          }}
+        >
           <ErrorBoundary fallbackTitle="Canvas Error">
-            <div className="border border-[var(--color-accent-warm)] bg-white">
+            <div className="border border-[var(--color-accent-warm)] bg-white shadow-lg">
               <Stage
                 ref={stageRef}
                 width={canvasWidth}
                 height={canvasHeight}
                 onCanvasClick={handleCanvasClick}
               >
-                <Field sport={project?.sport || 'rugby-union'} width={canvasWidth} height={canvasHeight} />
+                <Field
+                  sport={project?.sport || 'rugby-union'}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  layout={project?.settings.pitchLayout}
+                />
+                <FieldLayoutOverlay
+                  layout={project?.settings.pitchLayout || 'standard'}
+                  sport={project?.sport || 'rugby-union'}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                />
                 <GridOverlay width={canvasWidth} height={canvasHeight} visible={showGrid} />
                 <GhostLayer />
                 <EntityLayer

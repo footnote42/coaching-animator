@@ -15,7 +15,7 @@ describe('ProjectStore - newProject', () => {
     });
 
     it('should initialize a project with valid UUIDs', () => {
-        const { newProject, project } = useProjectStore.getState();
+        const { newProject } = useProjectStore.getState();
 
         newProject();
 

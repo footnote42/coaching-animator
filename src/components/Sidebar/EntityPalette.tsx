@@ -14,8 +14,14 @@ export interface EntityPaletteProps {
   /** Called when cone button clicked */
   onAddCone: () => void;
 
-  /** Called when marker button clicked */
-  onAddMarker: () => void;
+  /** Called when tackle shield button clicked */
+  onAddTackleShield: () => void;
+
+  /** Called when tackle bag button clicked */
+  onAddTackleBag: () => void;
+
+  /** @deprecated Marker button removed - kept for backwards compatibility */
+  onAddMarker?: () => void;
 
   /** Current drawing mode */
   drawingMode: DrawingMode;
@@ -33,7 +39,9 @@ export function EntityPalette({
   onAddDefensePlayer,
   onAddBall,
   onAddCone,
-  onAddMarker,
+  onAddTackleShield,
+  onAddTackleBag,
+  // onAddMarker removed - markers deprecated
   drawingMode,
   onDrawingModeChange,
 }: EntityPaletteProps) {
@@ -85,14 +93,27 @@ export function EntityPalette({
         >
           + Cone
         </Button>
+      </div>
+
+      <h3 className="text-sm font-semibold text-pitch-green mt-4 mb-2">Equipment</h3>
+      <div className="flex flex-col gap-2">
         <Button
           variant="outline"
           size="sm"
-          onClick={onAddMarker}
+          onClick={onAddTackleShield}
           className="justify-start"
-          aria-label="Add marker"
+          aria-label="Add tackle shield"
         >
-          + Marker
+          + Tackle Shield
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onAddTackleBag}
+          className="justify-start"
+          aria-label="Add tackle bag"
+        >
+          + Tackle Bag
         </Button>
       </div>
 

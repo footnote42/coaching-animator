@@ -53,6 +53,7 @@ export const AnnotationLayer: React.FC<AnnotationLayerProps> = ({
     });
 
     // Handle right-click context menu
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleContextMenu = (annotationId: string, e: any) => {
         e.evt.preventDefault();
         const stage = e.target.getStage();

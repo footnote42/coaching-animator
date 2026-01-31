@@ -1,0 +1,67 @@
+# Staging Environment Configuration
+env: staging
+
+# Base URLs
+base_url: "https://staging.coaching-animator.com"
+api_url: "https://staging.coaching-animator.com/api"
+
+# Browser Configuration
+browser: chrome
+headless: true
+slow_mo: 50
+viewport:
+  width: 1920
+  height: 1088
+
+# Timeouts (in milliseconds)
+timeouts:
+  default: 20000
+  navigation: 45000
+  element: 8000
+  response: 20000
+
+# Output Configuration
+output:
+  screenshots: true
+  screenshots_path: "./test-results/staging/screenshots"
+  traces: true
+  traces_path: "./test-results/staging/traces"
+  videos: true
+  videos_path: "./test-results/staging/videos"
+  html: true
+  html_path: "./test-results/staging/html"
+
+# Test Data
+test_data:
+  users:
+    admin:
+      email: "admin@staging.com"
+      password: "StagingAdmin123!"
+      role: "admin"
+    coach:
+      email: "coach@staging.com"
+      password: "StagingCoach123!"
+      role: "user"
+
+# Feature Flags
+features:
+  guest_mode: true
+  social_features: true
+  admin_panel: true
+  video_export: true
+  annotations: true
+
+# Performance Thresholds (stricter for staging)
+performance:
+  page_load_max: 2500
+  animation_render_max: 800
+  api_response_max: 1500
+  memory_usage_max: 400
+
+# Accessibility Requirements
+accessibility:
+  wcag_level: "AA"
+  color_contrast: true
+  keyboard_navigation: true
+  screen_reader: true
+  focus_management: true

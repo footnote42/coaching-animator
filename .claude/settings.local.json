@@ -34,7 +34,14 @@
       "Bash(npm ls:*)",
       "Bash(dir:*)",
       "Bash(node verify-phase-3.1.js:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(cd:*)",
+      "Bash(npm run lint:*)",
+      "Bash(findstr:*)",
+      "Bash(npx eslint:*)",
+      "Bash([ -f .eslintignore ])",
+      "Bash(npx next lint:*)",
+      "Bash(npm run lint:fix:*)"
     ]
   }
 }

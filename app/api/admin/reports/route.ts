@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Transform to match API contract format
-  const transformedReports = (reports || []).map((report: any) => {
-    const animation = animationsMap.get(report.animation_id);
+  const transformedReports = (reports || []).map((report: { id: string; animation_id: string | null; reporter_id: string | null; reason: string; details: string | null; status: string; created_at: string }) => {
+    const animation = report.animation_id ? animationsMap.get(report.animation_id) : undefined;
     
     return {
       id: report.id,

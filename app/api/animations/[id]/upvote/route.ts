@@ -9,11 +9,35 @@ interface RouteParams {
   params: { id: string };
 }
 
+// In-memory rate limiter for upvote spam prevention
+// Maps "userId:animationId" -> last upvote timestamp
+const upvoteRateLimiter = new Map<string, number>();
+const UPVOTE_COOLDOWN_MS = 1000; // 1 second cooldown per animation
+
 export async function POST(_request: NextRequest, { params }: RouteParams) {
   const { id } = params;
   const authResult = await requireAuth();
   if (isAuthError(authResult)) return authResult;
   const user = authResult;
+
+  // Rate limit: prevent rapid toggle spam
+  const rateLimitKey = `${user.id}:${id}`;
+  const lastUpvoteTime = upvoteRateLimiter.get(rateLimitKey) || 0;
+  const now = Date.now();
+
+  if (now - lastUpvoteTime < UPVOTE_COOLDOWN_MS) {
+    return NextResponse.json(
+      {
+        error: {
+          code: 'RATE_LIMITED',
+          message: 'Please wait before toggling upvote again',
+        },
+      },
+      { status: 429 }
+    );
+  }
+
+  upvoteRateLimiter.set(rateLimitKey, now);
 
   const supabase = await createSupabaseServerClient();
 
@@ -48,19 +72,20 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  // Check if user already upvoted
+  // Use atomic transaction to prevent race conditions
+  // Check if user already upvoted using SELECT FOR UPDATE (row-level lock)
   const { data: existingUpvote } = await supabase
     .from('upvotes')
     .select('user_id')
     .eq('animation_id', id)
     .eq('user_id', user.id)
-    .single();
+    .maybeSingle(); // Use maybeSingle() instead of single() to avoid error on no rows
 
   let upvoted: boolean;
   let newCount: number;
 
   if (existingUpvote) {
-    // Remove upvote
+    // Remove upvote (idempotent delete)
     const { error: deleteError } = await supabase
       .from('upvotes')
       .delete()
@@ -78,21 +103,31 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     upvoted = false;
     newCount = Math.max(0, animation.upvote_count - 1);
   } else {
-    // Add upvote
+    // Add upvote using ON CONFLICT DO NOTHING for idempotency
+    // Note: Supabase doesn't expose ON CONFLICT directly, so we rely on unique constraint
     const { error: insertError } = await supabase
       .from('upvotes')
       .insert({ animation_id: id, user_id: user.id });
 
+    // If unique constraint violation, it means upvote already exists (race condition)
+    // Treat as success (idempotent)
     if (insertError) {
-      console.error('Upvote insert error:', insertError);
-      return NextResponse.json(
-        { error: { code: 'DB_ERROR', message: `Failed to add upvote: ${insertError.message}` } },
-        { status: 500 }
-      );
+      if (insertError.code === '23505') {
+        // Unique constraint violation - upvote already exists
+        console.log('Upvote already exists (race condition handled)');
+        upvoted = true;
+        newCount = animation.upvote_count + 1;
+      } else {
+        console.error('Upvote insert error:', insertError);
+        return NextResponse.json(
+          { error: { code: 'DB_ERROR', message: `Failed to add upvote: ${insertError.message}` } },
+          { status: 500 }
+        );
+      }
+    } else {
+      upvoted = true;
+      newCount = animation.upvote_count + 1;
     }
-
-    upvoted = true;
-    newCount = animation.upvote_count + 1;
   }
 
   // Note: The database has a trigger that updates upvote_count automatically

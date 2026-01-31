@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Group, Circle, Ellipse, Text } from 'react-konva';
-import { Entity } from '../../types';
+import { Group, Circle, Ellipse, Rect, Text } from 'react-konva';
+import Konva from 'konva';
+import { Entity, EntityOrientation } from '../../types';
 import { DESIGN_TOKENS } from '../../constants/design-tokens';
 
 /**
@@ -46,23 +47,38 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     onContextMenu,
     opacity = 1.0
 }) => {
-    const groupRef = useRef<any>(null);
+    const groupRef = useRef<Konva.Group>(null);
     const lastClickTimeRef = useRef<number>(0);
     const lastClickPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-    // Determine size based on entity type
+    // Determine size based on entity type (reduced 20-30% from original sizes)
     const getRadius = (type: Entity['type']): number => {
         switch (type) {
             case 'player':
-                return 20;
+                return 15; // Was 20px, reduced ~25%
             case 'ball':
-                return 12;
+                return 9;  // Was 12px, reduced 25%
             case 'cone':
-                return 15;
+                return 11; // Was 15px, reduced ~27%
             case 'marker':
-                return 10;
+                return 7;  // Was 10px, reduced 30%
+            case 'tackle-shield':
+                return 20; // Larger for equipment
+            case 'tackle-bag':
+                return 16; // Medium size
             default:
-                return 20;
+                return 15;
+        }
+    };
+
+    // Get rotation angle based on orientation
+    const getRotationAngle = (orientation: EntityOrientation | undefined): number => {
+        switch (orientation) {
+            case 'up': return 0;
+            case 'right': return 90;
+            case 'down': return 180;
+            case 'left': return 270;
+            default: return 0;
         }
     };
 
@@ -81,6 +97,10 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                 return '#EA580C'; // Orange
             case 'marker':
                 return DESIGN_TOKENS.colors.primary; // Pitch green
+            case 'tackle-shield':
+                return '#1E40AF'; // Deep blue
+            case 'tackle-bag':
+                return '#7C3AED'; // Purple
             case 'player':
                 // Use team-based default colors
                 const teamColors = {
@@ -95,6 +115,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle drag end with position clamping
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (e: any) => {
         const node = e.target;
         const x = node.x();
@@ -115,6 +136,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle click with custom double-click detection and drag threshold
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleClick = (e: any) => {
         const now = Date.now();
         const timeSinceLastClick = now - lastClickTimeRef.current;
@@ -147,6 +169,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle right-click context menu
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleContextMenu = (e: any) => {
         e.evt.preventDefault();
         const stage = e.target.getStage();
@@ -178,23 +201,69 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
         >
             {/* Render shape based on entity type */}
             {entity.type === 'ball' ? (
-                /* Ball: Oval/ellipse shape approximating a rugby ball (~1.5:1 ratio) */
+                /* Ball: Oval/ellipse shape approximating a rugby ball (~1.5:1 ratio) - reduced 25% */
                 <Ellipse
-                    radiusX={18}
-                    radiusY={12}
+                    radiusX={14}
+                    radiusY={9}
                     fill={color}
                     stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
-                    strokeWidth={isSelected ? 3 : 1}
+                    strokeWidth={isSelected ? 2 : 1}
                     shadowEnabled={false}
                     opacity={opacity}
                 />
-            ) : (
-                /* Players, cones, markers: Circle shape */
+            ) : entity.type === 'cone' ? (
+                /* Cone: Hollow circle (stroke only, no fill) */
+                <Circle
+                    radius={radius}
+                    fill="transparent"
+                    stroke={color}
+                    strokeWidth={3}
+                    shadowEnabled={false}
+                    opacity={opacity}
+                />
+            ) : entity.type === 'marker' ? (
+                /* Marker: Small filled circle - deprecated, keeping for backwards compatibility */
                 <Circle
                     radius={radius}
                     fill={color}
                     stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
-                    strokeWidth={isSelected ? 3 : 0}
+                    strokeWidth={isSelected ? 2 : 0}
+                    shadowEnabled={false}
+                    opacity={opacity}
+                />
+            ) : entity.type === 'tackle-shield' ? (
+                /* Tackle Shield: Rounded rectangle with orientation */
+                <Rect
+                    width={32}
+                    height={16}
+                    offsetX={16}
+                    offsetY={8}
+                    cornerRadius={4}
+                    fill={color}
+                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    strokeWidth={isSelected ? 2 : 1}
+                    rotation={getRotationAngle(entity.orientation)}
+                    shadowEnabled={false}
+                    opacity={opacity}
+                />
+            ) : entity.type === 'tackle-bag' ? (
+                /* Tackle Bag: Vertical oval/cylinder shape */
+                <Ellipse
+                    radiusX={10}
+                    radiusY={20}
+                    fill={color}
+                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : '#1A3D1A'}
+                    strokeWidth={isSelected ? 2 : 1}
+                    shadowEnabled={false}
+                    opacity={opacity}
+                />
+            ) : (
+                /* Players: Filled circle */
+                <Circle
+                    radius={radius}
+                    fill={color}
+                    stroke={isSelected ? DESIGN_TOKENS.colors.primary : undefined}
+                    strokeWidth={isSelected ? 2 : 0}
                     shadowEnabled={false}
                     opacity={opacity}
                 />
@@ -204,7 +273,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             {showLabel && (
                 <Text
                     text={entity.label}
-                    fontSize={14}
+                    fontSize={11}
                     fontFamily={DESIGN_TOKENS.typography.fontBody}
                     fill={DESIGN_TOKENS.colors.textInverse}
                     align="center"

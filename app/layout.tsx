@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { UserProvider } from '@/lib/contexts/UserContext';
 
 export const metadata: Metadata = {
   title: {
@@ -36,6 +37,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+import { OfflineIndicator } from '@/components/OfflineIndicator';
+
 export default function RootLayout({
   children,
 }: {
@@ -49,7 +52,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className="min-h-screen bg-background antialiased">
-        {children}
+        <UserProvider>
+          {children}
+          <OfflineIndicator />
+        </UserProvider>
       </body>
     </html>
   );

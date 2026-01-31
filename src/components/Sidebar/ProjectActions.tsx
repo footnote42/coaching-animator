@@ -7,8 +7,9 @@ import { Button } from '../ui/button';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { SportSelector } from './SportSelector';
 import { ShareButton } from './ShareButton';
-import { SportType, ExportStatus } from '../../types';
+import { SportType, ExportStatus, ExportFormat } from '../../types';
 import { toast } from 'sonner';
+import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 
 /**
@@ -20,13 +21,16 @@ import { toast } from 'sonner';
 export interface ProjectActionsProps {
     currentSport: SportType;
     onSportChange: (sport: SportType) => void;
-    onExport?: () => void;
+    onExport?: (format?: ExportFormat) => void;
     exportStatus?: ExportStatus;
     exportProgress?: number;
     exportError?: string | null;
     canExport?: boolean;
     isAuthenticated?: boolean;
     onSaveToCloud?: () => void;
+    recommendedFormat?: 'webm' | 'gif';
+    formatReason?: string;
+    exportFormat?: ExportFormat;
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
@@ -39,6 +43,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     canExport = false,
     isAuthenticated = false,
     onSaveToCloud,
+    recommendedFormat = 'webm',
+    formatReason = '',
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,8 +106,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                 console.warn('Project loaded with warnings:', result.warnings);
             }
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            toast.error(`Failed to load project: ${message}`);
+            toast.error(`Failed to load project: ${getFriendlyErrorMessage(error)}`);
         } finally {
             setLoadingState('load', false);
         }
@@ -158,6 +163,51 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     currentSport={currentSport}
                     onSportChange={onSportChange}
                 />
+
+                {/* Pitch Layout Selector */}
+                <div className="mt-3">
+                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
+                        Layout
+                    </label>
+                    <div className="grid grid-cols-2 gap-1">
+                        <Button
+                            variant={(project?.settings.pitchLayout || 'standard') === 'standard' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ pitchLayout: 'standard' })}
+                            disabled={!project}
+                            className={`text-xs ${(project?.settings.pitchLayout || 'standard') === 'standard' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                        >
+                            Standard
+                        </Button>
+                        <Button
+                            variant={project?.settings.pitchLayout === 'attack' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ pitchLayout: 'attack' })}
+                            disabled={!project}
+                            className={`text-xs ${project?.settings.pitchLayout === 'attack' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                        >
+                            Attack
+                        </Button>
+                        <Button
+                            variant={project?.settings.pitchLayout === 'defence' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ pitchLayout: 'defence' })}
+                            disabled={!project}
+                            className={`text-xs ${project?.settings.pitchLayout === 'defence' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                        >
+                            Defence
+                        </Button>
+                        <Button
+                            variant={project?.settings.pitchLayout === 'training' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateProjectSettings({ pitchLayout: 'training' })}
+                            disabled={!project}
+                            className={`text-xs ${project?.settings.pitchLayout === 'training' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                        >
+                            Training
+                        </Button>
+                    </div>
+                </div>
             </div>
 
             {/* Project Actions Section */}
@@ -273,16 +323,48 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     </div>
                 </div>
 
-                {/* Export button */}
+                {/* Format Selector */}
+                <div className="flex flex-col gap-1 mb-3">
+                    <label className="text-xs font-bold text-[var(--color-text-primary)]">
+                        Export Format
+                    </label>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onExport?.('webm')}
+                            disabled={!canExport || exportStatus !== 'idle'}
+                            className={`flex-1 ${recommendedFormat === 'webm' ? 'ring-1 ring-[var(--color-accent-warm)]' : ''}`}
+                        >
+                            {recommendedFormat === 'webm' && '★ '}WebM
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onExport?.('gif')}
+                            disabled={!canExport || exportStatus !== 'idle'}
+                            className={`flex-1 ${recommendedFormat === 'gif' ? 'ring-1 ring-[var(--color-accent-warm)]' : ''}`}
+                        >
+                            {recommendedFormat === 'gif' && '★ '}GIF
+                        </Button>
+                    </div>
+                    {formatReason && (
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                            {formatReason}
+                        </p>
+                    )}
+                </div>
+
+                {/* Export button (auto format) */}
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={onExport}
+                    onClick={() => onExport?.('auto')}
                     disabled={!canExport || exportStatus !== 'idle'}
                     className="w-full"
                 >
                     <Video className="w-4 h-4 mr-2" />
-                    Export Video
+                    Export ({recommendedFormat.toUpperCase()})
                 </Button>
 
                 {/* Export progress indicator */}

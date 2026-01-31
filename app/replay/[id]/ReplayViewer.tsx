@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Stage, Layer, Image as KonvaImage, Group, Circle, Ellipse, Text, Line } from 'react-konva';
 
 interface Frame {
   id: string;
@@ -39,9 +40,33 @@ interface ReplayViewerProps {
   payload: Payload;
 }
 
+const DESIGN_TOKENS = {
+  colors: {
+    primary: '#1A3D1A',
+    textInverse: '#F8F9FA',
+    attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],
+    defense: ['#DC2626', '#EA580C', '#F59E0B', '#EF4444'],
+    neutral: ['#FFFFFF', '#8B4513', '#FFD700', '#FF6B35'],
+  }
+};
+
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+
 export function ReplayViewer({ payload }: ReplayViewerProps) {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [fieldImage, setFieldImage] = useState<HTMLImageElement | null>(null);
+  const animationRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number>(0);
+
+  // Load field SVG
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = '/assets/fields/rugby-union.svg';
+    img.onload = () => setFieldImage(img);
+    img.onerror = () => console.error('Failed to load field image');
+  }, []);
 
   const frames = payload?.frames || [];
   const currentFrame = frames[currentFrameIndex];
@@ -72,13 +97,35 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
     setIsPlaying((prev) => !prev);
   }, [currentFrameIndex, frames.length]);
 
+  // Use requestAnimationFrame for smooth playback
   useEffect(() => {
     if (!isPlaying || !currentFrame) return;
 
     const duration = currentFrame.duration || 1000;
-    const timer = setTimeout(nextFrame, duration);
+    
+    const animate = (timestamp: number) => {
+      if (!lastFrameTimeRef.current) {
+        lastFrameTimeRef.current = timestamp;
+      }
+      
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      
+      if (elapsed >= duration) {
+        lastFrameTimeRef.current = timestamp;
+        nextFrame();
+      }
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      lastFrameTimeRef.current = 0;
+    };
   }, [isPlaying, currentFrame, nextFrame]);
 
   if (!frames.length) {
@@ -92,95 +139,116 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
   const entities = currentFrame ? Object.values(currentFrame.entities || {}) : [];
   const annotations = currentFrame?.annotations || [];
 
+  // Get entity color matching editor logic
+  const getEntityColor = (entity: Entity): string => {
+    if (entity.color) return entity.color;
+    
+    switch (entity.type) {
+      case 'ball':
+        return '#854D0E';
+      case 'cone':
+        return '#EA580C';
+      case 'marker':
+        return DESIGN_TOKENS.colors.primary;
+      case 'player':
+        const teamColors = {
+          attack: DESIGN_TOKENS.colors.attack[0],
+          defense: DESIGN_TOKENS.colors.defense[0],
+          neutral: DESIGN_TOKENS.colors.neutral[0]
+        };
+        return teamColors[entity.team] || DESIGN_TOKENS.colors.primary;
+      default:
+        return DESIGN_TOKENS.colors.primary;
+    }
+  };
+
+  // Get entity radius matching editor logic
+  const getEntityRadius = (type: Entity['type']): number => {
+    switch (type) {
+      case 'player': return 20;
+      case 'ball': return 12;
+      case 'cone': return 15;
+      case 'marker': return 10;
+      default: return 20;
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
-      {/* Canvas */}
-      <div className="relative w-full max-w-[800px] aspect-[4/3] bg-green-700 border border-border overflow-hidden">
-        {/* Field markings - simplified */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/30" />
-          <div className="absolute top-1/2 left-0 right-0 h-px bg-white/30" />
-        </div>
-
-        {/* Annotations */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          {annotations.map((annotation) => {
-            if (annotation.points.length < 4) return null;
-            
-            const pathData = annotation.points.reduce((acc, point, i) => {
-              const x = (point / 800) * 100;
-              const y = (annotation.points[i + 1] / 600) * 100;
-              if (i % 2 === 0) {
-                return acc + (i === 0 ? `M ${x}% ${y}%` : ` L ${x}% ${y}%`);
-              }
-              return acc;
-            }, '');
-
-            return (
-              <path
-                key={annotation.id}
-                d={pathData}
-                stroke={annotation.color}
-                strokeWidth="2"
-                fill="none"
-                markerEnd={annotation.type === 'arrow' ? 'url(#arrowhead)' : undefined}
+      {/* Canvas using react-konva to match editor */}
+      <div className="w-full max-w-[800px] aspect-[4/3] border border-border overflow-hidden">
+        <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
+          {/* Field background layer */}
+          <Layer listening={false}>
+            {fieldImage && (
+              <KonvaImage
+                image={fieldImage}
+                width={CANVAS_WIDTH}
+                height={CANVAS_HEIGHT}
+                listening={false}
               />
-            );
-          })}
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="#FFA500" />
-            </marker>
-          </defs>
-        </svg>
+            )}
+          </Layer>
 
-        {/* Entities */}
-        {entities.map((entity) => {
-          const left = (entity.x / 800) * 100;
-          const top = (entity.y / 600) * 100;
+          {/* Annotations layer */}
+          <Layer listening={false}>
+            {annotations.map((annotation) => {
+              if (annotation.points.length < 4) return null;
+              return (
+                <Line
+                  key={annotation.id}
+                  points={annotation.points}
+                  stroke={annotation.color}
+                  strokeWidth={2}
+                  lineCap="round"
+                  lineJoin="round"
+                />
+              );
+            })}
+          </Layer>
 
-          return (
-            <div
-              key={entity.id}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
-              style={{ left: `${left}%`, top: `${top}%` }}
-            >
-              {entity.type === 'player' && (
-                <div
-                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-md"
-                  style={{ backgroundColor: entity.color }}
-                >
-                  {entity.label || ''}
-                </div>
-              )}
-              {entity.type === 'ball' && (
-                <div
-                  className="w-5 h-5 rounded-full shadow-md"
-                  style={{ backgroundColor: entity.color }}
-                />
-              )}
-              {entity.type === 'cone' && (
-                <div
-                  className="w-0 h-0 border-l-[8px] border-r-[8px] border-b-[16px] border-l-transparent border-r-transparent"
-                  style={{ borderBottomColor: entity.color }}
-                />
-              )}
-              {entity.type === 'marker' && (
-                <div
-                  className="w-4 h-4 rotate-45"
-                  style={{ backgroundColor: entity.color }}
-                />
-              )}
-            </div>
-          );
-        })}
+          {/* Entities layer */}
+          <Layer>
+            {entities.map((entity) => {
+              const color = getEntityColor(entity);
+              const radius = getEntityRadius(entity.type);
+              
+              return (
+                <Group key={entity.id} x={entity.x} y={entity.y}>
+                  {entity.type === 'ball' ? (
+                    <Ellipse
+                      radiusX={18}
+                      radiusY={12}
+                      fill={color}
+                      stroke="#1A3D1A"
+                      strokeWidth={1}
+                    />
+                  ) : (
+                    <Circle
+                      radius={radius}
+                      fill={color}
+                    />
+                  )}
+                  {entity.type === 'player' && entity.label && (
+                    <Text
+                      text={entity.label}
+                      fontSize={14}
+                      fontFamily="Inter, system-ui, sans-serif"
+                      fill={DESIGN_TOKENS.colors.textInverse}
+                      align="center"
+                      verticalAlign="middle"
+                      width={radius * 2}
+                      height={radius * 2}
+                      offsetX={radius}
+                      offsetY={radius}
+                      listening={false}
+                    />
+                  )}
+                </Group>
+              );
+            })}
+          </Layer>
+        </Stage>
       </div>
 
       {/* Controls */}

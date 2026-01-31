@@ -7,6 +7,7 @@ import { AnimationType, Visibility } from '@/lib/schemas/animations';
 export interface AnimationSummary {
   id: string;
   title: string;
+  description?: string | null;
   animation_type: AnimationType;
   duration_ms: number;
   frame_count: number;
@@ -14,6 +15,7 @@ export interface AnimationSummary {
   upvote_count: number;
   created_at: string;
   updated_at: string;
+  thumbnail_url?: string | null;
 }
 
 interface AnimationCardProps {
@@ -94,12 +96,27 @@ export function AnimationCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Thumbnail placeholder with play overlay */}
+      {/* Thumbnail with play overlay */}
       <div
         className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center cursor-pointer group"
         onClick={() => onPlay?.(animation.id)}
       >
-        <div className="text-text-primary/30 text-sm font-mono">
+        {animation.thumbnail_url ? (
+          <img
+            src={animation.thumbnail_url}
+            alt={animation.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to placeholder on image error
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        
+        {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} text-text-primary/30 text-sm font-mono`}>
           {animation.frame_count} frames
         </div>
         

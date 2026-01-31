@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 import { getUser, requireAuth, isAuthError, requireNotBanned } from '../../../../lib/auth';
-import { UpdateAnimationSchema } from '../../../../lib/schemas/animations';
+import { UpdateAnimationSchema, validatePayloadSize } from '../../../../lib/schemas/animations';
 import { validateAnimationContent } from '../../../../lib/moderation';
 
 export const dynamic = 'force-dynamic';
@@ -128,6 +128,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
+  // Validate payload size if payload is being updated
+  if (body.payload) {
+    const sizeCheck = validatePayloadSize(body.payload);
+    if (!sizeCheck.valid) {
+      return NextResponse.json(
+        { error: { code: 'PAYLOAD_TOO_LARGE', message: sizeCheck.error } },
+        { status: 413 }
+      );
+    }
+  }
+
   const parsed = UpdateAnimationSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -140,7 +151,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   // Check content moderation if text fields are being updated
   if (data.title || data.description || data.coaching_notes) {
-    const moderation = validateAnimationContent({
+    const moderation = await validateAnimationContent({
       title: data.title,
       description: data.description,
       coaching_notes: data.coaching_notes,
@@ -187,7 +198,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  return NextResponse.json(updated);
+  // Add cache invalidation headers to ensure client refreshes lists
+  return NextResponse.json(updated, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
@@ -232,5 +250,13 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  return new NextResponse(null, { status: 204 });
+  // Add cache invalidation headers to ensure client refreshes lists
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
 }
