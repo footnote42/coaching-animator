@@ -99,7 +99,10 @@ export function UserProvider({ children }: UserProviderProps) {
           setTimeout(() => reject(new Error('Auth timeout')), 5000)
         );
 
-        const authResult = await Promise.race([authPromise, timeoutPromise]) as any;
+        const authResult = (await Promise.race([authPromise, timeoutPromise])) as {
+          data: { user: User | null };
+          error: Error | null;
+        };
         const currentUser = authResult.data?.user;
 
         if (!isSubscribed) return;
