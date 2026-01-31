@@ -126,6 +126,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
             const jsonContent = saveProject();
             const filename = generateProjectFilename(project.name);
             downloadJson(filename, jsonContent);
+            toast.success('Project saved locally');
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             alert(`Failed to save project: ${message}`);
