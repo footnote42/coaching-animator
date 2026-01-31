@@ -22,6 +22,22 @@ function LoginForm() {
     setErrorMessage('');
 
     const supabase = createSupabaseBrowserClient();
+
+    // Create a promise that resolves when session is confirmed
+    const sessionReady = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Session confirmation timeout'));
+      }, 10000); // 10 second timeout
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          clearTimeout(timeout);
+          subscription.unsubscribe();
+          resolve();
+        }
+      });
+    });
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -33,8 +49,18 @@ function LoginForm() {
       return;
     }
 
-    router.push(redirect);
-    router.refresh();
+    try {
+      // Wait for session to be fully established
+      await sessionReady;
+      // Now navigate - cookies should be synchronized
+      router.push(redirect);
+      router.refresh();
+    } catch (timeoutError) {
+      // Fallback: navigate anyway after timeout
+      console.warn('Session confirmation timeout, navigating anyway');
+      router.push(redirect);
+      router.refresh();
+    }
   };
 
   return (
