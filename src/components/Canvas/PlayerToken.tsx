@@ -115,7 +115,8 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle drag end with position clamping
-    const handleDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleDragEnd = (e: any) => {
         const node = e.target;
         const x = node.x();
         const y = node.y();
@@ -135,7 +136,8 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle click with custom double-click detection and drag threshold
-    const handleClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleClick = (e: any) => {
         const now = Date.now();
         const timeSinceLastClick = now - lastClickTimeRef.current;
 
@@ -167,7 +169,8 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     };
 
     // Handle right-click context menu
-    const handleContextMenu = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleContextMenu = (e: any) => {
         e.evt.preventDefault();
         const stage = e.target.getStage();
         const pointerPosition = stage.getPointerPosition();

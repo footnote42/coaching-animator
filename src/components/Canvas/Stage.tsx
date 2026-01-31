@@ -30,7 +30,8 @@ export const Stage = React.forwardRef<Konva.Stage, StageProps>(({
     onCanvasClick,
     children
 }, ref) => {
-    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleStageClick = (e: any) => {
         // Check if the click was on the stage background (not on any shape)
         const clickedOnEmpty = e.target === e.target.getStage();
 

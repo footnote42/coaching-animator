@@ -88,7 +88,8 @@ export async function GET(request: NextRequest) {
 
   // Transform response
   // We explicitly cast the joined data because TypeScript doesn't know about the relation
-  const animations = data?.map((animation: { id: string; title: string; description: string | null; animation_type: string; tags: string[] | null; duration_ms: number; frame_count: number; upvote_count: number; created_at: string; user_id: string; user_profiles: { display_name: string | null } | null }) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const animations = data?.map((animation: any) => ({
     id: animation.id,
     title: animation.title,
     description: animation.description,
