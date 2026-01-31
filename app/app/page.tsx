@@ -75,7 +75,7 @@ function AnimationToolPageContent() {
     // Only load if we have a loadId and it's different from last loaded
     if (loadId && loadId !== lastLoadedId) {
       setLastLoadedId(loadId);
-      getWithRetry<any>(`/api/animations/${loadId}`)
+      getWithRetry<{ id: string; payload: unknown; created_at: string; updated_at: string }>(`/api/animations/${loadId}`)
         .then(({ ok, data, status, error: apiError }) => {
           if (!ok) throw new Error(apiError || `Failed to load animation (${status})`);
           if (data && data.payload) {

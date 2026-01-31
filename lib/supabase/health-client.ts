@@ -88,7 +88,7 @@ export async function quickClientHealthCheck(): Promise<{ healthy: boolean; late
         // 3-second timeout for health check
         const { error } = await Promise.race([
             client.from('saved_animations').select('id').eq('visibility', 'public').limit(1),
-            new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
         ]);
 
         const latency = Date.now() - startTime;
