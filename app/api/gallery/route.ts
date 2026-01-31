@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
+  console.log('[Gallery API] GET request received');
   try {
     const searchParams = Object.fromEntries(request.nextUrl.searchParams);
     const query = GalleryQuerySchema.safeParse(searchParams);

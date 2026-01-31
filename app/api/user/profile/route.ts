@@ -40,6 +40,7 @@ export async function GET(_request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  console.log('[Profile API] PUT request received');
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
