@@ -7,9 +7,9 @@ import { Navigation } from '@/components/Navigation';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
 import { SkeletonGrid } from '@/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { fetchWithRetry } from '@/lib/api-client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
+import { useUser } from '@/lib/contexts/UserContext';
 
 interface PublicAnimation {
   id: string;
@@ -47,27 +47,18 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
 function GalleryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
+  const { user: authUser } = useUser();
   const [animations, setAnimations] = useState<PublicAnimation[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const currentUserId = authUser?.id ?? null;
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [type, setType] = useState<AnimationType | ''>(
     (searchParams.get('type') as AnimationType) || ''
   );
-
-  // Check auth status on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id ?? null);
-    };
-    checkAuth();
-  }, []);
   const [sort, setSort] = useState<SortField>(
     (searchParams.get('sort') as SortField) || 'created_at'
   );
@@ -91,12 +82,12 @@ function GalleryContent() {
       params.set('offset', String(offset));
 
       const response = await fetchWithRetry(`/api/gallery?${params}`);
-      
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to fetch gallery');
+        throw new Error(data.error?.message || 'Failed to fetch gallery');
       }
 
-      const data = await response.json();
       setAnimations(data.animations);
       setTotal(data.total);
     } catch (err) {
@@ -176,7 +167,7 @@ function GalleryContent() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       {/* Page Header */}
       <header className="border-b border-border bg-primary text-text-inverse">
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -231,11 +222,10 @@ function GalleryContent() {
                 <button
                   key={option.value}
                   onClick={() => handleSortChange(option.value)}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    sort === option.value
-                      ? 'bg-primary text-text-inverse'
-                      : 'bg-surface border border-border hover:border-primary'
-                  }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${sort === option.value
+                    ? 'bg-primary text-text-inverse'
+                    : 'bg-surface border border-border hover:border-primary'
+                    }`}
                 >
                   {option.label}
                   {sort === option.value && (

@@ -93,10 +93,10 @@ export function UserProvider({ children }: UserProviderProps) {
       try {
         if (!isSubscribed) return;
 
-        // Add a timeout fallback for getUser to prevent infinite loading
+        // Increase timeout to 15s for slower connections
         const authPromise = supabase.auth.getUser();
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth timeout')), 5000)
+          setTimeout(() => reject(new Error('Auth timeout')), 15000)
         );
 
         const authResult = (await Promise.race([authPromise, timeoutPromise])) as {
@@ -106,6 +106,9 @@ export function UserProvider({ children }: UserProviderProps) {
         const currentUser = authResult.data?.user;
 
         if (!isSubscribed) return;
+
+        // Only update if we actually got a result. 
+        // If it timed out, the catch block will handle it.
         setUser(currentUser ?? null);
 
         if (currentUser && isSubscribed) {
@@ -116,7 +119,15 @@ export function UserProvider({ children }: UserProviderProps) {
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-        console.error('Error initializing auth:', err);
+
+        const isTimeout = err instanceof Error && err.message === 'Auth timeout';
+        if (isTimeout) {
+          console.warn('Auth initialization timed out, waiting for onAuthStateChange...');
+          // Don't set user to null yet, let onAuthStateChange decide
+        } else {
+          console.error('Error initializing auth:', err);
+          setUser(null);
+        }
       } finally {
         if (isSubscribed) {
           setLoading(false);

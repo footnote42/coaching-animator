@@ -15,7 +15,15 @@ export async function GET(request: NextRequest) {
   }
 
   const { q, type, tags, sort, order, limit, offset } = query.data;
-  const user = await getUser();
+
+  // Make auth optional and resilient in gallery
+  let user = null;
+  try {
+    user = await getUser();
+  } catch (err) {
+    console.error('[Gallery API] Error getting user:', err);
+  }
+
   const supabase = await createSupabaseServerClient();
 
   // Build query for public animations only
@@ -66,9 +74,14 @@ export async function GET(request: NextRequest) {
   const { data, error, count } = await dbQuery;
 
   if (error) {
-    console.error('Database error:', error);
+    console.error('[Gallery API] Database error:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint
+    });
     return NextResponse.json(
-      { error: { code: 'DB_ERROR', message: 'Failed to fetch gallery' } },
+      { error: { code: 'DB_ERROR', message: `Database error: ${error.message}` } },
       { status: 500 }
     );
   }
@@ -76,19 +89,23 @@ export async function GET(request: NextRequest) {
   // Check if user has upvoted each animation (if authenticated)
   let upvotedIds: Set<string> = new Set();
   if (user && data && data.length > 0) {
-    const animationIds = data.map(a => a.id);
-    const { data: upvotes } = await supabase
-      .from('upvotes')
-      .select('animation_id')
-      .eq('user_id', user.id)
-      .in('animation_id', animationIds);
+    try {
+      const animationIds = data.map(a => a.id);
+      const { data: upvotes, error: upvoteError } = await supabase
+        .from('upvotes')
+        .select('animation_id')
+        .eq('user_id', user.id)
+        .in('animation_id', animationIds);
 
-    upvotedIds = new Set(upvotes?.map(u => u.animation_id) || []);
+      if (!upvoteError) {
+        upvotedIds = new Set(upvotes?.map(u => u.animation_id) || []);
+      }
+    } catch (err) {
+      console.error('[Gallery API] Error fetching upvotes:', err);
+    }
   }
 
   // Transform response
-  // We explicitly cast the joined data because TypeScript doesn't know about the relation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const animations = data?.map((animation: any) => ({
     id: animation.id,
     title: animation.title,
@@ -101,7 +118,7 @@ export async function GET(request: NextRequest) {
     created_at: animation.created_at,
     user_id: animation.user_id,
     author: {
-      display_name: animation.user_profiles?.[0]?.display_name ?? animation.user_profiles?.display_name ?? null,
+      display_name: animation.user_profiles?.[0]?.display_name ?? animation.user_profiles?.display_name ?? 'Anonymous',
     },
     user_has_upvoted: upvotedIds.has(animation.id),
   })) || [];
