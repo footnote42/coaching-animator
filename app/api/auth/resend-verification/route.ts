@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseBrowserClient } from '../../../../lib/supabase/client';
+import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { email } = parsed.data;
-    const supabase = createSupabaseBrowserClient();
+    const supabase = await createSupabaseServerClient();
 
     // Resend verification email
     const { error } = await supabase.auth.resend({

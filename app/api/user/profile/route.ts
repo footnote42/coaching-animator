@@ -3,7 +3,10 @@ import { createSupabaseServerClient } from '../../../../lib/supabase/server';
 import { requireAuth, isAuthError } from '../../../../lib/auth';
 import { UpdateProfileSchema } from '../../../../lib/schemas/users';
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+export async function GET(_request: NextRequest) {
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
@@ -87,4 +90,15 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

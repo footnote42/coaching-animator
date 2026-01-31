@@ -93,22 +93,19 @@ export function UserProvider({ children }: UserProviderProps) {
       try {
         if (!isSubscribed) return;
 
-        // Increase timeout to 15s for slower connections
-        const authPromise = supabase.auth.getUser();
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth timeout')), 15000)
-        );
+        // Simplify initAuth - rely on onAuthStateChange for the primary state
+        // but try to get the current user once at start.
+        const { data: { user: currentUser }, error } = await supabase.auth.getUser();
 
-        const authResult = (await Promise.race([authPromise, timeoutPromise])) as {
-          data: { user: User | null };
-          error: Error | null;
-        };
-        const currentUser = authResult.data?.user;
+        if (error) {
+          // Ignore "Auth session missing" errors at init
+          if (!error.message.includes('Auth session missing')) {
+            console.warn('Initial auth check warning:', error.message);
+          }
+        }
 
         if (!isSubscribed) return;
 
-        // Only update if we actually got a result. 
-        // If it timed out, the catch block will handle it.
         setUser(currentUser ?? null);
 
         if (currentUser && isSubscribed) {
@@ -119,15 +116,8 @@ export function UserProvider({ children }: UserProviderProps) {
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-
-        const isTimeout = err instanceof Error && err.message === 'Auth timeout';
-        if (isTimeout) {
-          console.warn('Auth initialization timed out, waiting for onAuthStateChange...');
-          // Don't set user to null yet, let onAuthStateChange decide
-        } else {
-          console.error('Error initializing auth:', err);
-          setUser(null);
-        }
+        console.error('Error initializing auth:', err);
+        setUser(null);
       } finally {
         if (isSubscribed) {
           setLoading(false);

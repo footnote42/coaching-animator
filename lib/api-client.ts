@@ -99,6 +99,7 @@ export async function postWithRetry<T>(
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
       },
       retryOptions
@@ -138,7 +139,7 @@ export async function getWithRetry<T>(
   retryOptions?: RetryOptions
 ): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
   try {
-    const response = await fetchWithRetry(url, { method: 'GET' }, retryOptions);
+    const response = await fetchWithRetry(url, { method: 'GET', credentials: 'include' }, retryOptions);
     const isJson = response.headers.get('content-type')?.includes('application/json');
     const responseData = isJson ? await response.json().catch(() => null) : null;
 
@@ -179,6 +180,7 @@ export async function putWithRetry<T>(
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
       },
       retryOptions
@@ -218,7 +220,7 @@ export async function deleteWithRetry(
   retryOptions?: RetryOptions
 ): Promise<{ ok: boolean; status: number; error?: string }> {
   try {
-    const response = await fetchWithRetry(url, { method: 'DELETE' }, retryOptions);
+    const response = await fetchWithRetry(url, { method: 'DELETE', credentials: 'include' }, retryOptions);
 
     if (!response.ok) {
       const isJson = response.headers.get('content-type')?.includes('application/json');

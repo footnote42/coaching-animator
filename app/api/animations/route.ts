@@ -6,6 +6,9 @@ import { checkQuota } from '../../../lib/quota';
 import { validateAnimationContent } from '../../../lib/moderation';
 import { checkRateLimit, getRateLimitHeaders } from '../../../lib/rate-limit';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * Convert a data URL to a Blob for upload.
  */

@@ -3,6 +3,9 @@ import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { getUser } from '../../../lib/auth';
 import { GalleryQuerySchema } from '../../../lib/schemas/animations';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = Object.fromEntries(request.nextUrl.searchParams);
