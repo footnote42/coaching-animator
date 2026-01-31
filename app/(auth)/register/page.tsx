@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '../../../lib/supabase/client';
+import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 export default function RegisterPage() {
 
@@ -12,6 +13,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [resendingVerification, setResendingVerification] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,13 +49,45 @@ export default function RegisterPage() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(getFriendlyErrorMessage(error));
       setLoading(false);
       return;
     }
 
     setSuccessMessage('Check your email for a confirmation link to complete registration.');
     setLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      setErrorMessage('Please enter your email address first');
+      return;
+    }
+
+    setResendingVerification(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.error?.message || 'Failed to resend verification email');
+        return;
+      }
+
+      setSuccessMessage('Verification email sent! Please check your inbox.');
+    } catch (error) {
+      setErrorMessage('Failed to resend verification email. Please try again.');
+    } finally {
+      setResendingVerification(false);
+    }
   };
 
   return (
@@ -68,7 +102,18 @@ export default function RegisterPage() {
 
       {successMessage && (
         <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm">
-          {successMessage}
+          <p>{successMessage}</p>
+          <p className="mt-2 text-xs">
+            Didn't receive the email?{' '}
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={resendingVerification}
+              className="text-primary hover:underline disabled:opacity-50"
+            >
+              {resendingVerification ? 'Sending...' : 'Resend verification email'}
+            </button>
+          </p>
         </div>
       )}
 

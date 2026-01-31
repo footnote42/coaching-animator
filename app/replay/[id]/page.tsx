@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { Navigation } from '@/components/Navigation';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { ReplayViewer } from './ReplayViewer';
 
@@ -84,16 +85,20 @@ export default async function ReplayPage({ params }: PageProps) {
     .eq('id', id);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
+    <div className="min-h-screen bg-[var(--color-surface-warm)]">
+      <Navigation />
+      
+      {/* Animation Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-5xl mx-auto px-4 py-4">
-          <a href="/" className="text-sm text-primary hover:underline mb-2 inline-block">
-            ← Back to Coaching Animator
-          </a>
           <h1 className="text-2xl font-heading font-bold text-text-primary">
             {animation.title}
           </h1>
+          {animation.description && (
+            <p className="mt-2 text-text-primary/80">
+              {animation.description}
+            </p>
+          )}
           <div className="flex items-center gap-4 mt-2 text-sm text-text-primary/70">
             <span>By {authorDisplayName || 'Anonymous Coach'}</span>
             <span>•</span>

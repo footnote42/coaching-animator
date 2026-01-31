@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { X, Loader2, Cloud, AlertCircle } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
+import { postWithRetry } from '@/lib/api-client';
+import { offlineQueue } from '@/lib/offline-queue';
+import { quickClientHealthCheck } from '@/lib/supabase/health-client';
+import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 interface SaveToCloudModalProps {
   projectName: string;
@@ -35,7 +39,7 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) {
       setError('Title is required');
       return;
@@ -51,28 +55,71 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
         .filter(t => t.length > 0)
         .slice(0, 10);
 
-      const response = await fetch('/api/animations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim() || undefined,
-          animation_type: animationType,
-          visibility,
-          tags: tagArray.length > 0 ? tagArray : undefined,
-          payload,
-        }),
-      });
+      const requestBody = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        animation_type: animationType,
+        visibility,
+        tags: tagArray.length > 0 ? tagArray : undefined,
+        payload,
+      };
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error?.message || 'Failed to save animation');
+      // Check health before attempting upload
+      const health = await quickClientHealthCheck();
+
+      // If we're offline or database is unreachable, queue it
+      if (!health.healthy || !navigator.onLine) {
+        const offlineId = offlineQueue.addItem({
+          type: 'create',
+          endpoint: '/api/animations',
+          method: 'POST',
+          payload: requestBody
+        });
+
+        onSuccess(offlineId);
+        return;
       }
 
-      const result = await response.json();
-      onSuccess(result.id);
+      const result = await postWithRetry<{ id: string }>('/api/animations', requestBody);
+
+      if (!result.ok || !result.data) {
+        // If it was a network error (status 0) or server error (5xx), queue it
+        if (result.status === 0 || result.status >= 500) {
+          const offlineId = offlineQueue.addItem({
+            type: 'create',
+            endpoint: '/api/animations',
+            method: 'POST',
+            payload: requestBody
+          });
+          onSuccess(offlineId);
+          return;
+        }
+
+        throw new Error(result.error || 'Failed to save animation');
+      }
+
+      onSuccess(result.data.id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      if (err instanceof Error && (err.message.includes('Network') || err.message.includes('fetch'))) {
+        // Catch-all for network errors thrown by fetchWithRetry if we didn't catch them above
+        const tagArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+        const offlineId = offlineQueue.addItem({
+          type: 'create',
+          endpoint: '/api/animations',
+          method: 'POST',
+          payload: {
+            title: title.trim(),
+            description: description.trim() || undefined,
+            animation_type: animationType,
+            visibility,
+            tags: tagArray.length > 0 ? tagArray : undefined,
+            payload,
+          }
+        });
+        onSuccess(offlineId);
+        return;
+      }
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setIsSaving(false);
     }
@@ -81,11 +128,11 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/50" 
+      <div
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-surface border border-border mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
@@ -160,11 +207,10 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
                   key={type.value}
                   type="button"
                   onClick={() => setAnimationType(type.value)}
-                  className={`p-3 text-left transition-colors border ${
-                    animationType === type.value
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+                  className={`p-3 text-left transition-colors border ${animationType === type.value
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50'
+                    }`}
                 >
                   <div className="font-medium text-sm text-text-primary">{type.label}</div>
                   <div className="text-xs text-text-primary/60">{type.description}</div>
@@ -198,11 +244,10 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
               {VISIBILITY_OPTIONS.map((option) => (
                 <label
                   key={option.value}
-                  className={`flex items-start p-3 cursor-pointer border transition-colors ${
-                    visibility === option.value
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+                  className={`flex items-start p-3 cursor-pointer border transition-colors ${visibility === option.value
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50'
+                    }`}
                 >
                   <input
                     type="radio"

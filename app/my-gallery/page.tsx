@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpDown, Plus, Loader2, FolderOpen } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 import { AnimationCard, AnimationSummary } from '@/components/AnimationCard';
 import { EditMetadataModal } from '@/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
@@ -11,6 +12,8 @@ import { MyAnimationsQuery } from '@/lib/schemas/animations';
 
 type SortField = MyAnimationsQuery['sort'];
 type SortOrder = MyAnimationsQuery['order'];
+
+const LIMIT = 24;
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: 'created_at', label: 'Date Created' },
@@ -25,10 +28,11 @@ export default function MyGalleryPage() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [sort, setSort] = useState<SortField>('created_at');
   const [order, setOrder] = useState<SortOrder>('desc');
-  
+  const [page, setPage] = useState(1);
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -41,12 +45,12 @@ export default function MyGalleryPage() {
       const params = new URLSearchParams({
         sort,
         order,
-        limit: '50',
-        offset: '0',
+        limit: String(LIMIT),
+        offset: String((page - 1) * LIMIT),
       });
 
       const response = await fetch(`/api/animations?${params}`);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/login?redirect=/my-gallery');
@@ -63,18 +67,18 @@ export default function MyGalleryPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [sort, order, router]);
+  }, [sort, order, page, router]);
 
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         router.push('/login?redirect=/my-gallery');
         return;
       }
-      
+
       fetchAnimations();
     };
 
@@ -134,8 +138,8 @@ export default function MyGalleryPage() {
     router.push(`/app?load=${id}`);
   };
 
-  const editingAnimation = editingId 
-    ? animations.find(a => a.id === editingId) 
+  const editingAnimation = editingId
+    ? animations.find(a => a.id === editingId)
     : null;
 
   const deletingAnimation = deletingId
@@ -144,7 +148,9 @@ export default function MyGalleryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      <Navigation />
+
+      {/* Page Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
@@ -155,22 +161,14 @@ export default function MyGalleryPage() {
               {total} animation{total !== 1 ? 's' : ''} saved
             </p>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <a
-              href="/profile"
-              className="text-sm text-text-primary/70 hover:text-primary transition-colors"
-            >
-              Profile
-            </a>
-            <a
-              href="/app"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              New Animation
-            </a>
-          </div>
+
+          <a
+            href="/app"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            New Animation
+          </a>
         </div>
       </header>
 
@@ -183,11 +181,10 @@ export default function MyGalleryPage() {
             <button
               key={option.value}
               onClick={() => handleSortChange(option.value)}
-              className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-                sort === option.value
-                  ? 'bg-primary text-text-inverse'
-                  : 'bg-surface border border-border hover:border-primary'
-              }`}
+              className={`px-3 py-1.5 text-sm font-medium transition-colors ${sort === option.value
+                ? 'bg-primary text-text-inverse'
+                : 'bg-surface border border-border hover:border-primary'
+                }`}
             >
               {option.label}
               {sort === option.value && (
@@ -217,17 +214,48 @@ export default function MyGalleryPage() {
         ) : animations.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {animations.map((animation) => (
-              <AnimationCard
-                key={animation.id}
-                animation={animation}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onPlay={handlePlay}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {animations.map((animation) => (
+                <AnimationCard
+                  key={animation.id}
+                  animation={animation}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onPlay={handlePlay}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {total > LIMIT && (
+              <div className="flex items-center justify-center gap-4 mt-12 border-t border-border pt-6">
+                <button
+                  onClick={() => {
+                    setPage(p => Math.max(1, p - 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={page === 1}
+                  className="px-4 py-2 border border-border bg-surface hover:bg-surface-warm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <div className="text-sm font-medium text-text-primary">
+                  Page {page} of {Math.ceil(total / LIMIT)}
+                </div>
+                <button
+                  onClick={() => {
+                    setPage(p => Math.min(Math.ceil(total / LIMIT), p + 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={page === Math.ceil(total / LIMIT)}
+                  className="px-4 py-2 border border-border bg-surface hover:bg-surface-warm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
       </main>
 

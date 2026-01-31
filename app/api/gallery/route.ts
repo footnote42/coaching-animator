@@ -31,7 +31,10 @@ export async function GET(request: NextRequest) {
       frame_count,
       upvote_count,
       created_at,
-      user_id
+      user_id,
+      user_profiles (
+        display_name
+      )
     `, { count: 'exact' })
     .eq('visibility', 'public')
     .is('hidden_at', null);
@@ -79,24 +82,13 @@ export async function GET(request: NextRequest) {
       .select('animation_id')
       .eq('user_id', user.id)
       .in('animation_id', animationIds);
-    
+
     upvotedIds = new Set(upvotes?.map(u => u.animation_id) || []);
   }
 
-  // Fetch author display names
-  let authorNames: Map<string, string | null> = new Map();
-  if (data && data.length > 0) {
-    const userIds = [...new Set(data.map(a => a.user_id))];
-    const { data: profiles } = await supabase
-      .from('user_profiles')
-      .select('id, display_name')
-      .in('id', userIds);
-    
-    profiles?.forEach(p => authorNames.set(p.id, p.display_name));
-  }
-
   // Transform response
-  const animations = data?.map(animation => ({
+  // We explicitly cast the joined data because TypeScript doesn't know about the relation
+  const animations = data?.map((animation: any) => ({
     id: animation.id,
     title: animation.title,
     description: animation.description,
@@ -108,7 +100,7 @@ export async function GET(request: NextRequest) {
     created_at: animation.created_at,
     user_id: animation.user_id,
     author: {
-      display_name: authorNames.get(animation.user_id) ?? null,
+      display_name: animation.user_profiles?.display_name ?? null,
     },
     user_has_upvoted: upvotedIds.has(animation.id),
   })) || [];

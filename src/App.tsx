@@ -64,7 +64,7 @@ function Editor() {
     const { selectedEntityId, selectEntity, deselectAll, showGhosts, toggleGhosts, showGrid, toggleGrid, selectedAnnotationId, selectAnnotation, drawingMode, setDrawingMode } = useUIStore();
 
     // Initialize export hook
-    const { exportStatus, exportProgress, exportError, startExport, canExport } = useExport(stageRef);
+    const { exportStatus, exportProgress, exportError, startExport, canExport, recommendedFormat, formatReason } = useExport(stageRef);
 
     // Local state for crash recovery dialog
     const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
@@ -207,13 +207,24 @@ function Editor() {
         });
     };
 
-    const handleAddMarker = () => {
+    const handleAddTackleShield = () => {
         addEntity({
-            type: 'marker',
+            type: 'tackle-shield',
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: DESIGN_TOKENS.colors.neutral[2],
+            color: '#1E40AF',
+            label: '',
+        });
+    };
+
+    const handleAddTackleBag = () => {
+        addEntity({
+            type: 'tackle-bag',
+            x: canvasWidth / 2,
+            y: canvasHeight / 2,
+            team: 'neutral',
+            color: '#7C3AED',
             label: '',
         });
     };
@@ -396,13 +407,16 @@ function Editor() {
                             exportProgress={exportProgress}
                             exportError={exportError}
                             canExport={canExport}
+                            recommendedFormat={recommendedFormat}
+                            formatReason={formatReason}
                         />
                         <EntityPalette
                             onAddAttackPlayer={handleAddAttackPlayer}
                             onAddDefensePlayer={handleAddDefensePlayer}
                             onAddBall={handleAddBall}
                             onAddCone={handleAddCone}
-                            onAddMarker={handleAddMarker}
+                            onAddTackleShield={handleAddTackleShield}
+                            onAddTackleBag={handleAddTackleBag}
                             drawingMode={drawingMode}
                             onDrawingModeChange={setDrawingMode}
                         />

@@ -26,6 +26,7 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; description: strin
 
 export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataModalProps) {
   const [title, setTitle] = useState(animation.title);
+  const [description, setDescription] = useState(animation.description || '');
   const [animationType, setAnimationType] = useState<AnimationType>(animation.animation_type);
   const [visibility, setVisibility] = useState<Visibility>(animation.visibility);
   const [isSaving, setIsSaving] = useState(false);
@@ -48,6 +49,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: title.trim(),
+          description: description.trim() || undefined,
           animation_type: animationType,
           visibility,
         }),
@@ -113,6 +115,23 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
               placeholder="Enter animation title"
               required
             />
+          </div>
+
+          {/* Description */}
+          <div className="mb-4">
+            <label htmlFor="animation-description" className="block text-sm font-medium text-text-primary mb-1">
+              Description
+            </label>
+            <textarea
+              id="animation-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none resize-none"
+              maxLength={500}
+              rows={3}
+              placeholder="Optional description for your animation"
+            />
+            <p className="mt-1 text-xs text-text-primary/60">{description.length}/500 characters</p>
           </div>
 
           {/* Animation Type */}

@@ -52,6 +52,9 @@ export interface ProjectSettings {
 
     /** Video export resolution */
     exportResolution: ExportResolution;
+
+    /** Pitch layout variant (defaults to 'standard') */
+    pitchLayout?: PitchLayout;
 }
 
 /**
@@ -101,6 +104,9 @@ export interface Entity {
 
     /** For ball: ID of player holding it */
     parentId?: string;
+
+    /** Orientation for equipment entities (tackle-shield) */
+    orientation?: EntityOrientation;
 }
 
 /**
@@ -146,7 +152,15 @@ export type EntityType =
     | 'player'
     | 'ball'
     | 'cone'
-    | 'marker';
+    | 'marker'
+    | 'tackle-shield'
+    | 'tackle-bag';
+
+/**
+ * Orientation for equipment entities (tackle-shield).
+ * Represents the direction the equipment faces.
+ */
+export type EntityOrientation = 'up' | 'down' | 'left' | 'right';
 
 /**
  * Team designations for color coding.
@@ -208,7 +222,14 @@ export type SidebarPanel = 'entities' | 'settings' | 'export';
 
 export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
 
+export type ExportFormat = 'webm' | 'gif' | 'auto';
+
 export type DrawingMode = 'none' | 'arrow' | 'line';
+
+/**
+ * Pitch layout variant for different tactical views.
+ */
+export type PitchLayout = 'standard' | 'attack' | 'defence' | 'training';
 
 export type PendingAction =
     | { type: 'new-project' }
@@ -249,6 +270,7 @@ export interface ProjectSettingsUpdate {
     gridSpacing: number;
     defaultTransitionDuration: number;
     exportResolution: ExportResolution;
+    pitchLayout?: PitchLayout;
 }
 
 export interface FrameUpdate {

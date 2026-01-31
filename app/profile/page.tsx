@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Navigation } from '@/components/Navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export default function ProfilePage() {
@@ -83,15 +84,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <header className="bg-surface border-b border-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-            <a href="/app" className="text-sm text-emerald-600 hover:text-emerald-700">
-              ← Back to App
-            </a>
-          </div>
+          <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>
         </div>
       </header>
 

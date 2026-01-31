@@ -19,6 +19,7 @@ interface PublicAnimation {
     display_name: string | null;
   };
   user_has_upvoted: boolean;
+  thumbnail_url?: string | null;
 }
 
 interface PublicAnimationCardProps {
@@ -92,9 +93,24 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onView(animation.id)}
     >
-      {/* Thumbnail placeholder with play overlay */}
+      {/* Thumbnail with play overlay */}
       <div className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center">
-        <div className="text-text-primary/30 text-sm font-mono">
+        {animation.thumbnail_url ? (
+          <img
+            src={animation.thumbnail_url}
+            alt={animation.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to placeholder on image error
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        
+        {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} text-text-primary/30 text-sm font-mono`}>
           {animation.frame_count} frames
         </div>
         

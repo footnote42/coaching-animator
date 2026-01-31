@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { requireAuth, isAuthError, requireNotBanned } from '../../../lib/auth';
-import { CreateAnimationSchema, MyAnimationsQuerySchema } from '../../../lib/schemas/animations';
+import { CreateAnimationSchema, MyAnimationsQuerySchema, validatePayloadSize } from '../../../lib/schemas/animations';
 import { checkQuota } from '../../../lib/quota';
 import { validateAnimationContent } from '../../../lib/moderation';
 import { checkRateLimit, getRateLimitHeaders } from '../../../lib/rate-limit';
+
+/**
+ * Convert a data URL to a Blob for upload.
+ */
+function dataUrlToBlob(dataUrl: string): Blob {
+  const parts = dataUrl.split(',');
+  const mime = parts[0].match(/:(.*?);/)?.[1] || 'image/png';
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
 
 export async function GET(request: NextRequest) {
   const authResult = await requireAuth();
@@ -74,6 +89,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Validate payload size first (before schema validation)
+  if (body.payload) {
+    const sizeCheck = validatePayloadSize(body.payload);
+    if (!sizeCheck.valid) {
+      return NextResponse.json(
+        { error: { code: 'PAYLOAD_TOO_LARGE', message: sizeCheck.error } },
+        { status: 413 }
+      );
+    }
+  }
+
   const parsed = CreateAnimationSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -85,7 +111,7 @@ export async function POST(request: NextRequest) {
   const data = parsed.data;
 
   // Check content moderation
-  const moderation = validateAnimationContent({
+  const moderation = await validateAnimationContent({
     title: data.title,
     description: data.description,
     coaching_notes: data.coaching_notes,
@@ -126,8 +152,37 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Insert into database
   const supabase = await createSupabaseServerClient();
+
+  // Handle thumbnail upload if provided
+  let thumbnailUrl: string | null = null;
+  if (data.thumbnail && data.thumbnail.startsWith('data:image/')) {
+    try {
+      // Convert data URL to blob
+      const thumbnailBlob = dataUrlToBlob(data.thumbnail);
+      const thumbnailPath = `thumbnails/${user.id}/${Date.now()}.png`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('animations')
+        .upload(thumbnailPath, thumbnailBlob, {
+          contentType: 'image/png',
+          upsert: false,
+        });
+
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage
+          .from('animations')
+          .getPublicUrl(thumbnailPath);
+        thumbnailUrl = urlData.publicUrl;
+      } else {
+        console.warn('Failed to upload thumbnail:', uploadError);
+      }
+    } catch (thumbError) {
+      console.warn('Thumbnail processing error:', thumbError);
+    }
+  }
+
+  // Insert into database
   const { data: animation, error } = await supabase
     .from('saved_animations')
     .insert({
@@ -141,8 +196,9 @@ export async function POST(request: NextRequest) {
       duration_ms: durationMs,
       frame_count: frameCount,
       visibility: data.visibility,
+      thumbnail_url: thumbnailUrl,
     })
-    .select('id, created_at')
+    .select('id, created_at, thumbnail_url')
     .single();
 
   if (error) {
@@ -153,5 +209,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(animation, { status: 201 });
+  // Add cache invalidation headers to ensure client refreshes lists
+  return NextResponse.json(animation, {
+    status: 201,
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
 }

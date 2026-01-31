@@ -477,7 +477,21 @@ export const useProjectStore = create<ProjectStoreState>()(
                     // Apply defaults
                     const team = entity.team ?? 'neutral';
                     const color = entity.color ?? DESIGN_TOKENS.colors[team][0];
-                    const label = entity.label ?? '';
+                    
+                    // Generate default label for players (Att 01, Def 01, etc.)
+                    let label = entity.label ?? '';
+                    if (entity.type === 'player' && !entity.label) {
+                        const currentFrame = state.project.frames[state.currentFrameIndex];
+                        const existingEntities = Object.values(currentFrame.entities);
+                        const sameTeamPlayers = existingEntities.filter(
+                            e => e.type === 'player' && e.team === team
+                        );
+                        const nextNumber = sameTeamPlayers.length + 1;
+                        const prefix = team === 'attack' ? 'Att' : team === 'defense' ? 'Def' : '';
+                        if (prefix) {
+                            label = `${prefix} ${String(nextNumber).padStart(2, '0')}`;
+                        }
+                    }
 
                     // Clamp coordinates to [0, 2000]
                     const clamp = (value: number, min: number, max: number) =>

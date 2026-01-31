@@ -34,7 +34,8 @@
       "Bash(npm ls:*)",
       "Bash(dir:*)",
       "Bash(node verify-phase-3.1.js:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(cd:*)"
     ]
   }
 }

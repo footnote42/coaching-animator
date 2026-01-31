@@ -1,4 +1,7 @@
 import { Play, Users, Share2, Download, Shield, Zap } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
+
+export const dynamic = 'force-dynamic';
 
 const FEATURES = [
   {
@@ -36,29 +39,7 @@ const FEATURES = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b border-border bg-surface">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🏉</span>
-            <span className="font-heading font-bold text-lg text-primary">Coaching Animator</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <a href="/gallery" className="text-sm text-text-primary hover:text-primary transition-colors">
-              Gallery
-            </a>
-            <a href="/login" className="text-sm text-text-primary hover:text-primary transition-colors">
-              Sign In
-            </a>
-            <a
-              href="/register"
-              className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              Get Started
-            </a>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="bg-primary text-text-inverse">

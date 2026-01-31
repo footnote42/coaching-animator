@@ -201,7 +201,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                         value={entity.parentId || 'none'}
                         onValueChange={(value) => onUpdate({ parentId: value === 'none' ? undefined : value })}
                     >
-                        <SelectTrigger className="font-mono">
+                        <SelectTrigger className="font-mono bg-[var(--color-surface-warm)]">
                             <SelectValue placeholder="None" />
                         </SelectTrigger>
                         <SelectContent>
