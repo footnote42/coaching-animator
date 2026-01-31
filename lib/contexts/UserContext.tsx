@@ -103,61 +103,61 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
     let isSubscribed = true;
+    let hasReceivedAuthState = false;
 
+    // Set up the auth state listener FIRST before checking initial state
+    // This ensures we don't miss any state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!isSubscribed) return;
+
+      hasReceivedAuthState = true;
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+
+      if (newUser) {
+        await loadProfile(newUser.id);
+      } else {
+        setProfile(null);
+      }
+
+      // Only set loading false after we've received and processed auth state
+      setLoading(false);
+    });
+
+    // Also try to get the current user for immediate feedback
+    // But don't set loading=false here - let onAuthStateChange handle it
     const initAuth = async () => {
       try {
-        if (!isSubscribed) return;
-
-        // Simplify initAuth - rely on onAuthStateChange for the primary state
-        // but try to get the current user once at start.
-        const { data: { user: currentUser }, error } = await supabase.auth.getUser();
-
-        if (error) {
-          // Ignore "Auth session missing" errors at init
-          if (!error.message.includes('Auth session missing')) {
-            console.warn('Initial auth check warning:', error.message);
-          }
-        }
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
 
         if (!isSubscribed) return;
 
-        setUser(currentUser ?? null);
-
-        if (currentUser && isSubscribed) {
+        // If we got a user and onAuthStateChange hasn't fired yet, 
+        // set the user immediately for faster UI
+        if (currentUser && !hasReceivedAuthState) {
+          setUser(currentUser);
           await loadProfile(currentUser.id);
         }
+
+        // Give onAuthStateChange a moment to fire, then set loading false if it hasn't
+        setTimeout(() => {
+          if (isSubscribed && !hasReceivedAuthState) {
+            setLoading(false);
+          }
+        }, 500);
       } catch (err) {
         // Ignore AbortErrors during cleanup
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
         console.error('Error initializing auth:', err);
-        setUser(null);
-      } finally {
-        if (isSubscribed) {
+        if (isSubscribed && !hasReceivedAuthState) {
           setLoading(false);
         }
       }
     };
 
     initAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!isSubscribed) return;
-
-      const newUser = session?.user ?? null;
-      setUser(newUser);
-
-      if (newUser) {
-        setLoading(true); // Re-set loading while fetching new profile
-        await loadProfile(newUser.id);
-        setLoading(false);
-      } else {
-        setProfile(null);
-        // Only trigger loading change if not already done in initAuth
-        setLoading(false);
-      }
-    });
 
     return () => {
       isSubscribed = false;
