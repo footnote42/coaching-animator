@@ -133,6 +133,29 @@ tests/                       # Test files
 - `npm test` - Run unit tests
 - `npm run e2e` - Run Playwright tests
 
+### Pre-Push CI Verification
+
+**Always run these checks before pushing to `main` to catch CI failures early:**
+
+```bash
+# Critical checks (must pass - these block CI)
+npm run lint              # ESLint - catches code quality issues
+npx tsc --noEmit         # TypeScript - catches type errors
+
+# Optional checks (good practice)
+npm test -- --run        # Unit tests - catches logic errors
+```
+
+**When to run:**
+- ✅ After fixing TypeScript errors
+- ✅ After modifying imports or dependencies
+- ✅ After refactoring shared utilities or types
+- ✅ Before any push to `main` or `staging`
+
+**CI Pipeline Reference:** See `.github/workflows/ci.yml` for the full CI/CD pipeline configuration.
+
+> **💡 Tip**: The `npm run build` command may fail locally without Supabase environment variables, but will pass in CI where secrets are configured. Focus on lint and typecheck for local verification.
+
 ## Project Status
 
 ### Completed Iterations
