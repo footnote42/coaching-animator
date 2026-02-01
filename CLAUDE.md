@@ -12,6 +12,23 @@ Auto-generated from all feature plans. Last updated: 2026-01-31
 - **Data Model**: `docs/architecture/database-schema.md` (extracted from `archive/specs/003-online-platform/data-model.md`)
 - **API Contracts**: `docs/architecture/api-contracts.md` (extracted from `archive/specs/003-online-platform/contracts/api-contracts.md`)
 
+## Documentation Quick Links
+
+**Start here for common tasks:**
+
+| Need | Document |
+|------|----------|
+| **New to project?** | [docs/development/getting-started.md](docs/development/getting-started.md) |
+| **Understand architecture** | [docs/README.md](docs/README.md) |
+| **API endpoints** | [docs/architecture/api-contracts.md](docs/architecture/api-contracts.md) |
+| **Database schema** | [docs/architecture/database-schema.md](docs/architecture/database-schema.md) |
+| **Authentication** | [docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md) |
+| **Testing** | [docs/testing/strategy.md](docs/testing/strategy.md) or [docs/testing/e2e-guide.md](docs/testing/e2e-guide.md) |
+| **Debug auth issues** | [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) |
+| **Debug API issues** | [docs/troubleshooting/production-stability.md](docs/troubleshooting/production-stability.md) |
+| **Governance & principles** | [.specify/memory/constitution.md](.specify/memory/constitution.md) |
+| **Product requirements** | [.specify/memory/PRD.md](.specify/memory/PRD.md) |
+
 ## Active Technologies
 
 - TypeScript 5.x with React 18+
@@ -25,6 +42,25 @@ Auto-generated from all feature plans. Last updated: 2026-01-31
 ## Project Structure
 
 ```text
+docs/                        # Developer documentation (NEW)
+├── README.md                # Documentation index and quick links
+├── architecture/            # System design documentation
+│   ├── database-schema.md   # Supabase tables, RLS, migrations
+│   ├── api-contracts.md     # API endpoint specifications
+│   └── auth-patterns.md     # Supabase auth implementation
+├── development/             # Developer guides
+│   └── getting-started.md   # Setup and onboarding
+├── testing/                 # Testing documentation
+│   ├── strategy.md          # E2E testing approach
+│   └── e2e-guide.md         # Playwright reference
+├── troubleshooting/         # Debugging guides
+│   ├── session-persistence.md  # Auth debugging
+│   └── production-stability.md # API debugging
+└── operations/              # Operational procedures
+    ├── ci-cd-setup.md       # GitHub Actions, Vercel pipeline
+    ├── staging-setup.md     # Staging environment
+    └── operations.md        # Backup, recovery procedures
+
 app/                         # Next.js App Router pages and API routes
 ├── (auth)/                  # Authentication pages (login, register, etc.)
 ├── (legal)/                 # Legal pages (terms, privacy, contact)
@@ -61,16 +97,26 @@ src/                         # Core animation components (from Vite)
 lib/                         # Shared utilities and Supabase clients
 ├── auth.ts                  # Authentication helpers
 ├── supabase/                # Supabase client configurations
+│   ├── client.ts            # Browser client (singleton)
+│   ├── server.ts            # Server client
+│   └── middleware.ts        # Auth refresh middleware
 └── schemas/                 # Database schemas
 
-specs/003-online-platform/   # Current iteration specs
-├── spec.md                  # 9 user stories, 40+ requirements
-├── tasks.md                 # 111 completed development tasks
-├── PROGRESS.md              # Implementation progress log
-├── data-model.md            # Database schemas
-├── research.md              # Technical decisions
-└── contracts/
-    └── api-contracts.md     # API endpoint specs
+specs/                       # Specifications (archived & active)
+├── 004-post-launch-improvements/  # Current iteration (Phase 13)
+└── archive/
+    └── specs/003-online-platform/ # Completed: User accounts, galleries
+        ├── spec.md          # 9 user stories, 40+ requirements
+        ├── tasks.md         # 111 completed development tasks
+        ├── data-model.md    # Database schema (see docs/architecture/)
+        └── contracts/
+            └── api-contracts.md  # API specs (see docs/architecture/)
+
+tests/                       # Test files
+└── e2e/                     # Playwright E2E tests
+    ├── phase-1-galleries.spec.ts  # Gallery & link sharing tests
+    ├── helpers.ts           # Test utilities
+    └── README.md            # Test documentation
 ```
 
 ## Commands
@@ -156,6 +202,8 @@ specs/003-online-platform/   # Current iteration specs
 | `follows` | Phase 2 foundation (UI deferred) |
 | `rate_limits` | Persistent rate limiting |
 
+**Full schema with RLS policies**: [docs/architecture/database-schema.md](docs/architecture/database-schema.md)
+
 ## API Endpoints (003-online-platform)
 
 | Endpoint | Auth | Purpose |
@@ -167,6 +215,8 @@ specs/003-online-platform/   # Current iteration specs
 | `POST /api/animations/[id]/remix` | Required | Clone to personal gallery |
 | `POST /api/report` | Required | Report animation |
 | `GET/POST /api/admin/reports` | Admin | Moderation queue |
+
+**Complete endpoint specs with request/response schemas**: [docs/architecture/api-contracts.md](docs/architecture/api-contracts.md)
 
 ## Development Learnings
 
@@ -183,6 +233,7 @@ specs/003-online-platform/   # Current iteration specs
 - Server Components: `createServerClient()`
 - Client Components: `createBrowserClient()`
 - Middleware refreshes auth token
+- **Full implementation guide**: See [docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md)
 
 ## Constitutional Compliance
 
@@ -196,6 +247,35 @@ specs/003-online-platform/   # Current iteration specs
 - **Tier 3 (Admin)**: Moderation and user management
 
 **Governance**: All backend features require Necessity Test, Privacy Impact Assessment, and Constitutional Amendment approval.
+
+## Documentation Navigation by Role
+
+### For Frontend Developers
+Start with [docs/development/getting-started.md](docs/development/getting-started.md), then:
+- [docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md) - Auth implementation
+- [docs/architecture/api-contracts.md](docs/architecture/api-contracts.md) - Available endpoints
+- [docs/testing/e2e-guide.md](docs/testing/e2e-guide.md) - Testing patterns
+
+### For Backend/API Developers
+Start with [docs/architecture/database-schema.md](docs/architecture/database-schema.md), then:
+- [docs/architecture/api-contracts.md](docs/architecture/api-contracts.md) - Endpoint specs
+- [docs/testing/strategy.md](docs/testing/strategy.md) - Testing approach
+- [CLAUDE.md](#key-constraints-from-constitution-v30) - Constitutional constraints
+
+### For DevOps/Infrastructure
+- `docs/operations/ci-cd-setup.md` - GitHub Actions and Vercel pipeline
+- `docs/operations/staging-setup.md` - Staging environment
+- `docs/operations/operations.md` - Backup and recovery
+
+### For QA/Testing
+- [docs/testing/strategy.md](docs/testing/strategy.md) - Test strategy and coverage
+- [docs/testing/e2e-guide.md](docs/testing/e2e-guide.md) - Running E2E tests
+- [docs/troubleshooting/](docs/troubleshooting/) - Debugging guides
+
+### For Troubleshooting
+- [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) - Auth issues
+- [docs/troubleshooting/production-stability.md](docs/troubleshooting/production-stability.md) - API issues
+- [docs/README.md](docs/README.md) - Quick diagnostic lookup
 
 ## Quality & Stability Guardrails
 
