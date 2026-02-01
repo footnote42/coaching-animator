@@ -6,10 +6,13 @@ Auto-generated from all feature plans. Last updated: 2026-02-01
 
 ## Current Iteration
 
-- **Spec Folder**: `specs/004-post-launch-improvements/`
+- **Spec Folder**: `specs/005-incremental-improvements/`
+- **Approach**: Incremental, pick-and-choose improvements (14 issues identified)
+- **Status**: 🔴 2 Critical, 🟠 5 High, 🟡 5 Medium, 🟢 2 Low priority issues
+- **Previous Spec**: `specs/004-post-launch-improvements/` (50-60% complete, see VERIFICATION.md)
 - **PRD**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform)
 - **Constitution**: `.specify/memory/constitution.md` (v3.0 with Tier 3 Authenticated)
-- **Data Model**: `docs/architecture/database-schema.md` (extracted from `archive/specs/003-online-platform/data-model.md`)
+- **Data Model**: `docs/architecture/database-schema.md`
 - **API Contracts**: `docs/architecture/api-contracts.md` (extracted from `archive/specs/003-online-platform/contracts/api-contracts.md`)
 
 ## Documentation Quick Links
@@ -196,9 +199,10 @@ npm test -- --run        # Unit tests - catches logic errors
 
 ## Recent Changes
 
+- **005-incremental-improvements Created (2026-02-01)**: New spec with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
+- **004-post-launch-improvements Verified (2026-02-01)**: Systematic verification found actual completion at 50-60%, not claimed 100%. Critical failures: retry logic exists but not used, navigation not integrated, tackle equipment missing, GIF export missing. See `specs/004-post-launch-improvements/VERIFICATION.md`.
 - **Profile Bugs Fixed (2026-02-01)**: Resolved display name persistence and animation count issues. Root cause: missing `max_animations` column in database schema. Added migration, comprehensive E2E tests, and troubleshooting documentation.
 - **003-online-platform Development Complete (2026-01-30)**: All 111 development tasks completed across 9 user stories. Full Next.js migration with user accounts, cloud storage, public gallery, upvoting, moderation, and admin dashboard implemented.
-- **Production Deployment Phase Started (2026-01-30)**: Phase 13 initiated with 25 remaining deployment tasks. Current build issues with static generation need resolution.
 - **Constitution v3.0.0 (2026-01-29)**: Added Tier 3 (Authenticated Features) for user accounts, cloud storage, public gallery, upvoting, moderation. Email-only auth, minimal profile data, GDPR compliance. Tier 1 (offline core) remains sacred.
 - **Phase 3.2: Vercel Functions API Implementation Complete (2026-01-27)**: Production-ready API handlers for link-sharing feature.
 - **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure for link-sharing feature.
