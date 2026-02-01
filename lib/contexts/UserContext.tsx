@@ -111,7 +111,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     // Set up the auth state listener FIRST before checking initial state
     // This ensures we don't miss any state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isSubscribed) return;
 
       const newUser = session?.user ?? null;
