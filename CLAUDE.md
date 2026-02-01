@@ -1,15 +1,16 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-30
+Auto-generated from all feature plans. Last updated: 2026-01-31
+
+> **📚 Documentation Reorganized**: New centralized docs in `docs/` directory. See [docs/README.md](docs/README.md) for architecture, testing, troubleshooting, and getting-started guides.
 
 ## Current Iteration
 
-- **Spec Folder**: `specs/003-online-platform/`
+- **Spec Folder**: `specs/004-post-launch-improvements/`
 - **PRD**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform)
 - **Constitution**: `.specify/memory/constitution.md` (v3.0 with Tier 3 Authenticated)
-- **Migration Plan**: `specs/003-online-platform/MIGRATION_PLAN.md`
-- **Data Model**: `specs/003-online-platform/data-model.md`
-- **API Contracts**: `specs/003-online-platform/contracts/api-contracts.md`
+- **Data Model**: `docs/architecture/database-schema.md` (extracted from `archive/specs/003-online-platform/data-model.md`)
+- **API Contracts**: `docs/architecture/api-contracts.md` (extracted from `archive/specs/003-online-platform/contracts/api-contracts.md`)
 
 ## Active Technologies
 

@@ -1,43 +1,42 @@
 # Phase 1 E2E Testing Strategy
 
+**Source**: Extracted from `TESTING_STRATEGY.md`
+**Last Updated**: 2026-01-31
+**Status**: ✅ Ready for execution
+**Test Suite**: `tests/e2e/phase-1-galleries.spec.ts` (13 tests)
+
+---
+
 ## Overview
 
-End-to-end tests for coaching-animator validate critical user journeys for **galleries and link sharing**. These tests run against a staging environment using Playwright and verify the complete flow from user registration through animation discovery and sharing.
+End-to-end tests for coaching-animator validate critical user journeys for **galleries and link sharing**. Tests run against a staging environment using Playwright and verify the complete flow from user registration through animation discovery and sharing.
 
-**Test Suite Location**: `tests/e2e/phase-1-galleries.spec.ts`
+---
 
-## Architecture Change Summary
+## Architecture Context
 
-**Documentation Updated (2026-01-31)**:
-- **CLAUDE.md**: Updated tiered architecture to cloud-first model
-- **Constitution v3.1**: Amended from offline-first to cloud-first with authentication-based persistence
+**Cloud-First Model** (Updated 2026-01-31):
+- Tier 0 (Guest): 10-frame local editor, JSON download only, no cloud persistence
+- Tier 1 (Authenticated): Cloud storage, personal gallery (50 animations max per user)
+- Tier 2 (Public/Link-Shared): Link sharing, public gallery browsing, upvoting
+- Tier 3 (Admin): Moderation and user management
 
-### Updated Tier Model
-
-```
-Tier 0 (Guest)         → 10-frame local editor, JSON download only
-Tier 1 (Authenticated) → Cloud storage, personal gallery (50 animations max per user)
-Tier 2 (Public)        → Link sharing, public gallery, upvoting
-Tier 3 (Admin)         → Moderation and user management
-```
-
-**Key Change**: All persistent storage now requires Supabase backend. Guest mode provides local editor UI for UX, but animations must be downloaded/exported locally.
+---
 
 ## Test Coverage
 
-### Phase 1: Galleries & Link Sharing
+### User Story 1: Cloud Save & Personal Gallery
 
-Three major user story groups tested:
+Authenticated users can save animations to cloud and manage personal gallery.
 
-#### **US1: Cloud Save & Personal Gallery**
-Tests that authenticated users can:
-- ✅ Register new account
-- ✅ Create animation in editor
-- ✅ Save animation to cloud via modal
-- ✅ View saved animation in personal gallery
-- ✅ Verify persistence across logout/login cycle
-- ✅ Manage animation metadata
-- ✅ Delete animations from gallery
+**Test Cases**:
+- Register new account
+- Create animation in editor
+- Save animation to cloud via modal
+- View saved animation in personal gallery
+- Verify persistence across logout/login cycle
+- Manage animation metadata
+- Delete animations from gallery
 
 **Critical Paths Validated**:
 - User registration → email verification → auth session
@@ -45,13 +44,16 @@ Tests that authenticated users can:
 - Session persistence (logout → login → animation still there)
 - Metadata storage (title, description, type, tags)
 
-#### **US2: Link Sharing & Visibility Toggle**
-Tests that users can:
-- ✅ Toggle animation visibility (private → link_shared → public)
-- ✅ Generate and copy shareable links
-- ✅ Share link_shared animations with guests (no login required)
-- ✅ Protect private animations (guest access denied)
-- ✅ Transition between visibility states
+### User Story 2: Link Sharing & Visibility Toggle
+
+Users can control animation visibility and generate shareable links.
+
+**Test Cases**:
+- Toggle animation visibility (private → link_shared → public)
+- Generate and copy shareable links
+- Share link_shared animations with guests (no login required)
+- Protect private animations (guest access denied)
+- Transition between visibility states
 
 **Critical Paths Validated**:
 - Visibility toggle persists in database
@@ -59,16 +61,19 @@ Tests that users can:
 - Private animations return 403/access denied
 - Share link generation works in UI
 
-#### **US3: Public Gallery Search & Discovery**
-Tests that guests and users can:
-- ✅ Access public gallery without login
-- ✅ Search by keyword (full-text search)
-- ✅ Filter by animation type (tactic, skill, game, other)
-- ✅ Sort by popularity (upvotes) or newest
-- ✅ Paginate through results
-- ✅ View animation detail pages
-- ✅ See upvote buttons (authenticated only)
-- ✅ Access creator display names
+### User Story 3: Public Gallery Search & Discovery
+
+Guests and users discover animations through public gallery.
+
+**Test Cases**:
+- Access public gallery without login
+- Search by keyword (full-text search)
+- Filter by animation type (tactic, skill, game, other)
+- Sort by popularity (upvotes) or newest
+- Paginate through results
+- View animation detail pages
+- See upvote buttons (authenticated only)
+- Access creator display names
 
 **Critical Paths Validated**:
 - Full-text search on title + description
@@ -86,6 +91,8 @@ Tests that guests and users can:
 4. Search finds it by keyword
 5. Guest can view detail page
 6. Upvote count displays (if authenticated)
+
+---
 
 ## Test Execution
 
@@ -140,6 +147,8 @@ Running 1000ms timeout ...
   13 passed (2m 15s)
 ```
 
+---
+
 ## Test Infrastructure
 
 ### File Structure
@@ -173,50 +182,7 @@ package.json                   # Test scripts (npm run e2e)
 - `getAnimationShareLink()` - Extract share URL
 - `takeScreenshot()` - Debug screenshots
 
-## CI/CD Integration
-
-### GitHub Actions Example
-
-Add to `.github/workflows/e2e.yml`:
-
-```yaml
-name: E2E Tests - Phase 1
-
-on: [push, pull_request]
-
-jobs:
-  e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - run: npm ci
-      - run: npx playwright install --with-deps
-
-      - name: Start dev server
-        run: npm run dev &
-
-      - name: Wait for server
-        run: npm run wait-for-port -- 3000
-
-      - name: Run E2E tests
-        run: npm run e2e
-
-      - name: Upload artifacts
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: e2e-results
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 30
-```
+---
 
 ## Environment Variables
 
@@ -239,6 +205,8 @@ PLAYWRIGHT_HEADED=false
 # Enable detailed output
 PLAYWRIGHT_DEBUG=false
 ```
+
+---
 
 ## Debugging Failed Tests
 
@@ -300,6 +268,8 @@ cat test-results/junit.xml
    - Videos (on failure) in same directory
    - Trace files for step-by-step replay
 
+---
+
 ## Test Data Management
 
 ### Test User Generation
@@ -327,6 +297,8 @@ Tests create animations but **do not clean up** (to verify persistence):
 # 3. Delete via SQL or UI
 ```
 
+---
+
 ## Performance Baseline
 
 Expected test execution times:
@@ -344,6 +316,55 @@ Expected test execution times:
 - Playwright browser startup time
 - Database query performance
 - Email verification (mocked or skipped in tests)
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions Example
+
+Add to `.github/workflows/e2e.yml`:
+
+```yaml
+name: E2E Tests - Phase 1
+
+on: [push, pull_request]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      - name: Start dev server
+        run: npm run dev &
+
+      - name: Wait for server
+        run: npm run wait-for-port -- 3000
+
+      - name: Run E2E tests
+        run: npm run e2e
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-results
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+```
+
+---
 
 ## Known Limitations & Future Improvements
 
@@ -381,6 +402,8 @@ Expected test execution times:
 - User profile management
 - Advanced search (tags, author)
 
+---
+
 ## Maintenance & Updates
 
 ### When to Update Tests
@@ -407,6 +430,8 @@ page.click('[data-testid="save-cloud"]')
 3. Use helper functions from `helpers.ts`
 4. Run locally to verify: `npm run e2e:headed`
 
+---
+
 ## Troubleshooting
 
 **Tests fail locally but pass in CI**:
@@ -424,29 +449,22 @@ page.click('[data-testid="save-cloud"]')
 - Check if element is hidden (display: none)
 - Wait for async content to load
 
+---
+
 ## References
 
 - **Playwright Docs**: https://playwright.dev
 - **Project Spec**: `specs/003-online-platform/spec.md`
-- **API Contracts**: `specs/003-online-platform/contracts/api-contracts.md`
-- **Architecture**: `CLAUDE.md`, `.specify/memory/constitution.md`
-
-## Related Commands
-
-```bash
-npm run dev              # Start dev server
-npm run e2e             # Run Phase 1 E2E tests
-npm run e2e:headed      # Run with visible browser
-npm run e2e:debug       # Interactive debugging
-npm run e2e:ui          # UI mode with live updates
-npm run e2e:report      # View HTML report
-npm test                # Run unit tests (Vitest)
-npm run lint            # Run ESLint
-```
+- **API Contracts**: `docs/architecture/api-contracts.md`
+- **Architecture**: `docs/architecture/auth-patterns.md`, `.specify/memory/constitution.md`
+- **E2E Guide**: `docs/testing/e2e-guide.md`
 
 ---
 
-**Last Updated**: 2026-01-31
-**Phase**: Phase 1 (Galleries & Link Sharing)
+## Test Status
+
+**Current Phase**: Phase 1 (Galleries & Link Sharing)
 **Test Count**: 13 tests across 3 user story groups + 1 cross-cutting workflow
 **Status**: ✅ Ready for execution (requires `/build` issue resolution for production deployment)
+
+**Last Updated**: 2026-01-31

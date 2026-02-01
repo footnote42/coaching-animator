@@ -63,6 +63,9 @@ cp .env.local.example .env.local
 
 The core animation tool works fully offline. Online features require Supabase configuration.
 
+### For Developers
+For complete development setup, architecture details, and contributing guidelines, see **[Developer Documentation](docs/)**.
+
 ---
 
 ## 📖 Usage Guide
