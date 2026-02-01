@@ -16,6 +16,8 @@ export default function ProfilePage() {
 
   // Sync local display name with profile once loaded
   useEffect(() => {
+    console.log('[Profile] profile.display_name changed:', profile?.display_name);
+    console.log('[Profile] profile.animation_count:', profile?.animation_count);
     if (profile) {
       setDisplayName(profile.display_name || '');
     }
@@ -41,19 +43,26 @@ export default function ProfilePage() {
     setSuccess(null);
 
     try {
+      console.log('[Profile] Saving display name:', displayName.trim());
       const { ok, status, error: apiError } = await putWithRetry(
         '/api/user/profile',
         { display_name: displayName.trim() || null }
       );
 
+      console.log('[Profile] API response - ok:', ok, 'status:', status);
+
       if (!ok) {
         throw new Error(apiError || `Failed to update profile (${status})`);
       }
 
+      console.log('[Profile] Calling refreshProfile...');
       await refreshProfile(); // Update global state
+      console.log('[Profile] refreshProfile complete');
+
       setSuccess('Profile updated successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
+      console.error('[Profile] Save error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setSaving(false);

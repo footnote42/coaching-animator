@@ -65,15 +65,18 @@ export function UserProvider({ children }: UserProviderProps) {
         return;
       }
 
+      console.log('[UserContext] Profile loaded from Supabase:', data);
 
       if (data) {
-        setProfile({
+        const newProfile = {
           id: data.id,
           display_name: data.display_name,
           role: data.role || 'user',
           animation_count: data.animation_count || 0,
           max_animations: data.max_animations || 50,
-        });
+        };
+        console.log('[UserContext] Setting profile state:', newProfile);
+        setProfile(newProfile);
       }
     } catch (err) {
       // Ignore AbortErrors - these happen during navigation/unmount
@@ -95,6 +98,7 @@ export function UserProvider({ children }: UserProviderProps) {
   };
 
   const refreshProfile = async () => {
+    console.log('[UserContext] refreshProfile called, user:', user?.id);
     if (user) {
       await loadProfile(user.id);
     }
@@ -107,61 +111,64 @@ export function UserProvider({ children }: UserProviderProps) {
 
     // Set up the auth state listener FIRST before checking initial state
     // This ensures we don't miss any state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isSubscribed) return;
 
-      hasReceivedAuthState = true;
       const newUser = session?.user ?? null;
       setUser(newUser);
+      hasReceivedAuthState = true;
 
+      // Don't block loading state on profile loading
       if (newUser) {
-        await loadProfile(newUser.id);
+        loadProfile(newUser.id);
       } else {
         setProfile(null);
       }
 
-      // Only set loading false after we've received and processed auth state
       setLoading(false);
     });
 
-    // Also try to get the current user for immediate feedback
-    // But don't set loading=false here - let onAuthStateChange handle it
     const initAuth = async () => {
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
 
         if (!isSubscribed) return;
 
-        // If we got a user and onAuthStateChange hasn't fired yet, 
-        // set the user immediately for faster UI
-        if (currentUser && !hasReceivedAuthState) {
+        if (currentUser) {
           setUser(currentUser);
-          await loadProfile(currentUser.id);
+          loadProfile(currentUser.id); // Non-blocking
         }
 
-        // Give onAuthStateChange a moment to fire, then set loading false if it hasn't
-        setTimeout(() => {
-          if (isSubscribed && !hasReceivedAuthState) {
-            setLoading(false);
-          }
-        }, 500);
+        // Final fallback to ensure loading always finishes
+        if (!hasReceivedAuthState) {
+          setLoading(false);
+          hasReceivedAuthState = true;
+        }
       } catch (err) {
-        // Ignore AbortErrors during cleanup
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
         console.error('Error initializing auth:', err);
-        if (isSubscribed && !hasReceivedAuthState) {
+        if (isSubscribed) {
           setLoading(false);
+          hasReceivedAuthState = true;
         }
       }
     };
+
+    // Absolute failsafe: force loading false after 3 seconds no matter what
+    const failsafe = setTimeout(() => {
+      if (isSubscribed) {
+        setLoading(false);
+      }
+    }, 3000);
 
     initAuth();
 
     return () => {
       isSubscribed = false;
       subscription.unsubscribe();
+      clearTimeout(failsafe);
     };
   }, []);
 

@@ -67,7 +67,8 @@ export async function registerUser(page: Page, user: TestUser): Promise<void> {
  * Login with existing user credentials
  */
 export async function loginUser(page: Page, user: TestUser): Promise<void> {
-  await page.goto('/login')
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3002'
+  await page.goto(`${baseUrl}/login`)
 
   const emailInput = page.locator('input[type="email"]')
   const passwordInput = page.locator('input[type="password"]')
@@ -421,4 +422,61 @@ export async function waitForElement(page: Page, selector: string, timeout: numb
 export async function takeScreenshot(page: Page, filename: string): Promise<void> {
   const timestamp = new Date().toISOString().replace(/:/g, '-')
   await page.screenshot({ path: `test-results/artifacts/${filename}-${timestamp}.png` })
+}
+
+// ============================================================================
+// Convenience Helpers for Common Tests
+// ============================================================================
+
+/**
+ * Login as the default test user (for local and production)
+ */
+export async function loginAsTestUser(page: Page): Promise<void> {
+  const testUser = {
+    email: 'user@test.com',
+    password: 'Password1!'
+  }
+  await loginUser(page, testUser)
+
+  // Wait for navigation to complete
+  await page.waitForURL(/\/(app|my-gallery|profile)/, { timeout: 10000 })
+}
+
+/**
+ * Create a test animation with minimal setup
+ */
+export async function createTestAnimation(page: Page, title: string): Promise<void> {
+  // Ensure we're on the editor page
+  if (!page.url().includes('/app')) {
+    await page.goto('http://localhost:3002/app')
+  }
+
+  // Wait for editor to load
+  await expect(page.locator('canvas')).toBeVisible({ timeout: 10000 })
+
+  // Add a frame if needed (editor might already have Frame 1)
+  const addFrameBtn = page.locator('button:has-text("Add Frame")')
+  if (await addFrameBtn.isVisible()) {
+    await addFrameBtn.click()
+    await page.waitForTimeout(500)
+  }
+
+  // Open save modal
+  const saveBtn = page.locator('button:has-text("Save to Cloud")')
+  await expect(saveBtn).toBeVisible()
+  await saveBtn.click()
+
+  // Wait for modal
+  await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 })
+
+  // Fill title
+  const titleInput = page.locator('input[placeholder*="title" i]').first()
+  await titleInput.fill(title)
+
+  // Submit
+  const submitBtn = page.locator('[role="dialog"] button:has-text("Save")')
+  await submitBtn.click()
+
+  // Wait for success (modal should close)
+  await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 })
 }

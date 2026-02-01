@@ -1,6 +1,6 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-31
+Auto-generated from all feature plans. Last updated: 2026-02-01
 
 > **📚 Documentation Reorganized**: New centralized docs in `docs/` directory. See [docs/README.md](docs/README.md) for architecture, testing, troubleshooting, and getting-started guides.
 
@@ -24,7 +24,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-31
 | **Database schema** | [docs/architecture/database-schema.md](docs/architecture/database-schema.md) |
 | **Authentication** | [docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md) |
 | **Testing** | [docs/testing/strategy.md](docs/testing/strategy.md) or [docs/testing/e2e-guide.md](docs/testing/e2e-guide.md) |
-| **Debug auth issues** | [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) |
+| **Debug auth issues** | [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) or [docs/troubleshooting/supabase-aborterror-fix.md](docs/troubleshooting/supabase-aborterror-fix.md) |
+| **Debug profile issues** | [docs/troubleshooting/profile-bugs-resolution-summary.md](docs/troubleshooting/profile-bugs-resolution-summary.md) |
 | **Debug API issues** | [docs/troubleshooting/production-stability.md](docs/troubleshooting/production-stability.md) |
 | **Governance & principles** | [.specify/memory/constitution.md](.specify/memory/constitution.md) |
 | **Product requirements** | [.specify/memory/PRD.md](.specify/memory/PRD.md) |
@@ -54,8 +55,11 @@ docs/                        # Developer documentation (NEW)
 │   ├── strategy.md          # E2E testing approach
 │   └── e2e-guide.md         # Playwright reference
 ├── troubleshooting/         # Debugging guides
-│   ├── session-persistence.md  # Auth debugging
-│   └── production-stability.md # API debugging
+│   ├── session-persistence.md       # Auth debugging
+│   ├── supabase-aborterror-fix.md   # AbortError resolution
+│   ├── profile-bugs-analysis.md     # Profile bugs investigation
+│   ├── profile-bugs-resolution-summary.md  # Profile bugs fix
+│   └── production-stability.md      # API debugging
 └── operations/              # Operational procedures
     ├── ci-cd-setup.md       # GitHub Actions, Vercel pipeline
     ├── staging-setup.md     # Staging environment
@@ -169,6 +173,7 @@ tests/                       # Test files
 
 ## Recent Changes
 
+- **Profile Bugs Fixed (2026-02-01)**: Resolved display name persistence and animation count issues. Root cause: missing `max_animations` column in database schema. Added migration, comprehensive E2E tests, and troubleshooting documentation.
 - **003-online-platform Development Complete (2026-01-30)**: All 111 development tasks completed across 9 user stories. Full Next.js migration with user accounts, cloud storage, public gallery, upvoting, moderation, and admin dashboard implemented.
 - **Production Deployment Phase Started (2026-01-30)**: Phase 13 initiated with 25 remaining deployment tasks. Current build issues with static generation need resolution.
 - **Constitution v3.0.0 (2026-01-29)**: Added Tier 3 (Authenticated Features) for user accounts, cloud storage, public gallery, upvoting, moderation. Email-only auth, minimal profile data, GDPR compliance. Tier 1 (offline core) remains sacred.
@@ -273,7 +278,8 @@ Start with [docs/architecture/database-schema.md](docs/architecture/database-sch
 - [docs/troubleshooting/](docs/troubleshooting/) - Debugging guides
 
 ### For Troubleshooting
-- [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) - Auth issues
+- [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) - Auth session issues
+- [docs/troubleshooting/supabase-aborterror-fix.md](docs/troubleshooting/supabase-aborterror-fix.md) - Supabase AbortError and missing nav links
 - [docs/troubleshooting/production-stability.md](docs/troubleshooting/production-stability.md) - API issues
 - [docs/README.md](docs/README.md) - Quick diagnostic lookup
 
