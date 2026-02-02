@@ -129,11 +129,22 @@ The gallery page uses direct `fetch()` calls instead of the retry wrapper. When 
 
 ## 🟠 HIGH Priority Issues
 
-### HIGH-001: No Site-Wide Navigation
+### HIGH-001: No Site-Wide Navigation ✅ FIXED
 
-**Risk**: 🟠 HIGH  
-**Impact**: 😕 UX Issue  
+**Risk**: 🟠 HIGH
+**Impact**: 😕 UX Issue
 **Effort**: Medium (1 day)
+**Status**: ✅ **FIXED** (2026-02-02)
+**Commits**: `121ddc6`, `5a491c6`, `13ba6cc`, `651f850`
+
+#### Resolution Summary
+- Added Navigation component to root layout (`app/layout.tsx`) with `variant="full"`
+- Removed duplicate Navigation imports from 6 pages (gallery, my-gallery, profile, admin, landing, replay)
+- Refactored legal layout to use Navigation from root layout instead of custom navigation
+- Fixed auth layout to use full navigation instead of simple variant
+- Navigation now appears consistently on all pages with auth-aware role-based links
+- Active page highlighting works automatically via `usePathname()`
+- All TypeScript and ESLint checks passed
 
 #### Description
 The `Navigation` component exists in `components/Navigation.tsx` and includes role-based links (Editor, Gallery, My Gallery, Profile, Admin), but it's not integrated into any page layouts. Users must use browser back button or manually type URLs.

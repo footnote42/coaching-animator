@@ -1,8 +1,8 @@
 # Spec 005: Incremental Improvements
 
-**Status**: 🔄 In Progress (2/14 complete)  
-**Created**: 2026-02-01  
-**Approach**: Incremental, pick-and-choose improvements  
+**Status**: 🔄 In Progress (3/14 complete)
+**Created**: 2026-02-01
+**Approach**: Incremental, pick-and-choose improvements
 **Source**: Verification of spec 004 + User observations
 
 ---
@@ -55,15 +55,11 @@ We use the **CVSS-inspired** severity scale commonly used in software security a
 
 ### 🟠 HIGH Priority Issues (Major Features)
 
-#### HIGH-001: No Site-Wide Navigation
+#### ~~HIGH-001: No Site-Wide Navigation~~ ✅ FIXED
+- **Status**: ✅ **FIXED** (2026-02-02, Commits: 121ddc6, 5a491c6, 13ba6cc, 651f850)
 - **Risk**: 🟠 HIGH
 - **Impact**: 😕 UX Issue
-- **Source**: Verification T112-T115
-- **Plain English**: The navigation component exists but isn't shown on any pages. Users have to use browser back button or manually type URLs.
-- **User Impact**: High - Confusing navigation, feels unprofessional
-- **Effort**: Medium (1 day) - Integrate Navigation component into layouts
-- **Files**: `app/layout.tsx`, `app/(auth)/layout.tsx`, `app/app/page.tsx`
-- **Fix**: Import and add `<Navigation />` to each layout
+- **Resolution**: Added Navigation to root layout, removed duplicates from pages, refactored legal and auth layouts. Navigation now appears consistently on all pages with auth-aware role-based links.
 
 #### HIGH-002: Safari/iOS Users Can't Export Animations
 - **Risk**: 🟠 HIGH
