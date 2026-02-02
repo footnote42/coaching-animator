@@ -1,3 +1,4 @@
+// Force reload: Entity palette fix
 import React, { useRef } from 'react';
 import { Group, Circle, Ellipse, Rect, Text } from 'react-konva';
 import Konva from 'konva';

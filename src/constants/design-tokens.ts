@@ -1,5 +1,5 @@
 /**
- * Design tokens for the Warm Tactical Professionalism aesthetic.
+ * Design tokens for the Warm Tactical Professionalism aesthetic. (Force reload)
  */
 
 export const DESIGN_TOKENS = {
@@ -33,7 +33,7 @@ export const DESIGN_TOKENS = {
         accentWarm: '#D97706',
         attack: ['#3B82F6', '#22C55E', '#06B6D4', '#8B5CF6'],
         defense: ['#EF4444', '#F97316', '#FBBF24', '#EC4899'],
-        neutral: ['#FFFFFF', '#92400E', '#FCD34D', '#FB923C'],
+        neutral: ['#FFFFFF', '#8B4513', '#FACC15', '#F97316'],
         annotation: '#FACC15',
     },
     typography: {

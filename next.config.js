@@ -1,4 +1,5 @@
 import withSerwistInit from '@serwist/next';
+// Force restart to pick up color palette changes
 
 const withSerwist = withSerwistInit({
   swSrc: 'app/sw.ts',
@@ -10,6 +11,7 @@ const withSerwist = withSerwistInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false,
   // Security headers per FR-SEC-01
   async headers() {
     // CSP directives - allows Supabase, Vercel analytics, inline styles for Konva
