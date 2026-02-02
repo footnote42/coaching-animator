@@ -1,6 +1,6 @@
 # Spec 005: Incremental Improvements
 
-**Status**: 📋 Planning  
+**Status**: 🔄 In Progress (2/14 complete)  
 **Created**: 2026-02-01  
 **Approach**: Incremental, pick-and-choose improvements  
 **Source**: Verification of spec 004 + User observations
@@ -39,25 +39,17 @@ We use the **CVSS-inspired** severity scale commonly used in software security a
 
 ### 🔴 CRITICAL Issues (Fix Before Production)
 
-#### CRIT-001: Save Operations Have No Retry Logic
+#### ~~CRIT-001: Save Operations Have No Retry Logic~~ ✅ FIXED
+- **Status**: ✅ **FIXED** (2026-02-02, Commit: 2d1f71f)
 - **Risk**: 🔴 CRITICAL
 - **Impact**: 💾 Data Loss
-- **Source**: Verification T105
-- **Plain English**: When users click "Save to Cloud," if the internet hiccups, their work is lost forever. The retry code exists but isn't connected.
-- **User Impact**: High - Users lose animations they've spent time creating
-- **Effort**: Low (2-4 hours) - Just wire up existing `postWithRetry` function
-- **Files**: `components/SaveToCloudModal.tsx`
-- **Fix**: Import and use `postWithRetry` from `lib/api-client.ts`
+- **Resolution**: Added `onRetry` callback to `api-client.ts` and wired up retry progress UI in SaveToCloudModal
 
-#### CRIT-002: Gallery Fails on Network Issues
+#### ~~CRIT-002: Gallery Fails on Network Issues~~ ✅ FIXED
+- **Status**: ✅ **FIXED** (2026-02-02, Commit: 2a44101)
 - **Risk**: 🔴 CRITICAL
 - **Impact**: 🚫 Feature Broken
-- **Source**: Verification T106
-- **Plain English**: If the internet is slow or unstable, the gallery page just fails to load instead of retrying. The retry code exists but isn't connected.
-- **User Impact**: High - Users can't browse animations on unstable connections
-- **Effort**: Low (2-4 hours) - Just wire up existing `fetchWithRetry` function
-- **Files**: `app/gallery/page.tsx`
-- **Fix**: Import and use `fetchWithRetry` from `lib/api-client.ts`
+- **Resolution**: Applied same retry progress pattern to Gallery page with banner UI
 
 ---
 
@@ -218,24 +210,26 @@ The following tasks were marked complete but need verification through browser t
 
 ## Summary Statistics
 
-| Priority | Count | Recommended Timeline |
-|----------|-------|---------------------|
-| 🔴 CRITICAL | 2 | Fix before any production deployment |
-| 🟠 HIGH | 5 | Fix within 1-2 weeks |
-| 🟡 MEDIUM | 5 | Fix within 1-2 months |
-| 🟢 LOW | 2 | Fix during slow periods |
-| ⚠️ Unverified | 16 | Test during normal usage |
+| Priority | Count | Status | Recommended Timeline |
+|----------|-------|--------|---------------------|
+| 🔴 CRITICAL | 2 | ✅ Complete | ~~Fix before any production deployment~~ |
+| 🟠 HIGH | 5 | 📋 Pending | Fix within 1-2 weeks |
+| 🟡 MEDIUM | 5 | 📋 Pending | Fix within 1-2 months |
+| 🟢 LOW | 2 | 📋 Pending | Fix during slow periods |
+| ⚠️ Unverified | 16 | 📋 Pending | Test during normal usage |
 
-**Total Identified Issues**: 14 (plus 16 unverified)
+**Total Identified Issues**: 14  
+**Completed**: 2/14 (14%)  
+**Remaining**: 12 issues (plus 16 unverified)
 
 ---
 
 ## Recommended Approach
 
-### Week 1: Critical Fixes
-1. CRIT-001: Wire up retry logic to SaveToCloudModal (2-4 hours)
-2. CRIT-002: Wire up retry logic to gallery (2-4 hours)
-3. Test both thoroughly with network throttling
+### ~~Week 1: Critical Fixes~~ ✅ COMPLETE
+1. ~~CRIT-001: Wire up retry logic to SaveToCloudModal (2-4 hours)~~ ✅ DONE
+2. ~~CRIT-002: Wire up retry logic to gallery (2-4 hours)~~ ✅ DONE
+3. ~~Test both thoroughly with network throttling~~ ⏳ Pending production testing
 
 ### Week 2-3: High Priority Features
 Pick 1-2 from:

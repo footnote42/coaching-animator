@@ -10,7 +10,7 @@
 ## Current Status
 
 **Active Issue**: None  
-**Completed**: 0/14 (0%)  
+**Completed**: 2/14 (14%)  
 **In Progress**: 0/14 (0%)
 
 ---
@@ -18,8 +18,8 @@
 ## Issue Status
 
 ### 🔴 CRITICAL (2 issues)
-- [ ] CRIT-001: Save Operations Have No Retry Logic
-- [ ] CRIT-002: Gallery Fails on Network Issues
+- [x] CRIT-001: Save Operations Have No Retry Logic ✅ **FIXED** (2026-02-02, Commit: 2d1f71f)
+- [x] CRIT-002: Gallery Fails on Network Issues ✅ **FIXED** (2026-02-02, Commit: 2a44101)
 
 ### 🟠 HIGH (5 issues)
 - [ ] HIGH-001: No Site-Wide Navigation
@@ -45,6 +45,36 @@
 
 <!-- Add new sessions at the TOP of this section -->
 
+### Session 2026-02-02
+
+**Date**: 2026-02-02  
+**Issues**: CRIT-001, CRIT-002  
+**Time Spent**: ~4 hours  
+**Status**: ✅ Complete
+
+**Work Done**:
+- Added `onRetry` callback to `lib/api-client.ts` for retry progress tracking
+- Updated `components/SaveToCloudModal.tsx` with retry progress UI ("Retrying... 1/3")
+- Updated `app/gallery/page.tsx` with retry progress banner
+- Removed async health check that was preventing retries from working
+- Added component cleanup with useRef to prevent state updates after unmount
+- All changes include error handling and backward compatibility
+- TypeScript and ESLint checks passed
+- Commits: 2d1f71f (CRIT-001), 2a44101 (CRIT-002)
+
+**Files Modified**:
+- `lib/api-client.ts` - Added onRetry callback support
+- `components/SaveToCloudModal.tsx` - Save retry progress
+- `app/gallery/page.tsx` - Gallery retry progress
+- `specs/005-incremental-improvements/ISSUES_REGISTER.md` - Marked issues as fixed
+
+**Next Steps**:
+- User testing in production
+- Monitor retry success rates
+- Address next high-priority issue
+
+---
+
 ### Session Template
 
 **Date**: YYYY-MM-DD  
@@ -69,7 +99,15 @@
 
 <!-- Move completed issues here -->
 
-None yet.
+### ✅ CRIT-001: Save Operations Have No Retry Logic
+**Completed**: 2026-02-02  
+**Commit**: 2d1f71f  
+**Impact**: Users now see retry progress during save operations, improving confidence and reducing perceived data loss
+
+### ✅ CRIT-002: Gallery Fails on Network Issues
+**Completed**: 2026-02-02  
+**Commit**: 2a44101  
+**Impact**: Users see retry progress when gallery fails to load, improving reliability on unstable networks
 
 ---
 
