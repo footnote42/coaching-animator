@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
+import { Navigation } from '@/components/Navigation';
 
 export const metadata: Metadata = {
   title: {
@@ -38,6 +39,7 @@ export const viewport: Viewport = {
 };
 
 import { OfflineIndicator } from '@/components/OfflineIndicator';
+import { Toaster } from 'sonner';
 
 export default function RootLayout({
   children,
@@ -45,17 +47,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className="min-h-screen bg-background antialiased">
+      <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
         <UserProvider>
+          <Navigation variant="full" />
           {children}
           <OfflineIndicator />
         </UserProvider>
+        <Toaster position="bottom-left" />
       </body>
     </html>
   );
