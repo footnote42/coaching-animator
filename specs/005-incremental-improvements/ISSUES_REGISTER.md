@@ -8,11 +8,20 @@
 
 ## 🔴 CRITICAL Issues
 
-### CRIT-001: Save Operations Have No Retry Logic
+### CRIT-001: Save Operations Have No Retry Logic ✅ FIXED
 
 **Risk**: 🔴 CRITICAL  
 **Impact**: 💾 Data Loss  
-**Effort**: Low (2-4 hours)
+**Effort**: Low (2-4 hours)  
+**Status**: ✅ **FIXED** (2026-02-02)  
+**Commit**: `2d1f71f`
+
+#### Resolution Summary
+- Added `onRetry` callback to `api-client.ts` for retry progress tracking
+- Updated `SaveToCloudModal.tsx` to display retry attempts in UI
+- Removed async health check that was preventing retries from working
+- Preserved fast `navigator.onLine` check for immediate offline detection
+- Users now see "Retrying... (1/3)" during retry attempts
 
 #### Description
 The `SaveToCloudModal` component uses direct `fetch()` calls instead of the retry wrapper. When network requests fail (timeout, 500 error, etc.), users lose their work permanently.
@@ -60,11 +69,20 @@ The retry logic exists in `lib/api-client.ts` with exponential backoff, but it's
 
 ---
 
-### CRIT-002: Gallery Fails on Network Issues
+### CRIT-002: Gallery Fails on Network Issues ✅ FIXED
 
 **Risk**: 🔴 CRITICAL  
 **Impact**: 🚫 Feature Broken  
-**Effort**: Low (2-4 hours)
+**Effort**: Low (2-4 hours)  
+**Status**: ✅ **FIXED** (2026-02-02)  
+**Commit**: Pending
+
+#### Resolution Summary
+- Applied same retry progress pattern as CRIT-001
+- Added `onRetry` callback to `getWithRetry` call in Gallery page
+- Added retry progress tracking with state and useRef cleanup
+- Updated loading UI to show "Retrying... (1/3)" banner during retries
+- Users now see retry progress when gallery fails to load
 
 #### Description
 The gallery page uses direct `fetch()` calls instead of the retry wrapper. When network requests fail, the entire gallery fails to load instead of retrying.

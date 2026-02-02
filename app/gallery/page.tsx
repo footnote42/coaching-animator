@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
@@ -53,6 +53,15 @@ function GalleryContent() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const isMountedRef = useRef(true);
+
+  // Cleanup to prevent state updates after unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const currentUserId = authUser?.id ?? null;
   const [search, setSearch] = useState(searchParams.get('q') || '');
@@ -82,7 +91,15 @@ function GalleryContent() {
       params.set('offset', String(offset));
 
       const { ok, data, status, error: apiError } = await getWithRetry<{ animations: PublicAnimation[]; total: number }>(
-        `/api/gallery?${params}`
+        `/api/gallery?${params}`,
+        {
+          onRetry: (attempt, _max) => {
+            // Only update state if component is still mounted
+            if (isMountedRef.current) {
+              setRetryAttempt(attempt);
+            }
+          }
+        }
       );
 
       if (!ok) {
@@ -97,6 +114,10 @@ function GalleryContent() {
       setError(getFriendlyErrorMessage(err));
     } finally {
       setIsLoading(false);
+      // Reset retry attempt counter
+      if (isMountedRef.current) {
+        setRetryAttempt(0);
+      }
     }
   }, [search, type, sort, order, offset]);
 
@@ -263,7 +284,17 @@ function GalleryContent() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 pb-8">
         {isLoading ? (
-          <SkeletonGrid count={8} />
+          <>
+            {retryAttempt > 0 && (
+              <div className="text-center py-4 mb-4 bg-surface-warm border border-border">
+                <p className="text-sm text-text-primary flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Retrying... ({retryAttempt}/3)
+                </p>
+              </div>
+            )}
+            <SkeletonGrid count={8} />
+          </>
         ) : error ? (
           <div className="text-center py-20">
             <p className="text-red-600 mb-4">{error}</p>
