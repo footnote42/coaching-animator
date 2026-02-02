@@ -905,6 +905,47 @@ const checkPasswordStrength = (pwd: string): 'weak' | 'medium' | 'strong' => {
 - ✅ Works on mobile devices
 - ✅ Doesn't interfere with form submission
 
+### MED-006: Entity Color Palette Refinement
+
+**Risk**: 🟡 MEDIUM  
+**Impact**: 🎨 Polish  
+**Effort**: Low (2-4 hours)
+
+#### Description
+The current color palette for entities (ball, cones, markers) contains "dull" orange and brown shades that don't complement coaching diagrams. The cone color defaults to a shade of brown in some contexts, causing confusion.
+
+#### Current Behavior
+- Cones default to brown in some spawn contexts
+- Color palette includes dull orange and brown
+- Colors aren't optimized for visual clarity on a coaching diagram
+
+#### Expected Behavior
+- Sport-appropriate color choices for equipment
+- Clear, vibrant colors that complement coaching diagrams
+- Consistent default colors across all instantiation points
+
+#### Files to Modify
+- `src/constants/design-tokens.ts`
+- `src/App.tsx`
+- `src/components/Canvas/PlayerToken.tsx`
+
+#### Implementation Steps
+1. Refine `DESIGN_TOKENS.colours.neutral` palette with better choices
+2. Update `App.tsx` instantiation logic to use the correct yellow color for cones
+3. Ensure `PlayerToken.tsx` fallbacks align with the new palette
+
+#### Validation Steps
+1. Add a cone to the canvas
+2. Verify: Default color is yellow, not brown
+3. Check other entities (ball, tackle shields) for visual consistency
+4. Verify overall palette looks professional and sport-appropriate
+
+#### Success Criteria
+- ✅ Cones default to yellow consistently
+- ✅ Dull orange and brown shades removed or replaced
+- ✅ Palette complements coaching diagrams
+- ✅ Professional, high-visibility appearance
+
 ---
 
 ## Issue Statistics
@@ -913,10 +954,10 @@ const checkPasswordStrength = (pwd: string): 'weak' | 'medium' | 'strong' => {
 |----------|-------|--------------
 | 🔴 CRITICAL | 2 | 4-8 hours |
 | 🟠 HIGH | 5 | 8-13 days |
-| 🟡 MEDIUM | 5 | 5-8 days |
+| 🟡 MEDIUM | 6 | 5-9 days |
 | 🟢 LOW | 3 | 75-120 minutes |
 
-**Total**: 15 issues, estimated 14-22 days of work
+**Total**: 16 issues, estimated 14-23 days of work
 
 ---
 

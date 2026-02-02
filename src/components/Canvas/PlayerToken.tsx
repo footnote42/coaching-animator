@@ -92,15 +92,15 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
         // Fallback to type-based defaults
         switch (entity.type) {
             case 'ball':
-                return '#854D0E'; // Brown
+                return DESIGN_TOKENS.colours.neutral[1]; // Ball Brown
             case 'cone':
-                return '#e6ea0cff'; // Orange
+                return DESIGN_TOKENS.colours.neutral[2]; // Cone Yellow
             case 'marker':
                 return DESIGN_TOKENS.colours.primary; // Pitch green
             case 'tackle-shield':
-                return '#1E40AF'; // Deep blue
+                return DESIGN_TOKENS.colours.defense[0]; // Red/High vis
             case 'tackle-bag':
-                return '#7C3AED'; // Purple
+                return DESIGN_TOKENS.colours.attack[3]; // Purple/High vis
             case 'player':
                 // Use team-based default colors
                 const teamColors = {

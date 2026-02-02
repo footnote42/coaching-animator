@@ -191,7 +191,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: DESIGN_TOKENS.colours.neutral[0],
+            color: DESIGN_TOKENS.colours.neutral[1], // Ball Brown
             label: '',
         });
     };
@@ -202,7 +202,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: DESIGN_TOKENS.colours.neutral[1],
+            color: DESIGN_TOKENS.colours.neutral[2], // Cone Yellow
             label: '',
         });
     };
