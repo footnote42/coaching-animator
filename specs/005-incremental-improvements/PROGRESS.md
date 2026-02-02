@@ -3,15 +3,15 @@
 **Spec**: 005-incremental-improvements  
 **Start Date**: 2026-02-01  
 **Approach**: Incremental, pick-and-choose  
-**Total Issues**: 16 identified
+**Total Issues**: 17 identified
 
 ---
 
 ## Current Status
 
 **Active Issue**: None
-**Completed**: 6/16 (37%)
-**In Progress**: 0/16 (0%)
+**Completed**: 6/17 (35%)
+**In Progress**: 0/17 (0%)
 
 ---
 
@@ -29,12 +29,13 @@
 - [ ] HIGH-005: Individual Animation Sharing Broken
 - [x] MED-006: Entity Color Palette Refinement ✅ **FIXED** (2026-02-02, Commits: 8bd9a04, c20be2c)
 
-### 🟡 MEDIUM (6 issues)
+### 🟡 MEDIUM (7 issues)
 - [ ] MED-001: Replay Playback Performance Poor
 - [ ] MED-002: Replay Page Layout Lacks Polish
 - [ ] MED-003: Staging Environment Configuration Missing
 - [ ] MED-004: Editor Layout Needs Refinement
 - [ ] MED-005: Entity Labeling Needs Refinement
+- [ ] MED-007: Centralized Entity Color Management (Backlogged)
 
 ### 🟢 LOW (2 issues)
 - [x] LOW-001: Cone Visual Thickness ✅ **FIXED** (2026-02-02, Commit: 8bd9a04)

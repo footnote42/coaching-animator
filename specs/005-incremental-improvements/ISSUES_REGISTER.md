@@ -948,6 +948,84 @@ The current color palette for entities (ball, cones, markers) contains "dull" or
 
 ---
 
+### MED-007: Centralized Entity Color Management
+
+**Risk**: 🟡 MEDIUM  
+**Impact**: 🏗️ Architecture / 🛠️ Maintainability  
+**Effort**: Medium (1-2 days)  
+**Status**: 📋 **BACKLOGGED**  
+**Plan**: [Implementation Plan](file:///C:/Users/kenho/.gemini/antigravity/brain/41c48a9a-b3a0-4989-ac69-0dcd8dbb09ab/implementation_plan.md)
+
+#### Description
+While MED-006 fixed immediate color palette issues, a deeper architectural problem remains: **40+ hardcoded hex literals scattered across 10 files** create tight coupling and make future color changes difficult.
+
+Despite fixing `App.tsx` entity creation handlers, the browser still shows old colors due to:
+1. **Multiple instantiation points** with different defaults
+2. **Fallback logic** in `PlayerToken.tsx`, `EntityProperties.tsx` with hardcoded values
+3. **Migration logic** in `projectStore.ts` with `#ffffff` hardcoded
+4. **State persistence** in localStorage "locking in" old colors for existing entities
+
+#### Current Behavior
+- Color assignments scattered across multiple files
+- Hardcoded hex strings bypass `DESIGN_TOKENS`
+- Inconsistent fallback logic per component
+- Dev server HMR doesn't pick up changes to entity defaults
+- No single source of truth for entity colors
+
+#### Proposed Solution
+Create **centralized Entity Color Service** (`src/services/entityColors.ts`):
+
+```typescript
+export const EntityColors = {
+  getDefault(type: EntityType, team?: TeamType): string,
+  resolve(color: string | undefined, type, team): string
+}
+```
+
+**Benefits**:
+- Single source of truth for all entity color logic
+- Type-safe API leveraging existing `EntityType` enum
+- Easy testing and validation
+- Future-proof for user preferences, themes
+- Can add ESLint rule to prevent hardcoding regression
+
+#### Files to Audit/Modify
+**Critical coupling points**:
+- `src/App.tsx` - Entity creation handlers
+- `src/components/Canvas/PlayerToken.tsx` - Fallback colors in `getColor()`
+- `src/components/Sidebar/EntityProperties.tsx` - Color picker defaults
+- `src/store/projectStore.ts` - Migration fallback logic
+- `src/components/ui/ColorPicker.tsx` - Border colors
+
+**Total**: 40+ hardcoded hex values across 10 files
+
+#### Implementation Steps
+1. **Phase 1**: Create `src/services/entityColors.ts` with typed API
+2. **Phase 2**: Refactor `App.tsx`, `PlayerToken.tsx`, `EntityProperties.tsx`
+3. **Phase 3**: Clean up `projectStore.ts` migration logic
+4. **Phase 4**: Add documentation and optional ESLint rule
+
+#### Validation Steps
+1. Create new cone → verify yellow
+2. Create all entity types → verify colors match design tokens
+3. Clear localStorage, create entities → verify defaults persist correctly
+4. Run E2E tests for entity creation flows
+5. Verify no hardcoded hex values remain in entity logic
+
+#### Success Criteria
+- ✅ Single source of truth for entity colors
+- ✅ All hardcoded hex literals removed from entity logic
+- ✅ Type-safe API with JSDoc documentation
+- ✅ Entity defaults consistent across all instantiation points
+- ✅ Future changes require editing only one file
+
+#### Dependencies
+- Builds on MED-006 (Color Palette Refinement)
+- Blocked by: None
+- Blocks: Future theming/preference features
+
+---
+
 ## Issue Statistics
 
 | Priority | Count | Total Effort |
