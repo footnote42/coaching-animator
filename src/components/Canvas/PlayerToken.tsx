@@ -59,7 +59,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             case 'ball':
                 return 9;  // Was 12px, reduced 25%
             case 'cone':
-                return 11; // Was 15px, reduced ~27%
+                return 8; // Reduced from 11 to 8 for minimalist look (LOW-001)
             case 'marker':
                 return 7;  // Was 10px, reduced 30%
             case 'tackle-shield':
@@ -94,7 +94,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             case 'ball':
                 return '#854D0E'; // Brown
             case 'cone':
-                return '#EA580C'; // Orange
+                return '#e6ea0cff'; // Orange
             case 'marker':
                 return DESIGN_TOKENS.colours.primary; // Pitch green
             case 'tackle-shield':
@@ -217,7 +217,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     radius={radius}
                     fill="transparent"
                     stroke={color}
-                    strokeWidth={3}
+                    strokeWidth={7} // Increased from 3 to 7 for better visibility (LOW-001)
                     shadowEnabled={false}
                     opacity={opacity}
                 />
