@@ -11,6 +11,7 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [hasToken, setHasToken] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Check if we have access token in URL hash (from email link)
@@ -19,11 +20,14 @@ export default function ResetPasswordPage() {
     const refreshToken = hashParams.get('refresh_token');
 
     if (accessToken && refreshToken) {
+      setHasToken(true);
       const supabase = createSupabaseBrowserClient();
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
       });
+    } else {
+      setHasToken(false);
     }
   }, []);
 
@@ -61,6 +65,36 @@ export default function ResetPasswordPage() {
       router.push('/login');
     }, 2000);
   };
+
+  // Show friendly message if no token is present
+  if (hasToken === false) {
+    return (
+      <div>
+        <h2 className="text-xl font-semibold text-text-primary mb-2">Reset Link Required</h2>
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-700 text-sm">
+          <p className="font-medium mb-2">📧 Password reset link required</p>
+          <p>This page requires a password reset link from your email.</p>
+          <p className="mt-2">If you haven&apos;t requested a password reset yet, click the button below.</p>
+        </div>
+        <a
+          href="/forgot-password"
+          className="block w-full py-2 px-4 bg-primary text-text-inverse font-medium text-center hover:opacity-90 transition-opacity"
+        >
+          Request a New Reset Link
+        </a>
+        <div className="mt-6 text-center text-sm text-text-primary/70">
+          <a href="/login" className="text-primary hover:underline">
+            Back to sign in
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while checking for token
+  if (hasToken === null) {
+    return <div className="text-center text-text-primary/70">Loading...</div>;
+  }
 
   return (
     <div>

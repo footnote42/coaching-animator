@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    setSuccessMessage('Check your email for a password reset link.');
+    setSuccessMessage('Check your email for a password reset link. The link will expire in 1 hour.');
     setLoading(false);
   };
 
@@ -44,8 +44,12 @@ export default function ForgotPasswordPage() {
       )}
 
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm">
-          {successMessage}
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 text-sm">
+          <p className="font-medium mb-2">📧 Email sent!</p>
+          <p>{successMessage}</p>
+          <p className="mt-2 text-xs">
+            <strong>Tip:</strong> If you don&apos;t see the email, check your spam folder.
+          </p>
         </div>
       )}
 
