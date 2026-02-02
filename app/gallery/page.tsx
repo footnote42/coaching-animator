@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
 import { PublicAnimationCard } from '@/components/PublicAnimationCard';
 import { SkeletonGrid } from '@/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
@@ -190,8 +189,6 @@ function GalleryContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       {/* Page Header */}
       <header className="border-b border-border bg-primary text-text-inverse">
         <div className="max-w-7xl mx-auto px-4 py-8">

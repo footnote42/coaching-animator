@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpDown, Plus, Loader2, FolderOpen } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
 import { AnimationCard, AnimationSummary } from '@/components/AnimationCard';
 import { EditMetadataModal } from '@/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
@@ -143,8 +142,6 @@ export default function MyGalleryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       {/* Page Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">

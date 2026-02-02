@@ -1,5 +1,4 @@
 import { Play, Users, Share2, Download, Shield, Zap } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,8 +38,6 @@ const FEATURES = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       {/* Hero Section */}
       <section className="bg-primary text-text-inverse">
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">

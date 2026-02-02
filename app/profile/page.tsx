@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Navigation } from '@/components/Navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry } from '@/lib/api-client';
 
@@ -84,8 +83,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       <header className="bg-surface border-b border-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>

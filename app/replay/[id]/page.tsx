@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { Navigation } from '@/components/Navigation';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { ReplayViewer } from './ReplayViewer';
 
@@ -86,8 +85,6 @@ export default async function ReplayPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-warm)]">
-      <Navigation />
-
       {/* Animation Header */}
       <header className="border-b border-border bg-surface">
         <div className="max-w-5xl mx-auto px-4 py-4">
