@@ -1,3 +1,4 @@
+// Force reload: Color palette refinement
 import { useEffect, useState, useRef } from 'react';
 import Konva from 'konva';
 import { Stage } from './components/Canvas/Stage';
@@ -213,7 +214,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: '#1E40AF',
+            color: DESIGN_TOKENS.colours.defense[0], // Red/High vis
             label: '',
         });
     };
@@ -224,7 +225,7 @@ function Editor() {
             x: canvasWidth / 2,
             y: canvasHeight / 2,
             team: 'neutral',
-            color: '#7C3AED',
+            color: DESIGN_TOKENS.colours.attack[3], // Purple/High vis
             label: '',
         });
     };
