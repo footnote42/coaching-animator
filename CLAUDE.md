@@ -266,6 +266,12 @@ npm test -- --run        # Unit tests - catches logic errors
 - Client Components: `createBrowserClient()`
 - Middleware refreshes auth token
 - **Full implementation guide**: See [docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md)
+ 
+### Development Sync & Persistence
+- **State Lock-in**: Entities saved in `localStorage` or databases keep their original properties. Updating code defaults does *not* automatically update existing entities; a "Start Fresh" or manual property migration is required.
+- **Hardcoding Shadowing**: Always check for hardcoded hex strings in instantiation handlers (e.g., `App.tsx`) that might bypass `DESIGN_TOKENS`.
+- **Token Naming**: Maintain single source of truth for palette keys; avoid naming splits like `colors` vs `colours`.
+- **HMR Failures**: Root-level initialization logic (like store defaults) may not hot-reload. Force a server restart by trivial edits to `next.config.js` or `package.json` if the browser shows stale behavior.
 
 ## Constitutional Compliance
 
