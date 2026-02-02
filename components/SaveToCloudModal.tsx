@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Loader2, Cloud, AlertCircle } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { postWithRetry } from '@/lib/api-client';
 import { offlineQueue } from '@/lib/offline-queue';
-import { quickClientHealthCheck } from '@/lib/supabase/health-client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 interface SaveToCloudModalProps {
@@ -36,6 +35,15 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
   const [tags, setTags] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const isMountedRef = useRef(true);
+
+  // Cleanup to prevent state updates after unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +72,8 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
         payload,
       };
 
-      // Check health before attempting upload
-      const health = await quickClientHealthCheck();
-
-      // If we're offline or database is unreachable, queue it
-      if (!health.healthy || !navigator.onLine) {
+      // Quick synchronous check - if offline, queue immediately
+      if (!navigator.onLine) {
         const offlineId = offlineQueue.addItem({
           type: 'create',
           endpoint: '/api/animations',
@@ -80,7 +85,20 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
         return;
       }
 
-      const result = await postWithRetry<{ id: string }>('/api/animations', requestBody);
+      // Let postWithRetry handle the request with retries
+      // (removed async health check to allow retries to work)
+      const result = await postWithRetry<{ id: string }>(
+        '/api/animations',
+        requestBody,
+        {
+          onRetry: (attempt, _max) => {
+            // Only update state if component is still mounted
+            if (isMountedRef.current) {
+              setRetryAttempt(attempt);
+            }
+          }
+        }
+      );
 
       if (!result.ok || !result.data) {
         // If it was a network error (status 0) or server error (5xx), queue it
@@ -122,6 +140,10 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
       setError(getFriendlyErrorMessage(err));
     } finally {
       setIsSaving(false);
+      // Reset retry attempt counter
+      if (isMountedRef.current) {
+        setRetryAttempt(0);
+      }
     }
   };
 
@@ -284,7 +306,7 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
               {isSaving ? (
                 <span className="inline-flex items-center justify-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  {retryAttempt > 0 ? `Retrying... (${retryAttempt}/3)` : 'Saving...'}
                 </span>
               ) : (
                 <span className="inline-flex items-center justify-center gap-2">

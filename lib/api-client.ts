@@ -10,13 +10,15 @@ interface RetryOptions {
   baseDelayMs?: number;
   maxDelayMs?: number;
   retryOn?: number[];
+  onRetry?: (attempt: number, maxRetries: number) => void;
 }
 
-const DEFAULT_OPTIONS: Required<RetryOptions> = {
+const DEFAULT_OPTIONS: RetryOptions = {
   maxRetries: 3,
   baseDelayMs: 1000,
   maxDelayMs: 10000,
   retryOn: [408, 429, 500, 502, 503, 504], // Timeout, Rate limit, Server errors
+  onRetry: undefined,
 };
 
 /**
@@ -49,7 +51,13 @@ export async function fetchWithRetry(
   init?: RequestInit,
   retryOptions?: RetryOptions
 ): Promise<Response> {
-  const options = { ...DEFAULT_OPTIONS, ...retryOptions };
+  const options = {
+    maxRetries: retryOptions?.maxRetries ?? DEFAULT_OPTIONS.maxRetries!,
+    baseDelayMs: retryOptions?.baseDelayMs ?? DEFAULT_OPTIONS.baseDelayMs!,
+    maxDelayMs: retryOptions?.maxDelayMs ?? DEFAULT_OPTIONS.maxDelayMs!,
+    retryOn: retryOptions?.retryOn ?? DEFAULT_OPTIONS.retryOn!,
+    onRetry: retryOptions?.onRetry,
+  };
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= options.maxRetries; attempt++) {
@@ -62,6 +70,16 @@ export async function fetchWithRetry(
         console.warn(
           `[API] Request to ${url} failed with ${response.status}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${options.maxRetries})`
         );
+
+        // Notify callback of retry attempt (with error protection)
+        if (options.onRetry) {
+          try {
+            options.onRetry(attempt + 1, options.maxRetries);
+          } catch (callbackError) {
+            console.warn('[API] onRetry callback error:', callbackError);
+          }
+        }
+
         await sleep(delay);
         continue;
       }
@@ -76,6 +94,16 @@ export async function fetchWithRetry(
         console.warn(
           `[API] Network error for ${url}: ${lastError.message}, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${options.maxRetries})`
         );
+
+        // Notify callback of retry attempt (with error protection)
+        if (options.onRetry) {
+          try {
+            options.onRetry(attempt + 1, options.maxRetries);
+          } catch (callbackError) {
+            console.warn('[API] onRetry callback error:', callbackError);
+          }
+        }
+
         await sleep(delay);
         continue;
       }
