@@ -1,5 +1,3 @@
-import { Navigation } from '@/components/Navigation';
-
 export default function AuthLayout({
   children,
 }: {
@@ -7,7 +5,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation variant="simple" />
+      {/* Navigation inherited from root layout with full variant */}
       <div className="flex items-center justify-center p-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
