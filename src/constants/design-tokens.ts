@@ -13,15 +13,15 @@ export const DESIGN_TOKENS = {
         textInverse: '#F8F9FA',
         accentWarm: '#D97706',        // Warm amber accent
 
-        // Team colours - refined for better contrast on green pitch
-        attack: ['#3B82F6', '#22C55E', '#06B6D4', '#8B5CF6'],  // Blue, Green, Cyan, Purple
-        defense: ['#EF4444', '#F97316', '#FBBF24', '#EC4899'],  // Red, Orange, Amber, Pink
-        neutral: ['#FFFFFF', '#8B4513', '#FACC15', '#F97316'],  // White, Ball Brown, Cone Yellow, Vibrant Orange
+        // Team colours - refined for better contrast on green pitch (Standardized to vibrant sports tones)
+        attack: ['#2563EB', '#16A34A', '#0891B2', '#7C3AED'],  // Vibrant Blue, Green, Cyan, Purple
+        defense: ['#DC2626', '#EA580C', '#D97706', '#DB2777'], // Vibrant Red, Safety Orange, Amber, Pink
+        neutral: ['#FFFFFF', '#78350F', '#E6EA0C', '#FB923C'], // White, Deep Brown (Ball), High-Vis Yellow (Cone), Bright Orange
 
         // Annotation colour (tactical yellow - high visibility)
-        annotation: '#FACC15',
+        annotation: '#E6EA0C',
     },
-    // Backwards compatibility property (will remove after fixing refs)
+    // Backwards compatibility property
     colors: {
         primary: '#1A3D1A',
         background: '#F8F9FA',
@@ -31,10 +31,10 @@ export const DESIGN_TOKENS = {
         textPrimary: '#111827',
         textInverse: '#F8F9FA',
         accentWarm: '#D97706',
-        attack: ['#3B82F6', '#22C55E', '#06B6D4', '#8B5CF6'],
-        defense: ['#EF4444', '#F97316', '#FBBF24', '#EC4899'],
-        neutral: ['#FFFFFF', '#8B4513', '#FACC15', '#F97316'],
-        annotation: '#FACC15',
+        attack: ['#2563EB', '#16A34A', '#0891B2', '#7C3AED'],
+        defense: ['#DC2626', '#EA580C', '#D97706', '#DB2777'],
+        neutral: ['#FFFFFF', '#78350F', '#E6EA0C', '#FB923C'],
+        annotation: '#E6EA0C',
     },
     typography: {
         fontMono: "'JetBrains Mono', 'Fira Code', monospace",
