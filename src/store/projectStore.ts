@@ -19,6 +19,7 @@ import type { SharePayloadV1 } from '../types/share';
 import { DESIGN_TOKENS } from '../constants/design-tokens';
 import { VALIDATION } from '../constants/validation';
 import { validateHexColor, validateEntityLabel, validateProject } from '../utils/validation';
+import { EntityColors } from '../services/entityColors';
 
 export interface ProjectStoreState {
     project: Project | null;
@@ -163,8 +164,11 @@ export const useProjectStore = create<ProjectStoreState>()(
                         id: e.id,
                         type: e.type,
                         team: e.team === 'defence' ? 'defense' : e.team as TeamType,
-                        // Default values for missing fields
-                        color: e.team === 'attack' ? DESIGN_TOKENS.colours.attack[0] : (e.team === 'defence' ? DESIGN_TOKENS.colours.defense[0] : '#ffffff'),
+                        // Use EntityColors service for consistent default colors
+                        color: EntityColors.getDefault(
+                            e.type,
+                            e.team === 'defence' ? 'defense' : e.team as TeamType
+                        ),
                         label: '',
                         x: e.x,
                         y: e.y

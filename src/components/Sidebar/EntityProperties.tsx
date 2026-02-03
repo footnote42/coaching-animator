@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
+import { EntityColors } from '../../services/entityColors';
 
 export interface EntityPropertiesProps {
     /** Selected entity to edit */
@@ -103,7 +104,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
 
                 <ColorPicker
                     label="Colour"
-                    value={selectedAnnotation.color || '#FACC15'}
+                    value={selectedAnnotation.color || EntityColors.annotation}
                     onChange={(color) => updateAnnotation(selectedAnnotation.id, { color })}
                 />
             </div>
@@ -218,7 +219,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
             {/* Colour */}
             <ColorPicker
                 label="Colour"
-                value={entity.color || '#1A3D1A'}
+                value={EntityColors.resolve(entity.color, entity.type, entity.team)}
                 onChange={(color) => onUpdate({ color })}
             />
         </div>

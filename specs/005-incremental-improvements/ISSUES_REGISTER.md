@@ -325,6 +325,7 @@ Spec 004 claimed to implement tackle shields and tackle bags (T121-T126), but th
 - [app/(auth)/forgot-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/forgot-password/page.tsx) - Request reset page
 - [app/(auth)/reset-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/reset-password/page.tsx) - Set new password page
 | [LOW-001] | Fix Cone Visual Thickness | Polish | 🎨 Polish | ✅ FIXED | Cones were too thin. Increased strokeWidth to 7px, reduced radius to 8px, and changed color to yellow (#e6ea0cff) for high visibility. | [PlayerToken.tsx](file:///c:/Coding%20Projects/coaching-animator/src/components/Canvas/PlayerToken.tsx) | low001_cone_thickness_prompt.md.resolved |
+| [MED-007] | Centralized Entity Color Management | [Entity Color Service](file:///c:/Coding%20Projects/coaching-animator/src/services/entityColors.ts) | High | ✅ | 2026-02-03 | low001_cone_thickness_prompt.md.resolved |
 - [app/(auth)/login/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/login/page.tsx#L117-L119) - Has "Forgot password?" link
 
 **Features Verified**:
@@ -691,11 +692,11 @@ The editor layout (/app) feels cramped or unbalanced. Spacing, sizing, and propo
 6. Get user feedback
 
 #### Validation Steps
-1. Open editor
-2. Verify: Comfortable spacing
-3. Verify: Balanced layout
-4. Test on different screen sizes
-5. Get feedback from users
+11. Open editor
+12. Verify: Comfortable spacing
+13. Verify: Balanced layout
+14. Test on different screen sizes
+15. Get feedback from users
 
 #### Success Criteria
 - ✅ Layout feels comfortable
@@ -953,8 +954,7 @@ The current color palette for entities (ball, cones, markers) contains "dull" or
 **Risk**: 🟡 MEDIUM  
 **Impact**: 🏗️ Architecture / 🛠️ Maintainability  
 **Effort**: Medium (1-2 days)  
-**Status**: 📋 **BACKLOGGED**  
-**Plan**: [Implementation Plan](file:///C:/Users/kenho/.gemini/antigravity/brain/41c48a9a-b3a0-4989-ac69-0dcd8dbb09ab/implementation_plan.md)
+**Status**: ✅ **FIXED** (2026-02-03)
 
 #### Description
 While MED-006 fixed immediate color palette issues, a deeper architectural problem remains: **40+ hardcoded hex literals scattered across 10 files** create tight coupling and make future color changes difficult.

@@ -273,6 +273,15 @@ npm test -- --run        # Unit tests - catches logic errors
 - **Token Naming**: Maintain single source of truth for palette keys; avoid naming splits like `colors` vs `colours`.
 - **HMR Failures**: Root-level initialization logic (like store defaults) may not hot-reload. Force a server restart by trivial edits to `next.config.js` or `package.json` if the browser shows stale behavior.
 
+### Entity Color Service Pattern
+The `EntityColors` service (`src/services/entityColors.ts`) provides centralized entity color resolution:
+
+- **Dependency Rule**: `Entities → EntityColors → DESIGN_TOKENS` (never reverse)
+- **Usage**: Import `EntityColors` and use `getDefault(type, team?)` for defaults or `resolve(color, type, team?)` for fallback resolution
+- **Domain Assumptions**: Default colors are rugby coaching conventions, not UI constraints. Future themes/accessibility modes may extend the API.
+- **UI Separation**: UI component colors (e.g., ColorPicker borders) may differ from entity defaults intentionally. This is expected behavior.
+- **Empty Strings**: The service treats empty strings as "no color set" for backwards compatibility.
+
 ## Constitutional Compliance
 
 **Constitution Location**: `.specify/memory/constitution.md`
