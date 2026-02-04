@@ -126,6 +126,51 @@ tests/                       # Test files
     └── README.md            # Test documentation
 ```
 
+## Architecture: Next.js App Structure
+
+**Important**: This project migrated from Vite to Next.js. The editor is now served via Next.js App Router.
+
+### Active Files (Next.js)
+- **`app/app/page.tsx`** - `/app` route (animation editor page)
+- **`components/Editor.tsx`** - Main editor component with entity handlers
+- **`components/SaveToCloudModal.tsx`** - Cloud save dialog
+- **`components/OnboardingTutorial.tsx`** - Welcome tutorial
+- **`lib/contexts/UserContext.tsx`** - Auth state management
+
+### Core Animation Engine (`src/` directory)
+The `src/` directory contains the **reusable animation engine** (48 active files):
+- `src/components/Canvas/*` (11 files) - React-Konva rendering layers
+- `src/components/Sidebar/*` (6 files) - UI controls
+- `src/components/Timeline/*` (4 files) - Playback controls
+- `src/hooks/*` (8 files) - Custom React hooks
+- `src/store/*` (2 files) - Zustand state management
+- `src/services/*` (1 file) - Entity color service
+- `src/constants/*` (3 files) - Design tokens, validation
+- `src/types/*` (3 files) - TypeScript type definitions
+- `src/utils/*` (6 files) - File I/O, serialization, interpolation
+
+**⚠️ REMOVED**: `src/App.tsx` was deleted in cleanup (see ARCHITECTURE_CLEANUP_PLAN.md Option 2).
+**✅ ALWAYS EDIT `components/Editor.tsx`** - This is the active Next.js editor.
+
+### Entity Creation Handlers
+When adding/modifying entity creation logic:
+- ✅ **Edit**: `components/Editor.tsx` (handlers like `handleAddCone()`)
+- ❌ **Don't edit**: `src/App.tsx` (deleted during Vite cleanup)
+
+### File Mapping Quick Reference
+| Route | Page File | Main Component |
+|-------|-----------|----------------|
+| `/app` | `app/app/page.tsx` | `components/Editor.tsx` |
+| `/replay/[id]` | `app/replay/[id]/page.tsx` | `app/replay/[id]/ReplayViewer.tsx` |
+| `/gallery` | `app/gallery/page.tsx` | - |
+| `/my-gallery` | `app/my-gallery/page.tsx` | - |
+
+**Cleanup History (2026-02-04)**: Dead Vite code removed per Option 2 (V3 with deep-scan validation):
+- Deleted: `src/main.tsx`, `src/vite-env.d.ts`, `src/index.css`, `src/App.tsx`, `index.html` (756 lines + 1 file)
+- Verified: Zero `import.meta.env` usage, no global type dependencies, CSS files 100% identical
+- Active: `components/Editor.tsx` is the sole editor implementation
+- See: `specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md`
+
 ## Commands
 
 - `npm run dev` - Start Next.js development server (port 3000)

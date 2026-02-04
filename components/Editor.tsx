@@ -1,3 +1,18 @@
+/**
+ * Animation Editor - Main editor component for Next.js app
+ *
+ * This file is the SOLE editor implementation after the Vite → Next.js migration.
+ * src/App.tsx (legacy Vite editor) was deleted during cleanup (2026-02-04).
+ *
+ * All entity creation handlers are defined here:
+ * - handleAddCone() - Creates cone entities with default colors from EntityColors service
+ * - handleAddBall() - Creates ball entities
+ * - handleAddPlayer() - Creates player entities
+ * - handleAddTackleShield() - Creates tackle shield entities
+ * - handleAddTackleBag() - Creates tackle bag entities
+ *
+ * See specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md for cleanup history.
+ */
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
