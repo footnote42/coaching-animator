@@ -324,8 +324,6 @@ Spec 004 claimed to implement tackle shields and tackle bags (T121-T126), but th
 **Existing Files**:
 - [app/(auth)/forgot-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/forgot-password/page.tsx) - Request reset page
 - [app/(auth)/reset-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/reset-password/page.tsx) - Set new password page
-| [LOW-001] | Fix Cone Visual Thickness | Polish | 🎨 Polish | ✅ FIXED | Cones were too thin. Increased strokeWidth to 7px, reduced radius to 8px, and changed color to yellow (#e6ea0cff) for high visibility. | [PlayerToken.tsx](file:///c:/Coding%20Projects/coaching-animator/src/components/Canvas/PlayerToken.tsx) | low001_cone_thickness_prompt.md.resolved |
-| [MED-007] | Centralized Entity Color Management | [Entity Color Service](file:///c:/Coding%20Projects/coaching-animator/src/services/entityColors.ts) | High | ✅ | 2026-02-03 | low001_cone_thickness_prompt.md.resolved |
 - [app/(auth)/login/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/login/page.tsx#L117-L119) - Has "Forgot password?" link
 
 **Features Verified**:

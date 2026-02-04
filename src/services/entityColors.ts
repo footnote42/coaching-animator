@@ -11,7 +11,7 @@ const { neutral, attack, defense, primary, annotation } = DESIGN_TOKENS.colours;
  * extending getDefault() to accept additional context parameters.
  */
 const ENTITY_DEFAULTS = {
-    ball: neutral[1],           // Ball Brown
+    ball: neutral[0],           // Ball White (User Preference)
     cone: neutral[2],           // Cone Yellow
     marker: primary,            // Pitch green
     'tackle-shield': defense[0], // Red/High vis

@@ -314,7 +314,7 @@ npm test -- --run        # Unit tests - catches logic errors
  
 ### Development Sync & Persistence
 - **State Lock-in**: Entities saved in `localStorage` or databases keep their original properties. Updating code defaults does *not* automatically update existing entities; a "Start Fresh" or manual property migration is required.
-- **Hardcoding Shadowing**: Always check for hardcoded hex strings in instantiation handlers (e.g., `App.tsx`) that might bypass `DESIGN_TOKENS`.
+- **Hardcoding Shadowing**: ✅ **FIXED (2026-02-04)**. All hardcoded hex strings in instantiation handlers (`Editor.tsx`) and rendering layers (`PlayerToken.tsx`) have been replaced by the `EntityColors` service. Explicitly prohibit new hardcoded hex values in UI-to-entity logic.
 - **Token Naming**: Maintain single source of truth for palette keys; avoid naming splits like `colors` vs `colours`.
 - **HMR Failures**: Root-level initialization logic (like store defaults) may not hot-reload. Force a server restart by trivial edits to `next.config.js` or `package.json` if the browser shows stale behavior.
 
@@ -322,8 +322,9 @@ npm test -- --run        # Unit tests - catches logic errors
 The `EntityColors` service (`src/services/entityColors.ts`) provides centralized entity color resolution:
 
 - **Dependency Rule**: `Entities → EntityColors → DESIGN_TOKENS` (never reverse)
-- **Usage**: Import `EntityColors` and use `getDefault(type, team?)` for defaults or `resolve(color, type, team?)` for fallback resolution
-- **Domain Assumptions**: Default colors are rugby coaching conventions, not UI constraints. Future themes/accessibility modes may extend the API.
+- **Usage**: Import `EntityColors` and use `getDefault(type, team?)` for defaults or `resolve(color, type, team?)` for fallback resolution.
+- **Enforcement**: This service is the **mandatory** single source of truth. Creation handlers must not use `DESIGN_TOKENS` or hex literals directly.
+- **Domain Assumptions**: Default colors follow user preference: **Ball is White** (`neutral[0]`), **Cones are High-Vis Yellow** (`neutral[2]`).
 - **UI Separation**: UI component colors (e.g., ColorPicker borders) may differ from entity defaults intentionally. This is expected behavior.
 - **Empty Strings**: The service treats empty strings as "no color set" for backwards compatibility.
 

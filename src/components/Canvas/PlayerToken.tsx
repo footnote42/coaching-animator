@@ -5,6 +5,8 @@ import Konva from 'konva';
 import { Entity, EntityOrientation } from '../../types';
 import { DESIGN_TOKENS } from '../../constants/design-tokens';
 
+import { EntityColors } from '../../services/entityColors';
+
 /**
  * Props for the PlayerToken component
  */
@@ -85,34 +87,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
 
     // Determine color based on entity type and color property
     const getColor = (): string => {
-        // Use entity's color if specified
-        if (entity.color) {
-            return entity.color;
-        }
-
-        // Fallback to type-based defaults
-        switch (entity.type) {
-            case 'ball':
-                return DESIGN_TOKENS.colours.neutral[1]; // Ball Brown
-            case 'cone':
-                return DESIGN_TOKENS.colours.neutral[2]; // Cone Yellow
-            case 'marker':
-                return DESIGN_TOKENS.colours.primary; // Pitch green
-            case 'tackle-shield':
-                return DESIGN_TOKENS.colours.defense[0]; // Red/High vis
-            case 'tackle-bag':
-                return DESIGN_TOKENS.colours.attack[3]; // Purple/High vis
-            case 'player':
-                // Use team-based default colors
-                const teamColors = {
-                    attack: DESIGN_TOKENS.colours.attack[0],
-                    defense: DESIGN_TOKENS.colours.defense[0],
-                    neutral: DESIGN_TOKENS.colours.neutral[0]
-                };
-                return teamColors[entity.team] || DESIGN_TOKENS.colours.primary;
-            default:
-                return DESIGN_TOKENS.colours.primary;
-        }
+        return EntityColors.resolve(entity.color, entity.type, entity.team);
     };
 
     // Handle drag end with position clamping

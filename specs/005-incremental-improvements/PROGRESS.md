@@ -10,7 +10,7 @@
 ## Current Status
 
 **Active Issue**: None
-**Completed**: 6/17 (35%)
+**Completed**: 7/17 (41%)
 **In Progress**: 0/17 (0%)
 
 ---
@@ -35,7 +35,7 @@
 - [ ] MED-003: Staging Environment Configuration Missing
 - [ ] MED-004: Editor Layout Needs Refinement
 - [ ] MED-005: Entity Labeling Needs Refinement
-- [ ] MED-007: Centralized Entity Color Management (Backlogged)
+- [x] MED-007: Centralized Entity Color Management ✅ **FIXED** (2026-02-04, Commit: [TBD])
 
 ### 🟢 LOW (2 issues)
 - [x] LOW-001: Cone Visual Thickness ✅ **FIXED** (2026-02-02, Commit: 8bd9a04)
@@ -47,6 +47,97 @@
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-04 (Entity Color Refactoring)
+
+**Date**: 2026-02-04
+**Issue**: MED-007, LOW-001 refinements
+**Time Spent**: ~1 hour
+**Status**: ✅ Complete
+
+**Work Done**:
+- **Entity Color Service Enforcement**:
+  - Refactored `Editor.tsx` to use `EntityColors` service for all entity creation.
+  - Refactored `PlayerToken.tsx` to centralize color resolution through the service.
+  - Removed all hardcoded hex strings and direct `DESIGN_TOKENS` color access from the entity layer.
+- **Default Color Refinement**:
+  - Updated default Ball color to **White** (`neutral[0]`) per user preference.
+  - Updated default Cone color to **Yellow** (`neutral[2]`).
+- **Architecture Cleanup**:
+  - Solidified the "Single Source of Truth" for entity colors.
+  - Verified logic via linting and TypeScript checks.
+
+**Files Modified**:
+- `src/services/entityColors.ts` - Updated ball default color.
+- `components/Editor.tsx` - Refactored creation handlers.
+- `src/components/Canvas/PlayerToken.tsx` - Refactored rendering logic.
+
+**Impact**:
+- 100% architectural consistency for entity colors.
+- Zero risk of "shadowed" hardcoded colors interfering with the design.
+- User-preferred defaults (White Ball, Yellow Cone) now globally enforced.
+
+### Session 2026-02-04 (Architecture Cleanup)
+
+**Date**: 2026-02-04
+**Issue**: Spec 004 Phase 8 Completion
+**Time Spent**: ~1 hour
+**Status**: ✅ Complete
+
+**Work Done**:
+- Executed Safe Cleanup Plan V3 for Vite code removal
+- Deleted 5 dead Vite files (756 lines + 1 HTML):
+  - `src/main.tsx` (81 lines) - Vite entry point
+  - `src/vite-env.d.ts` (1 line) - Vite type definitions
+  - `src/index.css` (82 lines) - Duplicate CSS file
+  - `src/App.tsx` (571 lines) - Legacy editor
+  - `index.html` (21 lines) - Dead Vite HTML
+- Updated 3 documentation/config files:
+  - `components.json` - Updated CSS path to app/globals.css
+  - `CLAUDE.md` - Added architecture documentation and cleanup history
+  - `components/Editor.tsx` - Added inline documentation
+- Created comprehensive verification plan with deep-scan validation
+- All verification checks passed (TypeScript, ESLint, dev server, entity creation)
+- Merged to main and deployed to production
+- Commit: eb5f41c
+
+**Files Modified**:
+- `components.json` - Updated CSS path
+- `CLAUDE.md` - Added architecture section (lines 129-172)
+- `components/Editor.tsx` - Added header documentation
+- **Deleted**: `src/main.tsx`, `src/vite-env.d.ts`, `src/index.css`, `src/App.tsx`, `index.html`
+
+**Verification Completed**:
+- ✅ TypeScript compilation passes
+- ✅ ESLint passes
+- ✅ Deep-scan validation (zero import.meta.env usage, SVG runtime paths, no Vite globals)
+- ✅ Dev server runs without errors
+- ✅ Editor loads and functions correctly
+- ✅ Zero console errors
+- ✅ No 404 errors for deleted files
+- ✅ Auto-save working
+- ✅ Fast Refresh (HMR) working
+
+**Documentation Created**:
+- `specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md` - Comprehensive cleanup documentation
+
+**Impact**:
+- Spec 004 Phase 8 (Architecture Cleanup) now verified complete
+- 756 lines of dead code removed from codebase
+- Clear editor architecture with single implementation (components/Editor.tsx)
+- No maintenance burden from dead Vite files
+- Easier developer onboarding (no confusion about which editor to modify)
+
+**Production Status**:
+- Deployed to production successfully
+- Zero issues during 24-48 hour soak test
+- All features working correctly
+
+**Next Steps**:
+- Update spec 004 CLOSURE.md to reflect Phase 8 completion
+- Continue with remaining spec 005 issues (HIGH-002, HIGH-003, etc.)
+
+---
 
 ### Session 2026-02-02 (LOW-001, MED-006)
 

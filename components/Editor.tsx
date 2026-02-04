@@ -36,6 +36,7 @@ import { useUser } from '@/lib/contexts/UserContext';
 import { useProjectStore } from '@/store/projectStore';
 import { useUIStore } from '@/store/uiStore';
 import { DESIGN_TOKENS } from '@/constants/design-tokens';
+import { EntityColors } from '@/services/entityColors';
 import { VALIDATION } from '@/constants/validation';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/components/ui/EntityContextMenu';
@@ -200,7 +201,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'attack',
-      color: DESIGN_TOKENS.colours.attack[0],
+      color: EntityColors.getDefault('player', 'attack'),
       label: '',
     });
   };
@@ -211,7 +212,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'defense',
-      color: DESIGN_TOKENS.colours.defense[0],
+      color: EntityColors.getDefault('player', 'defense'),
       label: '',
     });
   };
@@ -222,7 +223,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: DESIGN_TOKENS.colours.neutral[0],
+      color: EntityColors.getDefault('ball'),
       label: '',
     });
   };
@@ -233,7 +234,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: DESIGN_TOKENS.colours.neutral[1],
+      color: EntityColors.getDefault('cone'),
       label: '',
     });
   };
@@ -244,7 +245,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: '#1E40AF',
+      color: EntityColors.getDefault('tackle-shield'),
       label: '',
     });
   };
@@ -255,7 +256,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'neutral',
-      color: '#7C3AED',
+      color: EntityColors.getDefault('tackle-bag'),
       label: '',
     });
   };
