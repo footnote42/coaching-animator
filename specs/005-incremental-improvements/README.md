@@ -105,25 +105,17 @@ We use the **CVSS-inspired** severity scale commonly used in software security a
 
 ### 🟡 MEDIUM Priority Issues (Annoying but Workable)
 
-#### MED-001: Replay Playback Performance Poor
+#### ~~MED-001: Replay Playback Performance Poor~~ ✅ FIXED
+- **Status**: ✅ **FIXED** (2026-02-05, Commit: 780a928)
 - **Risk**: 🟡 MEDIUM
 - **Impact**: 🐌 Performance
-- **Source**: Verification T103
-- **Plain English**: Replay uses `setTimeout` instead of `requestAnimationFrame`, making playback choppy and inefficient.
-- **User Impact**: Medium - Playback looks unprofessional
-- **Effort**: Low (2-3 hours) - Replace setTimeout with requestAnimationFrame
-- **Files**: `app/replay/[id]/ReplayViewer.tsx`
-- **Fix**: Use `requestAnimationFrame` for smooth 60fps playback
+- **Resolution**: Created store-free `useReplayAnimationLoop` hook with stable RAF lifecycle, entity interpolation, speed controls (0.5x/1x/2x), and loop toggle
 
-#### MED-002: Replay Page Layout Lacks Polish
+#### ~~MED-002: Replay Page Layout Lacks Polish~~ ✅ FIXED
+- **Status**: ✅ **FIXED** (2026-02-05, Commit: 780a928)
 - **Risk**: 🟡 MEDIUM
 - **Impact**: 🎨 Polish
-- **Source**: User observation
-- **Plain English**: The replay page doesn't have pitch markings and looks less polished than the editor. Animation playback isn't smooth.
-- **User Impact**: Medium - Looks unprofessional compared to editor
-- **Effort**: Medium (1 day) - Add pitch markings, improve layout
-- **Files**: `app/replay/[id]/ReplayViewer.tsx`, `app/replay/[id]/page.tsx`
-- **Fix**: Use same Field component as editor, improve styling
+- **Resolution**: Replaced inline rendering with editor's shared canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken). Pixel-identical entity rendering, all 6 entity types, sport-specific fields, arrow annotations with arrowheads
 
 #### MED-003: Staging Environment Configuration Missing
 - **Risk**: 🟡 MEDIUM
@@ -210,13 +202,13 @@ The following tasks were marked complete but need verification through browser t
 |----------|-------|--------|---------------------|
 | 🔴 CRITICAL | 2 | ✅ Complete | ~~Fix before any production deployment~~ |
 | 🟠 HIGH | 5 | 📋 Pending | Fix within 1-2 weeks |
-| 🟡 MEDIUM | 5 | 📋 Pending | Fix within 1-2 months |
+| 🟡 MEDIUM | 5 | ✅ 2 Complete, 📋 3 Pending | Fix within 1-2 months |
 | 🟢 LOW | 2 | 📋 Pending | Fix during slow periods |
 | ⚠️ Unverified | 16 | 📋 Pending | Test during normal usage |
 
-**Total Identified Issues**: 14  
-**Completed**: 2/14 (14%)  
-**Remaining**: 12 issues (plus 16 unverified)
+**Total Identified Issues**: 14
+**Completed**: 9/14 (64%)
+**Remaining**: 5 issues (plus 16 unverified)
 
 ---
 

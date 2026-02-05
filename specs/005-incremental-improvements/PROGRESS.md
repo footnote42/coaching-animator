@@ -10,7 +10,7 @@
 ## Current Status
 
 **Active Issue**: None
-**Completed**: 7/17 (41%)
+**Completed**: 9/17 (53%)
 **In Progress**: 0/17 (0%)
 
 ---
@@ -30,8 +30,8 @@
 - [x] MED-006: Entity Color Palette Refinement ✅ **FIXED** (2026-02-02, Commits: 8bd9a04, c20be2c)
 
 ### 🟡 MEDIUM (7 issues)
-- [ ] MED-001: Replay Playback Performance Poor
-- [ ] MED-002: Replay Page Layout Lacks Polish
+- [x] MED-001: Replay Playback Performance Poor ✅ **FIXED** (2026-02-05, Commit: 780a928)
+- [x] MED-002: Replay Page Layout Lacks Polish ✅ **FIXED** (2026-02-05, Commit: 780a928)
 - [ ] MED-003: Staging Environment Configuration Missing
 - [ ] MED-004: Editor Layout Needs Refinement
 - [ ] MED-005: Entity Labeling Needs Refinement
@@ -47,6 +47,62 @@
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-05 (Replay Viewer Overhaul)
+
+**Date**: 2026-02-05
+**Issues**: MED-001, MED-002
+**Status**: ✅ Complete
+
+**Work Done**:
+- **MED-001 (Choppy Playback)**:
+  - Investigated real root cause: RAF loop restarting every frame, no entity interpolation, race conditions
+  - Created `src/hooks/useReplayAnimationLoop.ts` — store-free animation hook using refs for stable RAF lifecycle
+  - Smooth entity interpolation via `PlaybackPosition` (entities glide between frames)
+  - Added playback speed controls (0.5x, 1x, 2x) and loop toggle
+  - Created `ReplayCanvas` internal component to isolate ~60fps re-renders from controls
+- **MED-002 (Visual Polish)**:
+  - Replaced ReplayViewer's inline rendering with editor's shared canvas components
+  - Reused: Stage, Field, EntityLayer, AnnotationLayer, PlayerToken (all verified store-free)
+  - Fixed entity sizes, shapes, colors to match editor exactly
+  - Added support for tackle-shield and tackle-bag entity types
+  - Arrow annotations with arrowheads and frame visibility filtering
+  - Dynamic sport-specific field loading from payload
+  - Removed duplicate description block from page layout
+  - Tightened page container from max-w-5xl to max-w-4xl
+- **Backward Compatibility**:
+  - Created `normalizeReplayPayload()` for centralised compat handling
+  - Handles unknown sports, NaN coordinates, missing annotation frame IDs, missing entity fields
+- **Testing**:
+  - 3 defensive render tests (valid, degraded, empty payloads) — all pass
+  - Created `vitest.config.ts` with custom alias resolution matching tsconfig dual `@/*` paths
+  - ESLint: 0 warnings/errors, TypeScript: 0 errors
+  - Next.js build passes, bundle: 180 kB First Load (comparable to editor's 176 kB)
+- **Documentation**:
+  - Added "Shared Canvas Components" note to CLAUDE.md
+- **Commit**: 780a928
+
+**Files Modified**:
+- `src/hooks/useReplayAnimationLoop.ts` (NEW) — ~80 lines, store-free RAF hook
+- `app/replay/[id]/ReplayViewer.tsx` (REWRITE) — ~340 lines, shared components + normalisation
+- `app/replay/[id]/__tests__/ReplayViewer.test.tsx` (NEW) — 3 defensive render tests
+- `app/replay/[id]/page.tsx` (EDIT) — removed duplicate description, tightened layout
+- `vitest.config.ts` (NEW) — alias resolution + test exclusions
+- `CLAUDE.md` (EDIT) — shared canvas components documentation
+
+**Impact**:
+- Replay viewer now renders identically to the editor (pixel-identical entities)
+- Smooth 60fps playback with entity interpolation (no more snapping)
+- All 6 entity types supported (player, ball, cone, marker, tackle-shield, tackle-bag)
+- Speed and loop controls for better replay experience
+- Single source of truth for entity rendering (editor and replay share components)
+
+**Next Steps**:
+- Visual acceptance testing on production with real animations
+- Browser testing (Chrome, Firefox, Safari)
+- Consider remaining HIGH priority issues (HIGH-002, HIGH-003, HIGH-005)
+
+---
 
 ### Session 2026-02-04 (Entity Color Refactoring)
 
@@ -407,6 +463,16 @@
 **Completed**: 2026-02-02
 **Commits**: 8bd9a04, c20be2c
 **Impact**: Refined the entire equipment palette for professional coaching visual quality. Removed hardcoded hex values and synced the design token system.
+
+### ✅ MED-001: Replay Playback Performance Poor
+**Completed**: 2026-02-05
+**Commit**: 780a928
+**Impact**: Smooth 60fps entity interpolation replaces choppy frame-snapping. Store-free `useReplayAnimationLoop` hook with stable RAF lifecycle. Speed controls (0.5x/1x/2x) and loop toggle added.
+
+### ✅ MED-002: Replay Page Layout Lacks Polish
+**Completed**: 2026-02-05
+**Commit**: 780a928
+**Impact**: Replay viewer now reuses editor's shared canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken) for pixel-identical rendering. All 6 entity types supported. Sport-specific fields, arrow annotations with arrowheads, and EntityColors service for correct colors. Centralised `normalizeReplayPayload()` for backward compatibility.
 
 ---
 

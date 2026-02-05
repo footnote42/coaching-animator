@@ -36,8 +36,8 @@ Spec 005 is a **backlog of 14 issues** discovered during verification of spec 00
 
 ### 🟡 MEDIUM (Annoying but Workable) - 5 issues
 
-**MED-001**: Replay uses setTimeout instead of requestAnimationFrame → **Choppy playback**  
-**MED-002**: Replay page lacks pitch markings → **Looks unprofessional**  
+~~**MED-001**: Replay uses setTimeout instead of requestAnimationFrame → **Choppy playback**~~ ✅ FIXED
+~~**MED-002**: Replay page lacks pitch markings → **Looks unprofessional**~~ ✅ FIXED  
 **MED-003**: No .env.staging file → **Can't deploy to staging**  
 **MED-004**: Editor layout needs refinement → **Feels cramped**  
 **MED-005**: Entity labeling could be clearer → **Slightly confusing**

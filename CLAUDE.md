@@ -175,6 +175,20 @@ When modifying these, test both `/app` (editor) and `/replay/[id]` (replay):
 | `/gallery` | `app/gallery/page.tsx` | - |
 | `/my-gallery` | `app/my-gallery/page.tsx` | - |
 
+### Sharing & Replay Feature
+
+Animations are shared via read-only replay links at `/replay/[id]`:
+
+1. **Create** animation in editor (`/app`)
+2. **Save to Cloud** (requires authentication)
+3. **Publish** with `public` or `link-shared` visibility (from My Gallery or editor)
+4. **Share** the `/replay/[id]` URL — anyone can view without authentication
+
+The replay viewer (`app/replay/[id]/ReplayViewer.tsx`) reuses the editor's canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken) for pixel-identical rendering. It includes:
+- `normalizeReplayPayload()` — backward compatibility for older database payloads
+- `useReplayAnimationLoop` hook — store-free RAF animation with entity interpolation
+- Playback controls: play/pause, prev/next, speed (0.5x/1x/2x), loop toggle
+
 **Cleanup History (2026-02-04)**: Dead Vite code removed per Option 2 (V3 with deep-scan validation):
 - Deleted: `src/main.tsx`, `src/vite-env.d.ts`, `src/index.css`, `src/App.tsx`, `index.html` (756 lines + 1 file)
 - Verified: Zero `import.meta.env` usage, no global type dependencies, CSS files 100% identical
@@ -254,6 +268,7 @@ npm test -- --run        # Unit tests - catches logic errors
 
 ## Recent Changes
 
+- **Replay Viewer Overhauled (2026-02-05)**: MED-001 + MED-002 fixed. ReplayViewer rewritten to reuse editor's shared canvas components for pixel-identical rendering. Store-free `useReplayAnimationLoop` hook replaces buggy RAF loop with smooth entity interpolation. Speed controls (0.5x/1x/2x) and loop toggle added. Centralised `normalizeReplayPayload()` for backward compatibility. 3 defensive render tests. See `specs/005-incremental-improvements/PROGRESS.md`.
 - **005-incremental-improvements Created (2026-02-01)**: New spec with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
 - **004-post-launch-improvements Verified (2026-02-01)**: Systematic verification found actual completion at 50-60%, not claimed 100%. Critical failures: retry logic exists but not used, navigation not integrated, tackle equipment missing, GIF export missing. See `specs/004-post-launch-improvements/VERIFICATION.md`.
 - **Profile Bugs Fixed (2026-02-01)**: Resolved display name persistence and animation count issues. Root cause: missing `max_animations` column in database schema. Added migration, comprehensive E2E tests, and troubleshooting documentation.

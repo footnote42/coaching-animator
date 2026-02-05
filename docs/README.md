@@ -114,9 +114,9 @@ Reference guides for debugging production issues:
 
 ### Current Iteration
 
-- **Spec Folder**: `specs/004-post-launch-improvements/`
-- **Status**: In progress (Phase 13 - Production Deployment)
-- **Tasks Completed**: 111/111 (95% of total project)
+- **Spec Folder**: `specs/005-incremental-improvements/`
+- **Status**: In progress (9/14 issues resolved)
+- **Previous Spec**: `specs/004-post-launch-improvements/` (Phase 13 - Production Deployment)
 
 ### Historical Specifications
 
@@ -263,6 +263,49 @@ See [API Contracts](architecture/api-contracts.md) for full specifications.
 - Find API endpoints → [API Contracts](architecture/api-contracts.md)
 - Understand database structure → [Database Schema](architecture/database-schema.md)
 - Know what features are Tier 1 vs Tier 2 → [Constitution](../.specify/memory/constitution.md)
+- Understand sharing/replay → See "Sharing & Replay Feature" below
+
+---
+
+## Sharing & Replay Feature
+
+Animations can be shared via read-only replay links. This is how it works end-to-end:
+
+### How Users Share Animations
+
+1. **Create**: User creates an animation in the editor at `/app`
+2. **Save to Cloud**: User saves to cloud via "Save to Cloud" modal (requires authentication)
+3. **Publish**: User sets visibility to `public` or `link-shared` (from My Gallery or editor)
+4. **Share**: Animation is accessible at `/replay/[id]` — a read-only replay page
+
+### Replay Viewer Architecture
+
+The replay page (`/replay/[id]`) renders animations using **shared canvas components** from the editor:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `Stage` | `src/components/Canvas/Stage.tsx` | Konva Stage wrapper |
+| `Field` | `src/components/Canvas/Field.tsx` | Sport-specific pitch SVG |
+| `EntityLayer` | `src/components/Canvas/EntityLayer.tsx` | Entity rendering + interpolation |
+| `AnnotationLayer` | `src/components/Canvas/AnnotationLayer.tsx` | Arrow/Line annotations |
+| `PlayerToken` | `src/components/Canvas/PlayerToken.tsx` | Individual entity shapes |
+| `useReplayAnimationLoop` | `src/hooks/useReplayAnimationLoop.ts` | Store-free RAF animation |
+
+The `ReplayViewer` (`app/replay/[id]/ReplayViewer.tsx`) orchestrates these components with:
+- **`normalizeReplayPayload()`** — backward compatibility for older database payloads
+- **`ReplayCanvas`** — internal component isolating 60fps renders from controls
+- **Playback controls** — play/pause, prev/next frame, speed (0.5x/1x/2x), loop toggle
+
+### Key API Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/animations/[id]` | Fetch animation payload (public/link-shared) |
+| `POST /api/share` | Generate shareable link |
+
+### When Modifying Shared Components
+
+These canvas components are shared between the editor (`/app`) and replay (`/replay/[id]`). When modifying them, test both routes. See [CLAUDE.md](../CLAUDE.md) "Shared Canvas Components" section.
 
 ---
 
