@@ -11,13 +11,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
-  const { data: animation } = await supabase
+  // 1. Check saved_animations
+  let { data: animation } = await supabase
     .from('saved_animations')
     .select('title, description, animation_type')
     .eq('id', id)
     .is('hidden_at', null)
     .in('visibility', ['public', 'link_shared'])
     .single();
+
+  // 2. Check shares
+  if (!animation) {
+    const { data: share } = await supabase
+      .from('shares')
+      .select('payload')
+      .eq('id', id)
+      .single();
+
+    if (share) {
+      return {
+        title: 'Shared Animation | Coaching Animator',
+        description: 'View this tactic shared via Coaching Animator.',
+        openGraph: {
+          title: 'Shared Animation',
+          description: 'View this tactic shared via Coaching Animator.',
+          type: 'website'
+        }
+      };
+    }
+  }
 
   if (!animation) {
     return {
@@ -40,7 +62,8 @@ export default async function ReplayPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
-  const { data: animation, error } = await supabase
+  // 1. Try to find in saved_animations (Logged-in User Saves)
+  let { data: animation } = await supabase
     .from('saved_animations')
     .select(`
       id,
@@ -62,9 +85,49 @@ export default async function ReplayPage({ params }: PageProps) {
     .in('visibility', ['public', 'link_shared'])
     .single();
 
-  // Fetch author display name separately
+  // 2. If not found, try shares (Anonymous Links)
+  let isShare = false;
+
+  if (!animation) {
+    const { data: share, error: shareError } = await supabase
+      .from('shares')
+      .select('id, payload, created_at')
+      .eq('id', id)
+      .single();
+
+    if (share && !shareError) {
+      isShare = true;
+      // Construct a pseudo-animation object from the share data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sharePayload = share.payload as any;
+
+      animation = {
+        id: share.id,
+        title: sharePayload.name || 'Shared Animation', // V1 doesn't have name, hydratePayload provides default
+        description: 'A shared animation link',
+        animation_type: 'tactic',
+        tags: [],
+        payload: share.payload,
+        duration_ms: 0, // Calculated on client
+        frame_count: sharePayload.frames?.length || 0,
+        visibility: 'link_shared',
+        upvote_count: 0,
+        view_count: 0,
+        created_at: share.created_at,
+        user_id: null // Anonymous
+      };
+
+      // Update access time (fire and forget)
+      await supabase
+        .from('shares')
+        .update({ last_accessed_at: new Date().toISOString() })
+        .eq('id', id);
+    }
+  }
+
+  // Fetch author display name separately (only if it's a real user save)
   let authorDisplayName: string | null = null;
-  if (animation?.user_id) {
+  if (!isShare && animation?.user_id) {
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('display_name')
@@ -73,15 +136,17 @@ export default async function ReplayPage({ params }: PageProps) {
     authorDisplayName = profile?.display_name ?? null;
   }
 
-  if (error || !animation) {
+  if (!animation) {
     notFound();
   }
 
-  // Increment view count
-  await supabase
-    .from('saved_animations')
-    .update({ view_count: (animation.view_count || 0) + 1 })
-    .eq('id', id);
+  // Increment view count (only for saved animations, shares track access time instead)
+  if (!isShare) {
+    await supabase
+      .from('saved_animations')
+      .update({ view_count: (animation.view_count || 0) + 1 })
+      .eq('id', id);
+  }
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-warm)]">

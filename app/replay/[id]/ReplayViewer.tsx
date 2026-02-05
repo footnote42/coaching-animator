@@ -8,6 +8,8 @@ import { Field } from '@/components/Canvas/Field';
 import { EntityLayer } from '@/components/Canvas/EntityLayer';
 import { AnnotationLayer } from '@/components/Canvas/AnnotationLayer';
 import { useReplayAnimationLoop } from '@/hooks/useReplayAnimationLoop';
+import { hydrateSharePayload } from '@/utils/hydratePayload';
+import type { SharePayloadV1 } from '@/types/share';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -18,7 +20,7 @@ interface ReplayPayload {
   name: string;
   sport: SportType;
   frames: Frame[];
-  settings: { pitchLayout?: PitchLayout; [key: string]: unknown };
+  settings: { pitchLayout?: PitchLayout;[key: string]: unknown };
 }
 
 interface ReplayViewerProps {
@@ -38,17 +40,35 @@ const VALID_SPORTS: readonly string[] = [
 
 /**
  * Normalise a raw database payload into a typed ReplayPayload.
- *
- * Handles all backward compatibility in one pass:
- * - Sport validation against the SportType union (fallback: rugby-union)
- * - NaN/Infinity entity coordinates clamped to 0
- * - Missing parentId/orientation normalised to undefined
- * - Missing annotation startFrameId/endFrameId default to first/last frame
- * - Empty frames/entities/annotations get safe defaults
  */
 function normalizeReplayPayload(raw: unknown): ReplayPayload {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const payload = (raw ?? {}) as Record<string, any>;
+  let payload = (raw ?? {}) as Record<string, any>;
+
+  // DETECT V1/V2 SHARE PAYLOAD
+  // SharePayloadV1 uses 'frames[].updates' instead of 'frames[].entities'
+  const isSharePayload = Array.isArray(payload.frames) &&
+    payload.frames.length > 0 &&
+    payload.frames[0].updates !== undefined;
+
+  if (isSharePayload) {
+    console.log('[ReplayViewer] Detected SharePayload, hydrating...');
+    try {
+      const project = hydrateSharePayload(payload as SharePayloadV1);
+      // Transform hydrated project back into ReplayPayload shape
+      // ReplayPayload is essentially Project properties
+      return {
+        version: project.version,
+        name: project.name,
+        sport: project.sport,
+        frames: project.frames,
+        settings: { ...project.settings }
+      };
+    } catch (err) {
+      console.error('[ReplayViewer] Hydration failed:', err);
+      // Fallthrough to standard normalization (which will likely result in empty/broken but safe render)
+    }
+  }
 
   const sport: SportType = VALID_SPORTS.includes(payload.sport as string)
     ? (payload.sport as SportType)
@@ -155,8 +175,8 @@ function ReplayCanvas({
         <AnnotationLayer
           annotations={currentFrame?.annotations ?? []}
           selectedAnnotationId={null}
-          onAnnotationSelect={() => {}}
-          onContextMenu={() => {}}
+          onAnnotationSelect={() => { }}
+          onContextMenu={() => { }}
           interactive={false}
           currentFrameId={currentFrame?.id ?? ''}
           frameIds={frameIds}
@@ -164,10 +184,10 @@ function ReplayCanvas({
         <EntityLayer
           entities={entities}
           selectedEntityId={null}
-          onEntitySelect={() => {}}
-          onEntityMove={() => {}}
-          onEntityDoubleClick={() => {}}
-          onEntityContextMenu={() => {}}
+          onEntitySelect={() => { }}
+          onEntityMove={() => { }}
+          onEntityDoubleClick={() => { }}
+          onEntityContextMenu={() => { }}
           interactive={false}
           playbackPosition={playbackPosition}
           frames={frames}
@@ -290,11 +310,10 @@ export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
             <button
               key={speed}
               onClick={() => setPlaybackSpeed(speed)}
-              className={`px-2 py-1 text-xs border transition-colors ${
-                playbackSpeed === speed
-                  ? 'bg-primary text-text-inverse border-primary'
-                  : 'border-border hover:border-primary'
-              }`}
+              className={`px-2 py-1 text-xs border transition-colors ${playbackSpeed === speed
+                ? 'bg-primary text-text-inverse border-primary'
+                : 'border-border hover:border-primary'
+                }`}
             >
               {speed}x
             </button>
@@ -304,11 +323,10 @@ export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
         {/* Loop toggle */}
         <button
           onClick={() => setLoopPlayback((prev) => !prev)}
-          className={`p-2 border transition-colors ${
-            loopPlayback
-              ? 'bg-primary text-text-inverse border-primary'
-              : 'border-border hover:bg-surface-warm'
-          }`}
+          className={`p-2 border transition-colors ${loopPlayback
+            ? 'bg-primary text-text-inverse border-primary'
+            : 'border-border hover:bg-surface-warm'
+            }`}
           title={loopPlayback ? 'Loop: On' : 'Loop: Off'}
         >
           <Repeat className="w-5 h-5" />
@@ -324,11 +342,10 @@ export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
               setCurrentFrameIndex(index);
               setIsPlaying(false);
             }}
-            className={`w-8 h-8 flex-shrink-0 border transition-colors ${
-              index === currentFrameIndex
-                ? 'bg-primary text-text-inverse border-primary'
-                : 'bg-surface border-border hover:border-primary'
-            }`}
+            className={`w-8 h-8 flex-shrink-0 border transition-colors ${index === currentFrameIndex
+              ? 'bg-primary text-text-inverse border-primary'
+              : 'bg-surface border-border hover:border-primary'
+              }`}
           >
             {index + 1}
           </button>

@@ -48,7 +48,11 @@
       "Bash(set BASE_URL=https://coaching-animator.vercel.app)",
       "Bash(npx playwright test:*)",
       "Bash(git merge:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx next build)",
+      "Bash(git diff:*)"
     ]
   }
 }

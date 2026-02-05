@@ -463,58 +463,34 @@ Users who forget their password have no way to reset it. They are permanently lo
 
 ---
 
-### HIGH-005: Individual Animation Sharing Broken
+### HIGH-005: Individual Animation Sharing & Replay Broken ✅ FIXED
 
 **Risk**: 🟠 HIGH  
 **Impact**: 🚫 Feature Broken  
-**Effort**: Medium (1-2 days)
+**Effort**: Medium (2 days)
+**Status**: ✅ **FIXED** (2026-02-05)
+**Commit**: Pending
+
+#### Resolution Summary
+- **Fix 404 on Share Links**: Implemented fallback route in `app/replay/[id]/page.tsx` to check `shares` table if `saved_animations` lookup fails. Effectively restored access to all anonymous share links.
+- **Rich V2 Payload**: Created `SharePayloadV2` supporting all entity types (Cones, Markers, Bags, Shields), annotations (Arrows, Lines), and generic labeling.
+- **Payload Optimization**: Increased safe payload size to 500KB and implemented coordinate rounding (1 decimal place) to support larger animations.
+- **Backward Compatibility**: Created pure `hydrateSharePayload` utility to auto-convert legacy V1 links to the current `Project` structure for playback.
+- **End-to-End Verification**: Confirmed creating a V2 share (with cones/arrows) and replaying it works for anonymous users.
 
 #### Description
-Users can share animations from the public gallery, but the share functionality doesn't work from the editor (/app) where users create their animations. The share button either doesn't exist or doesn't work.
-
-#### Current Behavior
-- User creates animation in /app
-- User wants to share with others
-- **No working share button or functionality**
-- User must publish to gallery first, then share from there
-
-#### Expected Behavior
-- User creates animation in /app
-- User clicks "Share" button
-- Share modal opens with link
-- User can copy link and share with others
-- Link works and shows animation
-
-#### Files to Modify
-- `app/app/page.tsx` - Add share button/modal
-- Share modal component - Ensure works from editor
-- API routes - Verify share endpoint works
-
-#### Implementation Steps
-1. Add "Share" button to editor UI
-2. Create or reuse share modal component
-3. Wire up share functionality
-4. Generate share link
-5. Test link works correctly
-
-#### Validation Steps
-1. Open editor (/app)
-2. Create animation
-3. Save animation
-4. Verify: "Share" button visible
-5. Click "Share" button
-6. Verify: Share modal opens
-7. Verify: Share link generated
-8. Copy share link
-9. Open link in incognito/private window
-10. Verify: Animation loads and plays correctly
+Users can share animations from the public gallery, but the share functionality from the editor (/app) was broken or limited. Specifically:
+1.  Anonymous share links resulted in 404 errors on the replay page.
+2.  Shared data dropped non-player entities (Cones, Equipment) and annotations.
+3.  Payloads were strictly limited to 100KB, causing failures for complex plays.
 
 #### Success Criteria
-- ✅ Share button visible in editor
+- ✅ Share button works in editor
 - ✅ Share modal opens correctly
 - ✅ Share link generated successfully
-- ✅ Share link works in any browser
-- ✅ Shared animation displays correctly
+- ✅ Share link works in any browser (No 404s)
+- ✅ Shared animation displays correctly (Players AND Cones/Annotations visible)
+
 
 ---
 

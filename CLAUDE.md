@@ -147,7 +147,7 @@ The `src/` directory contains the **reusable animation engine** (48 active files
 - `src/services/*` (1 file) - Entity color service
 - `src/constants/*` (3 files) - Design tokens, validation
 - `src/types/*` (3 files) - TypeScript type definitions
-- `src/utils/*` (6 files) - File I/O, serialization, interpolation
+- `src/utils/*` (7 files) - File I/O, serialization, V1/V2 hydration, interpolation
 
 **⚠️ REMOVED**: `src/App.tsx` was deleted in cleanup (see ARCHITECTURE_CLEANUP_PLAN.md Option 2).
 **✅ ALWAYS EDIT `components/Editor.tsx`** - This is the active Next.js editor.

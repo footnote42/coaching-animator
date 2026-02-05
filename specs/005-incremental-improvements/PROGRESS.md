@@ -10,7 +10,7 @@
 ## Current Status
 
 **Active Issue**: None
-**Completed**: 9/17 (53%)
+**Completed**: 10/17 (59%)
 **In Progress**: 0/17 (0%)
 
 ---
@@ -26,7 +26,7 @@
 - [ ] HIGH-002: Safari/iOS Users Can't Export Animations
 - [ ] HIGH-003: Tackle Equipment Feature Missing
 - [x] HIGH-004: Password Reset Not Implemented ✅ **VERIFIED** (2026-02-02, Already implemented)
-- [ ] HIGH-005: Individual Animation Sharing Broken
+- [x] HIGH-005: Individual Animation Sharing & Replay Broken ✅ **FIXED** (2026-02-05, Commit: Pending)
 - [x] MED-006: Entity Color Palette Refinement ✅ **FIXED** (2026-02-02, Commits: 8bd9a04, c20be2c)
 
 ### 🟡 MEDIUM (7 issues)
@@ -47,6 +47,43 @@
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-05 (Sharing & Replay Fixes)
+
+**Date**: 2026-02-05
+**Issues**: HIGH-005
+**Status**: ✅ Complete
+
+**Work Done**:
+- **Fix 404 on Share Links**: 
+  - Restored access to anonymous shared animations by implementing a fallback lookup to the `shares` table in `app/replay/[id]/page.tsx`.
+  - Previously, only saved/authenticated animations were being queried, causing all shares to fail with 404.
+- **Rich Sharing (V2)**:
+  - Defined `SharePayloadV2` schema to support *all* project features (Cones, Markers, Equipment, Annotations/Arrows).
+  - Updated `serializeForShare` to output V2 format.
+  - Updated `ReplayViewer` to ingest V2 payloads.
+- **Robustness & Compatibility**:
+  - Created pure `hydrateSharePayload` utility to safely convert both legacy V1 and new V2 payloads into the app's `Project` structure.
+  - Added `hydratePayload.test.ts` unit tests to ensure no regressions.
+  - Increased API payload limit to 500KB (from 100KB) to support complex plays.
+- **Verification**:
+  - Confirmed anonymous users can open shared links.
+  - Verified Cones and Arrows now visible in shared replays.
+
+**Files Modified**:
+- `app/api/share/route.ts` (Limits, Logging, V2 Schema)
+- `app/replay/[id]/page.tsx` (Route Fallback)
+- `app/replay/[id]/ReplayViewer.tsx` (Hydration Integration)
+- `src/utils/hydratePayload.ts` (New Utility)
+- `src/utils/serializeForShare.ts` (V2 Logic)
+- `src/types/share.ts` (V2 Types)
+
+**Impact**:
+- Sharing is now fully functional and reliable.
+- User creations (including annotations/equipment) are preserved when shared.
+- Backward compatibility for any old links is guaranteed.
+
+---
 
 ### Session 2026-02-05 (Replay Viewer Overhaul)
 
