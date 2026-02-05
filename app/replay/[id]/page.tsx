@@ -87,7 +87,7 @@ export default async function ReplayPage({ params }: PageProps) {
     <div className="min-h-screen bg-[var(--color-surface-warm)]">
       {/* Animation Header */}
       <header className="border-b border-border bg-surface">
-        <div className="max-w-5xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-2xl font-heading font-bold text-text-primary">
             {animation.title}
           </h1>
@@ -105,9 +105,6 @@ export default async function ReplayPage({ params }: PageProps) {
             <span>•</span>
             <span>{animation.upvote_count} upvotes</span>
           </div>
-          {animation.description && (
-            <p className="mt-3 text-text-primary/80">{animation.description}</p>
-          )}
           {animation.tags && animation.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {animation.tags.map((tag: string) => (
@@ -124,13 +121,13 @@ export default async function ReplayPage({ params }: PageProps) {
       </header>
 
       {/* Replay Viewer */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-8">
         <ReplayViewer payload={animation.payload} />
       </main>
 
       {/* Footer */}
       <footer className="border-t border-border bg-surface-warm">
-        <div className="max-w-5xl mx-auto px-4 py-6 text-center">
+        <div className="max-w-4xl mx-auto px-4 py-6 text-center">
           <p className="text-sm text-text-primary/70">
             Created with{' '}
             <a href="/" className="text-primary hover:underline">

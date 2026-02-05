@@ -1,85 +1,205 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Stage, Layer, Image as KonvaImage, Group, Circle, Ellipse, Text, Line } from 'react-konva';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat } from 'lucide-react';
+import type { Frame, SportType, PitchLayout, PlaybackPosition } from '@/types';
+import { Stage } from '@/components/Canvas/Stage';
+import { Field } from '@/components/Canvas/Field';
+import { EntityLayer } from '@/components/Canvas/EntityLayer';
+import { AnnotationLayer } from '@/components/Canvas/AnnotationLayer';
+import { useReplayAnimationLoop } from '@/hooks/useReplayAnimationLoop';
 
-interface Frame {
-  id: string;
-  duration?: number;
-  entities: Record<string, Entity>;
-  annotations?: Annotation[];
-}
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
-interface Entity {
-  id: string;
-  type: 'player' | 'ball' | 'cone' | 'marker';
-  x: number;
-  y: number;
-  team: 'attack' | 'defense' | 'neutral';
-  color: string;
-  label?: string;
-}
-
-interface Annotation {
-  id: string;
-  type: 'arrow' | 'line';
-  points: number[];
-  color: string;
-}
-
-interface Payload {
+interface ReplayPayload {
   version: string;
   name: string;
-  sport: string;
+  sport: SportType;
   frames: Frame[];
-  settings: Record<string, unknown>;
+  settings: { pitchLayout?: PitchLayout; [key: string]: unknown };
 }
 
 interface ReplayViewerProps {
-  payload: Payload;
+  payload: unknown;
 }
 
-const DESIGN_TOKENS = {
-  colours: {
-    primary: '#1A3D1A',
-    textInverse: '#F8F9FA',
-    attack: ['#2563EB', '#10B981', '#06B6D4', '#8B5CF6'],
-    defense: ['#DC2626', '#EA580C', '#F59E0B', '#EF4444'],
-    neutral: ['#FFFFFF', '#8B4513', '#FFD700', '#FF6B35'],
-  }
-};
+// ---------------------------------------------------------------------------
+// Payload normalisation (single source of backward-compat fixes)
+// ---------------------------------------------------------------------------
+
+const VALID_SPORTS: readonly string[] = [
+  'rugby-union',
+  'rugby-league',
+  'soccer',
+  'american-football',
+];
+
+/**
+ * Normalise a raw database payload into a typed ReplayPayload.
+ *
+ * Handles all backward compatibility in one pass:
+ * - Sport validation against the SportType union (fallback: rugby-union)
+ * - NaN/Infinity entity coordinates clamped to 0
+ * - Missing parentId/orientation normalised to undefined
+ * - Missing annotation startFrameId/endFrameId default to first/last frame
+ * - Empty frames/entities/annotations get safe defaults
+ */
+function normalizeReplayPayload(raw: unknown): ReplayPayload {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const payload = (raw ?? {}) as Record<string, any>;
+
+  const sport: SportType = VALID_SPORTS.includes(payload.sport as string)
+    ? (payload.sport as SportType)
+    : 'rugby-union';
+
+  const rawFrames = Array.isArray(payload.frames) ? payload.frames : [];
+  const frameIds: string[] = rawFrames.map((f: { id?: string }) => f.id ?? '');
+
+  const normalizedFrames: Frame[] = rawFrames.map(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (frame: any) => ({
+      ...frame,
+      entities: Object.fromEntries(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Object.entries(frame.entities ?? {}).map(([id, entity]: [string, any]) => [
+          id,
+          {
+            ...entity,
+            x: Number.isFinite(entity.x) ? entity.x : 0,
+            y: Number.isFinite(entity.y) ? entity.y : 0,
+            parentId: entity.parentId || undefined,
+            orientation: entity.orientation || undefined,
+          },
+        ]),
+      ),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      annotations: (frame.annotations ?? []).map((a: any) => ({
+        ...a,
+        startFrameId: a.startFrameId || frameIds[0] || frame.id,
+        endFrameId: a.endFrameId || frameIds[frameIds.length - 1] || frame.id,
+      })),
+    }),
+  );
+
+  return {
+    version: String(payload.version || '1.0.0'),
+    name: String(payload.name || 'Untitled'),
+    sport,
+    frames: normalizedFrames,
+    settings: (payload.settings as ReplayPayload['settings']) || {},
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Canvas dimensions
+// ---------------------------------------------------------------------------
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-export function ReplayViewer({ payload }: ReplayViewerProps) {
+// ---------------------------------------------------------------------------
+// ReplayCanvas — owns playbackPosition, isolates 60fps re-renders
+// ---------------------------------------------------------------------------
+
+interface ReplayCanvasProps {
+  frames: Frame[];
+  currentFrameIndex: number;
+  isPlaying: boolean;
+  playbackSpeed: number;
+  loopPlayback: boolean;
+  sport: SportType;
+  pitchLayout?: PitchLayout;
+  onFrameAdvance: (nextIndex: number) => void;
+  onPlaybackComplete: () => void;
+}
+
+function ReplayCanvas({
+  frames,
+  currentFrameIndex,
+  isPlaying,
+  playbackSpeed,
+  loopPlayback,
+  sport,
+  pitchLayout,
+  onFrameAdvance,
+  onPlaybackComplete,
+}: ReplayCanvasProps) {
+  const [playbackPosition, setPlaybackPosition] = useState<PlaybackPosition | null>(null);
+
+  useReplayAnimationLoop({
+    frames,
+    currentFrameIndex,
+    isPlaying,
+    playbackSpeed,
+    loopPlayback,
+    onFrameAdvance,
+    onPlaybackComplete,
+    onPlaybackPositionUpdate: setPlaybackPosition,
+  });
+
+  const currentFrame = frames[currentFrameIndex];
+  const entities = currentFrame ? Object.values(currentFrame.entities) : [];
+  const frameIds = useMemo(() => frames.map((f) => f.id), [frames]);
+
+  return (
+    <div className="w-full max-w-[800px] aspect-[4/3] border border-border bg-white overflow-hidden">
+      <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
+        <Field
+          sport={sport}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          layout={pitchLayout}
+        />
+        <AnnotationLayer
+          annotations={currentFrame?.annotations ?? []}
+          selectedAnnotationId={null}
+          onAnnotationSelect={() => {}}
+          onContextMenu={() => {}}
+          interactive={false}
+          currentFrameId={currentFrame?.id ?? ''}
+          frameIds={frameIds}
+        />
+        <EntityLayer
+          entities={entities}
+          selectedEntityId={null}
+          onEntitySelect={() => {}}
+          onEntityMove={() => {}}
+          onEntityDoubleClick={() => {}}
+          onEntityContextMenu={() => {}}
+          interactive={false}
+          playbackPosition={playbackPosition}
+          frames={frames}
+        />
+      </Stage>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ReplayViewer — orchestrator (low-frequency re-renders)
+// ---------------------------------------------------------------------------
+
+export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
+  const payload = useMemo(() => normalizeReplayPayload(rawPayload), [rawPayload]);
+  const frames = payload.frames;
+
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [fieldImage, setFieldImage] = useState<HTMLImageElement | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const lastFrameTimeRef = useRef<number>(0);
-
-  // Load field SVG
-  useEffect(() => {
-    const img = new window.Image();
-    img.src = '/assets/fields/rugby-union.svg';
-    img.onload = () => setFieldImage(img);
-    img.onerror = () => console.error('Failed to load field image');
-  }, []);
-
-  const frames = payload?.frames || [];
-  const currentFrame = frames[currentFrameIndex];
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [loopPlayback, setLoopPlayback] = useState(false);
 
   const nextFrame = useCallback(() => {
     setCurrentFrameIndex((prev) => {
       if (prev >= frames.length - 1) {
+        if (loopPlayback) return 0;
         setIsPlaying(false);
         return prev;
       }
       return prev + 1;
     });
-  }, [frames.length]);
+  }, [frames.length, loopPlayback]);
 
   const prevFrame = useCallback(() => {
     setCurrentFrameIndex((prev) => Math.max(0, prev - 1));
@@ -97,37 +217,6 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
     setIsPlaying((prev) => !prev);
   }, [currentFrameIndex, frames.length]);
 
-  // Use requestAnimationFrame for smooth playback
-  useEffect(() => {
-    if (!isPlaying || !currentFrame) return;
-
-    const duration = currentFrame.duration || 1000;
-
-    const animate = (timestamp: number) => {
-      if (!lastFrameTimeRef.current) {
-        lastFrameTimeRef.current = timestamp;
-      }
-
-      const elapsed = timestamp - lastFrameTimeRef.current;
-
-      if (elapsed >= duration) {
-        lastFrameTimeRef.current = timestamp;
-        nextFrame();
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      lastFrameTimeRef.current = 0;
-    };
-  }, [isPlaying, currentFrame, nextFrame]);
-
   if (!frames.length) {
     return (
       <div className="text-center py-20 text-text-primary/70">
@@ -136,120 +225,20 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
     );
   }
 
-  const entities = currentFrame ? Object.values(currentFrame.entities || {}) : [];
-  const annotations = currentFrame?.annotations || [];
-
-  // Get entity color matching editor logic
-  const getEntityColor = (entity: Entity): string => {
-    if (entity.color) return entity.color;
-
-    switch (entity.type) {
-      case 'ball':
-        return '#854D0E';
-      case 'cone':
-        return '#EA580C';
-      case 'marker':
-        return DESIGN_TOKENS.colours.primary;
-      case 'player':
-        const teamColors = {
-          attack: DESIGN_TOKENS.colours.attack[0],
-          defense: DESIGN_TOKENS.colours.defense[0],
-          neutral: DESIGN_TOKENS.colours.neutral[0]
-        };
-        return teamColors[entity.team] || DESIGN_TOKENS.colours.primary;
-      default:
-        return DESIGN_TOKENS.colours.primary;
-    }
-  };
-
-  // Get entity radius matching editor logic
-  const getEntityRadius = (type: Entity['type']): number => {
-    switch (type) {
-      case 'player': return 20;
-      case 'ball': return 12;
-      case 'cone': return 15;
-      case 'marker': return 10;
-      default: return 20;
-    }
-  };
-
   return (
     <div className="flex flex-col items-center">
-      {/* Canvas using react-konva to match editor */}
-      <div className="w-full max-w-[800px] aspect-[4/3] border border-border overflow-hidden">
-        <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
-          {/* Field background layer */}
-          <Layer listening={false}>
-            {fieldImage && (
-              <KonvaImage
-                image={fieldImage}
-                width={CANVAS_WIDTH}
-                height={CANVAS_HEIGHT}
-                listening={false}
-              />
-            )}
-          </Layer>
-
-          {/* Annotations layer */}
-          <Layer listening={false}>
-            {annotations.map((annotation) => {
-              if (annotation.points.length < 4) return null;
-              return (
-                <Line
-                  key={annotation.id}
-                  points={annotation.points}
-                  stroke={annotation.color}
-                  strokeWidth={2}
-                  lineCap="round"
-                  lineJoin="round"
-                />
-              );
-            })}
-          </Layer>
-
-          {/* Entities layer */}
-          <Layer>
-            {entities.map((entity) => {
-              const color = getEntityColor(entity);
-              const radius = getEntityRadius(entity.type);
-
-              return (
-                <Group key={entity.id} x={entity.x} y={entity.y}>
-                  {entity.type === 'ball' ? (
-                    <Ellipse
-                      radiusX={18}
-                      radiusY={12}
-                      fill={color}
-                      stroke="#1A3D1A"
-                      strokeWidth={1}
-                    />
-                  ) : (
-                    <Circle
-                      radius={radius}
-                      fill={color}
-                    />
-                  )}
-                  {entity.type === 'player' && entity.label && (
-                    <Text
-                      text={entity.label}
-                      fontSize={14}
-                      fontFamily="Inter, system-ui, sans-serif"
-                      fill={DESIGN_TOKENS.colours.textInverse}
-                      align="center"
-                      verticalAlign="middle"
-                      width={radius * 2}
-                      height={radius * 2}
-                      offsetX={radius}
-                      offsetY={radius}
-                      listening={false}
-                    />
-                  )}
-                </Group>
-              );
-            })}
-          </Layer>
-        </Stage>
-      </div>
+      {/* Canvas — 60fps re-renders isolated here */}
+      <ReplayCanvas
+        frames={frames}
+        currentFrameIndex={currentFrameIndex}
+        isPlaying={isPlaying}
+        playbackSpeed={playbackSpeed}
+        loopPlayback={loopPlayback}
+        sport={payload.sport}
+        pitchLayout={payload.settings?.pitchLayout}
+        onFrameAdvance={setCurrentFrameIndex}
+        onPlaybackComplete={() => setIsPlaying(false)}
+      />
 
       {/* Controls */}
       <div className="mt-4 flex items-center gap-4">
@@ -275,12 +264,16 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
           className="p-3 bg-primary text-text-inverse hover:bg-primary/90 transition-colors"
           title={isPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+          {isPlaying ? (
+            <Pause className="w-6 h-6" />
+          ) : (
+            <Play className="w-6 h-6" />
+          )}
         </button>
 
         <button
           onClick={nextFrame}
-          disabled={currentFrameIndex >= frames.length - 1}
+          disabled={currentFrameIndex >= frames.length - 1 && !loopPlayback}
           className="p-2 border border-border hover:bg-surface-warm transition-colors disabled:opacity-50"
           title="Next frame"
         >
@@ -290,6 +283,36 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
         <span className="text-sm text-text-primary/70 ml-2">
           Frame {currentFrameIndex + 1} / {frames.length}
         </span>
+
+        {/* Speed controls */}
+        <div className="flex items-center gap-1 ml-4">
+          {[0.5, 1, 2].map((speed) => (
+            <button
+              key={speed}
+              onClick={() => setPlaybackSpeed(speed)}
+              className={`px-2 py-1 text-xs border transition-colors ${
+                playbackSpeed === speed
+                  ? 'bg-primary text-text-inverse border-primary'
+                  : 'border-border hover:border-primary'
+              }`}
+            >
+              {speed}x
+            </button>
+          ))}
+        </div>
+
+        {/* Loop toggle */}
+        <button
+          onClick={() => setLoopPlayback((prev) => !prev)}
+          className={`p-2 border transition-colors ${
+            loopPlayback
+              ? 'bg-primary text-text-inverse border-primary'
+              : 'border-border hover:bg-surface-warm'
+          }`}
+          title={loopPlayback ? 'Loop: On' : 'Loop: Off'}
+        >
+          <Repeat className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Frame strip */}
@@ -301,10 +324,11 @@ export function ReplayViewer({ payload }: ReplayViewerProps) {
               setCurrentFrameIndex(index);
               setIsPlaying(false);
             }}
-            className={`w-8 h-8 flex-shrink-0 border transition-colors ${index === currentFrameIndex
+            className={`w-8 h-8 flex-shrink-0 border transition-colors ${
+              index === currentFrameIndex
                 ? 'bg-primary text-text-inverse border-primary'
                 : 'bg-surface border-border hover:border-primary'
-              }`}
+            }`}
           >
             {index + 1}
           </button>

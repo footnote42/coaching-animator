@@ -157,6 +157,16 @@ When adding/modifying entity creation logic:
 - ✅ **Edit**: `components/Editor.tsx` (handlers like `handleAddCone()`)
 - ❌ **Don't edit**: `src/App.tsx` (deleted during Vite cleanup)
 
+### Shared Canvas Components
+The following components are shared between Editor and ReplayViewer.
+When modifying these, test both `/app` (editor) and `/replay/[id]` (replay):
+
+- `src/components/Canvas/Stage.tsx`
+- `src/components/Canvas/Field.tsx`
+- `src/components/Canvas/PlayerToken.tsx`
+- `src/components/Canvas/EntityLayer.tsx`
+- `src/components/Canvas/AnnotationLayer.tsx`
+
 ### File Mapping Quick Reference
 | Route | Page File | Main Component |
 |-------|-----------|----------------|
