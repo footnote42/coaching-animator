@@ -43,7 +43,7 @@ const VALID_SPORTS: readonly string[] = [
  */
 function normalizeReplayPayload(raw: unknown): ReplayPayload {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let payload = (raw ?? {}) as Record<string, any>;
+  const payload = (raw ?? {}) as Record<string, any>;
 
   // DETECT V1/V2 SHARE PAYLOAD
   // SharePayloadV1 uses 'frames[].updates' instead of 'frames[].entities'

@@ -1,5 +1,5 @@
-import { SharePayload, SharePayloadV2 } from '@/types/share';
-import { Entity, Frame, TeamType, Project, EntityType, PitchLayout, SportType } from '@/types';
+import { SharePayload, SharePayloadV1, SharePayloadV2 } from '@/types/share';
+import { Entity, Frame, TeamType, Project, EntityType, PitchLayout, SportType, EntityOrientation, AnnotationType } from '@/types';
 import { EntityColors } from '@/services/entityColors';
 
 /**
@@ -16,24 +16,26 @@ export function hydrateSharePayload(payload: SharePayload): Project {
     const currentEntities: Record<string, Entity> = {};
 
     // Helper to safely resolve team/color
-    const resolveEntityProps = (e: any) => {
+    type RawEntity = SharePayloadV1['entities'][0] | SharePayloadV2['entities'][0];
+    const resolveEntityProps = (e: RawEntity) => {
         const type = e.type as EntityType;
         // Handle V1 'defence' vs 'defense' typo if present
-        let team = e.team === 'defence' ? 'defense' : (e.team as TeamType);
+        const rawTeam = e.team as string | undefined;
+        let team: TeamType = rawTeam === 'defence' ? 'defense' : (rawTeam as TeamType);
 
         // If team is undefined (e.g. equipment in V2), default to neutral
         if (!team) team = 'neutral';
 
         // V2 might provide color/label, V1 does not
-        const color = e.color || EntityColors.getDefault(type, team);
-        const label = e.label || '';
+        const color = ('color' in e && e.color) ? e.color : EntityColors.getDefault(type, team);
+        const label = ('label' in e && e.label) ? e.label : '';
 
         return { type, team, color, label };
     };
 
     // Initialize entities from payload (base state)
     if (payload.entities) {
-        payload.entities.forEach(e => {
+        (payload.entities as RawEntity[]).forEach(e => {
             const props = resolveEntityProps(e);
             currentEntities[e.id] = {
                 id: e.id,
@@ -44,7 +46,7 @@ export function hydrateSharePayload(payload: SharePayload): Project {
                 x: e.x,
                 y: e.y,
                 parentId: undefined, // Setup below if needed
-                orientation: (e as any).orientation || undefined
+                orientation: ('orientation' in e && e.orientation) ? e.orientation as EntityOrientation : undefined
             };
         });
     }
@@ -75,21 +77,21 @@ export function hydrateSharePayload(payload: SharePayload): Project {
         });
 
         // Handle Annotations (V2 only)
-        const annotations = isV2 && (frameData as any).annotations
-            ? ((frameData as any).annotations as any[]).map(a => ({
+        const annotations = isV2 && 'annotations' in frameData && Array.isArray(frameData.annotations)
+            ? (frameData as SharePayloadV2['frames'][0]).annotations?.map(a => ({
                 id: a.id || crypto.randomUUID(),
-                type: a.type,
+                type: a.type as AnnotationType,
                 points: a.points,
                 color: a.color,
-                startFrameId: a.startFrameId || '', // Will need fixing if strictly required
-                endFrameId: a.endFrameId || ''
-            }))
+                startFrameId: '', // Will be fixed below
+                endFrameId: ''
+            })) || []
             : [];
 
         const frameId = crypto.randomUUID();
 
         // Fix annotation frame IDs if missing
-        annotations.forEach((a: any) => {
+        annotations.forEach((a) => {
             if (!a.startFrameId) a.startFrameId = frameId;
             if (!a.endFrameId) a.endFrameId = frameId;
         });

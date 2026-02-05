@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = await createSupabaseServerClient();
 
   // 1. Check saved_animations
-  let { data: animation } = await supabase
+  const { data: animation } = await supabase
     .from('saved_animations')
     .select('title, description, animation_type')
     .eq('id', id)

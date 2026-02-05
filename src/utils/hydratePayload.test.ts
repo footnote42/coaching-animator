@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { hydrateSharePayload } from './hydratePayload';
-import { SharePayloadV1 } from '@/types/share';
+import { SharePayloadV1, SharePayloadV2 } from '@/types/share';
 
 describe('hydrateSharePayload', () => {
     // V1 Payload fixture based on real production data
@@ -80,7 +80,7 @@ describe('hydrateSharePayload', () => {
     });
 
     it('should hydrate a valid V2 payload with annotations', () => {
-        const v2Payload: any = {
+        const v2Payload: SharePayloadV2 = {
             version: 2,
             sport: 'soccer',
             name: 'V2 Test',
