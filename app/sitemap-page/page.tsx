@@ -40,17 +40,9 @@ const siteStructure: RouteNode[] = [
     {
         path: '/gallery',
         name: 'Public Gallery',
-        description: 'Browse all published animations from the community',
+        description: 'Browse all published animations from the community (links to /replay/[id])',
         auth: 'public',
-        status: 'working',
-        children: [
-            {
-                path: '/gallery/[id]',
-                name: 'Animation Detail',
-                description: 'View specific animation, upvote, report, remix',
-                auth: 'public'
-            }
-        ]
+        status: 'working'
     },
     {
         path: '/my-gallery',

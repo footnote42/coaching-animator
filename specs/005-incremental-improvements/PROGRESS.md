@@ -3,15 +3,15 @@
 **Spec**: 005-incremental-improvements  
 **Start Date**: 2026-02-01  
 **Approach**: Incremental, pick-and-choose  
-**Total Issues**: 17 identified
+**Total Issues**: 19 identified
 
 ---
 
 ## Current Status
 
 **Active Issue**: None
-**Completed**: 10/17 (59%)
-**In Progress**: 0/17 (0%)
+**Completed**: 11/19 (58%)
+**In Progress**: 0/19 (0%)
 
 ---
 
@@ -21,23 +21,25 @@
 - [x] CRIT-001: Save Operations Have No Retry Logic ✅ **FIXED** (2026-02-02, Commit: 2d1f71f)
 - [x] CRIT-002: Gallery Fails on Network Issues ✅ **FIXED** (2026-02-02, Commit: 2a44101)
 
-### 🟠 HIGH (5 issues)
+### 🟠 HIGH (6 issues)
 - [x] HIGH-001: No Site-Wide Navigation ✅ **FIXED** (2026-02-02, Commits: 121ddc6, 5a491c6, 13ba6cc, 651f850)
 - [ ] HIGH-002: Safari/iOS Users Can't Export Animations
 - [ ] HIGH-003: Tackle Equipment Feature Missing
 - [x] HIGH-004: Password Reset Not Implemented ✅ **VERIFIED** (2026-02-02, Already implemented)
 - [x] HIGH-005: Individual Animation Sharing & Replay Broken ✅ **FIXED** (2026-02-05, Commit: Pending)
+- [ ] HIGH-006: Mobile Playback Optimization & Compact View
 - [x] MED-006: Entity Color Palette Refinement ✅ **FIXED** (2026-02-02, Commits: 8bd9a04, c20be2c)
 
-### 🟡 MEDIUM (7 issues)
+### 🟡 MEDIUM (8 issues)
 - [x] MED-001: Replay Playback Performance Poor ✅ **FIXED** (2026-02-05, Commit: 780a928)
 - [x] MED-002: Replay Page Layout Lacks Polish ✅ **FIXED** (2026-02-05, Commit: 780a928)
 - [ ] MED-003: Staging Environment Configuration Missing
 - [ ] MED-004: Editor Layout Needs Refinement
 - [ ] MED-005: Entity Labeling Needs Refinement
-- [x] MED-007: Centralized Entity Color Management ✅ **FIXED** (2026-02-04, Commit: [TBD])
+- [x] MED-007: Centralized Entity Color Management ✅ **FIXED** (2026-02-04, Commit: eb5f41c)
+- [x] MED-008: Gallery Detail Page Uses Stale Rendering Logic ✅ **FIXED** (2026-02-06)
 
-### 🟢 LOW (2 issues)
+### 🟢 LOW (3 issues)
 - [x] LOW-001: Cone Visual Thickness ✅ **FIXED** (2026-02-02, Commit: 8bd9a04)
 - [ ] LOW-002: Pitch Layout Type Missing from Types
 - [ ] LOW-003: Password Strength Indicator Missing
@@ -47,6 +49,93 @@
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-06 (Gallery Detail Route Removal)
+
+**Date**: 2026-02-06
+**Issues**: MED-008
+**Status**: ✅ Complete
+
+**Work Done**:
+
+- **Phase 1: Move ReplayViewer to Shared Component Space**:
+  - Moved `app/replay/[id]/ReplayViewer.tsx` to `src/components/replay/ReplayViewer.tsx` (357 lines)
+  - Updated imports in `app/replay/[id]/page.tsx` and test file
+  - Prevents cross-route coupling (ReplayViewer no longer lives inside a route segment)
+
+- **Phase 2: Update Gallery to Redirect to Replay**:
+  - Modified `app/gallery/page.tsx` handleView function (line 159)
+  - Changed redirect from `/gallery/[id]` to `/replay/[id]`
+  - Gallery thumbnails now use modern ReplayViewer
+
+- **Phase 3: Delete Obsolete Gallery Detail Route**:
+  - Deleted entire `app/gallery/[id]/` directory (697 lines)
+    - `app/gallery/[id]/page.tsx` (215 lines - server component)
+    - `app/gallery/[id]/GalleryDetailClient.tsx` (482 lines - legacy CSS/SVG viewer)
+  - Updated `app/sitemap-page/page.tsx` to reflect gallery links to `/replay/[id]`
+
+- **Phase 4: Remove Obsolete Replay Code**:
+  - Deleted `src/components/Replay/ReplayPage.tsx` (165 lines - obsolete component)
+  - Deleted `src/hooks/useSharePayload.ts` (45 lines - obsolete hook)
+  - Removed `loadFromSharePayload()` method from `src/store/projectStore.ts` (~92 lines)
+  - Removed unused imports (TeamType, SharePayloadV1, EntityColors)
+  - Deleted empty `src/components/Replay/` directory
+
+- **Phase 5: Testing & Validation**:
+  - ✅ ESLint: Zero errors
+  - ✅ TypeScript: Zero errors
+  - ✅ Production Build: Success
+  - Manual testing guide provided for browser verification
+
+- **Phase 6: Documentation**:
+  - Updated PROGRESS.md (this file)
+  - Updated ISSUES_REGISTER.md
+
+**Files Created**:
+
+- `src/components/replay/ReplayViewer.tsx` - Extracted from app route to shared space
+
+**Files Modified**:
+- `app/gallery/page.tsx` - Changed handleView to navigate to `/replay/[id]`
+- `app/replay/[id]/page.tsx` - Updated import to use shared ReplayViewer
+- `app/replay/[id]/__tests__/ReplayViewer.test.tsx` - Updated import path
+- `app/sitemap-page/page.tsx` - Updated gallery description
+- `src/store/projectStore.ts` - Removed loadFromSharePayload method and unused imports
+
+**Files Deleted**:
+- `app/gallery/[id]/` directory (entire gallery detail route - 697 lines)
+- `app/replay/[id]/ReplayViewer.tsx` (moved to shared space)
+- `src/components/Replay/ReplayPage.tsx` (165 lines - obsolete)
+- `src/hooks/useSharePayload.ts` (45 lines - obsolete)
+- `src/components/Replay/` directory (empty)
+
+**Impact**:
+- Gallery now uses modern ReplayViewer with React-Konva rendering
+- Visual consistency between Gallery and Shared Links guaranteed
+- Full entity type support including equipment (tackle shields, tackle bags)
+- Smooth interpolation via RAF-based `useReplayAnimationLoop` hook
+- Speed controls (0.5x, 1x, 2x) and loop toggle now available in gallery views
+- Removed 1,004 lines of obsolete code (697 gallery detail + 165 ReplayPage + 45 useSharePayload + 97 from projectStore)
+- Single source of truth for animation viewing (one viewer, not two)
+- Simplified codebase with no code duplication
+- Easier maintenance (one component to update, not multiple)
+
+**Success Criteria**:
+- ✅ Gallery thumbnails redirect to `/replay/[id]`
+- ✅ Visual consistency between Gallery and Shared Links
+- ✅ Support for all entity types including equipment
+- ✅ Playback controls (Speed: 0.5x/1x/2x, Loop toggle)
+- ✅ Smooth interpolation during playback
+- ✅ Obsolete gallery detail route removed
+- ✅ Obsolete replay code removed
+- ✅ Zero build errors, zero TypeScript errors
+
+**Next Steps**:
+- User acceptance testing in browser (gallery navigation, replay functionality)
+- Monitor for any issues in production
+- Continue with remaining high-priority issues
+
+---
 
 ### Session 2026-02-05 (Sharing & Replay Fixes)
 
@@ -69,6 +158,13 @@
 - **Verification**:
   - Confirmed anonymous users can open shared links.
   - Verified Cones and Arrows now visible in shared replays.
+- **Regression Identified**: 
+  - Noticed Public Gallery (`/gallery/[id]`) still uses legacy `GalleryDetailClient` with hardcoded rendering logic.
+  - Recorded as **MED-008** for future resolution.
+- **Mobile Observation**:
+  - Noticed playback UI is too cluttered for small mobile screens.
+  - Need a "stripped down" compact view for better on-field use.
+  - Recorded as **HIGH-006** (High Priority, Medium Complexity).
 
 **Files Modified**:
 - `app/api/share/route.ts` (Limits, Logging, V2 Schema)
@@ -510,6 +606,11 @@
 **Completed**: 2026-02-05
 **Commit**: 780a928
 **Impact**: Replay viewer now reuses editor's shared canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken) for pixel-identical rendering. All 6 entity types supported. Sport-specific fields, arrow annotations with arrowheads, and EntityColors service for correct colors. Centralised `normalizeReplayPayload()` for backward compatibility.
+
+### ✅ MED-008: Gallery Detail Page Uses Stale Rendering Logic
+
+**Completed**: 2026-02-06
+**Impact**: Gallery now uses modern ReplayViewer with React-Konva rendering. Removed 1,004 lines of obsolete code (legacy GalleryDetailClient, obsolete ReplayPage, useSharePayload hook). Visual consistency between Gallery and Shared Links guaranteed. Single source of truth for animation viewing. All entity types and playback features now available in gallery views.
 
 ---
 

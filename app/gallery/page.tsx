@@ -156,7 +156,7 @@ function GalleryContent() {
   const hasFilters = search || type;
 
   const handleView = (id: string) => {
-    router.push(`/gallery/${id}`);
+    router.push(`/replay/${id}`);
   };
 
   const handleUpvote = async (id: string): Promise<{ upvoted: boolean; upvote_count: number } | null> => {

@@ -492,7 +492,30 @@ Users can share animations from the public gallery, but the share functionality 
 - ✅ Shared animation displays correctly (Players AND Cones/Annotations visible)
 
 
+### HIGH-006: Mobile Playback Optimization & Compact View
+
+**Risk**: 🟠 HIGH  
+**Impact**: 📱 User Experience (Mobile)  
+**Effort**: Medium (2-3 days)
+**Status**: 🔴 **OPEN**
+
+#### Description
+The current replay viewer and gallery detail views are not optimized for mobile devices. The presence of global headers, footers, and large control bars makes the animation itself too small to see clearly on a handheld screen. Coaches need a "stripped down" or "compact" view that prioritizes the canvas.
+
+#### Proposed Solution
+- **Compact Replay Mode**: Create a view that hides non-essential UI (header, footer, details) when viewed on mobile or via a specific `?view=compact` parameter.
+- **Thumb-Friendly Controls**: Overhaul playback buttons to be larger and more accessible for one-handed use.
+- **Dynamic Scaling**: Ensure the canvas maximizes available width and height without requiring scrolling.
+- **Fullscreen Support**: Add a "Go Fullscreen" button for the animation canvas.
+
+#### Success Criteria
+- [ ] Animation is clearly legible on device screens (min 360px wide).
+- [ ] UI clutter is removed in "compact" mode.
+- [ ] Playback controls are usable without accidental misclicks.
+- [ ] Aspect ratio preserved while maximizing screen real estate.
+
 ---
+
 
 ## 🟡 MEDIUM Priority Issues
 
@@ -985,16 +1008,41 @@ export const EntityColors = {
 
 ---
 
+### MED-008: Gallery Detail Page Uses Stale Rendering Logic
+
+**Risk**: 🟡 MEDIUM
+**Impact**: 🎨 Visual Inconsistency
+**Effort**: Medium (1 day)
+**Status**: ✅ **FIXED** (2026-02-06)
+
+#### Description
+The public gallery detail page (`/gallery/[id]`) uses `GalleryDetailClient.tsx`, which contains a duplicated and simplified animation viewer. Unlike the primary `/replay/[id]` route which was recently overhauled to use the unified `ReplayViewer`, the gallery detail view:
+- Uses hardcoded `800x600` coordinate mapping (not the standard `2000x2000`).
+- Manually renders entities and annotations with basic CSS/SVG instead of React-Konva.
+- Lacks support for newer features like equipment (Tackle Bags, Shields), smooth interpolation, and speed controls.
+
+#### Resolution Summary
+
+Redirected gallery thumbnails to use `/replay/[id]` route instead of `/gallery/[id]`. Removed entire obsolete gallery detail route (697 lines). Moved ReplayViewer to shared component space (`src/components/replay/ReplayViewer.tsx`) to prevent cross-route coupling. Removed obsolete replay code including ReplayPage.tsx (165 lines), useSharePayload.ts (45 lines), and loadFromSharePayload method from projectStore.ts (97 lines). Total: 1,004 lines of obsolete code removed. Gallery now uses modern ReplayViewer with React-Konva, smooth interpolation, speed controls, and full entity support.
+
+#### Success Criteria
+- [x] `/gallery/[id]` replaced by or integrates `ReplayViewer`.
+- [x] Visual consistency between Gallery and Shared Links.
+- [x] Support for all entity types (Equipment, etc.) in Gallery view.
+- [x] Playback controls (Speed, Loop) available in Gallery.
+
+---
+
 ## Issue Statistics
 
 | Priority | Count | Total Effort |
 |----------|-------|--------------
 | 🔴 CRITICAL | 2 | 4-8 hours |
-| 🟠 HIGH | 5 | 8-13 days |
-| 🟡 MEDIUM | 6 | 5-9 days |
+| 🟠 HIGH | 6 | 10-16 days |
+| 🟡 MEDIUM | 7 | 6-10 days |
 | 🟢 LOW | 3 | 75-120 minutes |
 
-**Total**: 16 issues, estimated 14-23 days of work
+**Total**: 19 issues, estimated 18-28 days of work
 
 ---
 

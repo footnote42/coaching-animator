@@ -22,7 +22,7 @@ vi.mock('konva', () => ({
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ReplayViewer } from '../ReplayViewer';
+import { ReplayViewer } from '@/components/replay/ReplayViewer';
 
 const VALID_PAYLOAD = {
   version: '1.0.0',

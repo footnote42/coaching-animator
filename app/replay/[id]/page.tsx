@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
-import { ReplayViewer } from './ReplayViewer';
+import { ReplayViewer } from '@/components/replay/ReplayViewer';
 
 interface PageProps {
   params: Promise<{ id: string }>;
