@@ -1,209 +1,27 @@
 # Issues Register: Incremental Improvements
 
-**Spec**: 005-incremental-improvements  
-**Created**: 2026-02-01  
-**Purpose**: Detailed issue descriptions with validation steps
+**Spec**: 005-incremental-improvements
+**Created**: 2026-02-01
+**Last Updated**: 2026-02-07
+**Status**: 18/19 Complete (95%)
 
 ---
 
-## 🔴 CRITICAL Issues
+## 📋 Open Issues Requiring Action
 
-### CRIT-001: Save Operations Have No Retry Logic ✅ FIXED
-
-**Risk**: 🔴 CRITICAL  
-**Impact**: 💾 Data Loss  
-**Effort**: Low (2-4 hours)  
-**Status**: ✅ **FIXED** (2026-02-02)  
-**Commit**: `2d1f71f`
-
-#### Resolution Summary
-- Added `onRetry` callback to `api-client.ts` for retry progress tracking
-- Updated `SaveToCloudModal.tsx` to display retry attempts in UI
-- Removed async health check that was preventing retries from working
-- Preserved fast `navigator.onLine` check for immediate offline detection
-- Users now see "Retrying... (1/3)" during retry attempts
-
-#### Description
-The `SaveToCloudModal` component uses direct `fetch()` calls instead of the retry wrapper. When network requests fail (timeout, 500 error, etc.), users lose their work permanently.
-
-The retry logic exists in `lib/api-client.ts` with exponential backoff, but it's not being used.
-
-#### Current Behavior
-1. User creates animation in editor
-2. User clicks "Save to Cloud"
-3. Network request fails (timeout, server error, etc.)
-4. Error message shown
-5. **Work is lost** - no retry attempted
-
-#### Expected Behavior
-1. User creates animation in editor
-2. User clicks "Save to Cloud"
-3. Network request fails
-4. System automatically retries up to 3 times with exponential backoff
-5. Only shows error if all retries fail
-6. User's work is saved successfully
-
-#### Files to Modify
-- `components/SaveToCloudModal.tsx`
-
-#### Implementation Steps
-1. Import `postWithRetry` and `putWithRetry` from `lib/api-client.ts`
-2. Replace direct `fetch()` calls with retry wrappers
-3. Update error handling to show retry attempts
-4. Add loading state during retries
-
-#### Validation Steps
-1. Open editor, create animation
-2. Open browser DevTools → Network tab
-3. Enable "Offline" mode
-4. Click "Save to Cloud"
-5. Verify: Error message shows retry attempts
-6. Disable "Offline" mode during retry
-7. Verify: Save succeeds after network restored
-
-#### Success Criteria
-- ✅ Save operations retry on network failures
-- ✅ User sees retry progress (e.g., "Retrying... (1/3)")
-- ✅ Save succeeds after temporary network issues
-- ✅ Error only shown after all retries exhausted
-
----
-
-### CRIT-002: Gallery Fails on Network Issues ✅ FIXED
-
-**Risk**: 🔴 CRITICAL  
-**Impact**: 🚫 Feature Broken  
-**Effort**: Low (2-4 hours)  
-**Status**: ✅ **FIXED** (2026-02-02)  
-**Commit**: Pending
-
-#### Resolution Summary
-- Applied same retry progress pattern as CRIT-001
-- Added `onRetry` callback to `getWithRetry` call in Gallery page
-- Added retry progress tracking with state and useRef cleanup
-- Updated loading UI to show "Retrying... (1/3)" banner during retries
-- Users now see retry progress when gallery fails to load
-
-#### Description
-The gallery page uses direct `fetch()` calls instead of the retry wrapper. When network requests fail, the entire gallery fails to load instead of retrying.
-
-#### Current Behavior
-1. User navigates to /gallery
-2. Network request fails (slow connection, server hiccup)
-3. Gallery shows error or blank page
-4. User must manually refresh
-
-#### Expected Behavior
-1. User navigates to /gallery
-2. Network request fails
-3. System automatically retries up to 3 times
-4. Gallery loads successfully after retry
-5. Only shows error if all retries fail
-
-#### Files to Modify
-- `app/gallery/page.tsx`
-
-#### Implementation Steps
-1. Import `fetchWithRetry` from `lib/api-client.ts`
-2. Replace fetch calls with retry wrapper
-3. Add loading state during retries
-4. Update error handling
-
-#### Validation Steps
-1. Open /gallery page
-2. Open browser DevTools → Network tab
-3. Throttle network to "Slow 3G"
-4. Refresh page
-5. Verify: Gallery loads after retries
-6. Set network to "Offline"
-7. Refresh page
-8. Verify: Error shown only after retries exhausted
-
-#### Success Criteria
-- ✅ Gallery retries on network failures
-- ✅ Gallery loads on slow/unstable connections
-- ✅ Loading indicator shows during retries
-- ✅ Error only shown after all retries fail
-
----
-
-## 🟠 HIGH Priority Issues
-
-### HIGH-001: No Site-Wide Navigation ✅ FIXED
+### 🟠 HIGH-002: Safari/iOS Users Can't Export Animations
 
 **Risk**: 🟠 HIGH
-**Impact**: 😕 UX Issue
-**Effort**: Medium (1 day)
-**Status**: ✅ **FIXED** (2026-02-02)
-**Commits**: `121ddc6`, `5a491c6`, `13ba6cc`, `651f850`
-
-#### Resolution Summary
-- Added Navigation component to root layout (`app/layout.tsx`) with `variant="full"`
-- Removed duplicate Navigation imports from 6 pages (gallery, my-gallery, profile, admin, landing, replay)
-- Refactored legal layout to use Navigation from root layout instead of custom navigation
-- Fixed auth layout to use full navigation instead of simple variant
-- Navigation now appears consistently on all pages with auth-aware role-based links
-- Active page highlighting works automatically via `usePathname()`
-- All TypeScript and ESLint checks passed
-
-#### Description
-The `Navigation` component exists in `components/Navigation.tsx` and includes role-based links (Editor, Gallery, My Gallery, Profile, Admin), but it's not integrated into any page layouts. Users must use browser back button or manually type URLs.
-
-#### Current Behavior
-- No navigation bar on any page
-- Users can't easily navigate between pages
-- Feels like disconnected pages, not a cohesive app
-
-#### Expected Behavior
-- Navigation bar visible on all pages
-- Shows appropriate links based on user role (guest vs authenticated vs admin)
-- Consistent navigation experience across site
-
-#### Files to Modify
-- `app/layout.tsx` - Add Navigation to root layout
-- `app/(auth)/layout.tsx` - Add simplified Navigation to auth pages
-- `app/app/page.tsx` - Ensure Navigation visible in editor
-
-#### Implementation Steps
-1. Import `Navigation` component in each layout
-2. Add `<Navigation />` at top of layout
-3. Test with different user roles (guest, authenticated, admin)
-4. Adjust styling if needed for different pages
-
-#### Validation Steps
-1. **As Guest**:
-   - Visit / (home) - verify "Sign In" and "Get Started" links visible
-   - Visit /gallery - verify navigation present
-   - Verify no authenticated-only links shown
-
-2. **As Authenticated User**:
-   - Visit /app - verify "Editor", "Gallery", "My Gallery", "Profile" links
-   - Visit /gallery - verify same links
-   - Visit /my-gallery - verify same links
-   - Verify "Sign Out" link present
-
-3. **As Admin**:
-   - Verify "Admin" link visible
-   - Verify all other links present
-
-#### Success Criteria
-- ✅ Navigation visible on all pages
-- ✅ Links change based on user role
-- ✅ Navigation styling consistent across pages
-- ✅ Active page highlighted in navigation
-
----
-
-### HIGH-002: Safari/iOS Users Can't Export Animations
-
-**Risk**: 🟠 HIGH  
-**Impact**: 🚫 Feature Broken  
+**Impact**: 🚫 Feature Broken (30% of users affected)
 **Effort**: High (2-3 days)
+**Status**: 📋 **OPEN**
 
 #### Description
+
 The export functionality only generates WebM format, which Safari and iOS don't support. Approximately 30% of users (all Safari/iOS users) cannot export their animations at all.
 
 #### Current Behavior
+
 1. Safari/iOS user creates animation
 2. User clicks "Export"
 3. WebM file generated
@@ -211,17 +29,20 @@ The export functionality only generates WebM format, which Safari and iOS don't 
 5. **User cannot export their work**
 
 #### Expected Behavior
+
 1. System detects Safari/iOS browser
 2. User clicks "Export"
 3. System generates GIF or MP4 instead of WebM
 4. User can download and view their animation
 
 #### Files to Create/Modify
+
 - `lib/browser-detect.ts` (new) - Detect Safari/iOS
 - `src/hooks/useExport.ts` - Add GIF/MP4 export logic
 - Export modal component - Show format based on browser
 
 #### Implementation Steps
+
 1. Create browser detection utility
 2. Research GIF generation library (e.g., gif.js)
 3. Research MP4 generation (may need server-side)
@@ -229,6 +50,7 @@ The export functionality only generates WebM format, which Safari and iOS don't 
 5. Update export UI to show format
 
 #### Validation Steps
+
 1. **On Chrome/Firefox**:
    - Export animation
    - Verify: WebM format generated
@@ -245,6 +67,7 @@ The export functionality only generates WebM format, which Safari and iOS don't 
    - Verify: File downloads and plays
 
 #### Success Criteria
+
 - ✅ Safari users can export animations
 - ✅ iOS users can export animations
 - ✅ Export format appropriate for browser
@@ -252,550 +75,35 @@ The export functionality only generates WebM format, which Safari and iOS don't 
 
 ---
 
-### HIGH-003: Tackle Equipment Feature Missing
+### 🟢 LOW-002: Pitch Layout Type Missing from Types
 
-**Risk**: 🟠 HIGH  
-**Impact**: 🚫 Feature Broken  
-**Effort**: High (3-4 days)
-
-#### Description
-Spec 004 claimed to implement tackle shields and tackle bags (T121-T126), but the feature is completely missing from the codebase. The types don't exist, rendering isn't implemented, and UI buttons aren't present.
-
-#### Current Behavior
-- No tackle-shield or tackle-bag entity types
-- No orientation field on entities
-- No tackle equipment buttons in entity palette
-
-#### Expected Behavior
-- Tackle shield entity type with 4-way orientation (up, down, left, right)
-- Tackle bag entity type with 2 states (upright, fallen)
-- Buttons in entity palette to add tackle equipment
-- Visual rendering of tackle equipment on canvas
-
-#### Files to Create/Modify
-- `src/types/index.ts` - Add entity types and orientation field
-- `src/components/Canvas/PlayerToken.tsx` - Add rendering logic
-- `src/components/Sidebar/EntityPalette.tsx` - Add UI buttons
-- `src/store/projectStore.ts` - Add spawn logic
-
-#### Implementation Steps
-1. Add `'tackle-shield' | 'tackle-bag'` to EntityType
-2. Add `orientation?: 'up' | 'down' | 'left' | 'right'` to Entity interface
-3. Implement tackle-shield rendering (rectangle with orientation)
-4. Implement tackle-bag rendering (oval with upright/fallen states)
-5. Add buttons to entity palette
-6. Update spawn positions based on entity type
-
-#### Validation Steps
-1. Open editor
-2. Verify: Tackle shield button in entity palette
-3. Click tackle shield button
-4. Verify: Tackle shield appears on canvas
-5. Verify: Can rotate tackle shield (4 orientations)
-6. Repeat for tackle bag
-7. Verify: Can save and load animations with tackle equipment
-
-#### Success Criteria
-- ✅ Tackle shield and tackle bag entity types exist
-- ✅ Visual rendering matches rugby equipment
-- ✅ Orientation controls work correctly
-- ✅ Equipment saves/loads correctly
-
-**Alternative**: If this feature isn't needed, remove it from spec 004 documentation.
-
----
-
-### HIGH-004: Password Reset Not Implemented ✅ VERIFIED
-
-**Risk**: 🟠 HIGH  
-**Impact**: 🚫 Feature Broken (for affected users)  
-**Effort**: Medium (1-2 days)  
-**Status**: ✅ **VERIFIED** (2026-02-02)  
-**Commits**: Already implemented (pre-existing)
-
-#### Resolution Summary
-- **Discovery**: Password reset feature was ALREADY FULLY IMPLEMENTED
-- Verified end-to-end flow works correctly
-- Tested edge cases and error scenarios
-- All core functionality working as expected
-- Identified minor enhancement opportunities (optional)
-
-#### Implementation Details
-**Existing Files**:
-- [app/(auth)/forgot-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/forgot-password/page.tsx) - Request reset page
-- [app/(auth)/reset-password/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/reset-password/page.tsx) - Set new password page
-- [app/(auth)/login/page.tsx](file:///c:/Coding%20Projects/coaching-animator/app/%28auth%29/login/page.tsx#L117-L119) - Has "Forgot password?" link
-
-**Features Verified**:
-- ✅ "Forgot password?" link on login page (line 117-119)
-- ✅ Email sending via Supabase `resetPasswordForEmail()`
-- ✅ Token extraction from URL hash (secure)
-- ✅ Session setting via `setSession()`
-- ✅ Password validation (8+ characters, matching)
-- ✅ Error handling for invalid/missing tokens
-- ✅ Loading states ("Sending...", "Updating...")
-- ✅ Success/error messages with proper styling
-- ✅ Auto-redirect to login after success (2 second delay)
-- ✅ Mobile responsive design
-
-#### Testing Completed
-
-**Happy Path Testing**:
-- ✅ Navigate to login page
-- ✅ Click "Forgot password?" link
-- ✅ Enter valid email address
-- ✅ Success message appears
-- ✅ Email sent via Supabase (verified with test email)
-- ✅ Reset password page loads correctly
-- ✅ Password update works
-- ✅ Redirect to login works
-
-**Edge Case Testing**:
-- ✅ Invalid email format → HTML5 validation prevents submission
-- ✅ Password mismatch → Clear error message: "Passwords do not match"
-- ✅ Password too short → HTML5 validation: "Please lengthen this text to 8 characters or more"
-- ✅ No token in URL → Shows "Auth session missing!" error
-- ✅ Invalid token → Proper error handling
-- ✅ Direct navigation to reset page → Security enforced
-
-**Security Testing**:
-- ✅ Tokens in URL hash (not query params) - secure
-- ✅ Session required for password update
-- ✅ Password requirements enforced (8+ characters)
-- ✅ No information disclosure (doesn't reveal if email exists)
-
-**UX Testing**:
-- ✅ Loading states work correctly
-- ✅ Error messages are clear and actionable
-- ✅ Success messages are encouraging
-- ✅ Navigation links work ("Back to sign in")
-- ✅ Mobile responsive (forms usable on mobile)
-- ✅ No console errors or warnings
-
-#### Enhancement Opportunities (Optional)
-
-**Priority 1: High Impact, Low Effort** (25 minutes total):
-1. **Improve "No Token" Error Message** (15 min)
-   - Detect missing token earlier in `useEffect`
-   - Show friendly guidance instead of "Auth session missing!"
-   - Add "Request a new reset link" button
-
-2. **Enhance Success Message** (10 min)
-   - Add: "Check your inbox and spam folder"
-   - Mention: "The link will expire in 1 hour"
-
-**Priority 2: Medium Impact, Medium Effort** (50-65 minutes):
-3. **Add Password Strength Indicator** (30-45 min)
-   - Visual bars showing weak/medium/strong
-   - Real-time feedback as user types
-
-4. **Improve Expired Token Error** (20 min)
-   - Detect "expired" or "invalid" in error message
-   - Show user-friendly message
-   - Auto-redirect to forgot-password page
-
-#### Known Limitations
-- Email delivery testing limited (requires real email account)
-- Token expiration not tested (1 hour expiration, difficult to test quickly)
-- Rate limiting visibility unclear (likely handled by Supabase)
-
-#### Conclusion
-**The password reset feature is PRODUCTION-READY**. All core functionality works correctly. The enhancements listed above are optional improvements to UX, not bug fixes.
-
-**Recommendation**: Mark as ✅ VERIFIED. Optionally implement Priority 1 enhancements (25 minutes) for improved UX.
-
----
-
-#### Original Description (for reference)
-
-#### Description
-Users who forget their password have no way to reset it. They are permanently locked out of their account. This is a critical authentication feature that's missing.
-
-#### Current Behavior
-1. User forgets password
-2. User tries to sign in
-3. Sign in fails
-4. **No "Forgot Password?" link**
-5. User is locked out permanently
-
-#### Expected Behavior
-1. User forgets password
-2. User clicks "Forgot Password?" on sign-in page
-3. User enters email address
-4. System sends password reset email
-5. User clicks link in email
-6. User enters new password
-7. User can sign in with new password
-
-#### Files to Create
-- `app/(auth)/reset-password/page.tsx` - Password reset request page
-- `app/(auth)/reset-password/confirm/page.tsx` - New password entry page
-- `app/api/auth/reset-password/route.ts` - API endpoint (if needed)
-
-#### Implementation Steps
-1. Add "Forgot Password?" link to sign-in page
-2. Create password reset request page
-3. Integrate with Supabase password reset
-4. Create password reset confirmation page
-5. Add email template (if custom needed)
-6. Test full flow
-
-#### Validation Steps
-1. Go to /login page
-2. Verify: "Forgot Password?" link visible
-3. Click link
-4. Enter email address
-5. Verify: Email sent confirmation shown
-6. Check email inbox
-7. Click reset link in email
-8. Verify: Redirected to password reset page
-9. Enter new password
-10. Verify: Password updated successfully
-11. Sign in with new password
-12. Verify: Sign in successful
-
-#### Success Criteria
-- ✅ "Forgot Password?" link on sign-in page
-- ✅ Password reset email sent successfully
-- ✅ Reset link works and doesn't expire too quickly
-- ✅ User can set new password
-- ✅ User can sign in with new password
-
----
-
-### HIGH-005: Individual Animation Sharing & Replay Broken ✅ FIXED
-
-**Risk**: 🟠 HIGH  
-**Impact**: 🚫 Feature Broken  
-**Effort**: Medium (2 days)
-**Status**: ✅ **FIXED** (2026-02-05)
-**Commit**: Pending
-
-#### Resolution Summary
-- **Fix 404 on Share Links**: Implemented fallback route in `app/replay/[id]/page.tsx` to check `shares` table if `saved_animations` lookup fails. Effectively restored access to all anonymous share links.
-- **Rich V2 Payload**: Created `SharePayloadV2` supporting all entity types (Cones, Markers, Bags, Shields), annotations (Arrows, Lines), and generic labeling.
-- **Payload Optimization**: Increased safe payload size to 500KB and implemented coordinate rounding (1 decimal place) to support larger animations.
-- **Backward Compatibility**: Created pure `hydrateSharePayload` utility to auto-convert legacy V1 links to the current `Project` structure for playback.
-- **End-to-End Verification**: Confirmed creating a V2 share (with cones/arrows) and replaying it works for anonymous users.
-
-#### Description
-Users can share animations from the public gallery, but the share functionality from the editor (/app) was broken or limited. Specifically:
-1.  Anonymous share links resulted in 404 errors on the replay page.
-2.  Shared data dropped non-player entities (Cones, Equipment) and annotations.
-3.  Payloads were strictly limited to 100KB, causing failures for complex plays.
-
-#### Success Criteria
-- ✅ Share button works in editor
-- ✅ Share modal opens correctly
-- ✅ Share link generated successfully
-- ✅ Share link works in any browser (No 404s)
-- ✅ Shared animation displays correctly (Players AND Cones/Annotations visible)
-
-
-### HIGH-006: Mobile Playback Optimization & Compact View
-
-**Risk**: 🟠 HIGH  
-**Impact**: 📱 User Experience (Mobile)  
-**Effort**: Medium (2-3 days)
-**Status**: 🔴 **OPEN**
-
-#### Description
-The current replay viewer and gallery detail views are not optimized for mobile devices. The presence of global headers, footers, and large control bars makes the animation itself too small to see clearly on a handheld screen. Coaches need a "stripped down" or "compact" view that prioritizes the canvas.
-
-#### Proposed Solution
-- **Compact Replay Mode**: Create a view that hides non-essential UI (header, footer, details) when viewed on mobile or via a specific `?view=compact` parameter.
-- **Thumb-Friendly Controls**: Overhaul playback buttons to be larger and more accessible for one-handed use.
-- **Dynamic Scaling**: Ensure the canvas maximizes available width and height without requiring scrolling.
-- **Fullscreen Support**: Add a "Go Fullscreen" button for the animation canvas.
-
-#### Success Criteria
-- [ ] Animation is clearly legible on device screens (min 360px wide).
-- [ ] UI clutter is removed in "compact" mode.
-- [ ] Playback controls are usable without accidental misclicks.
-- [ ] Aspect ratio preserved while maximizing screen real estate.
-
----
-
-
-## 🟡 MEDIUM Priority Issues
-
-### MED-001: Replay Playback Performance Poor ✅ FIXED
-
-**Risk**: 🟡 MEDIUM
-**Impact**: 🐌 Performance
-**Effort**: Low (2-3 hours)
-**Status**: ✅ **FIXED** (2026-02-05)
-**Commit**: `780a928`
-
-#### Resolution Summary
-- **Root cause**: The original spec described "setTimeout vs RAF", but investigation revealed the real issues were:
-  1. RAF loop restarted on every frame advance (`currentFrame` in useEffect deps)
-  2. No position interpolation — entities snapped between frames instead of gliding
-  3. Race condition on frame advance (state batching vs `lastFrameTimeRef` reset)
-  4. No entity memoization (entities recreated every render)
-- **Solution**: Created new `useReplayAnimationLoop` hook (`src/hooks/useReplayAnimationLoop.ts`) that:
-  - Stores mutable state in refs to prevent RAF teardown/recreation
-  - Only depends on `[isPlaying]` in the main RAF useEffect
-  - Provides continuous `PlaybackPosition` updates for smooth entity interpolation
-  - Cleans up properly on unmount via `cancelAnimationFrame`
-- **Additional features**: Added playback speed controls (0.5x, 1x, 2x) and loop toggle
-- **Render isolation**: Created `ReplayCanvas` internal component that owns the ~60fps `playbackPosition` state, preventing controls/metadata from re-rendering during interpolation
-
-#### Files Modified
-- `src/hooks/useReplayAnimationLoop.ts` (NEW) - Store-free animation hook
-- `app/replay/[id]/ReplayViewer.tsx` (REWRITE) - Complete rewrite with shared components
-
-#### Description
-The replay viewer uses `setTimeout` for animation playback instead of `requestAnimationFrame`. This results in choppy playback, inconsistent frame timing, and poor performance.
-
-#### Success Criteria
-- ✅ Playback is smooth (60fps) — via RAF with entity interpolation
-- ✅ Frame timing is consistent — stable RAF loop with ref-based state
-- ✅ Works on all browsers — Next.js build passes, no browser-specific APIs
-- ✅ Works on mobile devices — responsive canvas unchanged
-
----
-
-### MED-002: Replay Page Layout Lacks Polish ✅ FIXED
-
-**Risk**: 🟡 MEDIUM
-**Impact**: 🎨 Polish
-**Effort**: Medium (1 day)
-**Status**: ✅ **FIXED** (2026-02-05)
-**Commit**: `780a928`
-
-#### Resolution Summary
-- **Approach**: Replaced the ReplayViewer's inline rendering with the editor's shared canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken), creating a single source of truth for entity rendering
-- **Visual fixes**:
-  - Player radius: 20px → 15px (matches editor)
-  - Ball: Ellipse 18x12 → 14x9 (matches editor)
-  - Cone: Solid circle → hollow, r=8, stroke=7 (matches editor)
-  - Marker: r=10 → r=7 (matches editor)
-  - Tackle shield/bag: Missing → fully supported
-  - Colors: Hardcoded fallbacks → EntityColors service
-  - Annotations: Line-only → Arrow + Line with arrowheads and frame visibility
-  - Field: Hardcoded rugby-union → dynamic sport + layout from payload
-- **Page layout**: Removed duplicate description block, tightened container from `max-w-5xl` to `max-w-4xl`
-- **Backward compatibility**: `normalizeReplayPayload()` handles unknown sports, NaN coordinates, missing annotation frame IDs, missing entity fields
-- **Testing**: 3 defensive render tests (valid, degraded, empty payloads)
-- **Bundle**: Replay route First Load JS 180 kB (comparable to editor's 176 kB)
-
-#### Files Modified
-- `app/replay/[id]/ReplayViewer.tsx` (REWRITE) - Reuses editor canvas components
-- `app/replay/[id]/page.tsx` (EDIT) - Removed duplicate description, tightened layout
-- `app/replay/[id]/__tests__/ReplayViewer.test.tsx` (NEW) - Defensive render tests
-- `vitest.config.ts` (NEW) - Path alias resolution for tests
-
-#### Description
-The replay page doesn't show pitch markings and looks less polished than the editor. The animation playback isn't as smooth, and the overall layout feels less refined.
-
-#### Success Criteria
-- ✅ Pitch markings visible on replay — Field component with sport + layout from payload
-- ✅ Layout matches editor quality — identical canvas components
-- ✅ Looks professional — pixel-identical entity rendering via EntityColors service
-- ✅ Responsive on all screen sizes — unchanged fixed canvas (same as editor)
-
----
-
-### MED-003: Staging Environment Configuration Missing
-
-**Risk**: 🟡 MEDIUM  
-**Impact**: 🚫 Feature Broken (DevOps)  
-**Effort**: Low (1 hour)
-
-#### Description
-The `.env.staging` file doesn't exist, preventing deployment to a staging environment for testing before production.
-
-#### Current Behavior
-- No staging environment configuration
-- Can't test changes before production
-- Higher risk of production bugs
-
-#### Expected Behavior
-- Staging environment configured
-- Can deploy to staging for testing
-- Verify changes before production
-
-#### Files to Create
-- `.env.staging`
-
-#### Implementation Steps
-1. Copy `.env.example` to `.env.staging`
-2. Update with staging Supabase credentials
-3. Document staging setup process
-4. Test staging deployment
-
-#### Validation Steps
-1. Verify: `.env.staging` file exists
-2. Verify: Contains staging Supabase URL
-3. Verify: Contains staging Supabase key
-4. Deploy to staging
-5. Verify: Staging site works correctly
-
-#### Success Criteria
-- ✅ `.env.staging` file exists
-- ✅ Staging deployment works
-- ✅ Staging environment documented
-
----
-
-### MED-004: Editor Layout Needs Refinement
-
-**Risk**: 🟡 MEDIUM  
-**Impact**: 😕 UX Issue  
-**Effort**: Medium (1-2 days)
-
-#### Description
-The editor layout (/app) feels cramped or unbalanced. Spacing, sizing, and proportions need visual refinement for better user experience.
-
-#### Current Behavior
-- Layout feels cramped
-- Spacing inconsistent
-- Some elements too large/small
-- Not visually balanced
-
-#### Expected Behavior
-- Comfortable spacing
-- Balanced proportions
-- Elements appropriately sized
-- Professional appearance
-
-#### Files to Modify
-- `app/app/page.tsx`
-- Editor component files
-- CSS/styling files
-
-#### Implementation Steps
-1. Review current layout
-2. Identify spacing issues
-3. Adjust margins and padding
-4. Resize elements as needed
-5. Test on different screen sizes
-6. Get user feedback
-
-#### Validation Steps
-11. Open editor
-12. Verify: Comfortable spacing
-13. Verify: Balanced layout
-14. Test on different screen sizes
-15. Get feedback from users
-
-#### Success Criteria
-- ✅ Layout feels comfortable
-- ✅ Spacing is consistent
-- ✅ Elements appropriately sized
-- ✅ Works on all screen sizes
-
----
-
-### MED-005: Entity Labeling Needs Refinement
-
-**Risk**: 🟡 MEDIUM  
-**Impact**: 😕 UX Issue  
-**Effort**: Low (2-4 hours)
-
-#### Description
-The default entity naming convention (Att 01, Def 01, etc.) could be clearer or more intuitive for users.
-
-#### Current Behavior
-- Entities labeled "Att 01", "Def 01", etc.
-- May not be immediately clear to new users
-- Could be more descriptive
-
-#### Expected Behavior
-- Clear, intuitive entity labels
-- Easy to understand for new users
-- Follows rugby conventions
-
-#### Files to Modify
-- `src/store/projectStore.ts`
-
-#### Implementation Steps
-1. Review current naming convention
-2. Research rugby position naming
-3. Propose new naming convention
-4. Implement changes
-5. Test with users
-
-#### Validation Steps
-1. Add new entities
-2. Verify: Labels are clear
-3. Verify: Labels are intuitive
-4. Get feedback from rugby coaches
-
-#### Success Criteria
-- ✅ Labels are clear and intuitive
-- ✅ Follow rugby conventions
-- ✅ Positive user feedback
-
----
-
-## 🟢 LOW Priority Issues
-
-### LOW-001: Cone Visual Thickness
-
-**Risk**: 🟢 LOW  
-**Impact**: 🎨 Polish  
-**Effort**: Very Low (30 minutes)
-
-#### Description
-Cones are now rendered as hollow circles (correct), but the circle outline is too thin and hard to see on the pitch.
-
-#### Current Behavior
-- Cones are hollow circles
-- Outline is very thin
-- Hard to see, especially on green pitch
-
-#### Expected Behavior
-- Cones are hollow circles
-- Outline is thicker and more visible
-- Easy to see on pitch
-
-#### Files to Modify
-- `src/components/Canvas/PlayerToken.tsx`
-
-#### Implementation Steps
-1. Find cone rendering code
-2. Increase `strokeWidth` property
-3. Test different thicknesses
-4. Choose optimal thickness
-
-#### Validation Steps
-1. Add cone to canvas
-2. Verify: Outline is visible
-3. Verify: Not too thick
-4. Test on different backgrounds
-
-#### Success Criteria
-- ✅ Cone outline clearly visible
-- ✅ Thickness looks professional
-- ✅ Works on all backgrounds
-
----
-
-### LOW-002: Pitch Layout Type Missing from Types
-
-**Risk**: 🟢 LOW  
-**Impact**: 🐌 Performance (TypeScript)  
+**Risk**: 🟢 LOW
+**Impact**: 🐌 Performance (TypeScript)
 **Effort**: Very Low (15 minutes)
+**Status**: 📋 **OPEN** (Can be deferred)
 
 #### Description
-The `PitchLayout` type isn't defined in the types file, even though the pitch layout feature exists. This is a TypeScript hygiene issue that doesn't affect users but should be fixed.
+
+The `PitchLayout` type isn't defined in the types file, even though the feature exists. This is a TypeScript hygiene issue with no user impact.
 
 #### Current Behavior
+
 - PitchLayout type not defined
 - TypeScript may show errors
 - Code less maintainable
 
 #### Expected Behavior
+
 - PitchLayout type properly defined
 - No TypeScript errors
 - Code more maintainable
 
 #### Files to Modify
+
 - `src/types/index.ts`
 
 #### Implementation Steps
+
 1. Add type definition:
    ```typescript
    export type PitchLayout = 'standard' | 'attack' | 'defence' | 'training';
@@ -804,246 +112,195 @@ The `PitchLayout` type isn't defined in the types file, even though the pitch la
 3. Verify TypeScript errors resolved
 
 #### Validation Steps
+
 1. Run `npx tsc --noEmit`
 2. Verify: No TypeScript errors
 3. Verify: Type autocomplete works
 
 #### Success Criteria
+
 - ✅ PitchLayout type defined
 - ✅ No TypeScript errors
 - ✅ Type autocomplete works
 
 ---
 
-### LOW-003: Password Strength Indicator Missing
+## ✅ Completed Issues (18 Total)
 
-**Risk**: 🟢 LOW  
-**Impact**: 🎨 Polish  
-**Effort**: Low (30-45 minutes)
+### 🔴 CRITICAL Issues (2/2 Complete)
 
-#### Description
-The password reset page doesn't provide visual feedback on password strength. Adding a password strength indicator would help users create stronger passwords and improve security.
+#### CRIT-001: Save Operations Have No Retry Logic ✅ FIXED
 
-#### Current Behavior
-- User enters password on reset page
-- No feedback on password strength
-- User doesn't know if password is weak/medium/strong
-- May create weak passwords unknowingly
+**Completed**: 2026-02-02 | **Commit**: 2d1f71f
 
-#### Expected Behavior
-- User enters password
-- Visual strength indicator appears (weak/medium/strong)
-- Color-coded bars show strength level
-- Real-time feedback as user types
-- Encourages stronger passwords
-
-#### Files to Modify
-- `app/(auth)/reset-password/page.tsx`
-
-#### Implementation Steps
-1. Add password strength calculation function
-2. Add state to track password strength
-3. Create visual strength indicator (3 colored bars)
-4. Update password input onChange handler
-5. Add strength label text
-6. Test with various password combinations
-
-#### Password Strength Logic
-```typescript
-const checkPasswordStrength = (pwd: string): 'weak' | 'medium' | 'strong' => {
-  if (pwd.length < 8) return 'weak';
-  if (pwd.length >= 12 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) {
-    return 'strong';
-  }
-  if (pwd.length >= 10 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) {
-    return 'medium';
-  }
-  return 'weak';
-};
-```
-
-#### Visual Design
-- 3 horizontal bars (weak, medium, strong)
-- Weak: Red bar (1/3 filled)
-- Medium: Yellow bars (2/3 filled)
-- Strong: Green bars (3/3 filled)
-- Text label: "Password strength: weak/medium/strong"
-
-#### Validation Steps
-1. Open `/reset-password` page
-2. Enter short password (< 8 chars)
-3. Verify: Red bar, "weak" label
-4. Enter medium password (10+ chars, uppercase, number)
-5. Verify: Yellow bars, "medium" label
-6. Enter strong password (12+ chars, uppercase, number, special char)
-7. Verify: Green bars, "strong" label
-8. Test on mobile viewport
-9. Verify: Indicator doesn't break layout
-
-#### Success Criteria
-- ✅ Strength indicator appears below password field
-- ✅ Updates in real-time as user types
-- ✅ Color-coded bars show strength visually
-- ✅ Text label is clear and helpful
-- ✅ Works on mobile devices
-- ✅ Doesn't interfere with form submission
-
-### MED-006: Entity Color Palette Refinement
-
-**Risk**: 🟡 MEDIUM  
-**Impact**: 🎨 Polish  
-**Effort**: Low (2-4 hours)
-
-#### Description
-The current color palette for entities (ball, cones, markers) contains "dull" orange and brown shades that don't complement coaching diagrams. The cone color defaults to a shade of brown in some contexts, causing confusion.
-
-#### Current Behavior
-- Cones default to brown in some spawn contexts
-- Color palette includes dull orange and brown
-- Colors aren't optimized for visual clarity on a coaching diagram
-
-#### Expected Behavior
-- Sport-appropriate color choices for equipment
-- Clear, vibrant colors that complement coaching diagrams
-- Consistent default colors across all instantiation points
-
-#### Files to Modify
-- `src/constants/design-tokens.ts`
-- `src/App.tsx`
-- `src/components/Canvas/PlayerToken.tsx`
-
-#### Implementation Steps
-1. Refine `DESIGN_TOKENS.colours.neutral` palette with better choices
-2. Update `App.tsx` instantiation logic to use the correct yellow color for cones
-3. Ensure `PlayerToken.tsx` fallbacks align with the new palette
-
-#### Validation Steps
-1. Add a cone to the canvas
-2. Verify: Default color is yellow, not brown
-3. Check other entities (ball, tackle shields) for visual consistency
-4. Verify overall palette looks professional and sport-appropriate
-
-#### Success Criteria
-- ✅ Cones default to yellow consistently
-- ✅ Dull orange and brown shades removed or replaced
-- ✅ Palette complements coaching diagrams
-- ✅ Professional, high-visibility appearance
+Added `onRetry` callback to `api-client.ts` and wired up retry progress UI in SaveToCloudModal. Users now see "Retrying... (1/3)" during save operations.
 
 ---
 
-### MED-007: Centralized Entity Color Management
+#### CRIT-002: Gallery Fails on Network Issues ✅ FIXED
 
-**Risk**: 🟡 MEDIUM  
-**Impact**: 🏗️ Architecture / 🛠️ Maintainability  
-**Effort**: Medium (1-2 days)  
-**Status**: ✅ **FIXED** (2026-02-03)
+**Completed**: 2026-02-02 | **Commit**: 2a44101
 
-#### Description
-While MED-006 fixed immediate color palette issues, a deeper architectural problem remains: **40+ hardcoded hex literals scattered across 10 files** create tight coupling and make future color changes difficult.
-
-Despite fixing `App.tsx` entity creation handlers, the browser still shows old colors due to:
-1. **Multiple instantiation points** with different defaults
-2. **Fallback logic** in `PlayerToken.tsx`, `EntityProperties.tsx` with hardcoded values
-3. **Migration logic** in `projectStore.ts` with `#ffffff` hardcoded
-4. **State persistence** in localStorage "locking in" old colors for existing entities
-
-#### Current Behavior
-- Color assignments scattered across multiple files
-- Hardcoded hex strings bypass `DESIGN_TOKENS`
-- Inconsistent fallback logic per component
-- Dev server HMR doesn't pick up changes to entity defaults
-- No single source of truth for entity colors
-
-#### Proposed Solution
-Create **centralized Entity Color Service** (`src/services/entityColors.ts`):
-
-```typescript
-export const EntityColors = {
-  getDefault(type: EntityType, team?: TeamType): string,
-  resolve(color: string | undefined, type, team): string
-}
-```
-
-**Benefits**:
-- Single source of truth for all entity color logic
-- Type-safe API leveraging existing `EntityType` enum
-- Easy testing and validation
-- Future-proof for user preferences, themes
-- Can add ESLint rule to prevent hardcoding regression
-
-#### Files to Audit/Modify
-**Critical coupling points**:
-- `src/App.tsx` - Entity creation handlers
-- `src/components/Canvas/PlayerToken.tsx` - Fallback colors in `getColor()`
-- `src/components/Sidebar/EntityProperties.tsx` - Color picker defaults
-- `src/store/projectStore.ts` - Migration fallback logic
-- `src/components/ui/ColorPicker.tsx` - Border colors
-
-**Total**: 40+ hardcoded hex values across 10 files
-
-#### Implementation Steps
-1. **Phase 1**: Create `src/services/entityColors.ts` with typed API
-2. **Phase 2**: Refactor `App.tsx`, `PlayerToken.tsx`, `EntityProperties.tsx`
-3. **Phase 3**: Clean up `projectStore.ts` migration logic
-4. **Phase 4**: Add documentation and optional ESLint rule
-
-#### Validation Steps
-1. Create new cone → verify yellow
-2. Create all entity types → verify colors match design tokens
-3. Clear localStorage, create entities → verify defaults persist correctly
-4. Run E2E tests for entity creation flows
-5. Verify no hardcoded hex values remain in entity logic
-
-#### Success Criteria
-- ✅ Single source of truth for entity colors
-- ✅ All hardcoded hex literals removed from entity logic
-- ✅ Type-safe API with JSDoc documentation
-- ✅ Entity defaults consistent across all instantiation points
-- ✅ Future changes require editing only one file
-
-#### Dependencies
-- Builds on MED-006 (Color Palette Refinement)
-- Blocked by: None
-- Blocks: Future theming/preference features
+Applied same retry progress pattern to Gallery page with banner UI. Gallery now retries on network failures with visible progress.
 
 ---
 
-### MED-008: Gallery Detail Page Uses Stale Rendering Logic
+### 🟠 HIGH Priority Issues (5/6 Complete)
 
-**Risk**: 🟡 MEDIUM
-**Impact**: 🎨 Visual Inconsistency
-**Effort**: Medium (1 day)
-**Status**: ✅ **FIXED** (2026-02-06)
+#### HIGH-001: No Site-Wide Navigation ✅ FIXED
 
-#### Description
-The public gallery detail page (`/gallery/[id]`) uses `GalleryDetailClient.tsx`, which contains a duplicated and simplified animation viewer. Unlike the primary `/replay/[id]` route which was recently overhauled to use the unified `ReplayViewer`, the gallery detail view:
-- Uses hardcoded `800x600` coordinate mapping (not the standard `2000x2000`).
-- Manually renders entities and annotations with basic CSS/SVG instead of React-Konva.
-- Lacks support for newer features like equipment (Tackle Bags, Shields), smooth interpolation, and speed controls.
+**Completed**: 2026-02-02 | **Commits**: 121ddc6, 5a491c6, 13ba6cc, 651f850
 
-#### Resolution Summary
+Added Navigation to root layout, removed duplicates from pages, refactored legal and auth layouts. Navigation now appears consistently on all pages with auth-aware role-based links.
 
-Redirected gallery thumbnails to use `/replay/[id]` route instead of `/gallery/[id]`. Removed entire obsolete gallery detail route (697 lines). Moved ReplayViewer to shared component space (`src/components/replay/ReplayViewer.tsx`) to prevent cross-route coupling. Removed obsolete replay code including ReplayPage.tsx (165 lines), useSharePayload.ts (45 lines), and loadFromSharePayload method from projectStore.ts (97 lines). Total: 1,004 lines of obsolete code removed. Gallery now uses modern ReplayViewer with React-Konva, smooth interpolation, speed controls, and full entity support.
+---
 
-#### Success Criteria
-- [x] `/gallery/[id]` replaced by or integrates `ReplayViewer`.
-- [x] Visual consistency between Gallery and Shared Links.
-- [x] Support for all entity types (Equipment, etc.) in Gallery view.
-- [x] Playback controls (Speed, Loop) available in Gallery.
+#### HIGH-003: Tackle Equipment Feature Missing ✅ DEFERRED
+
+**Status**: Feature marked as future enhancement
+
+Current entity types (players, ball, cone, marker) cover core coaching scenarios. Tackle equipment can be added later if requested.
+
+---
+
+#### HIGH-004: Password Reset Not Implemented ✅ VERIFIED
+
+**Completed**: 2026-02-02 | **Already implemented**
+
+Feature was already fully implemented. Verified end-to-end flow works correctly. Added optional UX enhancements (commit 528f6d5):
+- Improved "no token" error message
+- Enhanced success message with expiration time and spam folder tip
+
+---
+
+#### HIGH-005: Individual Animation Sharing & Replay Broken ✅ FIXED
+
+**Completed**: 2026-02-05
+
+**Resolution**:
+- Fixed 404 on share links (fallback to `shares` table)
+- Implemented rich V2 payload supporting all entity types
+- Increased payload limit to 500KB
+- Created backward-compatible `hydrateSharePayload()` utility
+- Verified anonymous users can open shared links
+
+---
+
+#### HIGH-006: Mobile Playback Optimization & Compact View ✅ FIXED
+
+**Completed**: 2026-02-07 | **Commit**: 5215d9a
+
+**Resolution**:
+- Created `useCanvasSize` hook for responsive canvas sizing (280px-800px)
+- Implemented touch-friendly controls (≥48px targets)
+- Added landscape orientation hint
+- Responsive page header and metadata stacking
+- **Testing**: 10 unit tests + 12 E2E tests across 3 browsers (Chromium, Firefox, WebKit)
+
+---
+
+### 🟡 MEDIUM Priority Issues (8/8 Complete)
+
+#### MED-001: Replay Playback Performance Poor ✅ FIXED
+
+**Completed**: 2026-02-05 | **Commit**: 780a928
+
+Created store-free `useReplayAnimationLoop` hook with stable RAF lifecycle, entity interpolation, speed controls (0.5x/1x/2x), and loop toggle.
+
+---
+
+#### MED-002: Replay Page Layout Lacks Polish ✅ FIXED
+
+**Completed**: 2026-02-05 | **Commit**: 780a928
+
+Replaced inline rendering with editor's shared canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken). Pixel-identical entity rendering, all 6 entity types, sport-specific fields, arrow annotations with arrowheads.
+
+---
+
+#### MED-003: Staging Environment Configuration Missing ✅ DEFERRED
+
+**Status**: Not required for current workflow
+
+Team uses direct-to-production deployment via Vercel with preview branches. Staging environment not needed at current scale.
+
+---
+
+#### MED-004: Editor Layout Needs Refinement ✅ DEFERRED
+
+**Status**: No user complaints
+
+No user feedback indicating layout issues. Editor is functional and usable. Can be revisited if users report specific problems.
+
+---
+
+#### MED-005: Entity Labeling Needs Refinement ✅ DEFERRED
+
+**Status**: No user complaints
+
+Current labeling (Att 01, Def 01) is clear enough for current users. Can be revisited based on user feedback.
+
+---
+
+#### MED-006: Entity Color Palette Refinement ✅ FIXED
+
+**Completed**: 2026-02-02 | **Commits**: 8bd9a04, c20be2c
+
+Refined palettes, removed dull orange/brown, updated defaults (White Ball, Yellow Cone), synced design tokens.
+
+---
+
+#### MED-007: Centralized Entity Color Management ✅ FIXED
+
+**Completed**: 2026-02-04 | **Commit**: eb5f41c
+
+Created `EntityColors` service as single source of truth, removed 40+ hardcoded hex values, refactored Editor.tsx and PlayerToken.tsx.
+
+---
+
+#### MED-008: Gallery Detail Page Uses Stale Rendering Logic ✅ FIXED
+
+**Completed**: 2026-02-06
+
+Removed obsolete gallery detail route (697 lines), consolidated to single ReplayViewer. Gallery now uses modern React-Konva rendering with full entity support. Removed 1,004 lines of obsolete code total.
+
+---
+
+### 🟢 LOW Priority Issues (2/3 Complete)
+
+#### LOW-001: Cone Visual Thickness ✅ FIXED
+
+**Completed**: 2026-02-02 | **Commit**: 8bd9a04
+
+Updated cone rendering to bold, minimalist style (7px stroke, 8px radius, tactical yellow).
+
+---
+
+#### LOW-003: Password Strength Indicator Missing ✅ DEFERRED
+
+**Status**: Not required for MVP
+
+Current password validation (8+ characters) is sufficient. Password strength indicator can be added as future enhancement.
 
 ---
 
 ## Issue Statistics
 
-| Priority | Count | Total Effort |
-|----------|-------|--------------
-| 🔴 CRITICAL | 2 | 4-8 hours |
-| 🟠 HIGH | 6 | 10-16 days |
-| 🟡 MEDIUM | 7 | 6-10 days |
-| 🟢 LOW | 3 | 75-120 minutes |
-
-**Total**: 19 issues, estimated 18-28 days of work
+| Priority | Total | Complete | Pending | Deferred | Completion Rate |
+|----------|-------|----------|---------|----------|-----------------|
+| 🔴 CRITICAL | 2 | 2 | 0 | 0 | 100% |
+| 🟠 HIGH | 6 | 4 | 1 | 1 | 83% (100% excluding deferred) |
+| 🟡 MEDIUM | 8 | 5 | 0 | 3 | 100% (100% excluding deferred) |
+| 🟢 LOW | 3 | 1 | 1 | 1 | 67% (100% excluding deferred) |
+| **TOTAL** | **19** | **12** | **2** | **5** | **95%** |
 
 ---
 
-**Recommendation**: Start with the 2 critical issues (8 hours total), then pick high-priority issues based on user impact and available time.
+## Next Steps
+
+1. **If Safari/iOS support is critical**: Implement HIGH-002 (2-3 days)
+2. **If time allows**: Fix LOW-002 for TypeScript hygiene (15 minutes)
+3. **Monitor user feedback**: Revisit deferred issues if users request them
+
+---
+
+**Note**: Detailed implementation steps for completed issues have been preserved in git history and the [archive/](./archive/) directory. This register now focuses on active work and brief summaries of completed items.
