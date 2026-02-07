@@ -8,6 +8,7 @@ import { Field } from '@/components/Canvas/Field';
 import { EntityLayer } from '@/components/Canvas/EntityLayer';
 import { AnnotationLayer } from '@/components/Canvas/AnnotationLayer';
 import { useReplayAnimationLoop } from '@/hooks/useReplayAnimationLoop';
+import { useCanvasSize } from '@/hooks/useCanvasSize';
 import { hydrateSharePayload } from '@/utils/hydratePayload';
 import type { SharePayloadV1 } from '@/types/share';
 
@@ -113,13 +114,6 @@ function normalizeReplayPayload(raw: unknown): ReplayPayload {
 }
 
 // ---------------------------------------------------------------------------
-// Canvas dimensions
-// ---------------------------------------------------------------------------
-
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
-
-// ---------------------------------------------------------------------------
 // ReplayCanvas — owns playbackPosition, isolates 60fps re-renders
 // ---------------------------------------------------------------------------
 
@@ -146,6 +140,7 @@ function ReplayCanvas({
   onFrameAdvance,
   onPlaybackComplete,
 }: ReplayCanvasProps) {
+  const { width: canvasWidth, height: canvasHeight } = useCanvasSize(800, 4 / 3);
   const [playbackPosition, setPlaybackPosition] = useState<PlaybackPosition | null>(null);
 
   useReplayAnimationLoop({
@@ -164,36 +159,45 @@ function ReplayCanvas({
   const frameIds = useMemo(() => frames.map((f) => f.id), [frames]);
 
   return (
-    <div className="w-full max-w-[800px] aspect-[4/3] border border-border bg-white overflow-hidden">
-      <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
-        <Field
-          sport={sport}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          layout={pitchLayout}
-        />
-        <AnnotationLayer
-          annotations={currentFrame?.annotations ?? []}
-          selectedAnnotationId={null}
-          onAnnotationSelect={() => { }}
-          onContextMenu={() => { }}
-          interactive={false}
-          currentFrameId={currentFrame?.id ?? ''}
-          frameIds={frameIds}
-        />
-        <EntityLayer
-          entities={entities}
-          selectedEntityId={null}
-          onEntitySelect={() => { }}
-          onEntityMove={() => { }}
-          onEntityDoubleClick={() => { }}
-          onEntityContextMenu={() => { }}
-          interactive={false}
-          playbackPosition={playbackPosition}
-          frames={frames}
-        />
-      </Stage>
-    </div>
+    <>
+      {canvasWidth < 600 && (
+        <div className="mb-3 px-4 py-2 bg-[var(--color-surface-warm)] border border-border rounded text-sm text-text-primary">
+          💡 Rotate device for best viewing experience
+        </div>
+      )}
+      <div className="max-w-[800px] mx-auto">
+        <div className="border border-border bg-white overflow-hidden">
+          <Stage width={canvasWidth} height={canvasHeight}>
+            <Field
+              sport={sport}
+              width={canvasWidth}
+              height={canvasHeight}
+              layout={pitchLayout}
+            />
+            <AnnotationLayer
+              annotations={currentFrame?.annotations ?? []}
+              selectedAnnotationId={null}
+              onAnnotationSelect={() => { }}
+              onContextMenu={() => { }}
+              interactive={false}
+              currentFrameId={currentFrame?.id ?? ''}
+              frameIds={frameIds}
+            />
+            <EntityLayer
+              entities={entities}
+              selectedEntityId={null}
+              onEntitySelect={() => { }}
+              onEntityMove={() => { }}
+              onEntityDoubleClick={() => { }}
+              onEntityContextMenu={() => { }}
+              interactive={false}
+              playbackPosition={playbackPosition}
+              frames={frames}
+            />
+          </Stage>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -261,76 +265,83 @@ export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
       />
 
       {/* Controls */}
-      <div className="mt-4 flex items-center gap-4">
-        <button
-          onClick={reset}
-          className="p-2 border border-border hover:bg-surface-warm transition-colors"
-          title="Reset"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
+      <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
+        {/* Primary controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={reset}
+            className="w-12 h-12 sm:w-10 sm:h-10 border border-border hover:bg-surface-warm transition-colors flex items-center justify-center"
+            title="Reset"
+          >
+            <RotateCcw className="w-5 h-5" />
+          </button>
 
-        <button
-          onClick={prevFrame}
-          disabled={currentFrameIndex === 0}
-          className="p-2 border border-border hover:bg-surface-warm transition-colors disabled:opacity-50"
-          title="Previous frame"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
+          <button
+            onClick={prevFrame}
+            disabled={currentFrameIndex === 0}
+            className="w-12 h-12 sm:w-10 sm:h-10 border border-border hover:bg-surface-warm transition-colors disabled:opacity-50 flex items-center justify-center"
+            title="Previous frame"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
 
-        <button
-          onClick={togglePlay}
-          className="p-3 bg-primary text-text-inverse hover:bg-primary/90 transition-colors"
-          title={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? (
-            <Pause className="w-6 h-6" />
-          ) : (
-            <Play className="w-6 h-6" />
-          )}
-        </button>
+          <button
+            onClick={togglePlay}
+            className="w-12 h-12 sm:w-10 sm:h-10 bg-primary text-text-inverse hover:bg-primary/90 transition-colors flex items-center justify-center"
+            title={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? (
+              <Pause className="w-6 h-6" />
+            ) : (
+              <Play className="w-6 h-6" />
+            )}
+          </button>
 
-        <button
-          onClick={nextFrame}
-          disabled={currentFrameIndex >= frames.length - 1 && !loopPlayback}
-          className="p-2 border border-border hover:bg-surface-warm transition-colors disabled:opacity-50"
-          title="Next frame"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+          <button
+            onClick={nextFrame}
+            disabled={currentFrameIndex >= frames.length - 1 && !loopPlayback}
+            className="w-12 h-12 sm:w-10 sm:h-10 border border-border hover:bg-surface-warm transition-colors disabled:opacity-50 flex items-center justify-center"
+            title="Next frame"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
 
-        <span className="text-sm text-text-primary/70 ml-2">
+        {/* Frame counter */}
+        <span className="text-sm text-text-primary/70">
           Frame {currentFrameIndex + 1} / {frames.length}
         </span>
 
-        {/* Speed controls */}
-        <div className="flex items-center gap-1 ml-4">
-          {[0.5, 1, 2].map((speed) => (
-            <button
-              key={speed}
-              onClick={() => setPlaybackSpeed(speed)}
-              className={`px-2 py-1 text-xs border transition-colors ${playbackSpeed === speed
-                ? 'bg-primary text-text-inverse border-primary'
-                : 'border-border hover:border-primary'
-                }`}
-            >
-              {speed}x
-            </button>
-          ))}
-        </div>
+        {/* Secondary controls */}
+        <div className="flex items-center gap-2">
+          {/* Speed controls */}
+          <div className="flex items-center gap-1">
+            {[0.5, 1, 2].map((speed) => (
+              <button
+                key={speed}
+                onClick={() => setPlaybackSpeed(speed)}
+                className={`px-4 py-2 sm:px-3 sm:py-1 text-xs border transition-colors ${playbackSpeed === speed
+                  ? 'bg-primary text-text-inverse border-primary'
+                  : 'border-border hover:border-primary'
+                  }`}
+              >
+                {speed}x
+              </button>
+            ))}
+          </div>
 
-        {/* Loop toggle */}
-        <button
-          onClick={() => setLoopPlayback((prev) => !prev)}
-          className={`p-2 border transition-colors ${loopPlayback
-            ? 'bg-primary text-text-inverse border-primary'
-            : 'border-border hover:bg-surface-warm'
-            }`}
-          title={loopPlayback ? 'Loop: On' : 'Loop: Off'}
-        >
-          <Repeat className="w-5 h-5" />
-        </button>
+          {/* Loop toggle */}
+          <button
+            onClick={() => setLoopPlayback((prev) => !prev)}
+            className={`w-12 h-12 sm:w-10 sm:h-10 border transition-colors flex items-center justify-center ${loopPlayback
+              ? 'bg-primary text-text-inverse border-primary'
+              : 'border-border hover:bg-surface-warm'
+              }`}
+            title={loopPlayback ? 'Loop: On' : 'Loop: Off'}
+          >
+            <Repeat className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Frame strip */}

@@ -1,0 +1,44 @@
+<testsuites id="" name="" tests="12" failures="0" skipped="0" errors="0" time="33.336758">
+<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="chromium" tests="4" failures="0" skipped="0" time="7.258" errors="0">
+<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="1.593">
+<system-out>
+<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+]]>
+</system-out>
+</testcase>
+<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.721">
+</testcase>
+<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="1.942">
+</testcase>
+<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.002">
+</testcase>
+</testsuite>
+<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="firefox" tests="4" failures="0" skipped="0" time="10.541" errors="0">
+<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="4.271">
+<system-out>
+<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+]]>
+</system-out>
+</testcase>
+<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.957">
+</testcase>
+<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="2.144">
+</testcase>
+<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.169">
+</testcase>
+</testsuite>
+<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="webkit" tests="4" failures="0" skipped="0" time="8.205" errors="0">
+<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="1.994">
+<system-out>
+<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+]]>
+</system-out>
+</testcase>
+<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.877">
+</testcase>
+<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="2.183">
+</testcase>
+<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.151">
+</testcase>
+</testsuite>
+</testsuites>

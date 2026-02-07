@@ -45,7 +45,7 @@ export const Stage = React.forwardRef<Konva.Stage, StageProps>(({
             ref={ref}
             width={width}
             height={height}
-            pixelRatio={window.devicePixelRatio || 1}
+            pixelRatio={typeof window !== 'undefined' ? window.devicePixelRatio : 1}
             onClick={handleStageClick}
             style={{
                 cursor: 'default',

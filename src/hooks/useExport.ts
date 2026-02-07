@@ -4,7 +4,7 @@ import GIF from 'gif.js';
 import { useProjectStore } from '../store/projectStore';
 import { useFrameCapture } from './useFrameCapture';
 import { VALIDATION } from '../constants/validation';
-import { detectBrowser, getRecommendedFormat } from '../../lib/browser-detect';
+import { detectBrowser, getRecommendedFormat } from '@/lib/browser-detect';
 
 export type ExportStatus = 'idle' | 'preparing' | 'capturing' | 'encoding' | 'complete' | 'error';
 export type ExportFormat = 'webm' | 'mp4' | 'gif' | 'auto';
@@ -132,7 +132,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         canvas.width = captureResult.width;
         canvas.height = captureResult.height;
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
             throw new Error('Could not get canvas context');
         }
@@ -151,11 +151,11 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         };
 
         mediaRecorder.start();
-        
+
         for (let i = 0; i < captureResult.frames.length; i++) {
             const frame = captureResult.frames[i];
             const img = new Image();
-            
+
             await new Promise<void>((resolve) => {
                 img.onload = () => {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -164,13 +164,13 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
                 };
                 img.src = URL.createObjectURL(frame);
             });
-            
+
             setState(prev => ({
                 ...prev,
                 progress: Math.round(((i + 1) / captureResult.frames.length) * 50) + 50,
                 phase: `Encoding frame ${i + 1}/${captureResult.frames.length}`,
             }));
-            
+
             await new Promise(resolve => setTimeout(resolve, 1000 / captureResult.fps));
         }
 
@@ -212,7 +212,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         }
 
         // Determine actual format to use
-        let actualFormat: 'webm' | 'gif' = format === 'auto' 
+        let actualFormat: 'webm' | 'gif' = format === 'auto'
             ? (browserInfo.supportsWebM ? 'webm' : 'gif')
             : (format === 'gif' ? 'gif' : 'webm');
 
@@ -231,7 +231,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
 
         // Start frame capture for export
         const resolution = project?.settings?.exportResolution || '720p';
-        
+
         setState(prev => ({
             ...prev,
             status: 'capturing',
@@ -239,7 +239,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
         }));
 
         const captureResult = await frameCapture.captureFrames(resolution);
-        
+
         if (!captureResult) {
             setState({
                 status: 'error',
@@ -268,7 +268,7 @@ export function useExport(stageRef: React.RefObject<Konva.Stage | null>) {
                 outputBlob = await exportAsWebM(captureResult);
                 fileExtension = 'webm';
             }
-            
+
             // Download the file
             const url = URL.createObjectURL(outputBlob);
             const a = document.createElement('a');

@@ -2,7 +2,7 @@ import withSerwistInit from '@serwist/next';
 // Force restart to pick up color palette changes
 
 const withSerwist = withSerwistInit({
-  swSrc: 'app/sw.ts',
+  swSrc: 'src/app/sw.ts',
   swDest: 'public/sw.js',
   cacheOnNavigation: false, // Disabled to prevent SW interference with API routes
   reloadOnOnline: true,

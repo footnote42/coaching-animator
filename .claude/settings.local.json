@@ -52,7 +52,13 @@
       "Bash(npm test:*)",
       "Bash(npx vitest:*)",
       "Bash(npx next build)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:vitest.dev)",
+      "Bash(timeout /t 15 /nobreak)",
+      "Bash(BASE_URL=http://localhost:3000 npm run e2e:*)",
+      "Bash(del /F nul)"
     ]
   }
 }
