@@ -43,6 +43,25 @@ Auto-generated from all feature plans. Last updated: 2026-02-01
 - **Backend**: Supabase PostgreSQL + Supabase Auth
 - **Hosting**: Vercel
 
+## Environment
+
+- **Platform**: Windows with PowerShell
+- **Command Usage**: Do NOT use Unix-specific commands (`ls -la`, `grep`, `cat`, `find`, etc.)
+  - Use PowerShell equivalents or cross-platform alternatives
+  - Prefer dedicated Claude Code tools (Read, Grep, Glob) over shell commands for file operations
+- **Path Separators**: Use forward slashes `/` in cross-platform code, backslashes `\` only for Windows-specific paths
+
+## Core Behaviors
+
+### Documentation and Version Control
+
+After completing implementation work, **always proactively**:
+1. Update relevant documentation files (README.md, CLAUDE.md, docs/, spec files)
+2. Commit changes with descriptive messages following the project's git conventions
+3. Push commits to the remote repository
+
+**Do not wait to be asked**. Documentation updates and commits should be automatic follow-through after implementation tasks.
+
 ## Project Structure
 
 ```text
@@ -228,6 +247,31 @@ npm test -- --run        # Unit tests - catches logic errors
 
 > **💡 Tip**: The `npm run build` command may fail locally without Supabase environment variables, but will pass in CI where secrets are configured. Focus on lint and typecheck for local verification.
 
+## Testing
+
+### E2E Test Environment Verification
+
+Before running E2E tests (`npm run e2e`), **always verify**:
+- **Target URL**: Confirm whether testing against `localhost:3000` (dev) or production URL
+- **Server State**: Ensure dev server is running for local tests (`npm run dev`)
+- **Environment Variables**: Check that required env vars are set for the target environment
+
+**When in doubt**: Ask the user which environment to test against before executing tests.
+
+### Test Execution Commands
+
+```bash
+# Local development testing (requires npm run dev in separate terminal)
+npm run e2e
+
+# Unit tests
+npm test -- --run
+
+# CI verification (run before pushing)
+npm run lint
+npx tsc --noEmit
+```
+
 ## Project Status
 
 ### Completed Iterations
@@ -403,6 +447,25 @@ Start with [docs/architecture/database-schema.md](docs/architecture/database-sch
 - **Infrastructure Safety**: Use the `staging` branch for high-risk changes (Auth, Middleware, DB Schema) to verify CI/CD health before merging to `main`.
 - **SSR Awareness**: Next.js App Router relies on browser/server cookie sync. Always use the provided Supabase clients (`lib/supabase/`) to prevent session drift.
 - **Auth Resilience**: Use a 15s timeout for auth initialization in `UserContext` to account for mobile/network latency.
+
+## Workflow
+
+### Primary Languages
+
+- **TypeScript**: Primary development language for application code
+- **Python**: Scripts, tooling, automation
+- **Markdown**: Documentation, specifications, plans
+
+### Session Handoff
+
+When generating handoff prompts for the next task or session, **always include**:
+- Current task status and completion state
+- Relevant file paths and code locations
+- Outstanding issues or blockers
+- Next steps or dependencies
+- Any context needed for a fresh session to continue seamlessly
+
+**Goal**: A new session should be able to pick up exactly where the previous session left off without re-discovery.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
