@@ -1,0 +1,8 @@
+{
+  "hooks": {
+    "pre-commit": {
+      "command": "npx tsc --noEmit && npx eslint . --max-warnings 0",
+      "description": "Type-check and lint before committing"
+    }
+  }
+}
