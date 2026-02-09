@@ -58,7 +58,9 @@
       "WebFetch(domain:vitest.dev)",
       "Bash(timeout /t 15 /nobreak)",
       "Bash(BASE_URL=http://localhost:3000 npm run e2e:*)",
-      "Bash(del /F nul)"
+      "Bash(del /F nul)",
+      "Bash(Get-ChildItem -Path \"app/api\" -Recurse -Filter \"*.ts\")",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

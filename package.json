@@ -17,7 +17,8 @@
     "e2e:headed": "playwright test --headed",
     "e2e:debug": "playwright test --debug --headed",
     "e2e:ui": "playwright test --ui",
-    "e2e:report": "playwright show-report"
+    "e2e:report": "playwright show-report",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
