@@ -2,7 +2,40 @@
 ================================================================================
 SYNC IMPACT REPORT
 ================================================================================
-Version change: 2.1.0 → 3.0.0 (MAJOR - User Accounts & Online Platform)
+Version change: 3.1.0 → 3.2.0 (MINOR - OAuth Authentication Providers)
+
+Modified principles:
+- Section V.2: Updated Mandatory Safeguards to permit optional OAuth providers
+- Section V.6: Updated Absolute Prohibitions to allow OAuth with strict governance
+
+Added sections:
+- V.2.3 OAuth Authentication Providers (Optional Tier 1)
+
+Rationale for Amendment (CA-2026-001):
+- Addresses HIGH-004: Password reset broken, users cannot recover accounts
+- Reduces password management friction for grassroots coaches
+- 70%+ of coaches use Gmail - leverages existing trusted relationships
+- Maintains privacy-first principles: OAuth used only for auth, no tracking
+- Email/password remains primary and required option
+- Users control data: link/unlink anytime, set password anytime, delete anytime
+
+Key Safeguards:
+- Email/password MUST always be available (OAuth is convenience, not replacement)
+- No OAuth-only accounts (users can set password after OAuth signup)
+- Minimal scopes: email + name only (no calendar, contacts, files access)
+- No token storage: Supabase manages OAuth tokens, we only receive email/name/avatar
+- No tracking: OAuth providers receive no usage data or analytics
+- User control: Link/unlink providers, export data, delete account anytime
+
+Permitted Providers: Google, Apple, GitHub (via Supabase Auth)
+Prohibited: Facebook, Twitter, LinkedIn, Discord, Microsoft
+
+Security: PKCE, state validation, domain-locked redirects, minimal scopes
+Implementation: ~4-6 hours per provider via Supabase Auth
+
+================================================================================
+
+Previous Amendment: 2.1.0 → 3.0.0 (MAJOR - User Accounts & Online Platform)
 
 Modified principles:
 - Principle V: Added Tier 3 (Authenticated Features) for user accounts and cloud storage
@@ -124,8 +157,12 @@ The application adopts a **tiered feature architecture** with cloud-first persis
 - Animation history and versioning
 
 **Mandatory Safeguards**:
-1. **Email-Only Authentication**: No social login, no third-party identity providers
-2. **Minimal Profile Data**: Only email, optional display name, no additional PII collection
+1. **Authentication Options**:
+   - **Email/Password** (REQUIRED - must always be available as primary option)
+   - **OAuth Providers** (OPTIONAL - Google, Apple, GitHub permitted under Section V.2.3 governance)
+   - All authentication methods MUST support email verification
+   - Users MUST be able to link/unlink OAuth accounts and set passwords anytime
+2. **Minimal Profile Data**: Only email, optional display name, optional avatar URL (OAuth only), no additional PII collection
 3. **User Data Ownership**: Full export and deletion rights (GDPR-style compliance)
 4. **Transparent Storage**: Clear disclosure of what data is stored and where
 5. **Privacy by Default**: All content private by default unless explicitly published
@@ -157,6 +194,78 @@ The application adopts a **tiered feature architecture** with cloud-first persis
 1. **Role-Based Access Control**: Only users with admin role can access moderation tools
 2. **Audit Trail**: Admin actions logged for transparency
 3. **Transparent Policies**: Community guidelines explain what content gets moderated
+
+#### V.2.3 OAuth Authentication Providers (Optional Tier 1)
+
+**Permitted Providers:**
+- Google OAuth 2.0 (via Supabase Auth)
+- Apple Sign In (via Supabase Auth)
+- GitHub OAuth (via Supabase Auth)
+
+**Why These Providers:**
+- **Google**: Highest adoption (70%+ of web users), strong security, grassroots coaches often use Gmail
+- **Apple**: Privacy-focused (email relay, limited data sharing), required for App Store if offering social login
+- **GitHub**: Developer-friendly, minimal data sharing, aligns with open-source philosophy
+
+**Mandatory Requirements:**
+
+1. **Email/Password Must Remain Primary**
+   - OAuth is supplementary, not replacement
+   - Users MUST be able to create accounts with email/password only
+   - Login page MUST show email/password option prominently (above or equal to OAuth buttons)
+   - No "OAuth-only" accounts (users must be able to set password after OAuth signup)
+
+2. **User Control & Transparency**
+   - Users MUST be able to link/unlink OAuth providers from profile settings
+   - UI MUST clearly disclose what data is shared with each provider
+   - First-time OAuth login MUST show consent screen explaining:
+     - What data is accessed (email, name, avatar)
+     - That we don't store OAuth tokens long-term
+     - That email can be used for password recovery
+   - Users MUST be able to set a password after OAuth signup (account portability)
+
+3. **Privacy Safeguards**
+   - **No OAuth Token Storage**: We receive email/name/avatar, then discard OAuth tokens
+   - **No Cross-Site Tracking**: No sharing of user activity with OAuth providers
+   - **Minimal Scopes**: Only request email and public profile (no calendar, contacts, files access)
+   - **No Silent Auth**: No automatic login without user interaction
+   - **Data Minimization**: Store only email, display name, avatar URL (no OAuth user IDs or provider-specific tokens)
+
+4. **Security Requirements**
+   - OAuth redirect URIs MUST be domain-locked (no wildcard redirects)
+   - PKCE (Proof Key for Code Exchange) MUST be enabled for all flows
+   - State parameter MUST be validated to prevent CSRF attacks
+   - Supabase Auth MUST handle all OAuth flows (no direct provider integration)
+
+5. **Graceful Degradation**
+   - If OAuth provider is down, email/password MUST still work
+   - Users MUST be able to convert OAuth accounts to email/password
+   - Account deletion MUST revoke OAuth connections
+
+6. **No Third-Party Analytics Integration**
+   - OAuth providers MUST NOT be used for user tracking or analytics
+   - No Google Analytics, Facebook Pixel, or similar tracking tied to OAuth
+   - Provider SDKs limited to authentication only (no advertising/analytics modules)
+
+**Implementation via Supabase Auth:**
+- Supabase handles OAuth flows, token exchange, and security
+- We receive only: email, name, avatar URL
+- OAuth tokens never reach our application code
+- Supabase manages session cookies and PKCE flow
+
+**Prohibited OAuth Providers:**
+- **Facebook/Meta**: Data harvesting concerns, advertising integration risks
+- **Twitter/X**: Platform instability, unclear privacy policies
+- **LinkedIn**: Professional network, not relevant to grassroots coaching
+- **Discord**: Gaming-focused, limited coach adoption
+- **Microsoft**: Enterprise-focused, overlaps with GitHub for developer audience
+
+**Constitutional Alignment:**
+- ✅ Maintains "No telemetry" (OAuth used only for auth, not tracking)
+- ✅ Maintains "Minimal data collection" (email, name, avatar only)
+- ✅ Maintains "User data ownership" (users can export/delete anytime)
+- ✅ Maintains "No third-party analytics" (OAuth ≠ tracking)
+- ✅ Respects "Privacy-first" (email/password remains primary, OAuth is convenience)
 
 #### V.3 Data Retention & Privacy Policies
 
@@ -199,11 +308,13 @@ The application adopts a **tiered feature architecture** with cloud-first persis
 - Features requiring third-party identity providers (violates "Email-only Auth")
 - Features monetizing user data or requiring paid access to core features
 
-#### V.6 Absolute Prohibitions (Updated v3.1 - Cloud-First Model)
+#### V.6 Absolute Prohibitions (Updated v3.2 - OAuth Authentication)
 
 **STRICTLY FORBIDDEN regardless of tier:**
 - No telemetry, analytics, tracking, or user behavior monitoring
-- No third-party identity providers (Google, Facebook, Apple login)
+- No third-party identity providers for tracking or analytics purposes
+- OAuth authentication providers permitted ONLY under Section V.2.3 governance (Google, Apple, GitHub)
+- No OAuth-only accounts (email/password must remain available)
 - No third-party analytics services (Google Analytics, Sentry, Mixpanel, etc.)
 - No sale or sharing of user data with third parties
 - No paywalls (free tier must always provide genuine value, including cloud storage)
@@ -331,4 +442,4 @@ The application exists to **empower grassroots sports coaches** - volunteers, pa
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 3.1.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-31 (Architecture Pivot to Cloud-First Model)
+**Version**: 3.2.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-02-09 (OAuth Authentication Providers - Amendment CA-2026-001)
