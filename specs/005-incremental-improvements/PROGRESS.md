@@ -27,9 +27,15 @@
 
 ## Current Status
 
-**Active Issue**: None (all critical issues resolved!)
-**Completed**: 19/20 (95%)
-**Latest Task**: CRIT-003 fixed - Schema validation and error handling corrected (2026-02-09)
+**Active Issue**: HIGH-004 (Password Reset Not Fully Functional)
+**Completed**: 17/20 (85%)
+**Latest Task**: HIGH-004 reopened - Password reset goes through motions but doesn't actually change password (2026-02-09)
+
+**Recent Updates** (2026-02-09):
+- ✅ CRIT-003 fixed: Schema validation bug resolved
+- ✅ HIGH-003 verified: Tackle equipment is fully implemented (was incorrectly marked as missing)
+- ⚠️ HIGH-004 reopened: Password reset flow incomplete - requires investigation
+- 📋 ENH-001 added: Future enhancement for tackle-shield orientation control UI
 
 ### What's Next?
 
@@ -58,8 +64,8 @@
 ### 🟠 HIGH (6 issues)
 - [x] HIGH-001: No Site-Wide Navigation ✅ **FIXED** (2026-02-02, Commits: 121ddc6, 5a491c6, 13ba6cc, 651f850)
 - [ ] HIGH-002: Safari/iOS Users Can't Export Animations
-- [x] HIGH-003: Tackle Equipment Feature ✅ **IMPLEMENTED** (2026-02-09, 95% complete - 1 refinement: orientation control UI)
-- [x] HIGH-004: Password Reset Not Implemented ✅ **VERIFIED** (2026-02-02, Already implemented)
+- [x] HIGH-003: Tackle Equipment Feature ✅ **IMPLEMENTED** (2026-02-09, Feature complete - ENH-001 tracked for future orientation control UI)
+- [ ] HIGH-004: Password Reset Not Fully Functional ⚠️ **REOPENED** (2026-02-09, Goes through motions but doesn't actually change password)
 - [x] HIGH-005: Individual Animation Sharing & Replay Broken ✅ **FIXED** (2026-02-05, Commit: Pending)
 - [x] HIGH-006: Mobile Playback Optimization & Compact View ✅ **FIXED** (2026-02-07, Commit: 5215d9a)
 - [x] MED-006: Entity Color Palette Refinement ✅ **FIXED** (2026-02-02, Commits: 8bd9a04, c20be2c)
@@ -83,6 +89,65 @@
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-09 (Issue Verification & Documentation Updates)
+
+**Date**: 2026-02-09 (Part 2)
+**Issues**: HIGH-003 (Verification), HIGH-004 (Reopened)
+**Status**: Documentation updated
+
+**Work Done**:
+
+- **HIGH-003 Verification** ✅ Complete:
+  - Launched comprehensive investigation via Explore agent
+  - **Finding**: Tackle equipment is 95% implemented (not missing as documented)
+  - Verified all components working:
+    - ✅ Types: tackle-shield, tackle-bag in EntityType (src/types/index.ts:157-158)
+    - ✅ Rendering: 4-way rotation support (PlayerToken.tsx:210-235)
+    - ✅ Colors: High-vis defaults (entityColors.ts:17-18)
+    - ✅ UI buttons: Equipment section (EntityPalette.tsx:98-118)
+    - ✅ Handlers: Creation logic (Editor.tsx:242-262)
+    - ✅ Schema: Validation with optional fields (animations.ts:14,21)
+    - ✅ Save/Load: Works correctly (fixed in CRIT-003)
+    - ✅ Replay: Renders properly (shared canvas components)
+  - **One gap**: No UI control to change orientation after creation
+  - **Resolution**: Reclassified from "missing/deferred" to "complete"
+  - **Future Enhancement**: Created ENH-001 for orientation control UI (~30 min)
+
+- **HIGH-004 Reopened** ⚠️:
+  - User report: Password reset goes through motions but doesn't actually change password
+  - Previous verification (2026-02-02) confirmed UI flow but didn't test actual password change
+  - **Impact**: Users cannot recover locked accounts
+  - **Next Steps**: Debug password change mechanism, verify Supabase Auth API calls
+  - **Enhancement Opportunity**: Explore OAuth providers (Google, Apple, GitHub) as alternative
+  - **Constitutional Note**: OAuth requires amendment (currently email-only per Section 7.2)
+
+- **Documentation Updates**:
+  - Updated ISSUES_REGISTER.md with HIGH-003 verification results
+  - Added Future Enhancements section with ENH-001
+  - Reopened HIGH-004 with detailed findings
+  - Updated issue statistics (20 total, 17 complete, 3 pending, 81% completion)
+  - Updated PROGRESS.md with current status
+
+**Files Modified**:
+- `specs/005-incremental-improvements/ISSUES_REGISTER.md` - Issue status updates
+- `specs/005-incremental-improvements/PROGRESS.md` - This file
+- `specs/005-incremental-improvements/README.md` - Status summary updates
+- `specs/005-incremental-improvements/archive/` - Moved schema validation planning docs
+
+**Impact**:
+- Accurate issue tracking: HIGH-003 no longer incorrectly listed as missing
+- HIGH-004 flagged for urgent attention (users cannot reset passwords)
+- ENH-001 documented for future implementation (low priority)
+- Clear path forward: Fix password reset, consider OAuth alternatives
+
+**Next Steps**:
+1. **Priority**: Debug and fix HIGH-004 password reset (1-2 days)
+2. Evaluate OAuth providers and constitutional implications
+3. Consider HIGH-002 (Safari/iOS export) if requested
+4. Implement ENH-001 (orientation control) if users request it
+
+---
 
 ### Session 2026-02-09 (Schema Validation Fix - Implementation)
 

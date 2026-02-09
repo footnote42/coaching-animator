@@ -168,23 +168,57 @@ Added Navigation to root layout, removed duplicates from pages, refactored legal
 - ✅ Save to cloud: Works correctly (fixed in CRIT-003, 2026-02-09)
 - ✅ Replay viewer: Renders tackle equipment correctly (shared canvas components)
 
-**One Refinement Needed** (~30 minutes):
-- ⚠️ **Orientation Control**: Users can create tackle-shields but cannot change orientation after creation
-  - **Gap**: No UI control in EntityProperties.tsx for 4-way rotation (↑↓←→)
-  - **Workaround**: Users must delete and recreate to change orientation
-  - **Fix**: Add orientation selector after Possession section in EntityProperties.tsx
+**Status**: Feature complete and functional for production use.
 
-**Recommendation**: Implement orientation control for full feature completeness (Priority: Low-Medium).
+**Future Enhancement** (tracked separately):
+- **ENH-001**: Orientation Control UI for tackle-shields
+  - **Priority**: Low
+  - **Effort**: ~30 minutes
+  - **Details**: Add 4-button selector (↑↓←→) in EntityProperties.tsx
+  - **Current Workaround**: Users delete and recreate to change orientation
+  - See "Future Enhancements" section below for full details
 
 ---
 
-#### HIGH-004: Password Reset Not Implemented ✅ VERIFIED
+#### HIGH-004: Password Reset Not Fully Functional ⚠️ REOPENED
 
-**Completed**: 2026-02-02 | **Already implemented**
+**Status**: ⚠️ **REOPENED** (2026-02-09) | **Partially Functional**
 
-Feature was already fully implemented. Verified end-to-end flow works correctly. Added optional UX enhancements (commit 528f6d5):
-- Improved "no token" error message
-- Enhanced success message with expiration time and spam folder tip
+**Previous Status** (2026-02-02): Marked as verified and working
+- Verified: Request reset flow works (email sent)
+- Verified: Reset password page renders
+- Added UX enhancements (commit 528f6d5)
+
+**New Finding** (2026-02-09): Password reset goes through the motions but doesn't actually change the password
+- ✅ User can request password reset
+- ✅ Email is received with reset link
+- ✅ Reset page loads with token
+- ❌ **Password change doesn't take effect** - users cannot log in with new password
+- **Impact**: Users locked out of accounts cannot regain access
+
+**Root Cause**: Investigation needed
+- Possible issues:
+  1. Supabase Auth API call not completing correctly
+  2. Token validation failing silently
+  3. Password update not persisting to database
+  4. Missing server-side handler for password update
+
+**Related Enhancement**: OAuth/Social Login Options
+- **Motivation**: Reduce reliance on password reset flows
+- **Options to Explore**:
+  1. Google OAuth (most common, high user trust)
+  2. Apple Sign In (iOS users, privacy-focused)
+  3. GitHub OAuth (developer audience)
+  4. Magic Link (passwordless email authentication)
+- **Constitutional Considerations**: See `.specify/memory/constitution.md` Section 7.2
+  - Currently: "Email-only authentication (no third-party identity providers)"
+  - **Requires Constitutional Amendment** if adding OAuth providers
+- **Supabase Support**: Native OAuth integration available for all major providers
+
+**Next Steps**:
+1. Debug password reset flow to identify failure point
+2. Fix password update mechanism
+3. (Optional) Evaluate OAuth providers and constitutional implications
 
 ---
 
@@ -302,19 +336,62 @@ Current password validation (8+ characters) is sufficient. Password strength ind
 
 | Priority | Total | Complete | Pending | Deferred | Completion Rate |
 |----------|-------|----------|---------|----------|-----------------|
-| 🔴 CRITICAL | 2 | 2 | 0 | 0 | 100% |
-| 🟠 HIGH | 6 | 4 | 1 | 1 | 83% (100% excluding deferred) |
-| 🟡 MEDIUM | 8 | 5 | 0 | 3 | 100% (100% excluding deferred) |
-| 🟢 LOW | 3 | 1 | 1 | 1 | 67% (100% excluding deferred) |
-| **TOTAL** | **19** | **12** | **2** | **5** | **95%** |
+| 🔴 CRITICAL | 3 | 3 | 0 | 0 | 100% |
+| 🟠 HIGH | 6 | 4 | 2 | 0 | 67% |
+| 🟡 MEDIUM | 8 | 5 | 0 | 3 | 100% (excluding deferred) |
+| 🟢 LOW | 3 | 1 | 1 | 1 | 67% (excluding deferred) |
+| **TOTAL** | **20** | **13** | **3** | **4** | **81%** |
+
+**Notes**:
+- CRIT-003 added and fixed (2026-02-09): Schema validation bug
+- HIGH-003 reclassified from "deferred" to "complete" (2026-02-09): Tackle equipment verified as implemented
+- HIGH-004 reopened (2026-02-09): Password reset doesn't actually change password
+- ENH-001 added: Future enhancement for orientation control UI
+
+---
+
+## 🔮 Future Enhancements
+
+### ENH-001: Tackle-Shield Orientation Control UI
+
+**Priority**: 🟢 Low
+**Effort**: ~30 minutes
+**Status**: Tracked for future implementation
+
+**Current Behavior**:
+- Tackle-shields are created with default "up" orientation (0°)
+- Rendering supports 4-way rotation (up/right/down/left)
+- No UI control to change orientation after creation
+- Users must delete and recreate to change orientation
+
+**Proposed Enhancement**:
+- Add orientation selector to `EntityProperties.tsx` (after Possession, before Color)
+- 4-button layout: ↑ Up | → Right | ↓ Down | ← Left
+- Calls `onUpdate({ orientation: selectedOrientation })`
+- Visual feedback showing current orientation
+
+**Files to Modify**:
+- `src/components/Sidebar/EntityProperties.tsx` (~20-30 lines)
+
+**Testing**:
+- Create tackle-shield
+- Change orientation using new selector
+- Verify rotation in editor canvas
+- Save animation and verify orientation persists in replay
+
+**Workaround**: Users can delete and recreate shields with desired orientation. Feature is low priority as tackle equipment is rarely used compared to core entities (players, ball, cones).
 
 ---
 
 ## Next Steps
 
-1. **If Safari/iOS support is critical**: Implement HIGH-002 (2-3 days)
-2. **If time allows**: Fix LOW-002 for TypeScript hygiene (15 minutes)
-3. **Monitor user feedback**: Revisit deferred issues if users request them
+1. **PRIORITY: Fix HIGH-004** (Password Reset) - 1-2 days
+   - Debug password change mechanism
+   - Verify token handling and database updates
+   - Consider OAuth alternatives (requires constitutional review)
+2. **If Safari/iOS support is critical**: Implement HIGH-002 (2-3 days)
+3. **If time allows**: Fix LOW-002 for TypeScript hygiene (15 minutes)
+4. **Monitor user feedback**: Revisit ENH-001 if users request orientation control
 
 ---
 

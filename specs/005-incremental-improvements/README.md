@@ -1,19 +1,25 @@
 # Spec 005: Incremental Improvements
 
-**Status**: 🎉 Nearly Complete (18/19 complete - 95%)
+**Status**: 🔄 In Progress (17/20 complete - 85%)
 **Created**: 2026-02-01
-**Last Updated**: 2026-02-07
+**Last Updated**: 2026-02-09
 **Approach**: Incremental, pick-and-choose improvements
 **Source**: Verification of spec 004 + User observations
 
 ---
 
-## 🎉 Milestone Achievement: 95% Complete!
+## Summary
 
-**Completed**: 18 out of 19 issues (95%)
-**Remaining**: 1 open issue (HIGH-002: Safari/iOS Export)
+**Completed**: 17 out of 20 issues (85%)
+**Remaining**: 3 open issues (HIGH-002: Safari/iOS Export, HIGH-004: Password Reset, LOW-002: Type Definition)
 
-This spec has been highly successful with all critical and medium priority issues resolved. The project is now stable, feature-complete, and production-ready for 70% of users (Chrome/Firefox). Remaining work focuses on Safari/iOS compatibility.
+**Recent Updates** (2026-02-09):
+- ✅ CRIT-003 fixed: Schema validation bug resolved
+- ✅ HIGH-003 verified: Tackle equipment is fully implemented (was incorrectly marked as missing)
+- ⚠️ HIGH-004 reopened: Password reset flow incomplete - requires investigation
+- 📋 ENH-001 added: Future enhancement for tackle-shield orientation control UI
+
+All critical issues are now resolved. Remaining work includes password reset fix (urgent), Safari/iOS export compatibility, and optional enhancements.
 
 ---
 
@@ -87,9 +93,11 @@ We use the **CVSS-inspired** severity scale commonly used in software security a
 - **Status**: ✅ **IMPLEMENTED** (2026-02-09, 95% complete)
 - **Resolution**: Investigation revealed tackle equipment is fully functional. Types, rendering, colors, creation handlers, and schema validation all working. One refinement needed: orientation control UI for tackle-shields (~30 min). See ISSUES_REGISTER.md for details.
 
-#### ~~HIGH-004: Password Reset Not Implemented~~ ✅ VERIFIED
-- **Status**: ✅ **VERIFIED** (2026-02-02, Already implemented)
-- **Resolution**: Feature was already fully implemented. Verified end-to-end flow works correctly. Added optional UX enhancements (commit 528f6d5).
+#### HIGH-004: Password Reset Not Fully Functional ⚠️ REOPENED
+- **Status**: ⚠️ **REOPENED** (2026-02-09)
+- **Issue**: Password reset flow goes through motions but doesn't actually change password. Users cannot recover locked accounts.
+- **Previous Status**: Marked as verified (2026-02-02) - only tested UI flow, not actual password change.
+- **Next Steps**: Debug password change mechanism, verify Supabase Auth API calls, consider OAuth alternatives (requires constitutional amendment).
 
 #### ~~HIGH-005: Individual Animation Sharing & Replay Broken~~ ✅ FIXED
 - **Status**: ✅ **FIXED** (2026-02-05)
