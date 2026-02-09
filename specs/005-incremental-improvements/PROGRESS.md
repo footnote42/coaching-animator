@@ -90,6 +90,25 @@
 
 <!-- Add new sessions at the TOP of this section -->
 
+### Session 2026-02-09 (Vercel Deployment Hotfix)
+
+**Date**: 2026-02-09 (Part 4)
+**Issues**: MAINT-001 (Husky Deployment Error)
+**Status**: ✅ COMPLETE
+**Time Spent**: ~15 minutes
+
+**Work Done**:
+- **Issue**: Vercel deployment failed with `husky: command not found` error during `prepare` script.
+- **Root Cause**: `husky` was referenced in `package.json` scripts but missing from `devDependencies`.
+- **Fix**: Installed `husky` as a dev dependency and pushed updated `package.json`/`package-lock.json`.
+- **Verification**: User confirmed the deployment succeeded on Vercel.
+
+**Files Modified**:
+- `package.json`
+- `package-lock.json`
+
+---
+
 ### Session 2026-02-09 (Google OAuth Implementation)
 
 **Date**: 2026-02-09 (Part 3)
