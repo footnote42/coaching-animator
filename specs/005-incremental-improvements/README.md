@@ -83,9 +83,9 @@ We use the **CVSS-inspired** severity scale commonly used in software security a
 - **Status**: ✅ **FIXED** (2026-02-02, Commits: 121ddc6, 5a491c6, 13ba6cc, 651f850)
 - **Resolution**: Added Navigation to root layout, removed duplicates from pages, refactored legal and auth layouts. Navigation now appears consistently on all pages with auth-aware role-based links.
 
-#### ~~HIGH-003: Tackle Equipment Feature Missing~~ ✅ DEFERRED
-- **Status**: ✅ **DEFERRED** (Not required for current use case)
-- **Resolution**: Feature marked as future enhancement. Current entity types (players, ball, cone, marker) cover core coaching scenarios. Tackle equipment can be added later if requested.
+#### ~~HIGH-003: Tackle Equipment Feature~~ ✅ IMPLEMENTED
+- **Status**: ✅ **IMPLEMENTED** (2026-02-09, 95% complete)
+- **Resolution**: Investigation revealed tackle equipment is fully functional. Types, rendering, colors, creation handlers, and schema validation all working. One refinement needed: orientation control UI for tackle-shields (~30 min). See ISSUES_REGISTER.md for details.
 
 #### ~~HIGH-004: Password Reset Not Implemented~~ ✅ VERIFIED
 - **Status**: ✅ **VERIFIED** (2026-02-02, Already implemented)
