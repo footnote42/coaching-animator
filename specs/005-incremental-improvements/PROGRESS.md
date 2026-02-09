@@ -90,6 +90,50 @@
 
 <!-- Add new sessions at the TOP of this section -->
 
+### Session 2026-02-09 (Google OAuth Implementation)
+
+**Date**: 2026-02-09 (Part 3)
+**Issues**: ENH-002 (Google OAuth)
+**Status**: ✅ COMPLETE
+**Time Spent**: ~1.5 hours
+
+**Work Done**:
+
+- **Phase 1: Configuration & Backend** ✅
+  - Confirmed Supabase & Google Cloud credentials
+  - Created `src/app/auth/callback/route.ts` with explicit Identity object handling
+  - **Bug Fix**: Fixed `handleUnlink` in profile page to pass full Identity object to `unlinkIdentity`, not just ID (caused 400 error initially)
+
+- **Phase 2: Frontend Implementation** ✅
+  - **Login/Register**: Added "Sign in with Google" button with brand-compliant SVG icons
+  - **Profile Page**: Added "Connected Accounts" section
+    - Shows "Connected" status for Google
+    - Allows unlinking (with safety check: cannot unlink if it's the only provider)
+    - Allows setting/changing password for email/password auth (visible to all users now)
+  - **Privacy Policy**: Added OAuth data disclosure section
+
+- **Phase 3: Verification** ✅
+  - Verified User Flow:
+    - New user signup via Google → Success
+    - Existing email user linking Google → Success
+    - Account unlinking → Success
+    - Set password for OAuth-only user → Success
+  - Confirmed `redirect_uri_mismatch` fix (user updated Google Cloud Console)
+
+**Files Modified**:
+- `src/app/(auth)/login/page.tsx`
+- `src/app/(auth)/register/page.tsx`
+- `src/app/profile/page.tsx`
+- `src/app/auth/callback/route.ts` (New)
+- `src/app/(legal)/privacy/page.tsx`
+
+**Impact**:
+- Users can now sign in with Google (High trust, convenience)
+- Reduces reliance on the currently buggy Password Reset flow (HIGH-004)
+- Profile page functionality improved (Password management for all users)
+
+---
+
 ### Session 2026-02-09 (Issue Verification & Documentation Updates)
 
 **Date**: 2026-02-09 (Part 2)

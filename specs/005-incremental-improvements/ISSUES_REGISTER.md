@@ -340,7 +340,8 @@ Current password validation (8+ characters) is sufficient. Password strength ind
 | 🟠 HIGH | 6 | 4 | 2 | 0 | 67% |
 | 🟡 MEDIUM | 8 | 5 | 0 | 3 | 100% (excluding deferred) |
 | 🟢 LOW | 3 | 1 | 1 | 1 | 67% (excluding deferred) |
-| **TOTAL** | **20** | **13** | **3** | **4** | **81%** |
+| 🔵 ENHANCEMENTS | 1 | 1 | 0 | 0 | 100% |
+| **TOTAL** | **21** | **14** | **3** | **4** | **82%** |
 
 **Notes**:
 - CRIT-003 added and fixed (2026-02-09): Schema validation bug
