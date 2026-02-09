@@ -3,7 +3,7 @@
  * Run with: npx tsx scripts/add-max-animations.ts
  */
 
-// @ts-ignore - postgres package doesn't have type declarations
+// @ts-expect-error - postgres package doesn't have type declarations
 import postgres from 'postgres';
 import * as dotenv from 'dotenv';
 import * as path from 'path';

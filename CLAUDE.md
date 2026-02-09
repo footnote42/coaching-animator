@@ -1,6 +1,6 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-02-01
+Auto-generated from all feature plans. Last updated: 2026-02-08
 
 > **📚 Documentation Reorganized**: New centralized docs in `docs/` directory. See [docs/README.md](docs/README.md) for architecture, testing, troubleshooting, and getting-started guides.
 
@@ -312,6 +312,7 @@ npx tsc --noEmit
 
 ## Recent Changes
 
+- **Schema Validation Fix (2026-02-09)**: CRIT-003 resolved. Fixed critical bug preventing animations with tackle equipment from saving. Updated `EntitySchema` to include all 6 entity types (added tackle-shield, tackle-bag) with optional fields. Fixed error handling to distinguish client errors (400-499, show in modal) from network errors (0, 500-599, queue offline). Refactored to shared `ENTITY_TYPES` constant to prevent future schema drift. Users can now save complex plays with tackle shields and tackle bags successfully. See `specs/005-incremental-improvements/PROGRESS.md`.
 - **Replay Viewer Overhauled (2026-02-05)**: MED-001 + MED-002 fixed. ReplayViewer rewritten to reuse editor's shared canvas components for pixel-identical rendering. Store-free `useReplayAnimationLoop` hook replaces buggy RAF loop with smooth entity interpolation. Speed controls (0.5x/1x/2x) and loop toggle added. Centralised `normalizeReplayPayload()` for backward compatibility. 3 defensive render tests. See `specs/005-incremental-improvements/PROGRESS.md`.
 - **005-incremental-improvements Created (2026-02-01)**: New spec with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
 - **004-post-launch-improvements Verified (2026-02-01)**: Systematic verification found actual completion at 50-60%, not claimed 100%. Critical failures: retry logic exists but not used, navigation not integrated, tackle equipment missing, GIF export missing. See `specs/004-post-launch-improvements/VERIFICATION.md`.

@@ -2,28 +2,34 @@
 
 **Spec**: 005-incremental-improvements
 **Start Date**: 2026-02-01
-**Last Updated**: 2026-02-07
+**Last Updated**: 2026-02-08
 **Approach**: Incremental, pick-and-choose
-**Total Issues**: 19 identified
+**Total Issues**: 20 identified (1 new critical bug discovered)
 
 ---
 
-## 🎉 Milestone: 95% Complete!
+## ✅ CRITICAL BUG FIXED!
 
-**Status**: Nearly Complete
-**Completed**: 18/19 (95%)
-**Remaining**: 1 open issue (HIGH-002: Safari/iOS Export)
-**Deferred**: 5 issues (not needed at current scale or no user demand)
+**Status**: ✅ COMPLETE
+**Issue**: CRIT-003 - Schema Validation Bug Blocking All Saves
+**Severity**: 🔴 Critical (was breaking core functionality)
+**Impact**: Animations with tackle equipment can now be saved successfully
+**Completion Date**: 2026-02-09
 
-This spec has been highly successful with all critical issues resolved, the project stable and production-ready. Mobile optimization complete, sharing working, all core features functional.
+**Fix Applied**:
+1. ✅ Schema validation now includes all 6 entity types (tackle-shield, tackle-bag)
+2. ✅ Error handling distinguishes client errors (400-499) from network errors (0, 500-599)
+3. ✅ Refactored to shared ENTITY_TYPES constant (prevents future schema drift)
+
+**See**: Session 2026-02-09 (Schema Validation Fix - Implementation) below for details
 
 ---
 
 ## Current Status
 
-**Active Issue**: None (awaiting prioritization)
-**Completed**: 18/19 (95%)
-**Latest Task**: Task 18 complete - Deployed to production (2026-02-07)
+**Active Issue**: None (all critical issues resolved!)
+**Completed**: 19/20 (95%)
+**Latest Task**: CRIT-003 fixed - Schema validation and error handling corrected (2026-02-09)
 
 ### What's Next?
 
@@ -44,9 +50,10 @@ This spec has been highly successful with all critical issues resolved, the proj
 
 ## Issue Status
 
-### 🔴 CRITICAL (2 issues)
+### 🔴 CRITICAL (3 issues)
 - [x] CRIT-001: Save Operations Have No Retry Logic ✅ **FIXED** (2026-02-02, Commit: 2d1f71f)
 - [x] CRIT-002: Gallery Fails on Network Issues ✅ **FIXED** (2026-02-02, Commit: 2a44101)
+- [x] CRIT-003: Schema Validation Bug - Animations with Tackle Equipment Cannot Save ✅ **FIXED** (2026-02-09)
 
 ### 🟠 HIGH (6 issues)
 - [x] HIGH-001: No Site-Wide Navigation ✅ **FIXED** (2026-02-02, Commits: 121ddc6, 5a491c6, 13ba6cc, 651f850)
@@ -76,6 +83,136 @@ This spec has been highly successful with all critical issues resolved, the proj
 ## Session History
 
 <!-- Add new sessions at the TOP of this section -->
+
+### Session 2026-02-09 (Schema Validation Fix - Implementation)
+
+**Date**: 2026-02-09
+**Issue**: CRIT-003 (Schema Validation Bug)
+**Status**: ✅ COMPLETE
+**Time Spent**: ~1 hour
+
+**Work Done**:
+
+- **Phase 1: Schema Validation Fix** ✅
+  - Updated `src/lib/schemas/animations.ts` EntitySchema (lines 11-21)
+  - Added `'tackle-shield'` and `'tackle-bag'` to type enum (line 13)
+  - Added optional fields: `parentId` for ball attachment, `orientation` for tackle-shield (lines 19-20)
+  - Maintains backward compatibility with existing animations
+
+- **Phase 2: Error Handling Fix** ✅
+  - Updated `src/components/SaveToCloudModal.tsx` error handling (lines 103-125)
+  - Added 400-499 check to show errors in modal (no false success toast)
+  - Client errors (400-499) now show error message to user
+  - Network/server errors (0, 500-599) still queue offline correctly
+  - Eliminated false success on validation failures
+
+- **Phase 3: Shared Constants Refactor** ✅
+  - Created `ENTITY_TYPES` constant in `src/types/index.ts` as single source of truth
+  - Refactored `EntityType` to derive from `ENTITY_TYPES` array
+  - Updated schema to import and use `ENTITY_TYPES` constant
+  - Prevents future schema drift (TypeScript enforces sync at compile time)
+
+- **Testing & Verification** ✅
+  - ESLint: 0 errors
+  - TypeScript: 0 errors
+  - Dev server: Running successfully
+  - Manual testing: All test cases passed (user confirmed)
+    - Test 1: Save animation with tackle equipment → 201 success
+    - Test 2: Regression test without tackle equipment → Works correctly
+    - Test 3: Validation error handling → Shows error, no false success
+    - Test 4: Network error handling → Queues offline correctly
+
+**Files Modified**:
+- `src/lib/schemas/animations.ts` - Added missing entity types + optional fields
+- `src/components/SaveToCloudModal.tsx` - Fixed error handling logic
+- `src/types/index.ts` - Created ENTITY_TYPES constant
+- `specs/005-incremental-improvements/PROGRESS.md` - This file
+
+**Root Cause Confirmed**:
+- Spec 003 (2026-01-30): Schema created with 4 entity types
+- Spec 004 (2026-02-01): Tackle equipment added to types/rendering
+- **Gap**: Schema validation never updated to include new entity types
+- Commit 5215d9a (2026-02-07): File migration exposed the bug
+
+**Impact**:
+- ✅ Animations with tackle equipment now save successfully (201 response)
+- ✅ False success toast eliminated (validation errors show in modal)
+- ✅ Proper offline queueing (only for network/server errors)
+- ✅ Schema stays in sync with types (ENTITY_TYPES constant prevents future drift)
+- ✅ Users can now save complex plays with tackle shields and tackle bags
+- ✅ Database rows created correctly with tackle entities in payload JSONB
+
+**Prevention Measures Implemented**:
+1. Single source of truth: ENTITY_TYPES constant shared between types and schema
+2. TypeScript compiler enforces sync at build time
+3. Better error visibility: Client errors show in modal, not hidden as "success"
+
+**Next Steps**:
+- Monitor for any issues in production
+- Consider E2E test for "save animation with all entity types" (future enhancement)
+- Continue with remaining issues (HIGH-002: Safari/iOS Export, HIGH-003: Tackle Equipment Feature)
+
+---
+
+### Session 2026-02-08 (Critical Bug Discovery - Schema Validation)
+
+**Date**: 2026-02-08
+**Issue**: CRIT-003 (Schema Validation Bug)
+**Status**: ⚠️ DIAGNOSED - Plan Complete, Implementation Pending
+
+**Problem Report**:
+User reported: "Since refactoring I have noticed that animations no longer save to a user's playbook, nor do they appear in the public gallery."
+
+**Diagnostic Process**:
+1. **Initial Investigation**: Launched Explore agent to analyze complete save-to-cloud flow
+   - Verified API endpoints, database schema, RLS policies all correct
+   - Code logic appeared sound - no obvious bugs
+   - File migration (5215d9a) properly updated all imports
+
+2. **User Questioning**: Gathered critical runtime data
+   - POST `/api/animations` returns **400 Bad Request** (not success)
+   - User sees **success toast** (false positive)
+   - **Previously saved animations exist**, but no new saves work
+   - Dev server was properly rebuilt after refactoring
+
+3. **Root Cause Identified**: Two separate issues
+
+   **Issue 1: Schema Drift (Primary Bug)**
+   - `src/lib/schemas/animations.ts` only validates 4 entity types: `['player', 'ball', 'cone', 'marker']`
+   - App now supports 6 entity types (tackle equipment added in spec 004): `[..., 'tackle-shield', 'tackle-bag']`
+   - When tackle entities present in payload → 400 validation error at API level
+   - Schema was created in spec 003, tackle equipment added in spec 004, **schema never updated**
+
+   **Issue 2: False Success Toast (Secondary Bug)**
+   - `SaveToCloudModal.tsx` lines 105-114 treat 400 errors as "offline mode"
+   - Queues failed request and shows "Animation saved to cloud!" success message
+   - User believes save succeeded, but no database row created
+   - Design flaw: conflates client errors (400-499) with network errors (0, 500-599)
+
+**Solution Designed**:
+- **Part 1**: Update `EntitySchema` to include all 6 entity types + optional fields (`parentId`, `orientation`)
+- **Part 2**: Fix error handling to distinguish client errors (show error) vs network errors (queue offline)
+- **Part 3** (optional): Refactor to shared `ENTITY_TYPES` constant to prevent future schema drift
+
+**Timeline Discovery**:
+- Spec 003 (2026-01-30): Schema created with 4 entity types
+- Spec 004 (2026-02-01): Tackle equipment added to types/rendering
+- **Gap**: Schema validation never updated
+- Commit 5215d9a (2026-02-07): File migration exposed the bug when user tested with tackle equipment
+
+**Documentation Created**:
+- ✅ Full diagnostic plan: `SCHEMA_VALIDATION_FIX_PLAN.md`
+- ✅ Handoff prompt: `SCHEMA_VALIDATION_FIX_HANDOFF.md`
+- ✅ Updated PROGRESS.md with CRIT-003
+
+**Testing Plan**: 7-step verification process defined in plan
+**Estimated Fix Time**: ~50 minutes (5 min schema + 10 min error handling + 15 min refactor + 20 min testing)
+
+**Next Steps**:
+1. Implement Part 1: Update schema validation
+2. Implement Part 2: Fix error handling
+3. Run full test suite
+4. Deploy fix to production
 
 ### Session 2026-02-07 (Mobile Replay Optimization - Complete!)
 
@@ -816,6 +953,10 @@ This spec has been highly successful with all critical issues resolved, the proj
 **Completed**: 2026-02-02
 **Commit**: 2a44101
 **Impact**: Users see retry progress when gallery fails to load, improving reliability on unstable networks
+
+### ✅ CRIT-003: Schema Validation Bug - Animations with Tackle Equipment Cannot Save
+**Completed**: 2026-02-09
+**Impact**: Animations with tackle equipment (tackle-shield, tackle-bag) now save successfully. Fixed two-part issue: (1) Schema validation now includes all 6 entity types with optional fields, (2) Error handling distinguishes client errors (show in modal) from network errors (queue offline). Refactored to shared ENTITY_TYPES constant to prevent future schema drift. False success toast eliminated - validation errors now properly visible to users.
 
 ### ✅ HIGH-001: No Site-Wide Navigation
 **Completed**: 2026-02-02

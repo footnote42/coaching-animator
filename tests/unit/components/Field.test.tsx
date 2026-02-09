@@ -7,9 +7,9 @@ import { Field } from '../../../src/components/Canvas/Field';
 // Mock react-konva
 vi.mock('react-konva', () => {
     return {
-        Stage: ({ children }: any) => <div data-testid="konva-stage">{children}</div>,
-        Layer: ({ children }: any) => <div data-testid="konva-layer">{children}</div>,
-        Image: ({ image, width, height }: any) => {
+        Stage: ({ children }: { children: React.ReactNode }) => <div data-testid="konva-stage">{children}</div>,
+        Layer: ({ children }: { children: React.ReactNode }) => <div data-testid="konva-layer">{children}</div>,
+        Image: ({ image, width, height }: { image?: { src?: string }; width?: number; height?: number }) => {
             if (!image || !image.src) return <div data-testid="konva-layer-empty" />;
             return (
                 <div
@@ -43,7 +43,7 @@ describe('Field Component', () => {
 
             width = 0;
             height = 0;
-        } as any;
+        } as unknown as typeof Image;
         window.Image = global.Image;
     });
 

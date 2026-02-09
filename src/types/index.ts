@@ -147,14 +147,18 @@ export type SportType =
 
 /**
  * Entity categories.
+ * Export as const array for schema reuse (single source of truth).
  */
-export type EntityType =
-    | 'player'
-    | 'ball'
-    | 'cone'
-    | 'marker'
-    | 'tackle-shield'
-    | 'tackle-bag';
+export const ENTITY_TYPES = [
+  'player',
+  'ball',
+  'cone',
+  'marker',
+  'tackle-shield',
+  'tackle-bag',
+] as const;
+
+export type EntityType = typeof ENTITY_TYPES[number];
 
 /**
  * Orientation for equipment entities (tackle-shield).

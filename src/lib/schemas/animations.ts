@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENTITY_TYPES } from '@/types';
 
 export const AnimationTypeSchema = z.enum(['tactic', 'skill', 'game', 'other']);
 export const VisibilitySchema = z.enum(['private', 'link_shared', 'public']);
@@ -10,12 +11,14 @@ export const MAX_PAYLOAD_SIZE_BYTES = 1_000_000;
 // Entity schema for animation frames
 const EntitySchema = z.object({
   id: z.string(),
-  type: z.enum(['player', 'ball', 'cone', 'marker']),
+  type: z.enum(ENTITY_TYPES),  // Single source of truth
   team: z.enum(['attack', 'defense', 'neutral']),
   x: z.number(),
   y: z.number(),
   color: z.string().optional(),
   label: z.string().optional(),
+  parentId: z.string().optional(),  // For ball attachment
+  orientation: z.enum(['up', 'down', 'left', 'right']).optional(),  // For tackle-shield
 });
 
 // Annotation schema

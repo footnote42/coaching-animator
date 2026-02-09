@@ -101,7 +101,17 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
       );
 
       if (!result.ok || !result.data) {
-        // If it was a network error (status 0) or server error (5xx), queue it
+        // Client errors (400-499): Show error in modal, DO NOT queue offline
+        if (result.status >= 400 && result.status < 500) {
+          setError(
+            result.status === 400
+              ? 'Invalid animation data. Please try again or contact support.'
+              : result.error || 'Failed to save animation'
+          );
+          return;
+        }
+
+        // Network/Server errors (0, 500-599): Queue offline
         if (result.status === 0 || result.status >= 500) {
           const offlineId = offlineQueue.addItem({
             type: 'create',

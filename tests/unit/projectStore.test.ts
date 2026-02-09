@@ -128,7 +128,9 @@ describe('ProjectStore - newProject', () => {
         expect(updatedState.project?.createdAt).toBe(updatedState.project?.updatedAt);
 
         // Verify timestamps are within reasonable range
-        expect(updatedState.project?.createdAt! >= beforeTime).toBe(true);
-        expect(updatedState.project?.createdAt! <= afterTime).toBe(true);
+        const createdAt = updatedState.project?.createdAt;
+        expect(createdAt).toBeDefined();
+        expect(createdAt! >= beforeTime).toBe(true);
+        expect(createdAt! <= afterTime).toBe(true);
     });
 });
