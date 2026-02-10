@@ -31,7 +31,7 @@ Spec 005 is **91% complete** with only 2 open issues remaining. All critical, me
 
 **High Priority (5/6):**
 - Site-wide navigation ✅
-- Password reset (verified existing) ✅
+- Password reset & management ✅
 - Individual animation sharing ✅
 - Mobile playback optimization ✅
 - Tackle equipment ✅

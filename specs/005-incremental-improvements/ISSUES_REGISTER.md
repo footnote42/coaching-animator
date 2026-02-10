@@ -180,45 +180,32 @@ Added Navigation to root layout, removed duplicates from pages, refactored legal
 
 ---
 
-#### HIGH-004: Password Reset Not Fully Functional ⚠️ REOPENED
+#### HIGH-004: Password Reset & Profile Password Management ✅ FIXED
 
-**Status**: ⚠️ **REOPENED** (2026-02-09) | **Partially Functional**
+**Status**: ✅ **FIXED** (2026-02-09)
 
-**Previous Status** (2026-02-02): Marked as verified and working
-- Verified: Request reset flow works (email sent)
-- Verified: Reset password page renders
-- Added UX enhancements (commit 528f6d5)
+#### Description
 
-**New Finding** (2026-02-09): Password reset goes through the motions but doesn't actually change the password
-- ✅ User can request password reset
-- ✅ Email is received with reset link
-- ✅ Reset page loads with token
-- ❌ **Password change doesn't take effect** - users cannot log in with new password
-- **Impact**: Users locked out of accounts cannot regain access
+The password reset flow was previously reported as "going through the motions" but not persisting changes. Additionally, the profile page had UI bugs preventing reliable password updates.
 
-**Root Cause**: Investigation needed
-- Possible issues:
-  1. Supabase Auth API call not completing correctly
-  2. Token validation failing silently
-  3. Password update not persisting to database
-  4. Missing server-side handler for password update
+#### Resolution
 
-**Related Enhancement**: OAuth/Social Login Options
-- **Motivation**: Reduce reliance on password reset flows
-- **Options to Explore**:
-  1. Google OAuth (most common, high user trust)
-  2. Apple Sign In (iOS users, privacy-focused)
-  3. GitHub OAuth (developer audience)
-  4. Magic Link (passwordless email authentication)
-- **Constitutional Considerations**: See `.specify/memory/constitution.md` Section 7.2
-  - Currently: "Email-only authentication (no third-party identity providers)"
-  - **Requires Constitutional Amendment** if adding OAuth providers
-- **Supabase Support**: Native OAuth integration available for all major providers
+1.  **Profile Page UI Fixes**: Resolved a syntax error and conditional visibility bug that was hiding the password form.
+2.  **Set Password for OAuth Users**: Implemented a new "Set Password" flow in `profile/page.tsx` for users who sign up via Google but want to add an email/password credential later.
+3.  **Consistent Password Updates**: Standardized the use of `supabase.auth.updateUser({ password })` across the profile and reset-password pages.
+4.  **Verified Flow**: Confirmed that password updates now persist and allow users to authenticate with their new credentials.
 
-**Next Steps**:
-1. Debug password reset flow to identify failure point
-2. Fix password update mechanism
-3. (Optional) Evaluate OAuth providers and constitutional implications
+#### Files Modified
+
+- `src/app/profile/page.tsx`
+- `src/app/(auth)/reset-password/page.tsx`
+
+#### Success Criteria
+
+- ✅ Users can set a password if they only have an OAuth identity
+- ✅ Users can change an existing password via the profile page
+- ✅ Password reset flow via email link correctly updates the user record
+- ✅ No UI errors or hidden forms in the password management section
 
 ---
 
@@ -347,12 +334,12 @@ Resolved Vercel deployment failure caused by missing `husky` dependency. Added `
 | Priority | Total | Complete | Pending | Deferred | Completion Rate |
 |----------|-------|----------|---------|----------|-----------------|
 | 🔴 CRITICAL | 3 | 3 | 0 | 0 | 100% |
-| 🟠 HIGH | 6 | 4 | 2 | 0 | 67% |
+| 🟠 HIGH | 6 | 5 | 1 | 0 | 83% |
 | 🟡 MEDIUM | 8 | 5 | 0 | 3 | 100% (excluding deferred) |
 | 🟢 LOW | 3 | 1 | 1 | 1 | 67% (excluding deferred) |
 | 🔵 ENHANCEMENTS | 1 | 1 | 0 | 0 | 100% |
 | 🔧 MAINTENANCE | 1 | 1 | 0 | 0 | 100% |
-| **TOTAL** | **22** | **15** | **3** | **4** | **83%** |
+| **TOTAL** | **22** | **16** | **2** | **4** | **89%** |
 
 **Notes**:
 - CRIT-003 added and fixed (2026-02-09): Schema validation bug
