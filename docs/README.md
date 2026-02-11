@@ -1,8 +1,8 @@
 # Coaching Animator Documentation
 
-**Last Updated**: 2026-01-31
+**Last Updated**: 2026-02-11
 **Project Status**: 111/111 development tasks complete (95% of total)
-**Current Phase**: Phase 13 - Production Deployment
+**Current Phase**: Spec 005 - Incremental Improvements (82% complete)
 
 ---
 
@@ -24,6 +24,31 @@ These documents define the project's core principles and requirements:
 - **[Constitution](../.specify/memory/constitution.md)** - Core governance, architectural principles, and tiered feature model (Tier 0-3)
 - **[PRD](../.specify/memory/PRD.md)** - Product Requirements Document (sections 16-22 cover online platform)
 - **[CLAUDE.md](../CLAUDE.md)** - Auto-generated comprehensive development guidelines
+
+### PRD Analysis & Alignment
+
+Comprehensive analysis of implementation vs. requirements:
+
+- **[PRD Alignment Report](PRD_ALIGNMENT_REPORT.md)** - Executive summary of PRD coverage
+  - **89% alignment score** (76/85 requirements implemented)
+  - Zero P0 critical gaps
+  - Scope evolution analysis
+  - Risk assessment and recommendations
+  - Stakeholder communication templates
+
+- **[PRD Mapping](PRD_MAPPING.md)** - Requirements traceability matrix
+  - Line-by-line mapping of 85 PRD requirements to implementation
+  - Status indicators (✅ Implemented, 🟡 Partial, ❌ Missing)
+  - Implementation file references
+  - Beyond-PRD features documented
+  - Coverage metrics by category
+
+- **[PRD Gap Analysis](PRD_GAP_ANALYSIS.md)** - Prioritized backlog of missing features
+  - 2 P1 high-priority gaps (Safari export, community guidelines)
+  - 3 P2 medium-priority gaps (acceptable deferral)
+  - 4 P3 Phase 2 features (following system, etc.)
+  - Gap resolution roadmap (Sprint 1, Sprint 2, Phase 2)
+  - Risk assessment by gap
 
 ### Architecture
 
@@ -245,9 +270,12 @@ See [API Contracts](architecture/api-contracts.md) for full specifications.
 3. [Troubleshooting Guides](troubleshooting/)
 
 ### For Project Managers
-1. [Constitution](../.specify/memory/constitution.md)
-2. [PRD](../.specify/memory/PRD.md)
-3. [CLAUDE.md](../CLAUDE.md) (Project Status section)
+1. [PRD Alignment Report](PRD_ALIGNMENT_REPORT.md) ⭐ Start here
+2. [PRD Gap Analysis](PRD_GAP_ANALYSIS.md)
+3. [PRD Mapping](PRD_MAPPING.md)
+4. [Constitution](../.specify/memory/constitution.md)
+5. [PRD](../.specify/memory/PRD.md)
+6. [CLAUDE.md](../CLAUDE.md) (Project Status section)
 
 ---
 
@@ -264,6 +292,8 @@ See [API Contracts](architecture/api-contracts.md) for full specifications.
 - Understand database structure → [Database Schema](architecture/database-schema.md)
 - Know what features are Tier 1 vs Tier 2 → [Constitution](../.specify/memory/constitution.md)
 - Understand sharing/replay → See "Sharing & Replay Feature" below
+- Check PRD alignment and coverage → [PRD Alignment Report](PRD_ALIGNMENT_REPORT.md)
+- Find missing features → [PRD Gap Analysis](PRD_GAP_ANALYSIS.md)
 
 ---
 
@@ -314,6 +344,9 @@ These canvas components are shared between the editor (`/app`) and replay (`/rep
 ```
 docs/
 ├── README.md                          # This file
+├── PRD_ALIGNMENT_REPORT.md            # Executive summary (89% coverage)
+├── PRD_MAPPING.md                     # Requirements traceability matrix
+├── PRD_GAP_ANALYSIS.md                # Prioritized backlog
 ├── architecture/
 │   ├── database-schema.md             # Supabase PostgreSQL tables and RLS
 │   ├── api-contracts.md               # API endpoint specifications
@@ -355,6 +388,12 @@ Root Files:
 ---
 
 ## Recent Changes
+
+**2026-02-11**: PRD alignment analysis complete
+- Created comprehensive PRD mapping (85 requirements traced)
+- Generated gap analysis (2 P1, 3 P2, 4 P3 gaps identified)
+- Published alignment report (89% coverage score)
+- All analysis documents linked in this index
 
 **2026-01-31**: Documentation reorganization
 - Created centralized `/docs/` structure
