@@ -10,8 +10,9 @@ Auto-generated from all feature plans. Last updated: 2026-02-11
 - **Approach**: Incremental, pick-and-choose improvements (14 issues identified)
 - **Status**: 🔴 2 Critical, 🟠 5 High, 🟡 5 Medium, 🟢 2 Low priority issues
 - **Previous Spec**: `specs/004-post-launch-improvements/` (50-60% complete, see VERIFICATION.md)
-- **PRD**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform)
-- **Constitution**: `.specify/memory/constitution.md` (v3.0 with Tier 3 Authenticated)
+- **PRD v1.0**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform, 89% coverage)
+- **PRD v2.0**: `.specify/memory/PRD-v2.0.md` (DRAFT - Rugby coaching platform with progressions, organizations, version control)
+- **Constitution**: `.specify/memory/constitution.md` (v3.2 with OAuth providers)
 - **Data Model**: `docs/architecture/database-schema.md`
 - **API Contracts**: `docs/architecture/api-contracts.md` (extracted from `archive/specs/003-online-platform/contracts/api-contracts.md`)
 
@@ -34,7 +35,8 @@ Auto-generated from all feature plans. Last updated: 2026-02-11
 | **Missing features** | [docs/PRD_GAP_ANALYSIS.md](docs/PRD_GAP_ANALYSIS.md) (2 P1, 3 P2, 4 P3 gaps) |
 | **Requirements mapping** | [docs/PRD_MAPPING.md](docs/PRD_MAPPING.md) (85 requirements traced) |
 | **Governance & principles** | [.specify/memory/constitution.md](.specify/memory/constitution.md) |
-| **Product requirements** | [.specify/memory/PRD.md](.specify/memory/PRD.md) |
+| **Product requirements (v1.0)** | [.specify/memory/PRD.md](.specify/memory/PRD.md) |
+| **Product requirements (v2.0)** | [.specify/memory/PRD-v2.0.md](.specify/memory/PRD-v2.0.md) (DRAFT) |
 
 ## Active Technologies
 
