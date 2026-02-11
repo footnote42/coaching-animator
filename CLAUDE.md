@@ -1,6 +1,6 @@
 # coaching-animator Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-02-08
+Auto-generated from all feature plans. Last updated: 2026-02-11
 
 > **📚 Documentation Reorganized**: New centralized docs in `docs/` directory. See [docs/README.md](docs/README.md) for architecture, testing, troubleshooting, and getting-started guides.
 
@@ -30,6 +30,9 @@ Auto-generated from all feature plans. Last updated: 2026-02-08
 | **Debug auth issues** | [docs/troubleshooting/session-persistence.md](docs/troubleshooting/session-persistence.md) or [docs/troubleshooting/supabase-aborterror-fix.md](docs/troubleshooting/supabase-aborterror-fix.md) |
 | **Debug profile issues** | [docs/troubleshooting/profile-bugs-resolution-summary.md](docs/troubleshooting/profile-bugs-resolution-summary.md) |
 | **Debug API issues** | [docs/troubleshooting/production-stability.md](docs/troubleshooting/production-stability.md) |
+| **PRD alignment & coverage** | [docs/PRD_ALIGNMENT_REPORT.md](docs/PRD_ALIGNMENT_REPORT.md) (89% coverage) |
+| **Missing features** | [docs/PRD_GAP_ANALYSIS.md](docs/PRD_GAP_ANALYSIS.md) (2 P1, 3 P2, 4 P3 gaps) |
+| **Requirements mapping** | [docs/PRD_MAPPING.md](docs/PRD_MAPPING.md) (85 requirements traced) |
 | **Governance & principles** | [.specify/memory/constitution.md](.specify/memory/constitution.md) |
 | **Product requirements** | [.specify/memory/PRD.md](.specify/memory/PRD.md) |
 
@@ -67,6 +70,9 @@ After completing implementation work, **always proactively**:
 ```text
 docs/                        # Developer documentation (NEW)
 ├── README.md                # Documentation index and quick links
+├── PRD_ALIGNMENT_REPORT.md  # Executive summary (89% coverage, 2026-02-11)
+├── PRD_MAPPING.md           # Requirements traceability matrix (85 requirements)
+├── PRD_GAP_ANALYSIS.md      # Prioritized backlog (2 P1, 3 P2, 4 P3 gaps)
 ├── architecture/            # System design documentation
 │   ├── database-schema.md   # Supabase tables, RLS, migrations
 │   ├── api-contracts.md     # API endpoint specifications
