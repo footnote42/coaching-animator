@@ -64,7 +64,15 @@ cp .env.local.example .env.local
 The core animation tool works fully offline. Online features require Supabase configuration.
 
 ### For Developers
-For complete development setup, architecture details, and contributing guidelines, see **[Developer Documentation](docs/)**.
+
+**Comprehensive Documentation Available**:
+- **[Getting Started Guide](docs/development/getting-started.md)** - Setup, development workflow, and testing
+- **[Developer Documentation](docs/)** - Architecture, API contracts, database schema
+- **[Feature Modules](src/features/)** - Animation & Gallery READMEs with usage examples
+- **[Core Module](src/core/README.md)** - Shared utilities, hooks, stores, and types
+- **[Shared Components](src/shared/README.md)** - UI component library and design system
+
+The codebase follows a **feature-based architecture** (refactored Feb 2024) for V2.0 readiness. See the [Project Structure](#project-structure-feature-based-architecture) section below for details.
 
 ---
 
@@ -191,51 +199,111 @@ The Rugby Animation Tool follows the **Tactical Clubhouse Aesthetic**:
 - **React 18** + TypeScript
 - **Konva** - HTML5 Canvas library for smooth rendering
 - **Zustand** - Lightweight state management
-- **Tailwind CSS** - Modern utility-first styling
+- **Tailwind CSS v4** - Modern utility-first styling with CSS-based configuration
 - **Supabase** - Authentication, database, and storage
 - **Serwist** - PWA service worker for offline support
 
-### Project Structure
+### Project Structure (Feature-Based Architecture)
+
+The project follows a **feature-based architecture** (refactored Feb 2024) for scalability and V2.0 readiness:
+
 ```
-├── app/              # Next.js App Router pages and API routes
-│   ├── (auth)/       # Authentication pages
-│   ├── (legal)/      # Legal pages (Terms, Privacy, Contact)
-│   ├── admin/        # Admin dashboard
-│   ├── api/          # API endpoints
-│   ├── gallery/      # Public gallery pages
-│   ├── my-gallery/   # Personal gallery page
-│   ├── app/          # Animation tool (main application)
-│   ├── page.tsx      # Landing page
-│   └── layout.tsx    # Root layout
-├── components/       # React components
-│   ├── AnimationCard.tsx
-│   ├── Editor.tsx
-│   ├── SaveToCloudModal.tsx
-│   └── [other components]
-├── lib/              # Shared utilities and Supabase clients
-├── src/              # Core animation components (from Vite)
-├── specs/            # Feature specifications and tasks
-└── supabase/         # Database migrations
+├── src/
+│   ├── app/                 # Next.js App Router (pages, API routes, layouts)
+│   │   ├── (auth)/          # Authentication pages
+│   │   ├── (legal)/         # Legal pages (Terms, Privacy, Contact)
+│   │   ├── admin/           # Admin dashboard
+│   │   ├── api/             # API endpoints
+│   │   ├── gallery/         # Public gallery pages
+│   │   ├── my-gallery/      # Personal gallery page
+│   │   ├── app/             # Animation tool (main application)
+│   │   ├── replay/          # Animation replay pages
+│   │   ├── page.tsx         # Landing page
+│   │   └── layout.tsx       # Root layout
+│   ├── core/                # Shared utilities and domain logic
+│   │   ├── hooks/           # Custom React hooks (8 files)
+│   │   ├── stores/          # Zustand state management
+│   │   ├── types/           # TypeScript type definitions
+│   │   ├── utils/           # Pure utility functions
+│   │   ├── constants/       # Design tokens, validation rules
+│   │   └── README.md        # Core module documentation
+│   ├── features/            # Feature modules (domain-driven design)
+│   │   ├── animation/       # Animation editor feature
+│   │   │   ├── components/  # Canvas, Sidebar, Timeline, Editor
+│   │   │   ├── services/    # EntityColors service
+│   │   │   └── README.md    # Animation feature documentation
+│   │   └── gallery/         # Gallery feature
+│   │       ├── components/  # AnimationCard, PublicAnimationCard
+│   │       └── README.md    # Gallery feature documentation
+│   ├── shared/              # Reusable UI components
+│   │   ├── components/      # Navigation, ErrorBoundary, Modals
+│   │   ├── ui/              # Base UI primitives (Button, Dialog, etc.)
+│   │   └── README.md        # Shared module documentation
+│   └── lib/                 # Third-party integrations (Supabase, contexts)
+├── docs/                    # Developer documentation
+│   ├── README.md            # Documentation index
+│   ├── architecture/        # System design docs
+│   ├── development/         # Developer guides
+│   ├── testing/             # Testing strategy
+│   ├── troubleshooting/     # Debugging guides
+│   └── operations/          # CI/CD, deployment
+├── archive/specs/           # Archived specifications
+│   ├── 003-online-platform/ # Completed: User accounts, galleries
+│   ├── 004-post-launch-improvements/
+│   └── 005-incremental-improvements/
+└── supabase/                # Database migrations
 ```
+
+**Path Aliases** (configured in `tsconfig.json`):
+- `@/core/*` → Shared utilities, hooks, stores, types, constants
+- `@/features/*` → Feature modules (animation, gallery, future: organizations)
+- `@/shared/*` → Shared UI components and primitives
+- `@/lib/*` → Third-party integrations (Supabase, contexts)
 
 ---
 
 ## 🤝 Contributing
 
-This project follows a spec-driven development workflow. Current work focuses on the online platform migration:
+This project follows a spec-driven development workflow with comprehensive documentation.
 
-**Current Status**: Development complete (111/111 tasks)
-- ✅ All P1 stories complete (US1-US3: Auth, Save, Public Gallery)
-- ✅ All P2 stories complete (US4-US7: Guest Mode, Upvotes, Reports, Landing)
-- ✅ P3 stories complete (US8-US9: Admin moderation and Remix)
-- 🔄 In Progress: Production deployment (Phase 13 - 25 remaining tasks)
+### Current Project Status
 
-**Development Documents**:
-1. Check `/specs/003-online-platform/spec.md` for current feature specifications
-2. Review `/specs/003-online-platform/tasks.md` for implementation progress
-3. See `/specs/003-online-platform/PROGRESS.md` for session history
+**Online Platform (003-online-platform)**: ✅ Complete (111/111 tasks)
+- ✅ User accounts, cloud storage, galleries
+- ✅ Social features (upvoting, reporting)
+- ✅ Admin moderation dashboard
+- ✅ PWA with offline support
 
-**Submit Issues**: Reference specific User Stories (US1-US9) or Task IDs (T001-T111) when reporting bugs.
+**V2 Foundation Refactor (T001)**: ✅ Complete (Feb 2024)
+- ✅ T002: PRD v2.0 updated with audit findings
+- ✅ T003: Feature-based architecture (85 files migrated, 132+ imports updated)
+- ✅ T004: Barrel exports for all modules
+- ✅ T005: Comprehensive README documentation (~9,700 lines)
+
+**Current Iteration**: 005-incremental-improvements
+- 14 identified issues (2 critical, 5 high, 5 medium, 2 low priority)
+- Pick-and-choose approach for incremental fixes
+- See `archive/specs/005-incremental-improvements/` for details
+
+### Documentation Quick Links
+
+**For New Contributors**:
+- [Getting Started](docs/development/getting-started.md) - Setup and onboarding
+- [Architecture Overview](docs/README.md) - System design
+- [Feature Modules](src/features/) - Animation, Gallery READMEs
+- [Core Module](src/core/README.md) - Shared utilities and state management
+- [Shared Components](src/shared/README.md) - UI component library
+
+**For Development**:
+- [API Contracts](docs/architecture/api-contracts.md) - Endpoint specifications
+- [Database Schema](docs/architecture/database-schema.md) - Supabase tables and RLS
+- [Testing Strategy](docs/testing/strategy.md) - E2E testing approach
+- [Troubleshooting](docs/troubleshooting/) - Debugging guides
+
+**Submit Issues**:
+- Reference Task IDs (e.g., T001-T111) or issue codes (e.g., CRIT-001, HIGH-001)
+- Check `archive/specs/005-incremental-improvements/` for known issues
+- Include steps to reproduce, expected vs actual behavior, and browser/OS details
 
 ---
 
@@ -277,6 +345,60 @@ This project follows a spec-driven development workflow. Current work focuses on
 - **Video Export**: Requires Chrome/Edge for best compatibility
 - **Mobile Safari**: Limited video export support
 - **Supabase AbortError (Console Warning)**: You may see `AbortError: signal is aborted without reason` in the browser console during auth initialization. This is a known, harmless issue in the `@supabase/ssr` package that doesn't affect functionality. The error can be safely ignored.
+
+---
+
+## 📚 Documentation
+
+The project includes comprehensive documentation for developers, architects, and contributors:
+
+### Feature Module READMEs
+
+Each feature module has detailed documentation:
+
+- **[Animation Feature](src/features/animation/README.md)** (~3,800 lines)
+  - Editor, ReplayViewer, Canvas components
+  - EntityColors service and color management patterns
+  - State management integration with Zustand
+  - Custom hooks (useAnimationLoop, useExport, useFrameCapture, etc.)
+  - Testing patterns and V2.0 roadmap
+
+- **[Gallery Feature](src/features/gallery/README.md)** (~1,100 lines)
+  - Gallery card components (personal & public)
+  - Optimistic updates pattern
+  - Infinite scroll implementation
+  - API integration examples
+
+- **[Core Module](src/core/README.md)** (~2,900 lines)
+  - Zustand stores (projectStore, uiStore) with full API docs
+  - 8 custom hooks with usage examples
+  - Type definitions and constants
+  - Utilities (serialization, validation, interpolation)
+  - Dependency architecture rules
+
+- **[Shared Components](src/shared/README.md)** (~1,900 lines)
+  - Application components (Navigation, Modals, ErrorBoundary)
+  - UI primitives (Button, Dialog, Input, Select, Slider)
+  - Custom components (ColorPicker, ConfirmDialog, EntityContextMenu)
+  - Tailwind v4 design system and accessibility patterns
+
+### Developer Documentation
+
+Comprehensive guides in the `docs/` directory:
+
+- **[Documentation Index](docs/README.md)** - Quick navigation
+- **[Architecture](docs/architecture/)** - System design, database schema, API contracts
+- **[Development](docs/development/)** - Getting started, setup guides
+- **[Testing](docs/testing/)** - E2E strategy, Playwright guides
+- **[Troubleshooting](docs/troubleshooting/)** - Debugging session persistence, production stability
+- **[Operations](docs/operations/)** - CI/CD, deployment, staging setup
+
+### Product & Governance
+
+- **[PRD v1.0](docs/authority/PRD.md)** - Original product requirements (89% coverage)
+- **[PRD v2.0 (DRAFT)](docs/authority/PRD-v2.0.md)** - Rugby coaching platform vision
+- **[Constitution](docs/authority/constitution.md)** - v3.3 with organizational tier & privacy-preserving metrics
+- **[V2 Vision](docs/authority/V2_VISION.md)** - Future roadmap and features
 
 ---
 
