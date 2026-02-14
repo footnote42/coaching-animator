@@ -67,7 +67,9 @@
       "Bash(cleo show:*)",
       "Bash(cleo complete:*)",
       "Bash(cleo add:*)",
-      "Bash(cleo update:*)"
+      "Bash(cleo update:*)",
+      "Bash(git checkout:*)",
+      "Bash(cleo session start:*)"
     ]
   }
 }

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
-import { Navigation } from '@/components/Navigation';
+import { Navigation } from '@/shared/components/Navigation';
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +38,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-import { OfflineIndicator } from '@/components/OfflineIndicator';
+import { OfflineIndicator } from '@/shared/components/OfflineIndicator';
 import { Toaster } from 'sonner';
 
 export default function RootLayout({

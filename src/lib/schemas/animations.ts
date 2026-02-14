@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ENTITY_TYPES } from '@/types';
+import { ENTITY_TYPES } from '@/core/types';
 
 export const AnimationTypeSchema = z.enum(['tactic', 'skill', 'game', 'other']);
 export const VisibilitySchema = z.enum(['private', 'link_shared', 'public']);

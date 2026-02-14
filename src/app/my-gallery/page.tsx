@@ -3,9 +3,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpDown, Plus, Loader2, FolderOpen } from 'lucide-react';
-import { AnimationCard, AnimationSummary } from '@/components/AnimationCard';
-import { EditMetadataModal } from '@/components/EditMetadataModal';
-import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
+import { AnimationCard, AnimationSummary } from '@/features/gallery/components/AnimationCard';
+import { EditMetadataModal } from '@/shared/components/EditMetadataModal';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog';
 import { MyAnimationsQuery } from '@/lib/schemas/animations';
 import { getWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { useUser } from '@/lib/contexts/UserContext';
