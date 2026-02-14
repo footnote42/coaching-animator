@@ -3,7 +3,7 @@
   "_meta": {
     "version": "1.0.0",
     "created": "2026-02-14T15:31:23Z",
-    "lastModified": "2026-02-14T15:31:23Z"
+    "lastModified": "2026-02-14T18:30:34Z"
   },
   "backups": [
     {
@@ -16,6 +16,54 @@
       ],
       "checksumSummary": "367b633cb36bbda4f9d7a3bd1915be9f43bbb55d1a30279540fc361d1be0b1d3",
       "sizeBytes": 2874,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260214_180309_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-14T18:03:09Z",
+      "path": ".cleo/backups/safety/safety_20260214_180309_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "77df648643f3a589e4e5c0ddd061a0c1c10753df66f6b6ccb3f29c7375733407",
+      "sizeBytes": 10083,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260214_180800_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-14T18:08:00Z",
+      "path": ".cleo/backups/safety/safety_20260214_180800_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "49068bab7e3a75e7e09d760a10dcd83b3e808bc337917bc08e5fa25dafad61a5",
+      "sizeBytes": 10685,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260214_182231_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-14T18:22:29Z",
+      "path": ".cleo/backups/safety/safety_20260214_182231_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "a71fb75309e990dad5b4e470696fb36c03926e6d32fa611e189a78b5e82803d7",
+      "sizeBytes": 11272,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260214_183033_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-14T18:30:34Z",
+      "path": ".cleo/backups/safety/safety_20260214_183033_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "edc160e71a3b4be6612f8f7ecf67ccb9dc1469318b5c30fcf96557ee8db8aa0b",
+      "sizeBytes": 12021,
       "neverDelete": false
     }
   ]

@@ -69,7 +69,17 @@
       "Bash(cleo add:*)",
       "Bash(cleo update:*)",
       "Bash(git checkout:*)",
-      "Bash(cleo session start:*)"
+      "Bash(cleo session start:*)",
+      "Bash(git stash pop:*)",
+      "Bash(git stash drop:*)",
+      "Bash(cleo list:*)",
+      "Bash(cleo session end:*)",
+      "Bash(ct session:*)",
+      "Bash(ct focus:*)",
+      "Bash(ct show:*)",
+      "Bash(ct complete:*)",
+      "Bash(export CLEO_SESSION=session_20260214_150509_d8380c)",
+      "Bash(ct list:*)"
     ]
   }
 }

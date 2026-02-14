@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 17,
+    "totalEntries": 18,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T18:22:37Z",
+    "lastEntry": "2026-02-14T18:30:39Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -366,6 +366,26 @@
       "after": {
         "status": "done",
         "completedAt": "2026-02-14T18:22:29Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_28cbc4d0aec1",
+      "timestamp": "2026-02-14T18:30:39Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T001",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-14T18:30:34Z"
       },
       "details": {
         "field": "status",
