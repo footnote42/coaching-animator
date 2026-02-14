@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 6,
+    "totalEntries": 10,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T16:38:09Z",
+    "lastEntry": "2026-02-14T18:08:23Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -267,6 +267,74 @@
         "title": "Document feature modules with README files",
         "status": "pending",
         "priority": "medium"
+      }
+    },
+    {
+      "id": "log_2cb59b20e781",
+      "timestamp": "2026-02-14T18:03:17Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T003",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-14T18:03:09Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_12f2269d1722",
+      "timestamp": "2026-02-14T18:04:03Z",
+      "sessionId": "session_20260214_180403_6bf7cb",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T004",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T004"
+      }
+    },
+    {
+      "id": "log_6d95e3a240aa",
+      "timestamp": "2026-02-14T18:08:02Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T004",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-14T18:08:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_706ef94d3497",
+      "timestamp": "2026-02-14T18:08:23Z",
+      "sessionId": "session_20260214_180403_6bf7cb",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T004 complete: Barrel exports created for animation, gallery, core, and shared modules. All TypeScript checks pass."
       }
     }
   ]

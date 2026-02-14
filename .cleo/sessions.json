@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-14T16:38:09Z",
-    "totalSessionsCreated": 2
+    "lastModified": "2026-02-14T18:08:23Z",
+    "totalSessionsCreated": 3
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -99,6 +99,49 @@
         "start_tokens": 0,
         "max_tokens": 200000
       }
+    },
+    {
+      "id": "session_20260214_180403_6bf7cb",
+      "status": "ended",
+      "name": "Barrel Exports",
+      "agentId": null,
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T004",
+        "computedTaskIds": [
+          "T004"
+        ]
+      },
+      "focus": {
+        "currentTask": null,
+        "currentPhase": null,
+        "previousTask": "T004",
+        "sessionNote": "T004 complete: Barrel exports created for animation, gallery, core, and shared modules. All TypeScript checks pass.",
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T004",
+            "timestamp": "2026-02-14T18:04:03Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-14T18:04:03Z",
+      "lastActivity": "2026-02-14T18:08:23Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 1,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260214_180403_6bf7cb",
+        "start_timestamp": "2026-02-14T18:04:03Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      },
+      "endedAt": "2026-02-14T18:08:23Z"
     }
   ],
   "sessionHistory": []
