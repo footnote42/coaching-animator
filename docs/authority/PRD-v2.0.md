@@ -60,6 +60,58 @@ Transform Coaching Animator from a personal animation tool into a **rugby coachi
 - ⚠️ **AI Text-to-Animation** - Starting positions, full movement generation
 - ⚠️ **Mobile Editor Optimization** - Touch UX improvements (basic functionality retained)
 
+### 1.2.1 Architectural Regression: Offline Fallback Removal (Cloud-First Pivot)
+
+**⚠️ IMPORTANT: v1.0 → v2.0 Architectural Change**
+
+**What Changed:**
+- **v1.0 (Cloud-optional)**: Animations saved to localStorage first, sync to cloud when online
+- **v2.0 (Cloud-first)**: All persistence requires Supabase backend; localStorage used only for transient state
+
+**Why This Changed:**
+- Organizational tier (Tier 4) requires real-time collaboration and audit trails (impossible with eventual sync)
+- Version control requires centralized history (can't merge conflicting offline edits)
+- Hampshire RFU partnership requires reliable shared storage (not local-first)
+- PRD v2.0 Section 1.2 explicitly removes "graceful degradation if Supabase down" from requirements
+
+**User Impact - Migration Notice:**
+| Scenario | v1.0 Behavior | v2.0 Behavior | User Action Required |
+|----------|---------------|---------------|-----------------------|
+| **Internet goes down while editing** | Animation saved locally, syncs when online | Animation not saved (unsaved indicator shown) | **User must save before going offline** |
+| **Supabase outage during save** | Queued for sync when online | Fails with error message, animation lost if not exported | **User must export JSON before extended outages** |
+| **No Supabase access expected** | Works offline indefinitely with local saves | Guest mode (10 frames) only, no cloud persistence | **Use guest mode for offline development** |
+
+**Guest Mode Still Available (Tier 0):**
+- ✅ **10-frame local editor UI** remains fully functional
+- ✅ **JSON export/download** available without authentication
+- ✅ **LocalStorage backup** of current project (for browser refresh)
+- ❌ **Cloud storage** requires authentication
+- ❌ **Gallery access** requires authentication
+
+**Migration Communication Plan:**
+1. **v2.0 Launch Notice**: "v2.0 requires internet for cloud features. Guest mode (10 frames) works offline."
+2. **Autosave Alert**: Show banner if offline during edit: "Your changes won't be saved. Check your connection or export as JSON."
+3. **Periodic Reminders**: "Cloud-first architecture enables real-time collaboration and version history."
+4. **Offline Export**: Provide prominent "Export as JSON" button in guest mode.
+
+**Constitutional Alignment Check:**
+- ✅ **Section V.1 Guest Mode (Tier 0)**: "Local editor UI with no cloud persistence" - V2.0 maintains this
+- ✅ **Section VI.1 Accessibility**: Free tier (guest mode) still provides "genuine value" (10-frame animations)
+- ⚠️ **Section VI.2 Coach Advocacy**: Users losing localStorage backup may feel frustrated; mitigation needed
+
+**Rationale for Accepting This Regression:**
+- Organization partnerships outweigh offline convenience (strategic priority)
+- Staging environment (Phase 0) provides testing for connectivity issues
+- Health check monitoring (Section 11.4) reduces Supabase downtime impact
+- Guest mode export (Tier 0) provides offline-first exit ramp for users
+
+**Recommended Actions:**
+1. Document this change prominently in release notes
+2. Add "Export as backup" reminder in autosave messaging
+3. Monitor offline error reports in first 2 weeks post-launch
+4. Consider adding "retry with exponential backoff" for transient network errors
+5. Plan "true offline mode" as v3.0 feature (with local conflict resolution)
+
 ### 1.3 Success Metrics
 
 | Metric | v1.0 Baseline | v2.0 Target | Measurement |
@@ -670,6 +722,74 @@ CREATE TABLE collection_items (
 CREATE INDEX idx_collection_items_collection ON collection_items(collection_id);
 CREATE INDEX idx_collection_items_animation ON collection_items(animation_id);
 ```
+
+### 5.11 Export Format Compatibility (CRITICAL ORPHAN FROM LEGACY AUDIT)
+
+| ID | Requirement | Priority | Notes |
+|----|-------------|----------|-------|
+| **F-EXPORT-01** | Detect Safari/iOS browsers and offer appropriate export formats | P0 | Browser detection via User-Agent |
+| **F-EXPORT-02** | GIF export fallback for Safari/iOS (WebM not supported) | P0 | Use gif.js library |
+| **F-EXPORT-03** | User preference for export format (WebM, GIF, MP4) | P1 | Format selector in export modal |
+| **F-EXPORT-04** | Export format validation (ensure browser compatibility) | P1 | Warning if format unsupported |
+| **F-EXPORT-05** | Show export format recommendation based on browser | P2 | "Recommended for your device" badge |
+
+**User Story:**
+> As a **coach using Safari/iOS**, I want to **export animations in a compatible format** so that I can **save and share my work without file format errors**.
+
+**Acceptance Criteria:**
+- Safari/iOS users see GIF export option (not WebM)
+- Chrome/Firefox users see WebM export option (default)
+- Export modal shows "Recommended format" based on browser detection
+- User can override recommendation and select any format
+- Export fails gracefully with error message if format unsupported
+
+**Browser Detection Logic:**
+```typescript
+// lib/browser-detect.ts
+export function getBrowserInfo(): { isSafari: boolean; isIOS: boolean } {
+  const ua = navigator.userAgent;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
+  return { isSafari, isIOS };
+}
+
+export function getRecommendedExportFormat(): 'webm' | 'gif' | 'mp4' {
+  const { isSafari, isIOS } = getBrowserInfo();
+  if (isSafari || isIOS) return 'gif'; // Safari/iOS don't support WebM
+  return 'webm'; // Default for Chrome/Firefox
+}
+```
+
+**Export Format Implementation:**
+```typescript
+// src/hooks/useExport.ts
+import { getRecommendedExportFormat } from '@/lib/browser-detect';
+
+export function useExport() {
+  const [format, setFormat] = useState<'webm' | 'gif' | 'mp4'>(
+    getRecommendedExportFormat()
+  );
+
+  async function exportAnimation() {
+    if (format === 'webm') {
+      // Existing WebM export logic
+    } else if (format === 'gif') {
+      // New GIF export using gif.js
+      await exportAsGIF();
+    } else if (format === 'mp4') {
+      // Future: Server-side MP4 conversion (v2.1+)
+      throw new Error('MP4 export not yet implemented');
+    }
+  }
+
+  return { format, setFormat, exportAnimation };
+}
+```
+
+**Rationale:**
+- **Legacy Issue HIGH-002**: 30% of users (Safari/iOS) cannot export animations with WebM-only format
+- **User Impact**: Make-or-break feature for mobile coaches (WhatsApp sharing to players)
+- **Constitutional Alignment**: Respects **VI.1 Accessibility** (free tier must provide genuine value on all devices)
 
 ---
 
@@ -1703,14 +1823,26 @@ if (count >= 5) {
 
 ## 11. Migration & Deployment
 
-### 11.1 Phased Rollout Strategy
+### 11.1 Phased Rollout Strategy (Updated for Staging & Export Format)
 
-**Phase 1 (v2.0): Collections + Version Control + Template Library** (2 weeks)
+**Phase 0 (v2.0-prep): Staging Environment Setup + Export Format Infrastructure** (1 week - PREREQUISITE)
+- Create staging Supabase project with clone of production schema
+- Set up staging environment configuration (`.env.staging`)
+- Configure CI/CD pipeline for automated staging deployments
+- Implement browser detection utility (`lib/browser-detect.ts`) for export format selection
+- Add GIF export fallback using gif.js library
+- Create staging deployment playbook and migration testing workflow
+- Testing: Verify migrations work on staging data before production
+- **Why This Phase Matters**: Organizations tier (Phase 3) requires safe testing environment. Export format (legacy audit HIGH-002) affects iOS coaching use case. Staging needed before Hampshire RFU pilot.
+
+**Phase 1 (v2.0): Collections + Version Control + Template Library + Export Formats** (2.5 weeks)
 - New tables: `collections`, `collection_items`, `animation_versions`
 - New columns: `video_url`, `tags` (for templates)
-- New endpoints: Collections CRUD, Version history
-- UI: Collection cards, version history modal, template filter
-- Testing: E2E tests for collections and versions
+- New endpoints: Collections CRUD, Version history, Export format endpoints
+- New utilities: Browser detection (`lib/browser-detect.ts`), GIF export fallback
+- UI: Collection cards, version history modal, template filter, export format selector
+- Testing: E2E tests for collections, versions, export formats on Safari/iOS
+- **Legacy Audit Integration**: Resolves HIGH-002 (Safari/iOS export), partially addresses OPS-003 (health checks)
 
 **Phase 2 (v2.1): Progressions + Remix Genealogy** (1.5 weeks)
 - New columns: `parent_animation_id`, `progression_order`, `is_progression`, `remixed_from_id`, `remix_count`
@@ -1731,7 +1863,7 @@ if (count >= 5) {
 - UI: Club personalization settings, video link display
 - Testing: E2E tests for personalization
 
-**Total Estimated Duration:** 6.5 weeks
+**Total Estimated Duration:** 7.5 weeks (including Phase 0 staging prerequisite)
 
 ### 11.2 Rollback Plan
 
@@ -1805,6 +1937,67 @@ DROP TABLE IF EXISTS shares CASCADE;
 -- Drop table (no UI/API existed)
 DROP TABLE IF EXISTS follows CASCADE;
 ```
+
+### 11.4 Health Check Strategy for v2.0 Endpoints (Legacy Audit Integration - OPS-003)
+
+**Extend `/api/health` endpoint to cover new v2.0 functionality:**
+
+**Current Health Check (v1.0):**
+```typescript
+// GET /api/health
+{
+  status: "healthy" | "degraded" | "down",
+  timestamp: string,
+  database: "ok" | "error",
+}
+```
+
+**Extended Health Check (v2.0):**
+```typescript
+// GET /api/health
+{
+  status: "healthy" | "degraded" | "down",
+  timestamp: string,
+  database: {
+    status: "ok" | "error",
+    latency_ms: number,
+  },
+  endpoints: {
+    collections: "ok" | "error",      // Can create/read collections?
+    organizations: "ok" | "error",    // Can read org profiles?
+    animations: "ok" | "error",       // Can save animations?
+    versions: "ok" | "error",         // Can read version history?
+  },
+  storage: {
+    status: "ok" | "error",
+    usage_percent: number,            // Supabase Storage usage
+    remaining_gb: number,
+  },
+  rate_limiting: {
+    status: "ok" | "error",           // In-memory cache working?
+    pending_requests: number,
+  },
+}
+```
+
+**Implementation Checklist:**
+- ✅ Health check validates read access to core tables (animations, collections, organizations)
+- ✅ Latency monitoring for database queries (warn if >500ms)
+- ✅ Storage quota monitoring (alert if >80% usage)
+- ✅ Rate limiter cache verification (ensure in-memory cache operational)
+- ✅ Endpoint returns 503 Service Unavailable if any critical component down
+- ✅ Cached for 30 seconds (prevent query storms)
+
+**Monitoring & Alerting:**
+- **Health check monitoring**: Monitor `/api/health` every 5 minutes from uptime service
+- **Storage alerts**: Alert if usage exceeds 80% (allow scaling before quota exceeded)
+- **Latency alerts**: Alert if database latency exceeds 1 second (potential connection pool issues)
+- **Rate limiter alerts**: Alert if cache misses exceed 5% (potential memory pressure)
+
+**Rationale:**
+- **Legacy Issue OPS-003**: v1.0 lacked health check endpoint, making it hard to detect production issues
+- **v2.0 Complexity**: New tables (organizations, collections, versions) + new endpoints require comprehensive monitoring
+- **Hampshire RFU Pilot**: Organizations tier requires high reliability (organizational content must be available)
 
 ---
 
