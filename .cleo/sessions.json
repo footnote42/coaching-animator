@@ -5,7 +5,7 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-14T18:08:23Z",
+    "lastModified": "2026-02-14T18:11:59Z",
     "totalSessionsCreated": 3
   },
   "config": {
@@ -25,13 +25,17 @@
         "type": "epic",
         "rootTaskId": "T001",
         "computedTaskIds": [
-          "T001"
+          "T001",
+          "T002",
+          "T003",
+          "T004",
+          "T005"
         ]
       },
       "focus": {
-        "currentTask": "T001",
+        "currentTask": "T005",
         "currentPhase": null,
-        "previousTask": null,
+        "previousTask": "T001",
         "sessionNote": null,
         "nextAction": null,
         "focusHistory": [
@@ -39,15 +43,20 @@
             "taskId": "T001",
             "timestamp": "2026-02-14T15:05:09Z",
             "action": "focused"
+          },
+          {
+            "taskId": "T005",
+            "timestamp": "2026-02-14T18:11:59Z",
+            "action": "focused"
           }
         ]
       },
       "startedAt": "2026-02-14T15:05:09Z",
-      "lastActivity": "2026-02-14T15:05:09Z",
+      "lastActivity": "2026-02-14T18:11:59Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
-        "focusChanges": 1,
+        "focusChanges": 2,
         "suspendCount": 0,
         "resumeCount": 0
       },

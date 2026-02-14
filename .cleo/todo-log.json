@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 10,
+    "totalEntries": 16,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T18:08:23Z",
+    "lastEntry": "2026-02-14T18:11:59Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -336,6 +336,21 @@
       "details": {
         "note": "T004 complete: Barrel exports created for animation, gallery, core, and shared modules. All TypeScript checks pass."
       }
+    },
+    {
+      "id": "log_d74684ff25bb",
+      "timestamp": "2026-02-14T18:11:59Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T001"
+      },
+      "after": {
+        "currentTask": "T005"
+      },
+      "details": null
     }
   ]
 }
