@@ -53,6 +53,24 @@
         "type": "epic",
         "rootTaskId": "T001"
       }
+    },
+    {
+      "id": "log-1771081630-79582a",
+      "timestamp": "2026-02-14T15:07:10Z",
+      "action": "task_created",
+      "taskId": "T002",
+      "actor": "system",
+      "details": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium"
+      }
     }
   ]
 }
