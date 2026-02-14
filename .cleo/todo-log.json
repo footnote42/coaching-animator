@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 3,
+    "totalEntries": 4,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T15:22:41Z",
+    "lastEntry": "2026-02-14T15:31:34Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -111,6 +111,44 @@
       },
       "details": {
         "operation": "update"
+      }
+    },
+    {
+      "id": "log_5bdaa4d560ae",
+      "timestamp": "2026-02-14T15:31:34Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T002",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-14T15:31:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1771085460-853cd9",
+      "timestamp": "2026-02-14T16:11:00Z",
+      "action": "task_created",
+      "taskId": "T003",
+      "actor": "system",
+      "details": {
+        "title": "Implement Feature-Based Architecture",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement Feature-Based Architecture",
+        "status": "pending",
+        "priority": "medium"
       }
     }
   ]
