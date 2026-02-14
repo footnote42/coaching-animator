@@ -24,3 +24,6 @@ node_modules
 
 # Next.js build output
 .next/
+
+# Archived specs and legacy files
+/archive

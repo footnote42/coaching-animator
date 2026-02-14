@@ -9,10 +9,10 @@ Auto-generated from all feature plans. Last updated: 2026-02-11
 
 ## Current Iteration
 
-- **Spec Folder**: `specs/005-incremental-improvements/`
+- **Spec Folder**: `archive/specs/005-incremental-improvements/`
 - **Approach**: Incremental, pick-and-choose improvements (14 issues identified)
 - **Status**: 🔴 2 Critical, 🟠 5 High, 🟡 5 Medium, 🟢 2 Low priority issues
-- **Previous Spec**: `specs/004-post-launch-improvements/` (50-60% complete, see VERIFICATION.md)
+- **Previous Spec**: `archive/specs/004-post-launch-improvements/` (50-60% complete, see VERIFICATION.md)
 - **PRD v1.0**: `docs/authority/PRD.md` (Sections 16-22 cover online platform, 89% coverage)
 - **PRD v2.0**: `docs/authority/PRD-v2.0.md` (DRAFT - Rugby coaching platform with progressions, organizations, version control)
 - **V2 Vision**: 'docs/authority/V2_VISION.md' (Vision for the future of the app)
@@ -141,15 +141,16 @@ lib/                         # Shared utilities and Supabase clients
 │   └── middleware.ts        # Auth refresh middleware
 └── schemas/                 # Database schemas
 
-specs/                       # Specifications (archived & active)
-├── 004-post-launch-improvements/  # Current iteration (Phase 13)
-└── archive/
-    └── specs/003-online-platform/ # Completed: User accounts, galleries
-        ├── spec.md          # 9 user stories, 40+ requirements
-        ├── tasks.md         # 111 completed development tasks
-        ├── data-model.md    # Database schema (see docs/architecture/)
-        └── contracts/
-            └── api-contracts.md  # API specs (see docs/architecture/)
+archive/                     # Archived specifications
+└── specs/
+    ├── 003-online-platform/ # Completed: User accounts, galleries
+    │   ├── spec.md          # 9 user stories, 40+ requirements
+    │   ├── tasks.md         # 111 completed development tasks
+    │   ├── data-model.md    # Database schema (see docs/architecture/)
+    │   └── contracts/
+    │       └── api-contracts.md  # API specs (see docs/architecture/)
+    ├── 004-post-launch-improvements/  # Phase 13 (50-60% complete)
+    └── 005-incremental-improvements/  # Current iteration (14 issues)
 
 tests/                       # Test files
 └── e2e/                     # Playwright E2E tests
@@ -225,7 +226,7 @@ The replay viewer (`app/replay/[id]/ReplayViewer.tsx`) reuses the editor's canva
 - Deleted: `src/main.tsx`, `src/vite-env.d.ts`, `src/index.css`, `src/App.tsx`, `index.html` (756 lines + 1 file)
 - Verified: Zero `import.meta.env` usage, no global type dependencies, CSS files 100% identical
 - Active: `components/Editor.tsx` is the sole editor implementation
-- See: `specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md`
+- See: `archive/specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md`
 
 ## Commands
 
@@ -325,10 +326,10 @@ npx tsc --noEmit
 
 ## Recent Changes
 
-- **Schema Validation Fix (2026-02-09)**: CRIT-003 resolved. Fixed critical bug preventing animations with tackle equipment from saving. Updated `EntitySchema` to include all 6 entity types (added tackle-shield, tackle-bag) with optional fields. Fixed error handling to distinguish client errors (400-499, show in modal) from network errors (0, 500-599, queue offline). Refactored to shared `ENTITY_TYPES` constant to prevent future schema drift. Users can now save complex plays with tackle shields and tackle bags successfully. See `specs/005-incremental-improvements/PROGRESS.md`.
-- **Replay Viewer Overhauled (2026-02-05)**: MED-001 + MED-002 fixed. ReplayViewer rewritten to reuse editor's shared canvas components for pixel-identical rendering. Store-free `useReplayAnimationLoop` hook replaces buggy RAF loop with smooth entity interpolation. Speed controls (0.5x/1x/2x) and loop toggle added. Centralised `normalizeReplayPayload()` for backward compatibility. 3 defensive render tests. See `specs/005-incremental-improvements/PROGRESS.md`.
-- **005-incremental-improvements Created (2026-02-01)**: New spec with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
-- **004-post-launch-improvements Verified (2026-02-01)**: Systematic verification found actual completion at 50-60%, not claimed 100%. Critical failures: retry logic exists but not used, navigation not integrated, tackle equipment missing, GIF export missing. See `specs/004-post-launch-improvements/VERIFICATION.md`.
+- **Schema Validation Fix (2026-02-09)**: CRIT-003 resolved. Fixed critical bug preventing animations with tackle equipment from saving. Updated `EntitySchema` to include all 6 entity types (added tackle-shield, tackle-bag) with optional fields. Fixed error handling to distinguish client errors (400-499, show in modal) from network errors (0, 500-599, queue offline). Refactored to shared `ENTITY_TYPES` constant to prevent future schema drift. Users can now save complex plays with tackle shields and tackle bags successfully. See `archive/specs/005-incremental-improvements/PROGRESS.md`.
+- **Replay Viewer Overhauled (2026-02-05)**: MED-001 + MED-002 fixed. ReplayViewer rewritten to reuse editor's shared canvas components for pixel-identical rendering. Store-free `useReplayAnimationLoop` hook replaces buggy RAF loop with smooth entity interpolation. Speed controls (0.5x/1x/2x) and loop toggle added. Centralised `normalizeReplayPayload()` for backward compatibility. 3 defensive render tests. See `archive/specs/005-incremental-improvements/PROGRESS.md`.
+- **005-incremental-improvements Created (2026-02-01)**: New spec at `archive/specs/005-incremental-improvements/` with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
+- **004-post-launch-improvements Verified (2026-02-01)**: Systematic verification found actual completion at 50-60%, not claimed 100%. Critical failures: retry logic exists but not used, navigation not integrated, tackle equipment missing, GIF export missing. See `archive/specs/004-post-launch-improvements/VERIFICATION.md`.
 - **Profile Bugs Fixed (2026-02-01)**: Resolved display name persistence and animation count issues. Root cause: missing `max_animations` column in database schema. Added migration, comprehensive E2E tests, and troubleshooting documentation.
 - **003-online-platform Development Complete (2026-01-30)**: All 111 development tasks completed across 9 user stories. Full Next.js migration with user accounts, cloud storage, public gallery, upvoting, moderation, and admin dashboard implemented.
 - **Constitution v3.0.0 (2026-01-29)**: Added Tier 3 (Authenticated Features) for user accounts, cloud storage, public gallery, upvoting, moderation. Email-only auth, minimal profile data, GDPR compliance. Tier 1 (offline core) remains sacred.
