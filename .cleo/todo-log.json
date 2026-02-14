@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 5,
+    "totalEntries": 6,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T16:11:24Z",
+    "lastEntry": "2026-02-14T16:38:09Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -216,6 +216,21 @@
       },
       "details": {
         "operation": "update"
+      }
+    },
+    {
+      "id": "log_87189f58f446",
+      "timestamp": "2026-02-14T16:38:09Z",
+      "sessionId": "session_20260214_163809_069ac5",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T003",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T003"
       }
     }
   ]
