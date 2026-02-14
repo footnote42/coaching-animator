@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { EntityColors } from '../../../src/services/entityColors';
-import { DESIGN_TOKENS } from '../../../src/constants/design-tokens';
+import { EntityColors } from '@/features/animation/services/entityColors';
+import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 
 describe('EntityColors', () => {
     describe('getDefault', () => {

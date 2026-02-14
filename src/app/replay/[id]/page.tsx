@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import dynamic from 'next/dynamic';
-const ReplayViewer = dynamic(() => import('@/components/replay/ReplayViewer').then(m => m.ReplayViewer), {
+const ReplayViewer = dynamic(() => import('@/features/animation/components/ReplayViewer').then(m => m.ReplayViewer), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-surface h-[300px] w-full flex items-center justify-center text-text-primary/50">Loading replay viewer...</div>
 });

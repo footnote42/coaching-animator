@@ -1,0 +1,22 @@
+{
+  "$schema": "https://cleo-dev.com/schemas/v1/backup-manifest.schema.json",
+  "_meta": {
+    "version": "1.0.0",
+    "created": "2026-02-14T15:31:23Z",
+    "lastModified": "2026-02-14T15:31:23Z"
+  },
+  "backups": [
+    {
+      "id": "safety_20260214_153122_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-14T15:31:23Z",
+      "path": ".cleo/backups/safety/safety_20260214_153122_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "367b633cb36bbda4f9d7a3bd1915be9f43bbb55d1a30279540fc361d1be0b1d3",
+      "sizeBytes": 2874,
+      "neverDelete": false
+    }
+  ]
+}

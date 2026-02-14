@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
-import { PublicAnimationCard } from '@/components/PublicAnimationCard';
-import { SkeletonGrid } from '@/components/SkeletonCard';
+import { PublicAnimationCard } from '@/features/gallery/components/PublicAnimationCard';
+import { SkeletonGrid } from '@/features/gallery/components/SkeletonCard';
 import { AnimationType } from '@/lib/schemas/animations';
 import { getWithRetry } from '@/lib/api-client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';

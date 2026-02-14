@@ -252,7 +252,7 @@ Transform Coaching Animator from a personal animation tool into a **rugby coachi
 ### 4.2 New Persona: Organizational Coach (Hampshire RFU)
 
 **Demographics:**
-- **Age:** 35-60
+- **Age:** 30-70
 - **Role:** RFU coach educator, club development officer
 - **Tech Comfort:** Professional software use, content creation experience
 - **Rugby Experience:** Coached 10+ years, coaching qualifications
@@ -285,7 +285,7 @@ Transform Coaching Animator from a personal animation tool into a **rugby coachi
 ### 4.3 Tertiary Persona: Player (Mobile-Only User)
 
 **Demographics:**
-- **Age:** 12-35
+- **Age:** 13-45
 - **Role:** Rugby player (youth to senior)
 - **Tech Comfort:** Mobile-native, rarely uses desktop
 - **Rugby Experience:** Plays club rugby, learning drills

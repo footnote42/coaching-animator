@@ -3,14 +3,14 @@
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { SaveToCloudModal } from '@/components/SaveToCloudModal';
-import { OnboardingTutorial } from '@/components/OnboardingTutorial';
-import { useProjectStore } from '@/store/projectStore';
+import { SaveToCloudModal } from '@/shared/components/SaveToCloudModal';
+import { OnboardingTutorial } from '@/shared/components/OnboardingTutorial';
+import { useProjectStore } from '@/core/stores/projectStore';
 import { toast } from 'sonner';
 import { useUser } from '@/lib/contexts/UserContext';
 import { getWithRetry } from '@/lib/api-client';
 
-const Editor = dynamic(() => import('@/components/Editor'), {
+const Editor = dynamic(() => import('@/features/animation/components/Editor'), {
   ssr: false,
   loading: () => (
     <div className="flex h-screen items-center justify-center bg-background">

@@ -1,0 +1,117 @@
+{
+  "$schema": "./schemas/log.schema.json",
+  "version": "2.4.0",
+  "project": "coaching-animator",
+  "_meta": {
+    "schemaVersion": "2.4.0",
+    "totalEntries": 3,
+    "firstEntry": "2026-02-13T10:33:13Z",
+    "lastEntry": "2026-02-14T15:22:41Z",
+    "entriesPruned": 0
+  },
+  "entries": [
+    {
+      "id": "log_5a87506febca",
+      "timestamp": "2026-02-13T10:33:13Z",
+      "sessionId": null,
+      "action": "system_initialized",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "CLEO system initialized for project: coaching-animator"
+    },
+    {
+      "id": "log-1771081436-f86a6e",
+      "timestamp": "2026-02-14T15:03:56Z",
+      "action": "task_created",
+      "taskId": "T001",
+      "actor": "system",
+      "details": {
+        "title": "Project Refactor and V2 Foundation",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Project Refactor and V2 Foundation",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_e59a2dab0f20",
+      "timestamp": "2026-02-14T15:05:10Z",
+      "sessionId": "session_20260214_150509_d8380c",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T001",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T001"
+      }
+    },
+    {
+      "id": "log-1771081630-79582a",
+      "timestamp": "2026-02-14T15:07:10Z",
+      "action": "task_created",
+      "taskId": "T002",
+      "actor": "system",
+      "details": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_d32eddc1ba93",
+      "timestamp": "2026-02-14T15:22:41Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T002",
+      "before": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": [
+          "Section 5.11 added",
+          "Section 11.1 includes staging",
+          "Section 11.4 added",
+          "Offline regression documented",
+          "Constitution alignment verified"
+        ],
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    }
+  ]
+}

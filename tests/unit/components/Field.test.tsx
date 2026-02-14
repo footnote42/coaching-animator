@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import React from 'react';
-import { Field } from '../../../src/components/Canvas/Field';
+import { Field } from '@/features/animation/components/Canvas/Field';
 
 // Mock react-konva
 vi.mock('react-konva', () => {

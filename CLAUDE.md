@@ -100,46 +100,52 @@ docs/                        # Developer documentation (NEW)
     ├── staging-setup.md     # Staging environment
     └── operations.md        # Backup, recovery procedures
 
-app/                         # Next.js App Router pages and API routes
-├── (auth)/                  # Authentication pages (login, register, etc.)
-├── (legal)/                 # Legal pages (terms, privacy, contact)
-├── admin/                   # Admin dashboard
-├── api/                     # API endpoints
-│   ├── admin/              # Admin-only endpoints
-│   ├── animations/         # Animation CRUD operations
-│   └── auth/               # Authentication endpoints
-├── gallery/                 # Public gallery pages
-├── my-gallery/              # Personal gallery page
-├── profile/                 # User profile page
-├── replay/                  # Animation replay pages
-├── app/                     # Animation tool (main application)
-├── globals.css              # Global styles
-├── layout.tsx               # Root layout
-├── page.tsx                 # Landing page
-└── sitemap.ts               # SEO sitemap
-
-components/                  # React components (shared)
-├── AnimationCard.tsx        # Gallery animation card
-├── Editor.tsx               # Main animation editor
-├── SaveToCloudModal.tsx     # Cloud save dialog
-└── [other components]
-
-src/                         # Core animation components (from Vite)
-├── components/              # Canvas, Sidebar, Timeline components
-├── hooks/                   # Custom React hooks
-├── store/                   # Zustand stores
-├── utils/                   # Utilities
-├── types/                   # TypeScript type definitions
-├── constants/               # Design tokens and validation
-└── assets/                  # Field SVGs
-
-lib/                         # Shared utilities and Supabase clients
-├── auth.ts                  # Authentication helpers
-├── supabase/                # Supabase client configurations
-│   ├── client.ts            # Browser client (singleton)
-│   ├── server.ts            # Server client
-│   └── middleware.ts        # Auth refresh middleware
-└── schemas/                 # Database schemas
+src/                         # Feature-based architecture (refactored 2026-02-14, T003)
+├── app/                     # Next.js App Router (pages, API routes, layouts)
+│   ├── (auth)/              # Authentication pages (login, register, etc.)
+│   ├── (legal)/             # Legal pages (terms, privacy, contact)
+│   ├── admin/               # Admin dashboard
+│   ├── api/                 # API endpoints
+│   │   ├── admin/          # Admin-only endpoints
+│   │   ├── animations/     # Animation CRUD operations
+│   │   └── auth/           # Authentication endpoints
+│   ├── gallery/             # Public gallery pages
+│   ├── my-gallery/          # Personal gallery page
+│   ├── profile/             # User profile page
+│   ├── replay/              # Animation replay pages
+│   ├── app/                 # Animation tool (main application)
+│   ├── globals.css          # Global styles
+│   ├── layout.tsx           # Root layout
+│   ├── page.tsx             # Landing page
+│   └── sitemap.ts           # SEO sitemap
+├── core/                    # Shared utilities and domain logic
+│   ├── hooks/               # Shared React hooks (8 files)
+│   ├── stores/              # Zustand state management (projectStore, uiStore)
+│   ├── utils/               # Shared utilities (fileIO, serialization, validation)
+│   ├── types/               # TypeScript type definitions (Entity, Frame, Project)
+│   └── constants/           # Design tokens and validation rules
+├── features/                # Feature modules (domain-driven design)
+│   ├── animation/           # Animation editor feature
+│   │   ├── components/      # Canvas, Sidebar, Timeline, Editor, ReplayViewer
+│   │   │   ├── Canvas/      # React-Konva rendering layers (11 files)
+│   │   │   ├── Sidebar/     # Entity palette, properties, actions (6 files)
+│   │   │   └── Timeline/    # Frame strip, playback controls (4 files)
+│   │   └── services/        # Entity colors service
+│   └── gallery/             # Gallery feature
+│       └── components/      # AnimationCard, PublicAnimationCard, SkeletonCard
+├── shared/                  # Shared UI components
+│   ├── components/          # DeleteConfirmDialog, EditMetadataModal, Navigation, etc.
+│   └── ui/                  # ColorPicker, button, dialog, input, select, slider
+├── lib/                     # Third-party integrations
+│   ├── contexts/            # React contexts (UserContext)
+│   ├── supabase/            # Supabase client configurations
+│   │   ├── client.ts        # Browser client (singleton)
+│   │   ├── server.ts        # Server client
+│   │   └── middleware.ts    # Auth refresh middleware
+│   └── schemas/             # Database schemas (Zod validation)
+├── assets/                  # Static assets
+│   └── fields/              # Field SVGs (rugby, soccer, basketball, etc.)
+└── middleware.ts            # Next.js middleware (auth refresh)
 
 archive/                     # Archived specifications
 └── specs/
@@ -159,54 +165,76 @@ tests/                       # Test files
     └── README.md            # Test documentation
 ```
 
-## Architecture: Next.js App Structure
+## Architecture: Feature-Based Design
 
-**Important**: This project migrated from Vite to Next.js. The editor is now served via Next.js App Router.
+**Migration History**:
+- **2026-01-30**: Migrated from Vite to Next.js App Router
+- **2026-02-04**: Removed dead Vite code (756 lines)
+- **2026-02-14**: Refactored to feature-based architecture (T003, 85 files migrated)
 
-### Active Files (Next.js)
-- **`app/app/page.tsx`** - `/app` route (animation editor page)
-- **`components/Editor.tsx`** - Main editor component with entity handlers
-- **`components/SaveToCloudModal.tsx`** - Cloud save dialog
-- **`components/OnboardingTutorial.tsx`** - Welcome tutorial
-- **`lib/contexts/UserContext.tsx`** - Auth state management
+### Feature-Based Architecture (Since 2026-02-14)
 
-### Core Animation Engine (`src/` directory)
-The `src/` directory contains the **reusable animation engine** (48 active files):
-- `src/components/Canvas/*` (11 files) - React-Konva rendering layers
-- `src/components/Sidebar/*` (6 files) - UI controls
-- `src/components/Timeline/*` (4 files) - Playback controls
-- `src/hooks/*` (8 files) - Custom React hooks
-- `src/store/*` (2 files) - Zustand state management
-- `src/services/*` (1 file) - Entity color service
-- `src/constants/*` (3 files) - Design tokens, validation
-- `src/types/*` (3 files) - TypeScript type definitions
-- `src/utils/*` (7 files) - File I/O, serialization, V1/V2 hydration, interpolation
+The codebase follows a **feature-based architecture** for scalability and V2.0 readiness:
 
-**⚠️ REMOVED**: `src/App.tsx` was deleted in cleanup (see ARCHITECTURE_CLEANUP_PLAN.md Option 2).
-**✅ ALWAYS EDIT `components/Editor.tsx`** - This is the active Next.js editor.
+**Path Aliases** (configured in `tsconfig.json`):
+- `@/core/*` → Shared utilities, hooks, stores, types, constants
+- `@/features/*` → Feature modules (animation, gallery, future: organizations, collections)
+- `@/shared/*` → Shared UI components and primitives
+- `@/lib/*` → Third-party integrations (Supabase, contexts)
+
+### Active Files (Animation Editor)
+- **`src/app/app/page.tsx`** - `/app` route (animation editor page)
+- **`src/features/animation/components/Editor.tsx`** - Main editor component with entity handlers
+- **`src/shared/components/SaveToCloudModal.tsx`** - Cloud save dialog
+- **`src/shared/components/OnboardingTutorial.tsx`** - Welcome tutorial
+- **`src/lib/contexts/UserContext.tsx`** - Auth state management
+
+### Animation Feature Module (`src/features/animation/`)
+The animation feature is self-contained with 48+ files:
+- **Components**:
+  - `Canvas/*` (11 files) - React-Konva rendering layers (Stage, Field, EntityLayer, etc.)
+  - `Sidebar/*` (6 files) - Entity palette, properties panel, project actions
+  - `Timeline/*` (4 files) - Frame strip, playback controls, thumbnails
+  - `Editor.tsx` - Main editor orchestrator
+  - `ReplayViewer.tsx` - Read-only replay component
+- **Services**:
+  - `entityColors.ts` - Centralized color resolution for entities
+- **Hooks** (in `@/core/hooks/`):
+  - `useAnimationLoop`, `useExport`, `useFrameCapture`, `useShareAnimation`
+
+### Gallery Feature Module (`src/features/gallery/`)
+Gallery display components:
+- `AnimationCard.tsx` - Personal gallery card
+- `PublicAnimationCard.tsx` - Public gallery card with upvote
+- `SkeletonCard.tsx` - Loading skeleton
+
+### Shared Components (`src/shared/`)
+Reusable UI components across features:
+- **Components**: DeleteConfirmDialog, EditMetadataModal, ErrorBoundary, Navigation, etc.
+- **UI Primitives**: ColorPicker, button, dialog, input, select, slider
 
 ### Entity Creation Handlers
 When adding/modifying entity creation logic:
-- ✅ **Edit**: `components/Editor.tsx` (handlers like `handleAddCone()`)
+- ✅ **Edit**: `src/features/animation/components/Editor.tsx` (handlers like `handleAddCone()`)
 - ❌ **Don't edit**: `src/App.tsx` (deleted during Vite cleanup)
 
 ### Shared Canvas Components
 The following components are shared between Editor and ReplayViewer.
 When modifying these, test both `/app` (editor) and `/replay/[id]` (replay):
 
-- `src/components/Canvas/Stage.tsx`
-- `src/components/Canvas/Field.tsx`
-- `src/components/Canvas/PlayerToken.tsx`
-- `src/components/Canvas/EntityLayer.tsx`
-- `src/components/Canvas/AnnotationLayer.tsx`
+- `src/features/animation/components/Canvas/Stage.tsx`
+- `src/features/animation/components/Canvas/Field.tsx`
+- `src/features/animation/components/Canvas/PlayerToken.tsx`
+- `src/features/animation/components/Canvas/EntityLayer.tsx`
+- `src/features/animation/components/Canvas/AnnotationLayer.tsx`
 
 ### File Mapping Quick Reference
 | Route | Page File | Main Component |
 |-------|-----------|----------------|
-| `/app` | `app/app/page.tsx` | `components/Editor.tsx` |
-| `/replay/[id]` | `app/replay/[id]/page.tsx` | `app/replay/[id]/ReplayViewer.tsx` |
-| `/gallery` | `app/gallery/page.tsx` | - |
-| `/my-gallery` | `app/my-gallery/page.tsx` | - |
+| `/app` | `src/app/app/page.tsx` | `src/features/animation/components/Editor.tsx` |
+| `/replay/[id]` | `src/app/replay/[id]/page.tsx` | `src/features/animation/components/ReplayViewer.tsx` |
+| `/gallery` | `src/app/gallery/page.tsx` | `src/features/gallery/components/PublicAnimationCard.tsx` |
+| `/my-gallery` | `src/app/my-gallery/page.tsx` | `src/features/gallery/components/AnimationCard.tsx` |
 
 ### Sharing & Replay Feature
 
@@ -217,16 +245,29 @@ Animations are shared via read-only replay links at `/replay/[id]`:
 3. **Publish** with `public` or `link-shared` visibility (from My Gallery or editor)
 4. **Share** the `/replay/[id]` URL — anyone can view without authentication
 
-The replay viewer (`app/replay/[id]/ReplayViewer.tsx`) reuses the editor's canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken) for pixel-identical rendering. It includes:
+The replay viewer (`src/features/animation/components/ReplayViewer.tsx`) reuses the editor's canvas components (Stage, Field, EntityLayer, AnnotationLayer, PlayerToken) for pixel-identical rendering. It includes:
 - `normalizeReplayPayload()` — backward compatibility for older database payloads
 - `useReplayAnimationLoop` hook — store-free RAF animation with entity interpolation
 - Playback controls: play/pause, prev/next, speed (0.5x/1x/2x), loop toggle
 
-**Cleanup History (2026-02-04)**: Dead Vite code removed per Option 2 (V3 with deep-scan validation):
-- Deleted: `src/main.tsx`, `src/vite-env.d.ts`, `src/index.css`, `src/App.tsx`, `index.html` (756 lines + 1 file)
-- Verified: Zero `import.meta.env` usage, no global type dependencies, CSS files 100% identical
-- Active: `components/Editor.tsx` is the sole editor implementation
-- See: `archive/specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md`
+### Import Conventions
+
+**Always use path aliases** for cross-feature imports:
+```typescript
+// ✅ Correct - Use path aliases
+import { useProjectStore } from '@/core/stores/projectStore';
+import { Editor } from '@/features/animation/components/Editor';
+import { AnimationCard } from '@/features/gallery/components/AnimationCard';
+import { Button } from '@/shared/ui/button';
+
+// ❌ Incorrect - Avoid relative imports across features
+import { useProjectStore } from '../../core/stores/projectStore';
+```
+
+**V2.0 Readiness**: The feature-based architecture supports clean addition of new feature modules:
+- `src/features/organizations/` - Team/club management
+- `src/features/collections/` - Drill libraries
+- `src/features/progressions/` - Training progressions
 
 ## Commands
 
@@ -326,6 +367,7 @@ npx tsc --noEmit
 
 ## Recent Changes
 
+- **Feature-Based Architecture (2026-02-14)**: T003 complete. Migrated 85 files from flat `src/` structure to feature-based architecture for V2.0 readiness. New structure: `src/core/` (shared utilities), `src/features/animation/` (editor components), `src/features/gallery/` (gallery components), `src/shared/` (UI components). Added path aliases (`@/core/*`, `@/features/*`, `@/shared/*`) to `tsconfig.json`. Updated 132+ imports. TypeScript compilation passes. Prepares codebase for clean addition of organizations, collections, and progressions features. See commit `464f702`.
 - **Schema Validation Fix (2026-02-09)**: CRIT-003 resolved. Fixed critical bug preventing animations with tackle equipment from saving. Updated `EntitySchema` to include all 6 entity types (added tackle-shield, tackle-bag) with optional fields. Fixed error handling to distinguish client errors (400-499, show in modal) from network errors (0, 500-599, queue offline). Refactored to shared `ENTITY_TYPES` constant to prevent future schema drift. Users can now save complex plays with tackle shields and tackle bags successfully. See `archive/specs/005-incremental-improvements/PROGRESS.md`.
 - **Replay Viewer Overhauled (2026-02-05)**: MED-001 + MED-002 fixed. ReplayViewer rewritten to reuse editor's shared canvas components for pixel-identical rendering. Store-free `useReplayAnimationLoop` hook replaces buggy RAF loop with smooth entity interpolation. Speed controls (0.5x/1x/2x) and loop toggle added. Centralised `normalizeReplayPayload()` for backward compatibility. 3 defensive render tests. See `archive/specs/005-incremental-improvements/PROGRESS.md`.
 - **005-incremental-improvements Created (2026-02-01)**: New spec at `archive/specs/005-incremental-improvements/` with 14 risk-assessed issues from spec 004 verification and user observations. Includes 2 critical (retry logic not wired up), 5 high priority (navigation, Safari export, password reset, sharing), 5 medium (performance, layout), and 2 low priority issues. Designed for incremental, pick-and-choose approach.
