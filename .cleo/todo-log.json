@@ -232,6 +232,42 @@
         "type": "task",
         "rootTaskId": "T003"
       }
+    },
+    {
+      "id": "log-1771092143-44a65a",
+      "timestamp": "2026-02-14T18:02:23Z",
+      "action": "task_created",
+      "taskId": "T004",
+      "actor": "system",
+      "details": {
+        "title": "Add barrel exports for feature modules",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Add barrel exports for feature modules",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771092155-ccaaf9",
+      "timestamp": "2026-02-14T18:02:35Z",
+      "action": "task_created",
+      "taskId": "T005",
+      "actor": "system",
+      "details": {
+        "title": "Document feature modules with README files",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Document feature modules with README files",
+        "status": "pending",
+        "priority": "medium"
+      }
     }
   ]
 }
