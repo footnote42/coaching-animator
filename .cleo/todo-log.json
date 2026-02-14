@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 2,
+    "totalEntries": 3,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T15:05:10Z",
+    "lastEntry": "2026-02-14T15:22:41Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -70,6 +70,47 @@
         "title": "Update PRD v2.0 with Audit Findings",
         "status": "pending",
         "priority": "medium"
+      }
+    },
+    {
+      "id": "log_d32eddc1ba93",
+      "timestamp": "2026-02-14T15:22:41Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T002",
+      "before": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Update PRD v2.0 with Audit Findings",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": [
+          "Section 5.11 added",
+          "Section 11.1 includes staging",
+          "Section 11.4 added",
+          "Offline regression documented",
+          "Constitution alignment verified"
+        ],
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]
