@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 4,
+    "totalEntries": 5,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T15:31:34Z",
+    "lastEntry": "2026-02-14T16:11:24Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -149,6 +149,73 @@
         "title": "Implement Feature-Based Architecture",
         "status": "pending",
         "priority": "medium"
+      }
+    },
+    {
+      "id": "log_91ee0d2b98d1",
+      "timestamp": "2026-02-14T16:11:24Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T003",
+      "before": {
+        "title": "Implement Feature-Based Architecture",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement Feature-Based Architecture",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": [
+          "Create src/core/ with subdirs (hooks",
+          "stores",
+          "utils",
+          "types",
+          "constants)",
+          "Create src/features/ with subdirs (animation",
+          "gallery",
+          "organizations",
+          "collections",
+          "progressions",
+          "auth)",
+          "Create src/shared/ with subdirs (components",
+          "ui)",
+          "Move shared hooks from src/hooks to src/core/hooks",
+          "Move Zustand stores from src/store to src/core/stores",
+          "Move shared utils from src/utils to src/core/utils",
+          "Move global types from src/types to src/core/types",
+          "Move constants from src/constants to src/core/constants",
+          "Organize animation feature (components/Canvas|Sidebar|Timeline",
+          "hooks",
+          "services",
+          "utils)",
+          "Organize gallery feature (components/AnimationCard|PublicAnimationCard)",
+          "Move shared components to src/shared/components",
+          "Move UI primitives to src/shared/ui",
+          "Update tsconfig.json path aliases",
+          "Update all import statements across codebase",
+          "TypeScript compilation succeeds (npx tsc --noEmit)",
+          "All unit tests pass (npm test)",
+          "All E2E tests pass (npm run e2e)",
+          "Dev server runs without errors (npm run dev)"
+        ],
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]

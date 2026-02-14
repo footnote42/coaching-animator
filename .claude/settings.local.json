@@ -60,7 +60,14 @@
       "Bash(BASE_URL=http://localhost:3000 npm run e2e:*)",
       "Bash(del /F nul)",
       "Bash(Get-ChildItem -Path \"app/api\" -Recurse -Filter \"*.ts\")",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(git config:*)",
+      "Skill(commit-commands:commit)",
+      "Bash(gh:*)",
+      "Bash(cleo show:*)",
+      "Bash(cleo complete:*)",
+      "Bash(cleo add:*)",
+      "Bash(cleo update:*)"
     ]
   }
 }

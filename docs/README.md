@@ -21,8 +21,8 @@
 
 These documents define the project's core principles and requirements:
 
-- **[Constitution](../.specify/memory/constitution.md)** - Core governance, architectural principles, and tiered feature model (Tier 0-3)
-- **[PRD](../.specify/memory/PRD.md)** - Product Requirements Document (sections 16-22 cover online platform)
+- **[Constitution](../docs/authority/constitution.md)** - Core governance, architectural principles, and tiered feature model (Tier 0-3)
+- **[PRD](../docs/authority/PRD.md)** - Product Requirements Document (sections 16-22 cover online platform)
 - **[CLAUDE.md](../CLAUDE.md)** - Auto-generated comprehensive development guidelines
 
 ### PRD Analysis & Alignment
