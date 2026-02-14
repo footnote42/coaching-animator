@@ -1,3 +1,6 @@
+<!-- CLEO:START -->
+@.cleo/templates/AGENT-INJECTION.md
+<!-- CLEO:END -->
 # coaching-animator Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2026-02-11
@@ -10,9 +13,11 @@ Auto-generated from all feature plans. Last updated: 2026-02-11
 - **Approach**: Incremental, pick-and-choose improvements (14 issues identified)
 - **Status**: 🔴 2 Critical, 🟠 5 High, 🟡 5 Medium, 🟢 2 Low priority issues
 - **Previous Spec**: `specs/004-post-launch-improvements/` (50-60% complete, see VERIFICATION.md)
-- **PRD v1.0**: `.specify/memory/PRD.md` (Sections 16-22 cover online platform, 89% coverage)
-- **PRD v2.0**: `.specify/memory/PRD-v2.0.md` (DRAFT - Rugby coaching platform with progressions, organizations, version control)
-- **Constitution**: `.specify/memory/constitution.md` (v3.2 with OAuth providers)
+- **PRD v1.0**: `docs/authority/PRD.md` (Sections 16-22 cover online platform, 89% coverage)
+- **PRD v2.0**: `docs/authority/PRD-v2.0.md` (DRAFT - Rugby coaching platform with progressions, organizations, version control)
+- **V2 Vision**: 'docs/authority/V2_VISION.md' (Vision for the future of the app)
+- **Constitution**: `docs/authority/constitution.md` (v3.3 with Organizational Tier & Privacy-Preserving Metrics)
+- **Alignment Audit**: `docs/authority/ALIGNMENT_AUDIT_2026-02-14.md` (11 issues resolved, CA-2026-002 ratified)
 - **Data Model**: `docs/architecture/database-schema.md`
 - **API Contracts**: `docs/architecture/api-contracts.md` (extracted from `archive/specs/003-online-platform/contracts/api-contracts.md`)
 
@@ -330,7 +335,9 @@ npx tsc --noEmit
 - **Phase 3.2: Vercel Functions API Implementation Complete (2026-01-27)**: Production-ready API handlers for link-sharing feature.
 - **Phase 3.1: Supabase Setup Complete (2026-01-26)**: Backend infrastructure for link-sharing feature.
 
-## Key Constraints (from Constitution v3.0)
+## Key Constraints (from Constitution v3.3)
+
+**Recent Amendment (CA-2026-002, 2026-02-14)**: Added Tier 4 (Organizations), Privacy-Preserving Metrics, Remix Licensing, External Links, and Template Curation governance. All 11 alignment audit issues resolved.
 
 **Architecture Pivot (2026-01-31)**: Tool now operates in cloud-first model. Local editing UI for UX, but all persistence requires Supabase backend.
 
