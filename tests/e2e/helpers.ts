@@ -72,7 +72,8 @@ export async function loginUser(page: Page, user: TestUser): Promise<void> {
 
   const emailInput = page.locator('input[type="email"]')
   const passwordInput = page.locator('input[type="password"]')
-  const submitButton = page.locator('button:has-text("Sign In"), button:has-text("Login"), button[type="submit"]')
+  // Use exact match on form submit button to avoid matching OAuth buttons
+  const submitButton = page.locator('button[type="submit"]:has-text("Sign In")')
 
   await emailInput.fill(user.email)
   await passwordInput.fill(user.password)
