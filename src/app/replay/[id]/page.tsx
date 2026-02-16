@@ -53,6 +53,7 @@ export default async function ReplayPage({ params }: PageProps) {
       title,
       description,
       coaching_notes,
+      video_url,
       animation_type,
       tags,
       payload,
