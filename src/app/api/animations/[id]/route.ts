@@ -105,10 +105,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     const supabase = await createSupabaseServerClient();
 
-    // Check ownership
+    // Check ownership and get current version
     const { data: existing, error: fetchError } = await supabase
       .from('saved_animations')
-      .select('user_id')
+      .select('user_id, current_version, payload')
       .eq('id', id)
       .single();
 
@@ -185,11 +185,47 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (data.animation_type !== undefined) updateData.animation_type = data.animation_type;
     if (data.tags !== undefined) updateData.tags = data.tags;
     if (data.visibility !== undefined) updateData.visibility = data.visibility;
+    if (data.video_url !== undefined) updateData.video_url = data.video_url; // V2.0: YouTube URL
 
     if (data.payload !== undefined) {
       updateData.payload = data.payload;
       updateData.frame_count = data.payload.frames?.length ?? 0;
       updateData.duration_ms = data.payload.frames?.reduce((sum: number, frame: { duration?: number }) => sum + (frame.duration ?? 1000), 0) ?? 0;
+    }
+
+    // V2.0: Auto-create version on update if payload changed
+    if (data.payload !== undefined) {
+      // Parse current version
+      const currentVersion = existing.current_version || '1.0';
+      const [majorStr, minorStr] = currentVersion.split('.');
+      const currentMajor = parseInt(majorStr, 10) || 1;
+      const currentMinor = parseInt(minorStr, 10) || 0;
+
+      // Determine next version based on is_major_version flag
+      const isMajor = data.is_major_version === true;
+      const newMajor = isMajor ? currentMajor + 1 : currentMajor;
+      const newMinor = isMajor ? 0 : currentMinor + 1;
+      const newVersionNumber = `${newMajor}.${newMinor}`;
+
+      // Create new version entry
+      const { error: versionError } = await supabase
+        .from('animation_versions')
+        .insert({
+          animation_id: id,
+          version_number: newVersionNumber,
+          major_version: newMajor,
+          minor_version: newMinor,
+          payload: data.payload,
+          created_by: user.id,
+        });
+
+      if (versionError) {
+        console.warn('[Animation API] Failed to create version:', versionError);
+        // Non-fatal - continue with update
+      } else {
+        // Update current_version in the animation
+        updateData.current_version = newVersionNumber;
+      }
     }
 
     const { data: updated, error: updateError } = await supabase

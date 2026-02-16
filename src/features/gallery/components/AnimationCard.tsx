@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check } from 'lucide-react';
+import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check, History } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
+import { VersionHistoryModal } from './VersionHistoryModal';
 
 export interface AnimationSummary {
   id: string;
@@ -17,6 +18,7 @@ export interface AnimationSummary {
   created_at: string;
   updated_at: string;
   thumbnail_url?: string | null;
+  current_version?: string; // V2.0: Current version number
 }
 
 interface AnimationCardProps {
@@ -26,6 +28,7 @@ interface AnimationCardProps {
   onPlay?: (id: string) => void;
   showActions?: boolean;
   showCopyLink?: boolean;
+  onRefresh?: () => void; // V2.0: Callback after version restore
 }
 
 const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
@@ -73,9 +76,11 @@ export function AnimationCard({
   onPlay,
   showActions = true,
   showCopyLink = true,
+  onRefresh,
 }: AnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false); // V2.0: Version history modal
 
   const canCopyLink = animation.visibility !== 'private';
 
@@ -173,6 +178,16 @@ export function AnimationCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    setShowVersionHistory(true);
+                  }}
+                  className="p-1.5 hover:bg-surface-warm transition-colors"
+                  title="Version History"
+                >
+                  <History className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onEdit?.(animation.id);
                   }}
                   className="p-1.5 hover:bg-surface-warm transition-colors"
@@ -195,6 +210,20 @@ export function AnimationCard({
           </div>
         </div>
       </div>
+
+      {/* V2.0: Version History Modal */}
+      {showVersionHistory && (
+        <VersionHistoryModal
+          animationId={animation.id}
+          currentVersion={animation.current_version || '1.0'}
+          isOpen={showVersionHistory}
+          onClose={() => setShowVersionHistory(false)}
+          onRestore={() => {
+            setShowVersionHistory(false);
+            onRefresh?.();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -209,6 +209,8 @@ export async function POST(request: NextRequest) {
         frame_count: frameCount,
         visibility: data.visibility,
         thumbnail_url: thumbnailUrl,
+        video_url: data.video_url ?? null, // V2.0: YouTube tutorial video
+        current_version: '1.0', // V2.0: Initial version
       })
       .select('id, created_at, thumbnail_url')
       .single();
@@ -219,6 +221,23 @@ export async function POST(request: NextRequest) {
         { error: { code: 'DB_ERROR', message: 'Failed to save animation' } },
         { status: 500 }
       );
+    }
+
+    // V2.0: Create initial version (v1.0) in animation_versions
+    const { error: versionError } = await supabase
+      .from('animation_versions')
+      .insert({
+        animation_id: animation.id,
+        version_number: '1.0',
+        major_version: 1,
+        minor_version: 0,
+        payload: data.payload,
+        created_by: user.id,
+      });
+
+    if (versionError) {
+      console.warn('[Animations API] Failed to create v1.0 version:', versionError);
+      // Non-fatal - animation is already created, version history is optional
     }
 
     // Add cache invalidation headers to ensure client refreshes lists

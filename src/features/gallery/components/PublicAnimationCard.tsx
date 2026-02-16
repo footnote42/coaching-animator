@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Clock, Layers, ThumbsUp, Play, User } from 'lucide-react';
+import { Clock, Layers, ThumbsUp, Play, User, Copy } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
 
 interface PublicAnimation {
@@ -29,6 +29,7 @@ interface PublicAnimationCardProps {
   currentUserId?: string | null;
   onUpvote?: (id: string) => Promise<{ upvoted: boolean; upvote_count: number } | null>;
   onLoginRequired?: () => void;
+  onRemix?: (id: string) => void; // V2.0: Clone/remix animation (templates)
 }
 
 const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
@@ -57,13 +58,14 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote, onLoginRequired }: PublicAnimationCardProps) {
+export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote, onLoginRequired, onRemix }: PublicAnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [hasUpvoted, setHasUpvoted] = useState(animation.user_has_upvoted);
   const [upvoteCount, setUpvoteCount] = useState(animation.upvote_count);
   const [isUpvoting, setIsUpvoting] = useState(false);
 
   const isOwner = currentUserId && animation.user_id === currentUserId;
+  const isTemplate = animation.tags.includes('template'); // V2.0: Check if template
 
   const handleUpvoteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -126,6 +128,13 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
         <div className="absolute top-2 left-2 px-2 py-1 bg-primary/90 text-text-inverse text-xs font-medium uppercase">
           {ANIMATION_TYPE_LABELS[animation.animation_type]}
         </div>
+
+        {/* V2.0: Template badge */}
+        {isTemplate && (
+          <div className="absolute top-11 left-2 px-2 py-1 bg-blue-600/90 text-white text-xs font-medium uppercase">
+            Template
+          </div>
+        )}
 
         {/* Upvote button */}
         {!isOwner && (
@@ -192,13 +201,27 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs text-text-primary/50">
+        <div className="flex items-center justify-between text-xs text-text-primary/50 mb-2">
           <span className="flex items-center gap-1">
             <User className="w-3.5 h-3.5" />
             {animation.author.display_name || 'Anonymous'}
           </span>
           <span>{formatDate(animation.created_at)}</span>
         </div>
+
+        {/* V2.0: Use Template button */}
+        {isTemplate && onRemix && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemix(animation.id);
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+          >
+            <Copy className="w-4 h-4" />
+            Use Template
+          </button>
+        )}
       </div>
     </div>
   );

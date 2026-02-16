@@ -73,6 +73,7 @@ function GalleryContent() {
   const [order, setOrder] = useState<SortOrder>(
     (searchParams.get('order') as SortOrder) || 'desc'
   );
+  const [templatesOnly, setTemplatesOnly] = useState(false); // V2.0: Templates filter
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
@@ -84,6 +85,7 @@ function GalleryContent() {
       const params = new URLSearchParams();
       if (search) params.set('q', search);
       if (type) params.set('type', type);
+      if (templatesOnly) params.set('tags', 'template'); // V2.0: Filter for templates
       params.set('sort', sort);
       params.set('order', order);
       params.set('limit', String(limit));
@@ -118,7 +120,7 @@ function GalleryContent() {
         setRetryAttempt(0);
       }
     }
-  }, [search, type, sort, order, offset]);
+  }, [search, type, templatesOnly, sort, order, offset]);
 
   useEffect(() => {
     fetchGallery();
@@ -148,12 +150,13 @@ function GalleryContent() {
   const handleClearFilters = () => {
     setSearch('');
     setType('');
+    setTemplatesOnly(false);
     setSort('created_at');
     setOrder('desc');
     setOffset(0);
   };
 
-  const hasFilters = search || type;
+  const hasFilters = search || type || templatesOnly;
 
   const handleView = (id: string) => {
     router.push(`/replay/${id}`);
@@ -182,6 +185,11 @@ function GalleryContent() {
 
   const handleLoginRequired = () => {
     router.push('/login?redirect=/gallery');
+  };
+
+  const handleRemix = (id: string) => {
+    // V2.0: Navigate to editor with animation loaded for remixing
+    router.push(`/app?remix=${id}`);
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -235,6 +243,22 @@ function GalleryContent() {
                 ))}
               </select>
             </div>
+
+            {/* V2.0: Templates Only Filter */}
+            <label className="flex items-center gap-2 px-3 py-2 border border-border bg-surface hover:border-primary cursor-pointer">
+              <input
+                type="checkbox"
+                checked={templatesOnly}
+                onChange={(e) => {
+                  setTemplatesOnly(e.target.checked);
+                  setOffset(0);
+                }}
+                className="w-4 h-4 text-primary border-border focus:ring-primary"
+              />
+              <span className="text-sm font-medium text-text-primary">
+                Templates Only
+              </span>
+            </label>
 
             {/* Sort */}
             <div className="flex items-center gap-2">
@@ -315,6 +339,7 @@ function GalleryContent() {
                   currentUserId={currentUserId}
                   onUpvote={handleUpvote}
                   onLoginRequired={handleLoginRequired}
+                  onRemix={handleRemix}
                 />
               ))}
             </div>

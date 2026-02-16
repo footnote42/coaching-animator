@@ -71,9 +71,17 @@ export const CreateAnimationSchema = z.object({
   payload: AnimationPayloadSchema,
   visibility: VisibilitySchema.optional().default('private'),
   thumbnail: z.string().optional(), // Base64 data URL for thumbnail image
+  video_url: z.string()
+    .regex(
+      /^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/,
+      'Invalid YouTube URL format'
+    )
+    .optional(),
 });
 
-export const UpdateAnimationSchema = CreateAnimationSchema.partial();
+export const UpdateAnimationSchema = CreateAnimationSchema.partial().extend({
+  is_major_version: z.boolean().optional(), // V2.0: Flag to increment major version instead of minor
+});
 
 export const ReportSchema = z.object({
   animation_id: z.string().uuid(),
