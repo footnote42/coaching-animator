@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T18:11:03Z",
+  "lastUpdated": "2026-02-16T15:15:30Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "c293ef31718e5a86",
+    "checksum": "4ad6d3df1549158e",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 31,
+    "generation": 30,
     "lastModified": "2026-02-16T18:09:36Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -425,21 +425,19 @@
     {
       "id": "T012",
       "title": "Rugby-only sport selector",
-      "status": "done",
+      "status": "active",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:10Z",
-      "updatedAt": "2026-02-16T18:11:03Z",
+      "updatedAt": "2026-02-16T18:09:36Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union.",
-        "[COMPLETED 2026-02-16T18:11:03Z] VISIBLE_SPORTS constant added to fields.ts. SportSelector updated to filter dropdown to rugby types only. All sport code preserved for future expansion. Verified with lint and tsc."
-      ],
-      "completedAt": "2026-02-16T18:11:03Z"
+        "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union."
+      ]
     },
     {
       "id": "T013",

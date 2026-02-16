@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T15:11:40Z",
+  "lastUpdated": "2026-02-16T18:11:04Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "4d5652e748790093",
+    "checksum": "3f3b76d8917c3648",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 26,
-    "lastModified": "2026-02-16T15:06:58Z",
+    "generation": 32,
+    "lastModified": "2026-02-16T18:09:36Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": "T010",
+    "currentTask": "T012",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -391,36 +391,70 @@
     {
       "id": "T011",
       "title": "Remove marker entity type + auto-convert",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:08Z",
-      "updatedAt": "2026-02-16T15:03:08Z",
+      "updatedAt": "2026-02-16T15:15:29Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:08 UTC: Remove 'marker' from ENTITY_TYPES, remove marker color mapping, create payload hydration to convert markers to cones, show toast on conversion."
-      ]
+        "2026-02-16 15:03:08 UTC: Remove 'marker' from ENTITY_TYPES, remove marker color mapping, create payload hydration to convert markers to cones, show toast on conversion.",
+        "[COMPLETED 2026-02-16T15:15:29Z] Marker type removed from ENTITY_TYPES and EntityColors. Auto-conversion added to hydratePayload (marker → cone). PlayerToken rendering updated. Tests fixed. Verified with lint and tsc."
+      ],
+      "completedAt": "2026-02-16T15:15:29Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T15:15:30Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T012",
       "title": "Rugby-only sport selector",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:10Z",
-      "updatedAt": "2026-02-16T15:03:10Z",
+      "updatedAt": "2026-02-16T18:11:03Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union."
-      ]
+        "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union.",
+        "[COMPLETED 2026-02-16T18:11:03Z] VISIBLE_SPORTS constant added to fields.ts. SportSelector updated to filter dropdown to rugby types only. All sport code preserved for future expansion. Verified with lint and tsc."
+      ],
+      "completedAt": "2026-02-16T18:11:03Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T18:11:04Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T013",
