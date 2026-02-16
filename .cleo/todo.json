@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T19:47:16Z",
+  "lastUpdated": "2026-02-16T19:54:03Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "e2f726074a489a8f",
+    "checksum": "d90d4d8c046b2a39",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 44,
+    "generation": 48,
     "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -651,48 +651,82 @@
       "depends": [
         "T017"
       ],
-      "completedAt": "2026-02-16T19:47:16Z"
+      "completedAt": "2026-02-16T19:47:16Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:47:24Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T020",
       "title": "Update animations API for v2.0 fields",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:30Z",
-      "updatedAt": "2026-02-16T15:04:00Z",
+      "updatedAt": "2026-02-16T19:49:35Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:30 UTC: Extend POST /api/animations (video_url + v1.0 creation), PUT (auto-version + is_major_version), GET /api/gallery (tags filter). Depends on T10 and T11."
+        "2026-02-16 15:03:30 UTC: Extend POST /api/animations (video_url + v1.0 creation), PUT (auto-version + is_major_version), GET /api/gallery (tags filter). Depends on T10 and T11.",
+        "[COMPLETED 2026-02-16T19:49:35Z] Updated Animations API: video_url support, v1.0 on create, auto-versioning on update (major/minor), gallery tags filter already present. TypeScript + ESLint pass."
       ],
       "depends": [
         "T018",
         "T019"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:49:35Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:49:37Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T021",
       "title": "UI - Collection cards + template filter",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:32Z",
-      "updatedAt": "2026-02-16T15:04:02Z",
+      "updatedAt": "2026-02-16T19:54:03Z",
       "size": "medium",
       "position": 6,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:32 UTC: Add 'Templates Only' checkbox to gallery. Show blue 'Template' badge on PublicAnimationCard when tags includes 'template'. Add 'Use Template' button. Depends on T12."
+        "2026-02-16 15:03:32 UTC: Add 'Templates Only' checkbox to gallery. Show blue 'Template' badge on PublicAnimationCard when tags includes 'template'. Add 'Use Template' button. Depends on T12.",
+        "[COMPLETED 2026-02-16T19:54:03Z] Added template badge (blue pill), Use Template button, Templates Only filter checkbox in gallery. TypeScript + ESLint pass."
       ],
       "depends": [
         "T020"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:54:03Z"
     },
     {
       "id": "T022",
