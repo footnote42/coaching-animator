@@ -1,5 +1,5 @@
 import { SportType } from '@/core/types';
-import { FIELD_DIMENSIONS } from '@/core/constants/fields';
+import { FIELD_DIMENSIONS, VISIBLE_SPORTS } from '@/core/constants/fields';
 
 export interface SportSelectorProps {
     /** Currently selected sport */
@@ -12,9 +12,11 @@ export interface SportSelectorProps {
 /**
  * Sport selector component for choosing field type.
  * Uses Constitution-compliant styling: sharp corners, monospace font, pitch green accents.
+ *
+ * v2.0: Displays only rugby sports (VISIBLE_SPORTS) while keeping all sport code for future expansion.
  */
 export function SportSelector({ currentSport, onSportChange }: SportSelectorProps) {
-    const sportOptions: SportType[] = ['rugby-union', 'rugby-league', 'soccer', 'american-football'];
+    const sportOptions = VISIBLE_SPORTS;
 
     return (
         <div className="flex flex-col gap-2">

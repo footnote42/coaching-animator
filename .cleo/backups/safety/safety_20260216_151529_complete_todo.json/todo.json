@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T15:15:29Z",
+  "lastUpdated": "2026-02-16T15:11:40Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "e6ed91804fa1a4cc",
+    "checksum": "4d5652e748790093",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 28,
+    "generation": 27,
     "lastModified": "2026-02-16T15:11:53Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -391,21 +391,19 @@
     {
       "id": "T011",
       "title": "Remove marker entity type + auto-convert",
-      "status": "done",
+      "status": "active",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:08Z",
-      "updatedAt": "2026-02-16T15:15:29Z",
+      "updatedAt": "2026-02-16T15:11:53Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:08 UTC: Remove 'marker' from ENTITY_TYPES, remove marker color mapping, create payload hydration to convert markers to cones, show toast on conversion.",
-        "[COMPLETED 2026-02-16T15:15:29Z] Marker type removed from ENTITY_TYPES and EntityColors. Auto-conversion added to hydratePayload (marker → cone). PlayerToken rendering updated. Tests fixed. Verified with lint and tsc."
-      ],
-      "completedAt": "2026-02-16T15:15:29Z"
+        "2026-02-16 15:03:08 UTC: Remove 'marker' from ENTITY_TYPES, remove marker color mapping, create payload hydration to convert markers to cones, show toast on conversion."
+      ]
     },
     {
       "id": "T012",
