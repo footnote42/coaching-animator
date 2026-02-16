@@ -27,3 +27,4 @@ node_modules
 
 # Archived specs and legacy files
 /archive
+.worktrees/
