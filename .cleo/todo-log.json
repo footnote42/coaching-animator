@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 18,
+    "totalEntries": 19,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-14T18:30:39Z",
+    "lastEntry": "2026-02-16T15:02:24Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -390,6 +390,19 @@
       "details": {
         "field": "status",
         "operation": "complete"
+      }
+    },
+    {
+      "id": "log_f19bb4008826",
+      "timestamp": "2026-02-16T15:02:24Z",
+      "sessionId": "session_20260214_150509_d8380c",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Planning phase complete"
       }
     }
   ]
