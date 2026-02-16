@@ -20,7 +20,6 @@ import Konva from 'konva';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
 import { FieldLayoutOverlay } from '@/features/animation/components/Canvas/FieldLayoutOverlay';
-import { GridOverlay } from '@/features/animation/components/Canvas/GridOverlay';
 import { EntityLayer } from '@/features/animation/components/Canvas/EntityLayer';
 import { InlineEditor } from '@/features/animation/components/Canvas/InlineEditor';
 import { GhostLayer } from '@/features/animation/components/Canvas/GhostLayer';
@@ -89,8 +88,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     deselectAll,
     showGhosts,
     toggleGhosts,
-    showGrid,
-    toggleGrid,
     selectedAnnotationId,
     selectAnnotation,
     drawingMode,
@@ -509,7 +506,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                   width={canvasWidth}
                   height={canvasHeight}
                 />
-                <GridOverlay width={canvasWidth} height={canvasHeight} visible={showGrid} />
                 <GhostLayer />
                 <EntityLayer
                   entities={entities}
@@ -561,8 +557,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
               onLoopToggle={toggleLoop}
               ghostEnabled={showGhosts}
               onGhostToggle={toggleGhosts}
-              gridEnabled={showGrid}
-              onGridToggle={toggleGrid}
             />
             <FrameStrip
               frames={project?.frames ?? []}

@@ -41,11 +41,11 @@ export interface Project {
  * Project settings and preferences.
  */
 export interface ProjectSettings {
-    /** Toggle grid overlay visibility */
-    showGrid: boolean;
+    /** @deprecated Toggle grid overlay visibility (removed in v2.0) */
+    showGrid?: boolean;
 
-    /** Grid spacing in canvas units */
-    gridSpacing: number;
+    /** @deprecated Grid spacing in canvas units (removed in v2.0) */
+    gridSpacing?: number;
 
     /** Default transition duration for new frames (ms) */
     defaultTransitionDuration: number;
@@ -270,8 +270,8 @@ export interface PlaybackPosition {
 export interface ProjectSettingsUpdate {
     name: string;
     sport: SportType;
-    showGrid: boolean;
-    gridSpacing: number;
+    showGrid?: boolean; // @deprecated (removed in v2.0)
+    gridSpacing?: number; // @deprecated (removed in v2.0)
     defaultTransitionDuration: number;
     exportResolution: ExportResolution;
     pitchLayout?: PitchLayout;

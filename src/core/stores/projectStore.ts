@@ -90,8 +90,6 @@ export const useProjectStore = create<ProjectStoreState>()(
                         }
                     ],
                     settings: {
-                        showGrid: true,
-                        gridSpacing: 50,
                         defaultTransitionDuration: 2000,
                         exportResolution: '720p',
                     },
@@ -189,8 +187,6 @@ export const useProjectStore = create<ProjectStoreState>()(
                         // Update settings object
                         settings: {
                             ...state.project.settings,
-                            ...(updates.showGrid !== undefined && { showGrid: updates.showGrid }),
-                            ...(updates.gridSpacing !== undefined && { gridSpacing: updates.gridSpacing }),
                             ...(updates.defaultTransitionDuration !== undefined && { defaultTransitionDuration: updates.defaultTransitionDuration }),
                             ...(updates.exportResolution !== undefined && { exportResolution: updates.exportResolution }),
                         },

@@ -176,12 +176,7 @@ export const validateProject = (data: unknown): {
         errors.push('Missing or invalid "settings" object');
     } else {
         const s = project.settings as Record<string, unknown>;
-        if (typeof s.showGrid !== 'boolean') {
-            errors.push('Settings: invalid showGrid');
-        }
-        if (typeof s.gridSpacing !== 'number') {
-            errors.push('Settings: invalid gridSpacing');
-        }
+        // showGrid and gridSpacing are deprecated (v2.0) - skip validation
         if (typeof s.defaultTransitionDuration !== 'number') {
             errors.push('Settings: invalid defaultTransitionDuration');
         }

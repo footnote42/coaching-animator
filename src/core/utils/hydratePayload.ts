@@ -130,8 +130,6 @@ export function hydrateSharePayload(payload: SharePayload): Project {
         updatedAt: now,
         frames,
         settings: {
-            showGrid: false,
-            gridSpacing: 50,
             defaultTransitionDuration: 1000,
             exportResolution: '720p',
             pitchLayout

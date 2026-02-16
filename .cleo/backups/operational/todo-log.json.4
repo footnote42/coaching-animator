@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 29,
+    "totalEntries": 54,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-16T15:04:10Z",
+    "lastEntry": "2026-02-16T15:06:56Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1064,6 +1064,109 @@
       },
       "details": {
         "operation": "update"
+      }
+    },
+    {
+      "id": "log_2209414e9186",
+      "timestamp": "2026-02-16T15:04:12Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T025",
+      "before": {
+        "title": "E2E tests - Phase 0-1",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "E2E tests - Phase 0-1",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T021",
+          "T022",
+          "T023",
+          "T024"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b8139a0b82d5",
+      "timestamp": "2026-02-16T15:04:21Z",
+      "sessionId": "session_20260216_150242_650ba7",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Epic and task structure created successfully"
+      }
+    },
+    {
+      "id": "log_327f47b9c6bf",
+      "timestamp": "2026-02-16T15:04:24Z",
+      "sessionId": "session_20260216_150424_873c6e",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T015",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T006"
+      }
+    },
+    {
+      "id": "log_1c03b366192c",
+      "timestamp": "2026-02-16T15:04:32Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T015"
+      },
+      "after": {
+        "currentTask": "T009"
+      },
+      "details": null
+    },
+    {
+      "id": "log_d81e2831af29",
+      "timestamp": "2026-02-16T15:06:56Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T009",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-16T15:06:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
       }
     }
   ]

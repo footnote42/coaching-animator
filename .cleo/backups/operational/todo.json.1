@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T15:04:07Z",
+  "lastUpdated": "2026-02-16T15:04:12Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "af48b75484fd3ae1",
+    "checksum": "7174e03c29dfc57f",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 19,
-    "lastModified": "2026-02-16T15:02:42Z",
+    "generation": 21,
+    "lastModified": "2026-02-16T15:04:32Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 1
+    "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": null,
+    "currentTask": "T009",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -323,12 +323,12 @@
     {
       "id": "T009",
       "title": "Drop legacy tables (shares, follows)",
-      "status": "pending",
+      "status": "active",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:04Z",
-      "updatedAt": "2026-02-16T15:03:04Z",
+      "updatedAt": "2026-02-16T15:04:32Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
@@ -430,7 +430,7 @@
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-16T15:03:16Z",
+      "updatedAt": "2026-02-16T15:04:32Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
@@ -602,13 +602,16 @@
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:38Z",
-      "updatedAt": "2026-02-16T15:03:38Z",
+      "updatedAt": "2026-02-16T15:04:09Z",
       "size": "medium",
       "position": 9,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
         "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12."
+      ],
+      "depends": [
+        "T020"
       ]
     },
     {
@@ -619,13 +622,19 @@
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:40Z",
-      "updatedAt": "2026-02-16T15:03:40Z",
+      "updatedAt": "2026-02-16T15:04:12Z",
       "size": "medium",
       "position": 10,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
         "2026-02-16 15:03:40 UTC: Test suites: cleanup (grid gone, marker convert, rugby-only), mobile replay (responsive, touch, hints), collections, versions, templates, video URL. Depends on T13, T14, T15, T16."
+      ],
+      "depends": [
+        "T021",
+        "T022",
+        "T023",
+        "T024"
       ]
     }
   ],

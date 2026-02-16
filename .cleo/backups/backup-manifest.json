@@ -3,7 +3,7 @@
   "_meta": {
     "version": "1.0.0",
     "created": "2026-02-14T15:31:23Z",
-    "lastModified": "2026-02-14T18:30:34Z"
+    "lastModified": "2026-02-16T15:06:54Z"
   },
   "backups": [
     {
@@ -64,6 +64,18 @@
       ],
       "checksumSummary": "edc160e71a3b4be6612f8f7ecf67ccb9dc1469318b5c30fcf96557ee8db8aa0b",
       "sizeBytes": 12021,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260216_150654_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-16T15:06:54Z",
+      "path": ".cleo/backups/safety/safety_20260216_150654_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "7956c89c37801bc2fe731fd539a557825416c1c138ea94eb9327854d15a84327",
+      "sizeBytes": 24731,
       "neverDelete": false
     }
   ]

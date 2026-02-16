@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T15:04:12Z",
+  "lastUpdated": "2026-02-16T15:06:55Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "7174e03c29dfc57f",
+    "checksum": "94b119ebb5e9f9ba",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 21,
-    "lastModified": "2026-02-16T15:04:32Z",
+    "generation": 24,
+    "lastModified": "2026-02-16T15:06:58Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": "T009",
+    "currentTask": "T010",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -323,29 +323,46 @@
     {
       "id": "T009",
       "title": "Drop legacy tables (shares, follows)",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:04Z",
-      "updatedAt": "2026-02-16T15:04:32Z",
+      "updatedAt": "2026-02-16T15:06:54Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:04 UTC: Drop unused shares and follows tables. Update /api/share route and replay viewer. Migration SQL: DROP TABLE IF EXISTS shares CASCADE; DROP TABLE IF EXISTS follows CASCADE;"
-      ]
+        "2026-02-16 15:03:04 UTC: Drop unused shares and follows tables. Update /api/share route and replay viewer. Migration SQL: DROP TABLE IF EXISTS shares CASCADE; DROP TABLE IF EXISTS follows CASCADE;",
+        "[COMPLETED 2026-02-16T15:06:54Z] Migration created, /api/share deleted, replay viewer updated. Verified with lint and tsc."
+      ],
+      "completedAt": "2026-02-16T15:06:54Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T15:06:55Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T010",
       "title": "Remove grid overlay",
-      "status": "pending",
+      "status": "active",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:06Z",
-      "updatedAt": "2026-02-16T15:03:06Z",
+      "updatedAt": "2026-02-16T15:06:58Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
