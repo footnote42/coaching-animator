@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import dynamic from 'next/dynamic';
+import { Video } from 'lucide-react';
 const ReplayViewer = dynamic(() => import('@/features/animation/components/ReplayViewer').then(m => m.ReplayViewer), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-surface h-[300px] w-full flex items-center justify-center text-text-primary/50">Loading replay viewer...</div>
@@ -141,6 +142,21 @@ export default async function ReplayPage({ params }: PageProps) {
             <div className="text-text-primary/90 whitespace-pre-wrap break-words">
               {animation.coaching_notes}
             </div>
+          </div>
+        )}
+
+        {/* Video URL */}
+        {animation.video_url && (
+          <div className="mt-4 p-4 bg-surface border border-border rounded">
+            <a
+              href={animation.video_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+            >
+              <Video className="w-4 h-4" />
+              Watch Tutorial Video
+            </a>
           </div>
         )}
       </main>
