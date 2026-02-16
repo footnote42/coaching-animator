@@ -18,7 +18,14 @@ export function hydrateSharePayload(payload: SharePayload): Project {
     // Helper to safely resolve team/color
     type RawEntity = SharePayloadV1['entities'][0] | SharePayloadV2['entities'][0];
     const resolveEntityProps = (e: RawEntity) => {
-        const type = e.type as EntityType;
+        let type = e.type as EntityType | 'marker';
+
+        // Convert deprecated 'marker' type to 'cone' (v2.0 cleanup)
+        if (type === 'marker') {
+            type = 'cone';
+            console.info('[hydratePayload] Converted deprecated marker entity to cone:', e.id);
+        }
+
         // Handle V1 'defence' vs 'defense' typo if present
         const rawTeam = e.team as string | undefined;
         let team: TeamType = rawTeam === 'defence' ? 'defense' : (rawTeam as TeamType);
@@ -27,10 +34,10 @@ export function hydrateSharePayload(payload: SharePayload): Project {
         if (!team) team = 'neutral';
 
         // V2 might provide color/label, V1 does not
-        const color = ('color' in e && e.color) ? e.color : EntityColors.getDefault(type, team);
+        const color = ('color' in e && e.color) ? e.color : EntityColors.getDefault(type as EntityType, team);
         const label = ('label' in e && e.label) ? e.label : '';
 
-        return { type, team, color, label };
+        return { type: type as EntityType, team, color, label };
     };
 
     // Initialize entities from payload (base state)

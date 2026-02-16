@@ -2,7 +2,7 @@ import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 import type { EntityType, TeamType } from '@/core/types';
 
 // Aliased constants for semantic clarity (insulates from array index changes)
-const { neutral, attack, defense, primary, annotation } = DESIGN_TOKENS.colours;
+const { neutral, attack, defense, annotation } = DESIGN_TOKENS.colours;
 
 /**
  * Semantic entity color defaults.
@@ -13,7 +13,6 @@ const { neutral, attack, defense, primary, annotation } = DESIGN_TOKENS.colours;
 const ENTITY_DEFAULTS = {
     ball: neutral[0],           // Ball White (User Preference)
     cone: neutral[2],           // Cone Yellow
-    marker: primary,            // Pitch green
     'tackle-shield': defense[0], // Red/High vis
     'tackle-bag': attack[3],    // Purple/High vis
 } as const;
@@ -50,8 +49,6 @@ export const EntityColors = {
                 return ENTITY_DEFAULTS['tackle-shield'];
             case 'tackle-bag':
                 return ENTITY_DEFAULTS['tackle-bag'];
-            case 'marker':
-                return ENTITY_DEFAULTS.marker;
         }
         // TypeScript exhaustiveness: if a new EntityType is added, this line becomes unreachable
         // and will cause a compile error

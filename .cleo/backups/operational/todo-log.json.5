@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 31,
+    "totalEntries": 55,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-16T15:04:21Z",
+    "lastEntry": "2026-02-16T15:06:58Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1118,6 +1118,71 @@
       "details": {
         "note": "Epic and task structure created successfully"
       }
+    },
+    {
+      "id": "log_327f47b9c6bf",
+      "timestamp": "2026-02-16T15:04:24Z",
+      "sessionId": "session_20260216_150424_873c6e",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T015",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T006"
+      }
+    },
+    {
+      "id": "log_1c03b366192c",
+      "timestamp": "2026-02-16T15:04:32Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T015"
+      },
+      "after": {
+        "currentTask": "T009"
+      },
+      "details": null
+    },
+    {
+      "id": "log_d81e2831af29",
+      "timestamp": "2026-02-16T15:06:56Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T009",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-16T15:06:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6d0db4639054",
+      "timestamp": "2026-02-16T15:06:58Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T009"
+      },
+      "after": {
+        "currentTask": "T010"
+      },
+      "details": null
     }
   ]
 }

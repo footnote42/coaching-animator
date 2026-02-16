@@ -153,7 +153,6 @@ export const ENTITY_TYPES = [
   'player',
   'ball',
   'cone',
-  'marker',
   'tackle-shield',
   'tackle-bag',
 ] as const;

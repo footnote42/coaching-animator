@@ -63,8 +63,6 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                 return 9;  // Was 12px, reduced 25%
             case 'cone':
                 return 8; // Reduced from 11 to 8 for minimalist look (LOW-001)
-            case 'marker':
-                return 7;  // Was 10px, reduced 30%
             case 'tackle-shield':
                 return 20; // Larger for equipment
             case 'tackle-bag':
@@ -194,16 +192,6 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     fill="transparent"
                     stroke={color}
                     strokeWidth={7} // Increased from 3 to 7 for better visibility (LOW-001)
-                    shadowEnabled={false}
-                    opacity={opacity}
-                />
-            ) : entity.type === 'marker' ? (
-                /* Marker: Small filled circle - deprecated, keeping for backwards compatibility */
-                <Circle
-                    radius={radius}
-                    fill={color}
-                    stroke={isSelected ? DESIGN_TOKENS.colours.primary : undefined}
-                    strokeWidth={isSelected ? 2 : 0}
                     shadowEnabled={false}
                     opacity={opacity}
                 />

@@ -5,15 +5,11 @@ import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 describe('EntityColors', () => {
     describe('getDefault', () => {
         it('returns correct default for ball', () => {
-            expect(EntityColors.getDefault('ball')).toBe(DESIGN_TOKENS.colours.neutral[1]);
+            expect(EntityColors.getDefault('ball')).toBe(DESIGN_TOKENS.colours.neutral[0]);
         });
 
         it('returns correct default for cone', () => {
             expect(EntityColors.getDefault('cone')).toBe(DESIGN_TOKENS.colours.neutral[2]);
-        });
-
-        it('returns correct default for marker', () => {
-            expect(EntityColors.getDefault('marker')).toBe(DESIGN_TOKENS.colours.primary);
         });
 
         it('returns correct default for tackle-shield', () => {
@@ -55,7 +51,7 @@ describe('EntityColors', () => {
         });
 
         it('falls back to default when color is null', () => {
-            expect(EntityColors.resolve(null, 'ball')).toBe(DESIGN_TOKENS.colours.neutral[1]);
+            expect(EntityColors.resolve(null, 'ball')).toBe(DESIGN_TOKENS.colours.neutral[0]);
         });
 
         // Edge case: empty string treated as "no color set"
@@ -64,7 +60,7 @@ describe('EntityColors', () => {
         });
 
         it('treats whitespace-only string as missing color', () => {
-            expect(EntityColors.resolve('   ', 'ball')).toBe(DESIGN_TOKENS.colours.neutral[1]);
+            expect(EntityColors.resolve('   ', 'ball')).toBe(DESIGN_TOKENS.colours.neutral[0]);
         });
 
         it('respects team for player defaults', () => {
