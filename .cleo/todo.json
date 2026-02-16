@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T18:13:13Z",
+  "lastUpdated": "2026-02-16T18:16:24Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "4aa5ffac5159e970",
+    "checksum": "28db5682a6aad575",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 36,
+    "generation": 37,
     "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -510,19 +510,21 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "active",
+      "status": "done",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-16T18:13:31Z",
+      "updatedAt": "2026-02-16T18:16:24Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915."
-      ]
+        "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915.",
+        "[COMPLETED 2026-02-16T18:16:24Z] All 5 mobile requirements implemented. F-MOB-01/02 already done. F-MOB-03 landscape hint made dismissable. F-MOB-04 mobile editor warning added. F-MOB-05 coaching notes added to replay viewer with mobile-friendly layout. Verified with lint and tsc."
+      ],
+      "completedAt": "2026-02-16T18:16:24Z"
     },
     {
       "id": "T016",
