@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-14T18:30:34Z",
+  "lastUpdated": "2026-02-16T15:04:12Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "c37e55d2ccc564d1",
+    "checksum": "7174e03c29dfc57f",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 13,
-    "lastModified": "2026-02-16T15:02:24Z",
+    "generation": 21,
+    "lastModified": "2026-02-16T15:04:32Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 1
+    "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": null,
+    "currentTask": "T009",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -268,6 +268,374 @@
         "lastUpdated": "2026-02-14T18:22:36Z",
         "failureLog": []
       }
+    },
+    {
+      "id": "T006",
+      "title": "V2.0 Upgrade - Phase 0-1",
+      "status": "pending",
+      "priority": "medium",
+      "type": "epic",
+      "parentId": null,
+      "createdAt": "2026-02-16T15:02:48Z",
+      "updatedAt": "2026-02-16T15:02:48Z",
+      "size": "medium",
+      "position": 2,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:02:48 UTC: Epic for v2.0 upgrade execution. Phase 0: Cleanup \\& Prep (T01-T07). Phase 1: Collections + Versions + Templates (T08-T17). Plan: docs/plans/v2-phase-0-1-plan.md"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "Phase 0: Cleanup \\& Prep",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T006",
+      "createdAt": "2026-02-16T15:02:54Z",
+      "updatedAt": "2026-02-16T15:02:54Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:02:54 UTC: All tasks in this phase are parallel (no cross-dependencies). Includes: Drop legacy tables, remove grid overlay, remove marker type, rugby-only selector, verify Safari/iOS GIF export, create staging env, mobile replay optimization (P0)."
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Phase 1: Collections + Versions + Templates",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T006",
+      "createdAt": "2026-02-16T15:02:56Z",
+      "updatedAt": "2026-02-16T15:02:56Z",
+      "size": "medium",
+      "position": 2,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:02:56 UTC: Sequential dependencies per plan. Migrations → APIs → UI → E2E tests. Full dependency graph in docs/plans/v2-phase-0-1-plan.md"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Drop legacy tables (shares, follows)",
+      "status": "active",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:04Z",
+      "updatedAt": "2026-02-16T15:04:32Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:04 UTC: Drop unused shares and follows tables. Update /api/share route and replay viewer. Migration SQL: DROP TABLE IF EXISTS shares CASCADE; DROP TABLE IF EXISTS follows CASCADE;"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Remove grid overlay",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:06Z",
+      "updatedAt": "2026-02-16T15:03:06Z",
+      "size": "medium",
+      "position": 2,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:06 UTC: Delete GridOverlay component, remove showGrid state from uiStore, remove toggle button from PlaybackControls, remove usage from Editor/ReplayViewer."
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Remove marker entity type + auto-convert",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:08Z",
+      "updatedAt": "2026-02-16T15:03:08Z",
+      "size": "medium",
+      "position": 3,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:08 UTC: Remove 'marker' from ENTITY_TYPES, remove marker color mapping, create payload hydration to convert markers to cones, show toast on conversion."
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Rugby-only sport selector",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:10Z",
+      "updatedAt": "2026-02-16T15:03:10Z",
+      "size": "medium",
+      "position": 4,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union."
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "Verify Safari/iOS GIF export",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:12Z",
+      "updatedAt": "2026-02-16T15:03:12Z",
+      "size": "medium",
+      "position": 5,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:12 UTC: Audit useExport.ts and browser-detect.ts. If working, document. If incomplete, implement browser detection + GIF fallback + format selector."
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Create staging Supabase project",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:13Z",
+      "updatedAt": "2026-02-16T15:03:13Z",
+      "size": "medium",
+      "position": 6,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:13 UTC: Create staging project, apply migrations, create .env.staging, document workflow."
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
+      "status": "pending",
+      "priority": "high",
+      "type": "subtask",
+      "parentId": "T007",
+      "createdAt": "2026-02-16T15:03:16Z",
+      "updatedAt": "2026-02-16T15:04:32Z",
+      "size": "medium",
+      "position": 7,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915."
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Migration - Collections tables + video_url",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:21Z",
+      "updatedAt": "2026-02-16T15:03:21Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229."
+      ]
+    },
+    {
+      "id": "T017",
+      "title": "Migration - Version history table + trigger",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:23Z",
+      "updatedAt": "2026-02-16T15:03:23Z",
+      "size": "medium",
+      "position": 2,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:23 UTC: Create animation_versions table with auto-cleanup trigger. Add current_version column to saved_animations. Full schema in lines 237-263."
+      ]
+    },
+    {
+      "id": "T018",
+      "title": "API - Collections CRUD + items",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:25Z",
+      "updatedAt": "2026-02-16T15:03:56Z",
+      "size": "medium",
+      "position": 3,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:25 UTC: 7 endpoints for collection management. Routes: /api/collections (POST/GET), /api/collections/[id] (GET/PUT/DELETE), /api/collections/[id]/animations (POST), /api/collections/[id]/animations/[animationId] (DELETE). Depends on T08 migration."
+      ],
+      "depends": [
+        "T016"
+      ]
+    },
+    {
+      "id": "T019",
+      "title": "API - Version history + restore",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:27Z",
+      "updatedAt": "2026-02-16T15:03:58Z",
+      "size": "medium",
+      "position": 4,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:27 UTC: 2 endpoints: GET /api/animations/[id]/versions (list), POST /api/animations/[id]/versions/[versionId]/restore. Restore logic: read old payload → next version → create new version. Depends on T09 migration."
+      ],
+      "depends": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T020",
+      "title": "Update animations API for v2.0 fields",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:30Z",
+      "updatedAt": "2026-02-16T15:04:00Z",
+      "size": "medium",
+      "position": 5,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:30 UTC: Extend POST /api/animations (video_url + v1.0 creation), PUT (auto-version + is_major_version), GET /api/gallery (tags filter). Depends on T10 and T11."
+      ],
+      "depends": [
+        "T018",
+        "T019"
+      ]
+    },
+    {
+      "id": "T021",
+      "title": "UI - Collection cards + template filter",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:32Z",
+      "updatedAt": "2026-02-16T15:04:02Z",
+      "size": "medium",
+      "position": 6,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:32 UTC: Add 'Templates Only' checkbox to gallery. Show blue 'Template' badge on PublicAnimationCard when tags includes 'template'. Add 'Use Template' button. Depends on T12."
+      ],
+      "depends": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T022",
+      "title": "UI - Collection detail page",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:34Z",
+      "updatedAt": "2026-02-16T15:04:05Z",
+      "size": "medium",
+      "position": 7,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:34 UTC: New route /collections/[id]. Layout: name, description, owner, grid of animation cards, share button. Depends on T13."
+      ],
+      "depends": [
+        "T021"
+      ]
+    },
+    {
+      "id": "T023",
+      "title": "UI - Version history modal",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:37Z",
+      "updatedAt": "2026-02-16T15:04:07Z",
+      "size": "medium",
+      "position": 8,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:37 UTC: VersionHistoryModal component. Triggered from AnimationCard 'Version History' button. Lists versions newest-first with restore buttons. Depends on T12."
+      ],
+      "depends": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T024",
+      "title": "UI - Video URL in editor + replay viewer",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:38Z",
+      "updatedAt": "2026-02-16T15:04:09Z",
+      "size": "medium",
+      "position": 9,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12."
+      ],
+      "depends": [
+        "T020"
+      ]
+    },
+    {
+      "id": "T025",
+      "title": "E2E tests - Phase 0-1",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T008",
+      "createdAt": "2026-02-16T15:03:40Z",
+      "updatedAt": "2026-02-16T15:04:12Z",
+      "size": "medium",
+      "position": 10,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-16 15:03:40 UTC: Test suites: cleanup (grid gone, marker convert, rugby-only), mobile replay (responsive, touch, hints), collections, versions, templates, video URL. Depends on T13, T14, T15, T16."
+      ],
+      "depends": [
+        "T021",
+        "T022",
+        "T023",
+        "T024"
+      ]
     }
   ],
   "labels": {}

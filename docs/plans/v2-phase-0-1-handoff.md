@@ -10,7 +10,7 @@ You are a lead engineer executing a v2.0 upgrade of the coaching-animator applic
 
 ## Your Execution Plan
 
-Read the implementation plan at `archive/specs/006-v2-upgrade/PLAN-phase-0-1.md`. This contains 17 tasks across 2 phases with full dependency graph, file lists, SQL schemas, and verification steps.
+Read the implementation plan at `docs/plans/v2-phase-0-1-plan.md`. This contains 17 tasks across 2 phases with full dependency graph, file lists, SQL schemas, and verification steps.
 
 ## Authority Documents
 
@@ -58,4 +58,4 @@ Before writing any code, set up the task structure in CLEO:
 
 ## Start
 
-Begin by reading `archive/specs/006-v2-upgrade/PLAN-phase-0-1.md`, then set up the CLEO epic and task structure. Once tasks are created, start executing from T01.
+Begin by reading `docs/plans/v2-phase-0-1-plan.md`, then set up the CLEO epic and task structure. Once tasks are created, start executing from T01.

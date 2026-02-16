@@ -79,7 +79,11 @@
       "Bash(ct show:*)",
       "Bash(ct complete:*)",
       "Bash(export CLEO_SESSION=session_20260214_150509_d8380c)",
-      "Bash(ct list:*)"
+      "Bash(ct list:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(ct dash:*)",
+      "Bash(ct add:*)",
+      "Bash(ct update:*)"
     ]
   }
 }
