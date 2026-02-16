@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T18:11:04Z",
+  "lastUpdated": "2026-02-16T18:13:13Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "3f3b76d8917c3648",
+    "checksum": "4aa5ffac5159e970",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 33,
-    "lastModified": "2026-02-16T18:11:08Z",
+    "generation": 36,
+    "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": "T013",
+    "currentTask": "T015",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -459,19 +459,36 @@
     {
       "id": "T013",
       "title": "Verify Safari/iOS GIF export",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:12Z",
-      "updatedAt": "2026-02-16T18:11:08Z",
+      "updatedAt": "2026-02-16T18:13:12Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:12 UTC: Audit useExport.ts and browser-detect.ts. If working, document. If incomplete, implement browser detection + GIF fallback + format selector."
-      ]
+        "2026-02-16 15:03:12 UTC: Audit useExport.ts and browser-detect.ts. If working, document. If incomplete, implement browser detection + GIF fallback + format selector.",
+        "[COMPLETED 2026-02-16T18:13:12Z] GIF export fully implemented and documented. Browser detection works, auto-fallback to GIF on Safari/iOS. Format selector in UI. Created comprehensive docs/technical/safari-ios-export.md. All PRD F-EXPORT requirements met."
+      ],
+      "completedAt": "2026-02-16T18:13:12Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T18:13:13Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T014",
@@ -493,12 +510,12 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "pending",
+      "status": "active",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-16T15:04:32Z",
+      "updatedAt": "2026-02-16T18:13:31Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,

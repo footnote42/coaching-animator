@@ -115,9 +115,20 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     position: { x: number; y: number };
   } | null>(null);
 
+  // Mobile editor warning state
+  const [mobileWarningDismissed, setMobileWarningDismissed] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
   useAnimationLoop();
   useKeyboardShortcuts();
   useAutoSave();
+
+  // Track viewport width for mobile warning
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -474,6 +485,19 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       </aside>
 
       <main className="flex-1 flex flex-col">
+        {/* Mobile editor warning */}
+        {viewportWidth < 768 && !mobileWarningDismissed && (
+          <div className="px-4 py-2 bg-[var(--color-accent-warm)]/10 border-b border-[var(--color-accent-warm)] text-sm text-text-primary flex items-center justify-between gap-3">
+            <span>💻 Desktop recommended for editing. Mobile editing may be limited.</span>
+            <button
+              onClick={() => setMobileWarningDismissed(true)}
+              className="text-text-primary/70 hover:text-text-primary px-2 py-1"
+              aria-label="Dismiss warning"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         <div
           className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
           style={{

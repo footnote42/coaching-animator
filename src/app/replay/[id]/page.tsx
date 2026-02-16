@@ -52,6 +52,7 @@ export default async function ReplayPage({ params }: PageProps) {
       id,
       title,
       description,
+      coaching_notes,
       animation_type,
       tags,
       payload,
@@ -129,6 +130,18 @@ export default async function ReplayPage({ params }: PageProps) {
       {/* Replay Viewer */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <ReplayViewer payload={animation.payload} />
+
+        {/* Coaching Notes */}
+        {animation.coaching_notes && (
+          <div className="mt-8 p-4 bg-surface border border-border rounded">
+            <h2 className="text-lg font-heading font-bold text-text-primary mb-3">
+              Coaching Notes
+            </h2>
+            <div className="text-text-primary/90 whitespace-pre-wrap break-words">
+              {animation.coaching_notes}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}

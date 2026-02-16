@@ -142,6 +142,7 @@ function ReplayCanvas({
 }: ReplayCanvasProps) {
   const { width: canvasWidth, height: canvasHeight } = useCanvasSize(800, 4 / 3);
   const [playbackPosition, setPlaybackPosition] = useState<PlaybackPosition | null>(null);
+  const [landscapeHintDismissed, setLandscapeHintDismissed] = useState(false);
 
   useReplayAnimationLoop({
     frames,
@@ -160,9 +161,16 @@ function ReplayCanvas({
 
   return (
     <>
-      {canvasWidth < 600 && (
-        <div className="mb-3 px-4 py-2 bg-[var(--color-surface-warm)] border border-border rounded text-sm text-text-primary">
-          💡 Rotate device for best viewing experience
+      {canvasWidth < 600 && !landscapeHintDismissed && (
+        <div className="mb-3 px-4 py-2 bg-[var(--color-surface-warm)] border border-border rounded text-sm text-text-primary flex items-center justify-between gap-3">
+          <span>💡 Rotate device for best viewing experience</span>
+          <button
+            onClick={() => setLandscapeHintDismissed(true)}
+            className="text-text-primary/70 hover:text-text-primary px-2 py-1"
+            aria-label="Dismiss hint"
+          >
+            ✕
+          </button>
         </div>
       )}
       <div className="max-w-[800px] mx-auto">
