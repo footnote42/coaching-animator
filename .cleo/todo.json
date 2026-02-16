@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T18:16:24Z",
+  "lastUpdated": "2026-02-16T19:40:01Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "28db5682a6aad575",
+    "checksum": "f487191f6d388983",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 37,
+    "generation": 38,
     "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -529,19 +529,21 @@
     {
       "id": "T016",
       "title": "Migration - Collections tables + video_url",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:21Z",
-      "updatedAt": "2026-02-16T15:03:21Z",
+      "updatedAt": "2026-02-16T19:40:01Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229."
-      ]
+        "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229.",
+        "[COMPLETED 2026-02-16T19:40:01Z] Created collections migration: tables, indexes, RLS policies, video_url column with YouTube validation"
+      ],
+      "completedAt": "2026-02-16T19:40:01Z"
     },
     {
       "id": "T017",
