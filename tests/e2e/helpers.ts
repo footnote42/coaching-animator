@@ -67,7 +67,7 @@ export async function registerUser(page: Page, user: TestUser): Promise<void> {
  * Login with existing user credentials
  */
 export async function loginUser(page: Page, user: TestUser): Promise<void> {
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3002'
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
   await page.goto(`${baseUrl}/login`)
 
   const emailInput = page.locator('input[type="email"]')

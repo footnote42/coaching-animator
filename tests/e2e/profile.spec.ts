@@ -8,7 +8,7 @@ test.describe('Profile Page', () => {
   });
 
   test('should display profile page with user information', async ({ page }) => {
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Verify profile page loaded
     await expect(page.locator('h1:has-text("Profile Settings")')).toBeVisible();
@@ -24,7 +24,7 @@ test.describe('Profile Page', () => {
   });
 
   test('should update display name and persist after refresh', async ({ page }) => {
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Generate unique display name
     const newName = `Test Coach ${Date.now()}`;
@@ -62,7 +62,7 @@ test.describe('Profile Page', () => {
 
   test('should display accurate animation count', async ({ page }) => {
     // First, check initial animation count
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Get initial count from usage section
     const usageSection = page.locator('text=/\\d+ \\/ 50/');
@@ -73,7 +73,7 @@ test.describe('Profile Page', () => {
     console.log('[Test] Initial animation count:', initialCount);
 
     // Create a new animation
-    await page.goto('http://localhost:3002/app');
+    await page.goto('/app');
 
     // Wait for editor to load
     await expect(page.locator('text=Frame 1')).toBeVisible({ timeout: 10000 });
@@ -83,7 +83,7 @@ test.describe('Profile Page', () => {
     await createTestAnimation(page, animationTitle);
 
     // Navigate back to profile
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Verify count incremented
     const newCountText = await usageSection.textContent();
@@ -94,7 +94,7 @@ test.describe('Profile Page', () => {
   });
 
   test('should handle empty display name (anonymous)', async ({ page }) => {
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Clear display name to test anonymous mode
     const displayNameInput = page.locator('input#displayName');
@@ -112,7 +112,7 @@ test.describe('Profile Page', () => {
   });
 
   test('should show correct usage percentage bar', async ({ page }) => {
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Get animation count
     const usageText = await page.locator('text=/\\d+ \\/ 50/').textContent();
@@ -137,7 +137,7 @@ test.describe('Profile Page', () => {
   });
 
   test('should show quick links to galleries', async ({ page }) => {
-    await page.goto('http://localhost:3002/profile');
+    await page.goto('/profile');
 
     // Verify quick links section exists
     await expect(page.locator('h2:has-text("Quick Links")')).toBeVisible();
