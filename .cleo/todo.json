@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T19:40:01Z",
+  "lastUpdated": "2026-02-16T19:47:16Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "f487191f6d388983",
+    "checksum": "e2f726074a489a8f",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 38,
+    "generation": 44,
     "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -543,64 +543,115 @@
         "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229.",
         "[COMPLETED 2026-02-16T19:40:01Z] Created collections migration: tables, indexes, RLS policies, video_url column with YouTube validation"
       ],
-      "completedAt": "2026-02-16T19:40:01Z"
+      "completedAt": "2026-02-16T19:40:01Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:40:10Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T017",
       "title": "Migration - Version history table + trigger",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:23Z",
-      "updatedAt": "2026-02-16T15:03:23Z",
+      "updatedAt": "2026-02-16T19:40:45Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:23 UTC: Create animation_versions table with auto-cleanup trigger. Add current_version column to saved_animations. Full schema in lines 237-263."
-      ]
+        "2026-02-16 15:03:23 UTC: Create animation_versions table with auto-cleanup trigger. Add current_version column to saved_animations. Full schema in lines 237-263.",
+        "[COMPLETED 2026-02-16T19:40:45Z] Created version history migration: animation_versions table, current_version column, auto-cleanup trigger (latest+3), RLS policies"
+      ],
+      "completedAt": "2026-02-16T19:40:45Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:40:46Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T018",
       "title": "API - Collections CRUD + items",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:25Z",
-      "updatedAt": "2026-02-16T15:03:56Z",
+      "updatedAt": "2026-02-16T19:43:29Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:25 UTC: 7 endpoints for collection management. Routes: /api/collections (POST/GET), /api/collections/[id] (GET/PUT/DELETE), /api/collections/[id]/animations (POST), /api/collections/[id]/animations/[animationId] (DELETE). Depends on T08 migration."
+        "2026-02-16 15:03:25 UTC: 7 endpoints for collection management. Routes: /api/collections (POST/GET), /api/collections/[id] (GET/PUT/DELETE), /api/collections/[id]/animations (POST), /api/collections/[id]/animations/[animationId] (DELETE). Depends on T08 migration.",
+        "[COMPLETED 2026-02-16T19:43:29Z] Created Collections API: 7 endpoints (CRUD + animations), Zod schemas, auth, rate limiting, ownership enforcement. TypeScript + ESLint pass."
       ],
       "depends": [
         "T016"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:43:29Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:43:30Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T019",
       "title": "API - Version history + restore",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:27Z",
-      "updatedAt": "2026-02-16T15:03:58Z",
+      "updatedAt": "2026-02-16T19:47:16Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:27 UTC: 2 endpoints: GET /api/animations/[id]/versions (list), POST /api/animations/[id]/versions/[versionId]/restore. Restore logic: read old payload → next version → create new version. Depends on T09 migration."
+        "2026-02-16 15:03:27 UTC: 2 endpoints: GET /api/animations/[id]/versions (list), POST /api/animations/[id]/versions/[versionId]/restore. Restore logic: read old payload → next version → create new version. Depends on T09 migration.",
+        "[COMPLETED 2026-02-16T19:47:16Z] Created Version History API: GET versions (newest-first), POST restore (creates new minor version). TypeScript + ESLint pass."
       ],
       "depends": [
         "T017"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:47:16Z"
     },
     {
       "id": "T020",
