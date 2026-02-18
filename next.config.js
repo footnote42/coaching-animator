@@ -1,4 +1,5 @@
 import withSerwistInit from '@serwist/next';
+import path from 'path';
 // Force restart to pick up color palette changes
 
 const withSerwist = withSerwistInit({
@@ -91,6 +92,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
+      '@vercel/analytics/react': path.resolve('./node_modules/@vercel/analytics/dist/react/index.mjs'),
     };
 
     return config;
