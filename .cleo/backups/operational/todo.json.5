@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T18:11:03Z",
+  "lastUpdated": "2026-02-18T19:35:34Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "c293ef31718e5a86",
+    "checksum": "9ee49577d4a9896c",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 31,
-    "lastModified": "2026-02-16T18:09:36Z",
+    "generation": 52,
+    "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": "T012",
+    "currentTask": "T015",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -439,24 +439,56 @@
         "2026-02-16 15:03:10 UTC: Add VISIBLE_SPORTS = ['rugby-union', 'rugby-league'], filter SportSelector dropdown, default new projects to rugby-union.",
         "[COMPLETED 2026-02-16T18:11:03Z] VISIBLE_SPORTS constant added to fields.ts. SportSelector updated to filter dropdown to rugby types only. All sport code preserved for future expansion. Verified with lint and tsc."
       ],
-      "completedAt": "2026-02-16T18:11:03Z"
+      "completedAt": "2026-02-16T18:11:03Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T18:11:04Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T013",
       "title": "Verify Safari/iOS GIF export",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:12Z",
-      "updatedAt": "2026-02-16T15:03:12Z",
+      "updatedAt": "2026-02-16T18:13:12Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:12 UTC: Audit useExport.ts and browser-detect.ts. If working, document. If incomplete, implement browser detection + GIF fallback + format selector."
-      ]
+        "2026-02-16 15:03:12 UTC: Audit useExport.ts and browser-detect.ts. If working, document. If incomplete, implement browser detection + GIF fallback + format selector.",
+        "[COMPLETED 2026-02-16T18:13:12Z] GIF export fully implemented and documented. Browser detection works, auto-fallback to GIF on Safari/iOS. Format selector in UI. Created comprehensive docs/technical/safari-ios-export.md. All PRD F-EXPORT requirements met."
+      ],
+      "completedAt": "2026-02-16T18:13:12Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T18:13:13Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T014",
@@ -478,134 +510,223 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-16T15:04:32Z",
+      "updatedAt": "2026-02-16T18:16:24Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915."
-      ]
+        "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915.",
+        "[COMPLETED 2026-02-16T18:16:24Z] All 5 mobile requirements implemented. F-MOB-01/02 already done. F-MOB-03 landscape hint made dismissable. F-MOB-04 mobile editor warning added. F-MOB-05 coaching notes added to replay viewer with mobile-friendly layout. Verified with lint and tsc."
+      ],
+      "completedAt": "2026-02-16T18:16:24Z"
     },
     {
       "id": "T016",
       "title": "Migration - Collections tables + video_url",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:21Z",
-      "updatedAt": "2026-02-16T15:03:21Z",
+      "updatedAt": "2026-02-16T19:40:01Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229."
-      ]
+        "2026-02-16 15:03:21 UTC: Create collections and collection_items tables. Add video_url column to saved_animations. Full schema in docs/plans/v2-phase-0-1-plan.md lines 187-229.",
+        "[COMPLETED 2026-02-16T19:40:01Z] Created collections migration: tables, indexes, RLS policies, video_url column with YouTube validation"
+      ],
+      "completedAt": "2026-02-16T19:40:01Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:40:10Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T017",
       "title": "Migration - Version history table + trigger",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:23Z",
-      "updatedAt": "2026-02-16T15:03:23Z",
+      "updatedAt": "2026-02-16T19:40:45Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:23 UTC: Create animation_versions table with auto-cleanup trigger. Add current_version column to saved_animations. Full schema in lines 237-263."
-      ]
+        "2026-02-16 15:03:23 UTC: Create animation_versions table with auto-cleanup trigger. Add current_version column to saved_animations. Full schema in lines 237-263.",
+        "[COMPLETED 2026-02-16T19:40:45Z] Created version history migration: animation_versions table, current_version column, auto-cleanup trigger (latest+3), RLS policies"
+      ],
+      "completedAt": "2026-02-16T19:40:45Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:40:46Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T018",
       "title": "API - Collections CRUD + items",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:25Z",
-      "updatedAt": "2026-02-16T15:03:56Z",
+      "updatedAt": "2026-02-16T19:43:29Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:25 UTC: 7 endpoints for collection management. Routes: /api/collections (POST/GET), /api/collections/[id] (GET/PUT/DELETE), /api/collections/[id]/animations (POST), /api/collections/[id]/animations/[animationId] (DELETE). Depends on T08 migration."
+        "2026-02-16 15:03:25 UTC: 7 endpoints for collection management. Routes: /api/collections (POST/GET), /api/collections/[id] (GET/PUT/DELETE), /api/collections/[id]/animations (POST), /api/collections/[id]/animations/[animationId] (DELETE). Depends on T08 migration.",
+        "[COMPLETED 2026-02-16T19:43:29Z] Created Collections API: 7 endpoints (CRUD + animations), Zod schemas, auth, rate limiting, ownership enforcement. TypeScript + ESLint pass."
       ],
       "depends": [
         "T016"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:43:29Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:43:30Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T019",
       "title": "API - Version history + restore",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:27Z",
-      "updatedAt": "2026-02-16T15:03:58Z",
+      "updatedAt": "2026-02-16T19:47:16Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:27 UTC: 2 endpoints: GET /api/animations/[id]/versions (list), POST /api/animations/[id]/versions/[versionId]/restore. Restore logic: read old payload → next version → create new version. Depends on T09 migration."
+        "2026-02-16 15:03:27 UTC: 2 endpoints: GET /api/animations/[id]/versions (list), POST /api/animations/[id]/versions/[versionId]/restore. Restore logic: read old payload → next version → create new version. Depends on T09 migration.",
+        "[COMPLETED 2026-02-16T19:47:16Z] Created Version History API: GET versions (newest-first), POST restore (creates new minor version). TypeScript + ESLint pass."
       ],
       "depends": [
         "T017"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:47:16Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:47:24Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T020",
       "title": "Update animations API for v2.0 fields",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:30Z",
-      "updatedAt": "2026-02-16T15:04:00Z",
+      "updatedAt": "2026-02-16T19:49:35Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:30 UTC: Extend POST /api/animations (video_url + v1.0 creation), PUT (auto-version + is_major_version), GET /api/gallery (tags filter). Depends on T10 and T11."
+        "2026-02-16 15:03:30 UTC: Extend POST /api/animations (video_url + v1.0 creation), PUT (auto-version + is_major_version), GET /api/gallery (tags filter). Depends on T10 and T11.",
+        "[COMPLETED 2026-02-16T19:49:35Z] Updated Animations API: video_url support, v1.0 on create, auto-versioning on update (major/minor), gallery tags filter already present. TypeScript + ESLint pass."
       ],
       "depends": [
         "T018",
         "T019"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:49:35Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-16T19:49:37Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T021",
       "title": "UI - Collection cards + template filter",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:32Z",
-      "updatedAt": "2026-02-16T15:04:02Z",
+      "updatedAt": "2026-02-16T19:54:03Z",
       "size": "medium",
       "position": 6,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:32 UTC: Add 'Templates Only' checkbox to gallery. Show blue 'Template' badge on PublicAnimationCard when tags includes 'template'. Add 'Use Template' button. Depends on T12."
+        "2026-02-16 15:03:32 UTC: Add 'Templates Only' checkbox to gallery. Show blue 'Template' badge on PublicAnimationCard when tags includes 'template'. Add 'Use Template' button. Depends on T12.",
+        "[COMPLETED 2026-02-16T19:54:03Z] Added template badge (blue pill), Use Template button, Templates Only filter checkbox in gallery. TypeScript + ESLint pass."
       ],
       "depends": [
         "T020"
-      ]
+      ],
+      "completedAt": "2026-02-16T19:54:03Z"
     },
     {
       "id": "T022",
@@ -650,45 +771,79 @@
     {
       "id": "T024",
       "title": "UI - Video URL in editor + replay viewer",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:38Z",
-      "updatedAt": "2026-02-16T15:04:09Z",
+      "updatedAt": "2026-02-18T19:35:10Z",
       "size": "medium",
       "position": 9,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12."
+        "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12.",
+        "[COMPLETED 2026-02-18T19:35:10Z] Implemented YouTube video URL field in editor sidebar with validation, wired to cloud save handlers. Added Watch Tutorial Video link on replay page. All commits merged to main."
       ],
       "depends": [
         "T020"
-      ]
+      ],
+      "completedAt": "2026-02-18T19:35:10Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-18T19:35:21Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T025",
       "title": "E2E tests - Phase 0-1",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:40Z",
-      "updatedAt": "2026-02-16T15:04:12Z",
+      "updatedAt": "2026-02-18T19:35:32Z",
       "size": "medium",
       "position": 10,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:40 UTC: Test suites: cleanup (grid gone, marker convert, rugby-only), mobile replay (responsive, touch, hints), collections, versions, templates, video URL. Depends on T13, T14, T15, T16."
+        "2026-02-16 15:03:40 UTC: Test suites: cleanup (grid gone, marker convert, rugby-only), mobile replay (responsive, touch, hints), collections, versions, templates, video URL. Depends on T13, T14, T15, T16.",
+        "[COMPLETED 2026-02-18T19:35:32Z] Added 6 E2E test suites (cleanup-v2, mobile-replay, collections, versions, templates, video-url) plus test helpers (tests/helpers/auth.ts, tests/helpers/api.ts). All committed to main."
       ],
       "depends": [
         "T021",
         "T022",
         "T023",
         "T024"
-      ]
+      ],
+      "completedAt": "2026-02-18T19:35:32Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-18T19:35:34Z",
+        "failureLog": []
+      }
     }
   ],
   "labels": {}

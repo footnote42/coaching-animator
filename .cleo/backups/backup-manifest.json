@@ -3,7 +3,7 @@
   "_meta": {
     "version": "1.0.0",
     "created": "2026-02-14T15:31:23Z",
-    "lastModified": "2026-02-16T18:13:12Z"
+    "lastModified": "2026-02-18T19:35:32Z"
   },
   "backups": [
     {
@@ -124,6 +124,42 @@
       ],
       "checksumSummary": "531105fbe666a0c105d5ece7668532bca562eceb0b74178cac41d6beeb0ce5b6",
       "sizeBytes": 27272,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260216_181624_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-16T18:16:24Z",
+      "path": ".cleo/backups/safety/safety_20260216_181624_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "e6105231c2a999ebc62992a8a2dcec439981639518ac58e53a57bf04e673b395",
+      "sizeBytes": 27975,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260218_193509_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-18T19:35:10Z",
+      "path": ".cleo/backups/safety/safety_20260218_193509_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "ba8098ebfc3a939ef32a17cbd7a7a510afc86c01db37f5b437511f340de5a454",
+      "sizeBytes": 31584,
+      "neverDelete": false
+    },
+    {
+      "id": "safety_20260218_193531_complete_todo.json",
+      "type": "safety",
+      "timestamp": "2026-02-18T19:35:32Z",
+      "path": ".cleo/backups/safety/safety_20260218_193531_complete_todo.json",
+      "files": [
+        "todo.json"
+      ],
+      "checksumSummary": "88006d4174b9a3f1a743c7250e8c746cfb9959641a2fd8e057aeede9477bd99a",
+      "sizeBytes": 32241,
       "neverDelete": false
     }
   ]

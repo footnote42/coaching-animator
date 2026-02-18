@@ -1,44 +1,789 @@
-<testsuites id="" name="" tests="12" failures="0" skipped="0" errors="0" time="33.336758">
-<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="chromium" tests="4" failures="0" skipped="0" time="7.258" errors="0">
-<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="1.593">
+<testsuites id="" name="" tests="18" failures="18" skipped="0" errors="0" time="362.51241600000003">
+<testsuite name="profile.spec.ts" timestamp="2026-02-16T18:47:56.930Z" hostname="chromium" tests="6" failures="6" skipped="0" time="124.399" errors="0">
+<testcase name="Profile Page › should display profile page with user information" classname="profile.spec.ts" time="14.939">
+<failure message="profile.spec.ts:10:3 should display profile page with user information" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:10:3 › Profile Page › should display profile page with user information 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Profile Settings")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('h1:has-text("Profile Settings")')
+
+
+      12 |
+      13 |     // Verify profile page loaded
+    > 14 |     await expect(page.locator('h1:has-text("Profile Settings")')).toBeVisible();
+         |                                                                   ^
+      15 |
+      16 |     // Verify email field exists and is disabled
+      17 |     const emailInput = page.locator('input[type="email"]');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:14:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\error-context.md
+]]>
+</failure>
 <system-out>
-<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\error-context.md]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.721">
+<testcase name="Profile Page › should update display name and persist after refresh" classname="profile.spec.ts" time="31.335">
+<failure message="profile.spec.ts:26:3 should update display name and persist after refresh" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:26:3 › Profile Page › should update display name and persist after refresh 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.clear: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input#displayName')
+
+
+      33 |     // Clear existing value and enter new display name
+      34 |     const displayNameInput = page.locator('input#displayName');
+    > 35 |     await displayNameInput.clear();
+         |                            ^
+      36 |     await displayNameInput.fill(newName);
+      37 |
+      38 |     // Verify value was set
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:35:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[[Test] Setting display name to: Test Coach 1771267697487
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="1.942">
+<testcase name="Profile Page › should display accurate animation count" classname="profile.spec.ts" time="7.968">
+<failure message="profile.spec.ts:63:3 should display accurate animation count" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:63:3 › Profile Page › should display accurate animation count ───────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=/\\d+ \\/ 50/')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('text=/\\d+ \\/ 50/')
+
+
+      67 |     // Get initial count from usage section
+      68 |     const usageSection = page.locator('text=/\\d+ \\/ 50/');
+    > 69 |     await expect(usageSection).toBeVisible();
+         |                                ^
+      70 |
+      71 |     const initialCountText = await usageSection.textContent();
+      72 |     const initialCount = parseInt(initialCountText?.match(/^(\d+)/)?.[1] ?? '0');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:69:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-chromium\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.002">
+<testcase name="Profile Page › should handle empty display name (anonymous)" classname="profile.spec.ts" time="31.159">
+<failure message="profile.spec.ts:96:3 should handle empty display name (anonymous)" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:96:3 › Profile Page › should handle empty display name (anonymous) ──
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.clear: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input#displayName')
+
+
+       99 |     // Clear display name to test anonymous mode
+      100 |     const displayNameInput = page.locator('input#displayName');
+    > 101 |     await displayNameInput.clear();
+          |                            ^
+      102 |
+      103 |     // Save
+      104 |     await page.click('button:has-text("Save Changes")');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:101:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show correct usage percentage bar" classname="profile.spec.ts" time="31.17">
+<failure message="profile.spec.ts:114:3 should show correct usage percentage bar" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:114:3 › Profile Page › should show correct usage percentage bar ─────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.textContent: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('text=/\\d+ \\/ 50/')
+
+
+      116 |
+      117 |     // Get animation count
+    > 118 |     const usageText = await page.locator('text=/\\d+ \\/ 50/').textContent();
+          |                                                                ^
+      119 |     const count = parseInt(usageText?.match(/^(\d+)/)?.[1] ?? '0');
+      120 |
+      121 |     // Check that progress bar exists and has a width
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:118:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show quick links to galleries" classname="profile.spec.ts" time="7.828">
+<failure message="profile.spec.ts:139:3 should show quick links to galleries" type="FAILURE">
+<![CDATA[  [chromium] › profile.spec.ts:139:3 › Profile Page › should show quick links to galleries ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h2:has-text("Quick Links")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('h2:has-text("Quick Links")')
+
+
+      141 |
+      142 |     // Verify quick links section exists
+    > 143 |     await expect(page.locator('h2:has-text("Quick Links")')).toBeVisible();
+          |                                                              ^
+      144 |
+      145 |     // Verify My Playbook link
+      146 |     const myPlaybookLink = page.locator('a[href="/my-gallery"]');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:143:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\error-context.md]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
-<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="firefox" tests="4" failures="0" skipped="0" time="10.541" errors="0">
-<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="4.271">
+<testsuite name="profile.spec.ts" timestamp="2026-02-16T18:47:56.930Z" hostname="firefox" tests="6" failures="6" skipped="0" time="117.56" errors="0">
+<testcase name="Profile Page › should display profile page with user information" classname="profile.spec.ts" time="8.825">
+<failure message="profile.spec.ts:10:3 should display profile page with user information" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:10:3 › Profile Page › should display profile page with user information 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h1:has-text("Profile Settings")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('h1:has-text("Profile Settings")')
+
+
+      12 |
+      13 |     // Verify profile page loaded
+    > 14 |     await expect(page.locator('h1:has-text("Profile Settings")')).toBeVisible();
+         |                                                                   ^
+      15 |
+      16 |     // Verify email field exists and is disabled
+      17 |     const emailInput = page.locator('input[type="email"]');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:14:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\error-context.md
+]]>
+</failure>
 <system-out>
-<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\error-context.md]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.957">
+<testcase name="Profile Page › should update display name and persist after refresh" classname="profile.spec.ts" time="30.134">
+<failure message="profile.spec.ts:26:3 should update display name and persist after refresh" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:26:3 › Profile Page › should update display name and persist after refresh 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.clear: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input#displayName')
+
+
+      33 |     // Clear existing value and enter new display name
+      34 |     const displayNameInput = page.locator('input#displayName');
+    > 35 |     await displayNameInput.clear();
+         |                            ^
+      36 |     await displayNameInput.fill(newName);
+      37 |
+      38 |     // Verify value was set
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:35:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[[Test] Setting display name to: Test Coach 1771267826792
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="2.144">
+<testcase name="Profile Page › should display accurate animation count" classname="profile.spec.ts" time="8.963">
+<failure message="profile.spec.ts:63:3 should display accurate animation count" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:63:3 › Profile Page › should display accurate animation count ────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=/\\d+ \\/ 50/')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('text=/\\d+ \\/ 50/')
+
+
+      67 |     // Get initial count from usage section
+      68 |     const usageSection = page.locator('text=/\\d+ \\/ 50/');
+    > 69 |     await expect(usageSection).toBeVisible();
+         |                                ^
+      70 |
+      71 |     const initialCountText = await usageSection.textContent();
+      72 |     const initialCount = parseInt(initialCountText?.match(/^(\d+)/)?.[1] ?? '0');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:69:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-firefox\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.169">
+<testcase name="Profile Page › should handle empty display name (anonymous)" classname="profile.spec.ts" time="30.14">
+<failure message="profile.spec.ts:96:3 should handle empty display name (anonymous)" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:96:3 › Profile Page › should handle empty display name (anonymous) ───
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.clear: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input#displayName')
+
+
+       99 |     // Clear display name to test anonymous mode
+      100 |     const displayNameInput = page.locator('input#displayName');
+    > 101 |     await displayNameInput.clear();
+          |                            ^
+      102 |
+      103 |     // Save
+      104 |     await page.click('button:has-text("Save Changes")');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:101:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show correct usage percentage bar" classname="profile.spec.ts" time="30.121">
+<failure message="profile.spec.ts:114:3 should show correct usage percentage bar" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:114:3 › Profile Page › should show correct usage percentage bar ──────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.textContent: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('text=/\\d+ \\/ 50/')
+
+
+      116 |
+      117 |     // Get animation count
+    > 118 |     const usageText = await page.locator('text=/\\d+ \\/ 50/').textContent();
+          |                                                                ^
+      119 |     const count = parseInt(usageText?.match(/^(\d+)/)?.[1] ?? '0');
+      120 |
+      121 |     // Check that progress bar exists and has a width
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:118:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show quick links to galleries" classname="profile.spec.ts" time="9.377">
+<failure message="profile.spec.ts:139:3 should show quick links to galleries" type="FAILURE">
+<![CDATA[  [firefox] › profile.spec.ts:139:3 › Profile Page › should show quick links to galleries ──────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('h2:has-text("Quick Links")')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('h2:has-text("Quick Links")')
+
+
+      141 |
+      142 |     // Verify quick links section exists
+    > 143 |     await expect(page.locator('h2:has-text("Quick Links")')).toBeVisible();
+          |                                                              ^
+      144 |
+      145 |     // Verify My Playbook link
+      146 |     const myPlaybookLink = page.locator('a[href="/my-gallery"]');
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:143:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\error-context.md]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
-<testsuite name="replay-mobile.spec.ts" timestamp="2026-02-07T21:26:27.936Z" hostname="webkit" tests="4" failures="0" skipped="0" time="8.205" errors="0">
-<testcase name="Mobile viewport (375×667) › canvas fits viewport without horizontal scroll" classname="replay-mobile.spec.ts" time="1.994">
+<testsuite name="profile.spec.ts" timestamp="2026-02-16T18:47:56.930Z" hostname="webkit" tests="6" failures="6" skipped="0" time="89.876" errors="0">
+<testcase name="Profile Page › should display profile page with user information" classname="profile.spec.ts" time="12.009">
+<failure message="profile.spec.ts:10:3 should display profile page with user information" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:10:3 › Profile Page › should display profile page with user information 
+
+    TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers.ts:83
+
+      81 |
+      82 |   // Wait for navigation (may go to /app or auth confirmation)
+    > 83 |   await page.waitForNavigation({ timeout: 10000 })
+         |              ^
+      84 | }
+      85 |
+      86 | /**
+        at loginUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:83:14)
+        at loginAsTestUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:440:3)
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:7:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\error-context.md
+]]>
+</failure>
 <system-out>
-<![CDATA[✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\error-context.md]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Mobile viewport (375×667) › play/pause button meets 48×48px touch target requirement" classname="replay-mobile.spec.ts" time="1.877">
+<testcase name="Profile Page › should update display name and persist after refresh" classname="profile.spec.ts" time="30.973">
+<failure message="profile.spec.ts:26:3 should update display name and persist after refresh" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:26:3 › Profile Page › should update display name and persist after refresh 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.clear: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input#displayName')
+
+
+      33 |     // Clear existing value and enter new display name
+      34 |     const displayNameInput = page.locator('input#displayName');
+    > 35 |     await displayNameInput.clear();
+         |                            ^
+      36 |     await displayNameInput.fill(newName);
+      37 |
+      38 |     // Verify value was set
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:35:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[[Test] Setting display name to: Test Coach 1771267959601
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Tablet viewport (500×800) › canvas maintains 4:3 aspect ratio" classname="replay-mobile.spec.ts" time="2.183">
+<testcase name="Profile Page › should display accurate animation count" classname="profile.spec.ts" time="11.707">
+<failure message="profile.spec.ts:63:3 should display accurate animation count" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:63:3 › Profile Page › should display accurate animation count ─────────
+
+    TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers.ts:83
+
+      81 |
+      82 |   // Wait for navigation (may go to /app or auth confirmation)
+    > 83 |   await page.waitForNavigation({ timeout: 10000 })
+         |              ^
+      84 | }
+      85 |
+      86 | /**
+        at loginUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:83:14)
+        at loginAsTestUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:440:3)
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:7:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-display-accurate-animation-count-webkit\error-context.md]]
+]]>
+</system-out>
 </testcase>
-<testcase name="Desktop viewport (1920×1080) › canvas caps at 800×600 maximum dimensions" classname="replay-mobile.spec.ts" time="2.151">
+<testcase name="Profile Page › should handle empty display name (anonymous)" classname="profile.spec.ts" time="11.686">
+<failure message="profile.spec.ts:96:3 should handle empty display name (anonymous)" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:96:3 › Profile Page › should handle empty display name (anonymous) ────
+
+    TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers.ts:83
+
+      81 |
+      82 |   // Wait for navigation (may go to /app or auth confirmation)
+    > 83 |   await page.waitForNavigation({ timeout: 10000 })
+         |              ^
+      84 | }
+      85 |
+      86 | /**
+        at loginUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:83:14)
+        at loginAsTestUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:440:3)
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:7:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show correct usage percentage bar" classname="profile.spec.ts" time="11.77">
+<failure message="profile.spec.ts:114:3 should show correct usage percentage bar" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:114:3 › Profile Page › should show correct usage percentage bar ───────
+
+    TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers.ts:83
+
+      81 |
+      82 |   // Wait for navigation (may go to /app or auth confirmation)
+    > 83 |   await page.waitForNavigation({ timeout: 10000 })
+         |              ^
+      84 | }
+      85 |
+      86 | /**
+        at loginUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:83:14)
+        at loginAsTestUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:440:3)
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:7:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Profile Page › should show quick links to galleries" classname="profile.spec.ts" time="11.731">
+<failure message="profile.spec.ts:139:3 should show quick links to galleries" type="FAILURE">
+<![CDATA[  [webkit] › profile.spec.ts:139:3 › Profile Page › should show quick links to galleries ───────────
+
+    TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers.ts:83
+
+      81 |
+      82 |   // Wait for navigation (may go to /app or auth confirmation)
+    > 83 |   await page.waitForNavigation({ timeout: 10000 })
+         |              ^
+      84 | }
+      85 |
+      86 | /**
+        at loginUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:83:14)
+        at loginAsTestUser (C:\Coding Projects\coaching-animator\tests\e2e\helpers.ts:440:3)
+        at C:\Coding Projects\coaching-animator\tests\e2e\profile.spec.ts:7:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\video.webm]]
+
+[[ATTACHMENT|artifacts\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\error-context.md]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "🏉 Coaching Animator" [ref=e4]:
+        - /url: /
+        - generic [ref=e5]: 🏉
+        - generic [ref=e6]: Coaching Animator
+      - generic [ref=e7]:
+        - link "Public Gallery" [ref=e8]:
+          - /url: /gallery
+        - link "Sign In" [ref=e9]:
+          - /url: /login
+        - link "Get Started" [ref=e10]:
+          - /url: /register
+  - generic [ref=e13]:
+    - paragraph [ref=e15]: Rugby Play Visualisation
+    - generic [ref=e17]:
+      - heading "Sign In" [level=2] [ref=e18]
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Email
+          - textbox "Email" [ref=e22]:
+            - /placeholder: coach@example.com
+        - generic [ref=e23]:
+          - generic [ref=e24]: Password
+          - textbox "Password" [ref=e25]:
+            - /placeholder: ••••••••
+        - button "Sign In" [ref=e26]
+      - generic [ref=e27]:
+        - paragraph [ref=e28]: Or continue with
+        - button "Sign in with Google" [ref=e29]:
+          - img [ref=e30]
+          - generic [ref=e35]: Sign in with Google
+      - link "Forgot password?" [ref=e37]:
+        - /url: /forgot-password
+      - generic [ref=e38]:
+        - text: Don't have an account?
+        - link "Sign up" [ref=e39]:
+          - /url: /register
+  - region "Notifications alt+T"
+  - alert [ref=e40]
+```

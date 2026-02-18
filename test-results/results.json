@@ -100,30 +100,25 @@
     "updateSourceMethod": "patch",
     "version": "1.58.1",
     "workers": 1,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:3000",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "webServer": null
   },
   "suites": [
     {
-      "title": "replay-mobile.spec.ts",
-      "file": "replay-mobile.spec.ts",
+      "title": "profile.spec.ts",
+      "file": "profile.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Mobile viewport (375×667)",
-          "file": "replay-mobile.spec.ts",
-          "line": 52,
+          "title": "Profile Page",
+          "file": "profile.spec.ts",
+          "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "canvas fits viewport without horizontal scroll",
-              "ok": true,
+              "title": "should display profile page with user information",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -136,32 +131,138 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1593,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 14939,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:14:67",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 67,
+                          "line": 14
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[90m// Verify profile page loaded\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 14 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1:has-text(\"Profile Settings\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Verify email field exists and is disabled\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mconst\u001b[39m emailInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 67,
+                            "line": 14
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n\n\n  12 |\n  13 |     // Verify profile page loaded\n> 14 |     await expect(page.locator('h1:has-text(\"Profile Settings\")')).toBeVisible();\n     |                                                                   ^\n  15 |\n  16 |     // Verify email field exists and is disabled\n  17 |     const emailInput = page.locator('input[type=\"email\"]');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:14:67"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:47:58.068Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 67,
+                        "line": 14
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-a55bd5a0fb282f7938a9",
+              "file": "profile.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should update display name and persist after refresh",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 31335,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 28,
+                            "line": 35
+                          },
+                          "message": "Error: locator.clear: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input#displayName')\u001b[22m\n\n\n  33 |     // Clear existing value and enter new display name\n  34 |     const displayNameInput = page.locator('input#displayName');\n> 35 |     await displayNameInput.clear();\n     |                            ^\n  36 |     await displayNameInput.fill(newName);\n  37 |\n  38 |     // Verify value was set\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:35:28"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34\n"
+                          "text": "[Test] Setting display name to: Test Coach 1771267697487\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:29.270Z",
+                      "startTime": "2026-02-16T18:48:14.490Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-chromium\\error-context.md"
+                        }
+                      ]
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-11d5e5955081bd170d79",
-              "file": "replay-mobile.spec.ts",
-              "line": 55,
+              "id": "e8b79b4ee550a37632f1-9cc03a58d284542ea386",
+              "file": "profile.spec.ts",
+              "line": 26,
               "column": 3
             },
             {
-              "title": "play/pause button meets 48×48px touch target requirement",
-              "ok": true,
+              "title": "should display accurate animation count",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -172,30 +273,276 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 2,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1721,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 7968,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:69:32",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 32,
+                          "line": 69
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 67 |\u001b[39m     \u001b[90m// Get initial count from usage section\u001b[39m\n \u001b[90m 68 |\u001b[39m     \u001b[36mconst\u001b[39m usageSection \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=/\\\\d+ \\\\/ 50/'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 69 |\u001b[39m     \u001b[36mawait\u001b[39m expect(usageSection)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 70 |\u001b[39m\n \u001b[90m 71 |\u001b[39m     \u001b[36mconst\u001b[39m initialCountText \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m usageSection\u001b[33m.\u001b[39mtextContent()\u001b[33m;\u001b[39m\n \u001b[90m 72 |\u001b[39m     \u001b[36mconst\u001b[39m initialCount \u001b[33m=\u001b[39m parseInt(initialCountText\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mmatch(\u001b[35m/^(\\d+)/\u001b[39m)\u001b[33m?\u001b[39m\u001b[33m.\u001b[39m[\u001b[35m1\u001b[39m] \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m'0'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 32,
+                            "line": 69
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n\n  67 |     // Get initial count from usage section\n  68 |     const usageSection = page.locator('text=/\\\\d+ \\\\/ 50/');\n> 69 |     await expect(usageSection).toBeVisible();\n     |                                ^\n  70 |\n  71 |     const initialCountText = await usageSection.textContent();\n  72 |     const initialCount = parseInt(initialCountText?.match(/^(\\d+)/)?.[1] ?? '0');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:69:32"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:32.032Z",
+                      "startTime": "2026-02-16T18:48:47.402Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 32,
+                        "line": 69
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-2aebb0b7a53658f618c9",
-              "file": "replay-mobile.spec.ts",
-              "line": 91,
+              "id": "e8b79b4ee550a37632f1-c901542d786e1fc6f92d",
+              "file": "profile.spec.ts",
+              "line": 63,
               "column": 3
             },
             {
-              "title": "canvas fits viewport without horizontal scroll",
-              "ok": true,
+              "title": "should handle empty display name (anonymous)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 31159,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 28,
+                            "line": 101
+                          },
+                          "message": "Error: locator.clear: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input#displayName')\u001b[22m\n\n\n   99 |     // Clear display name to test anonymous mode\n  100 |     const displayNameInput = page.locator('input#displayName');\n> 101 |     await displayNameInput.clear();\n      |                            ^\n  102 |\n  103 |     // Save\n  104 |     await page.click('button:has-text(\"Save Changes\")');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:101:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:48:56.910Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--chromium\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-2a6199b74c65140d129b",
+              "file": "profile.spec.ts",
+              "line": 96,
+              "column": 3
+            },
+            {
+              "title": "should show correct usage percentage bar",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 31170,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 64,
+                            "line": 118
+                          },
+                          "message": "Error: locator.textContent: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n\n  116 |\n  117 |     // Get animation count\n> 118 |     const usageText = await page.locator('text=/\\\\d+ \\\\/ 50/').textContent();\n      |                                                                ^\n  119 |     const count = parseInt(usageText?.match(/^(\\d+)/)?.[1] ?? '0');\n  120 |\n  121 |     // Check that progress bar exists and has a width\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:118:64"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:49:29.610Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-chromium\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-8213c5a6f61aab39fe75",
+              "file": "profile.spec.ts",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "should show quick links to galleries",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7828,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:143:62",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 62,
+                          "line": 143
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 141 |\u001b[39m\n \u001b[90m 142 |\u001b[39m     \u001b[90m// Verify quick links section exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 143 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"Quick Links\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 144 |\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[90m// Verify My Playbook link\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m myPlaybookLink \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'a[href=\"/my-gallery\"]'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 62,
+                            "line": 143
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n\n\n  141 |\n  142 |     // Verify quick links section exists\n> 143 |     await expect(page.locator('h2:has-text(\"Quick Links\")')).toBeVisible();\n      |                                                              ^\n  144 |\n  145 |     // Verify My Playbook link\n  146 |     const myPlaybookLink = page.locator('a[href=\"/my-gallery\"]');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:143:62"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:50:02.357Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 62,
+                        "line": 143
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-0d263ee9bbc34192e243",
+              "file": "profile.spec.ts",
+              "line": 139,
+              "column": 3
+            },
+            {
+              "title": "should display profile page with user information",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -206,34 +553,140 @@
                   "projectName": "firefox",
                   "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 6,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4271,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 8825,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:14:67",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 67,
+                          "line": 14
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[90m// Verify profile page loaded\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 14 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1:has-text(\"Profile Settings\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 15 |\u001b[39m\n \u001b[90m 16 |\u001b[39m     \u001b[90m// Verify email field exists and is disabled\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mconst\u001b[39m emailInput \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 67,
+                            "line": 14
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h1:has-text(\"Profile Settings\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1:has-text(\"Profile Settings\")')\u001b[22m\n\n\n  12 |\n  13 |     // Verify profile page loaded\n> 14 |     await expect(page.locator('h1:has-text(\"Profile Settings\")')).toBeVisible();\n     |                                                                   ^\n  15 |\n  16 |     // Verify email field exists and is disabled\n  17 |     const emailInput = page.locator('input[type=\"email\"]');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:14:67"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:50:11.724Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-firefox\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 67,
+                        "line": 14
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-fe935605b5a4fb2fc1f6",
+              "file": "profile.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should update display name and persist after refresh",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30134,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 28,
+                            "line": 35
+                          },
+                          "message": "Error: locator.clear: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input#displayName')\u001b[22m\n\n\n  33 |     // Clear existing value and enter new display name\n  34 |     const displayNameInput = page.locator('input#displayName');\n> 35 |     await displayNameInput.clear();\n     |                            ^\n  36 |     await displayNameInput.fill(newName);\n  37 |\n  38 |     // Verify value was set\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:35:28"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34\n"
+                          "text": "[Test] Setting display name to: Test Coach 1771267826792\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:39.086Z",
+                      "startTime": "2026-02-16T18:50:22.717Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-firefox\\error-context.md"
+                        }
+                      ]
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-4e852dc5d7dee984b514",
-              "file": "replay-mobile.spec.ts",
-              "line": 55,
+              "id": "e8b79b4ee550a37632f1-398e9044737c8393643b",
+              "file": "profile.spec.ts",
+              "line": 26,
               "column": 3
             },
             {
-              "title": "play/pause button meets 48×48px touch target requirement",
-              "ok": true,
+              "title": "should display accurate animation count",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -244,30 +697,276 @@
                   "projectName": "firefox",
                   "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 8,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1957,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 8963,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:69:32",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 32,
+                          "line": 69
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 67 |\u001b[39m     \u001b[90m// Get initial count from usage section\u001b[39m\n \u001b[90m 68 |\u001b[39m     \u001b[36mconst\u001b[39m usageSection \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=/\\\\d+ \\\\/ 50/'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 69 |\u001b[39m     \u001b[36mawait\u001b[39m expect(usageSection)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 70 |\u001b[39m\n \u001b[90m 71 |\u001b[39m     \u001b[36mconst\u001b[39m initialCountText \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m usageSection\u001b[33m.\u001b[39mtextContent()\u001b[33m;\u001b[39m\n \u001b[90m 72 |\u001b[39m     \u001b[36mconst\u001b[39m initialCount \u001b[33m=\u001b[39m parseInt(initialCountText\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mmatch(\u001b[35m/^(\\d+)/\u001b[39m)\u001b[33m?\u001b[39m\u001b[33m.\u001b[39m[\u001b[35m1\u001b[39m] \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m'0'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 32,
+                            "line": 69
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=/\\\\d+ \\\\/ 50/')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n\n  67 |     // Get initial count from usage section\n  68 |     const usageSection = page.locator('text=/\\\\d+ \\\\/ 50/');\n> 69 |     await expect(usageSection).toBeVisible();\n     |                                ^\n  70 |\n  71 |     const initialCountText = await usageSection.textContent();\n  72 |     const initialCount = parseInt(initialCountText?.match(/^(\\d+)/)?.[1] ?? '0');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:69:32"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:44.183Z",
+                      "startTime": "2026-02-16T18:50:55.020Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-firefox\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 32,
+                        "line": 69
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-c633df6b6efaabe7bb96",
-              "file": "replay-mobile.spec.ts",
-              "line": 91,
+              "id": "e8b79b4ee550a37632f1-0ee8afbd39fb7ae33f99",
+              "file": "profile.spec.ts",
+              "line": 63,
               "column": 3
             },
             {
-              "title": "canvas fits viewport without horizontal scroll",
-              "ok": true,
+              "title": "should handle empty display name (anonymous)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30140,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 28,
+                            "line": 101
+                          },
+                          "message": "Error: locator.clear: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input#displayName')\u001b[22m\n\n\n   99 |     // Clear display name to test anonymous mode\n  100 |     const displayNameInput = page.locator('input#displayName');\n> 101 |     await displayNameInput.clear();\n      |                            ^\n  102 |\n  103 |     // Save\n  104 |     await page.click('button:has-text(\"Save Changes\")');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:101:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:51:06.115Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--firefox\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-f58a449a2849401d01db",
+              "file": "profile.spec.ts",
+              "line": 96,
+              "column": 3
+            },
+            {
+              "title": "should show correct usage percentage bar",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30121,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 64,
+                            "line": 118
+                          },
+                          "message": "Error: locator.textContent: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=/\\\\d+ \\\\/ 50/')\u001b[22m\n\n\n  116 |\n  117 |     // Get animation count\n> 118 |     const usageText = await page.locator('text=/\\\\d+ \\\\/ 50/').textContent();\n      |                                                                ^\n  119 |     const count = parseInt(usageText?.match(/^(\\d+)/)?.[1] ?? '0');\n  120 |\n  121 |     // Check that progress bar exists and has a width\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:118:64"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:51:38.728Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-firefox\\error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-207eb4f9b37a831f9e56",
+              "file": "profile.spec.ts",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "should show quick links to galleries",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9377,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:143:62",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                          "column": 62,
+                          "line": 143
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 141 |\u001b[39m\n \u001b[90m 142 |\u001b[39m     \u001b[90m// Verify quick links section exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 143 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"Quick Links\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 144 |\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[90m// Verify My Playbook link\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m myPlaybookLink \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'a[href=\"/my-gallery\"]'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 62,
+                            "line": 143
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"Quick Links\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"Quick Links\")')\u001b[22m\n\n\n  141 |\n  142 |     // Verify quick links section exists\n> 143 |     await expect(page.locator('h2:has-text(\"Quick Links\")')).toBeVisible();\n      |                                                              ^\n  144 |\n  145 |     // Verify My Playbook link\n  146 |     const myPlaybookLink = page.locator('a[href=\"/my-gallery\"]');\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:143:62"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:52:11.166Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-firefox\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                        "column": 62,
+                        "line": 143
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-b8d9b40a480d9570f5c5",
+              "file": "profile.spec.ts",
+              "line": 139,
+              "column": 3
+            },
+            {
+              "title": "should display profile page with user information",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -278,34 +977,140 @@
                   "projectName": "webkit",
                   "results": [
                     {
-                      "workerIndex": 2,
+                      "workerIndex": 12,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1994,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 12009,
+                      "error": {
+                        "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                          "column": 14,
+                          "line": 83
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers.ts:83\n\n\u001b[0m \u001b[90m 81 |\u001b[39m\n \u001b[90m 82 |\u001b[39m   \u001b[90m// Wait for navigation (may go to /app or auth confirmation)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 83 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForNavigation({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 84 |\u001b[39m }\n \u001b[90m 85 |\u001b[39m\n \u001b[90m 86 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                            "column": 14,
+                            "line": 83
+                          },
+                          "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at helpers.ts:83\n\n  81 |\n  82 |   // Wait for navigation (may go to /app or auth confirmation)\n> 83 |   await page.waitForNavigation({ timeout: 10000 })\n     |              ^\n  84 | }\n  85 |\n  86 | /**\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:52:22.936Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-567e0--page-with-user-information-webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                        "column": 14,
+                        "line": 83
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-897d13f5dee905159ef7",
+              "file": "profile.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should update display name and persist after refresh",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30973,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts",
+                            "column": 28,
+                            "line": 35
+                          },
+                          "message": "Error: locator.clear: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input#displayName')\u001b[22m\n\n\n  33 |     // Clear existing value and enter new display name\n  34 |     const displayNameInput = page.locator('input#displayName');\n> 35 |     await displayNameInput.clear();\n     |                            ^\n  36 |     await displayNameInput.fill(newName);\n  37 |\n  38 |     // Verify value was set\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:35:28"
+                        }
+                      ],
                       "stdout": [
                         {
-                          "text": "✓ Using test animation: 4efc251a-189d-4c02-b984-d68fc7cbbd34\n"
+                          "text": "[Test] Setting display name to: Test Coach 1771267959601\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:52.221Z",
+                      "startTime": "2026-02-16T18:52:36.226Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-eaf07-e-and-persist-after-refresh-webkit\\error-context.md"
+                        }
+                      ]
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-0d276c693d40a856e17a",
-              "file": "replay-mobile.spec.ts",
-              "line": 55,
+              "id": "e8b79b4ee550a37632f1-ac0fca127a6604b478ff",
+              "file": "profile.spec.ts",
+              "line": 26,
               "column": 3
             },
             {
-              "title": "play/pause button meets 48×48px touch target requirement",
-              "ok": true,
+              "title": "should display accurate animation count",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -316,106 +1121,70 @@
                   "projectName": "webkit",
                   "results": [
                     {
-                      "workerIndex": 2,
+                      "workerIndex": 14,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1877,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 11707,
+                      "error": {
+                        "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                          "column": 14,
+                          "line": 83
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers.ts:83\n\n\u001b[0m \u001b[90m 81 |\u001b[39m\n \u001b[90m 82 |\u001b[39m   \u001b[90m// Wait for navigation (may go to /app or auth confirmation)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 83 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForNavigation({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 84 |\u001b[39m }\n \u001b[90m 85 |\u001b[39m\n \u001b[90m 86 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                            "column": 14,
+                            "line": 83
+                          },
+                          "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at helpers.ts:83\n\n  81 |\n  82 |   // Wait for navigation (may go to /app or auth confirmation)\n> 83 |   await page.waitForNavigation({ timeout: 10000 })\n     |              ^\n  84 | }\n  85 |\n  86 | /**\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:54.446Z",
+                      "startTime": "2026-02-16T18:53:08.443Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-display-accurate-animation-count-webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                        "column": 14,
+                        "line": 83
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-d0b2761b20ec1791f1e3",
-              "file": "replay-mobile.spec.ts",
-              "line": 91,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Tablet viewport (500×800)",
-          "file": "replay-mobile.spec.ts",
-          "line": 115,
-          "column": 6,
-          "specs": [
-            {
-              "title": "canvas maintains 4:3 aspect ratio",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1942,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-02-07T21:26:33.761Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "32d206f4c905ec0751c1-dd5eac4a818b1706ce83",
-              "file": "replay-mobile.spec.ts",
-              "line": 118,
+              "id": "e8b79b4ee550a37632f1-1f950397bd8ff12493b4",
+              "file": "profile.spec.ts",
+              "line": 63,
               "column": 3
             },
             {
-              "title": "canvas maintains 4:3 aspect ratio",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2144,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-02-07T21:26:46.155Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "32d206f4c905ec0751c1-3deff13133c8e8bc197e",
-              "file": "replay-mobile.spec.ts",
-              "line": 118,
-              "column": 3
-            },
-            {
-              "title": "canvas maintains 4:3 aspect ratio",
-              "ok": true,
+              "title": "should handle empty display name (anonymous)",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -426,106 +1195,70 @@
                   "projectName": "webkit",
                   "results": [
                     {
-                      "workerIndex": 2,
+                      "workerIndex": 15,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2183,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 11686,
+                      "error": {
+                        "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                          "column": 14,
+                          "line": 83
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers.ts:83\n\n\u001b[0m \u001b[90m 81 |\u001b[39m\n \u001b[90m 82 |\u001b[39m   \u001b[90m// Wait for navigation (may go to /app or auth confirmation)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 83 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForNavigation({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 84 |\u001b[39m }\n \u001b[90m 85 |\u001b[39m\n \u001b[90m 86 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                            "column": 14,
+                            "line": 83
+                          },
+                          "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at helpers.ts:83\n\n  81 |\n  82 |   // Wait for navigation (may go to /app or auth confirmation)\n> 83 |   await page.waitForNavigation({ timeout: 10000 })\n     |              ^\n  84 | }\n  85 |\n  86 | /**\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:56.333Z",
+                      "startTime": "2026-02-16T18:53:21.398Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-d7596-pty-display-name-anonymous--webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                        "column": 14,
+                        "line": 83
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-176ad34a963dca5ef129",
-              "file": "replay-mobile.spec.ts",
-              "line": 118,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Desktop viewport (1920×1080)",
-          "file": "replay-mobile.spec.ts",
-          "line": 140,
-          "column": 6,
-          "specs": [
-            {
-              "title": "canvas caps at 800×600 maximum dimensions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2002,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-02-07T21:26:35.711Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "32d206f4c905ec0751c1-b3183e5149c61a0d3696",
-              "file": "replay-mobile.spec.ts",
-              "line": 143,
+              "id": "e8b79b4ee550a37632f1-6405881b2c2fab54abfd",
+              "file": "profile.spec.ts",
+              "line": 96,
               "column": 3
             },
             {
-              "title": "canvas caps at 800×600 maximum dimensions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2169,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-02-07T21:26:48.310Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "32d206f4c905ec0751c1-1f204ead248865596268",
-              "file": "replay-mobile.spec.ts",
-              "line": 143,
-              "column": 3
-            },
-            {
-              "title": "canvas caps at 800×600 maximum dimensions",
-              "ok": true,
+              "title": "should show correct usage percentage bar",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -536,25 +1269,139 @@
                   "projectName": "webkit",
                   "results": [
                     {
-                      "workerIndex": 2,
+                      "workerIndex": 16,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2151,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 11770,
+                      "error": {
+                        "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                          "column": 14,
+                          "line": 83
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers.ts:83\n\n\u001b[0m \u001b[90m 81 |\u001b[39m\n \u001b[90m 82 |\u001b[39m   \u001b[90m// Wait for navigation (may go to /app or auth confirmation)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 83 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForNavigation({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 84 |\u001b[39m }\n \u001b[90m 85 |\u001b[39m\n \u001b[90m 86 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                            "column": 14,
+                            "line": 83
+                          },
+                          "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at helpers.ts:83\n\n  81 |\n  82 |   // Wait for navigation (may go to /app or auth confirmation)\n> 83 |   await page.waitForNavigation({ timeout: 10000 })\n     |              ^\n  84 | }\n  85 |\n  86 | /**\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-02-07T21:26:58.527Z",
+                      "startTime": "2026-02-16T18:53:34.371Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-shoul-2456a-orrect-usage-percentage-bar-webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                        "column": 14,
+                        "line": 83
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "32d206f4c905ec0751c1-5fed7f3c2dd8308da828",
-              "file": "replay-mobile.spec.ts",
-              "line": 143,
+              "id": "e8b79b4ee550a37632f1-2eb9680aa42912270f39",
+              "file": "profile.spec.ts",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "should show quick links to galleries",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11731,
+                      "error": {
+                        "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+                        "stack": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5",
+                        "location": {
+                          "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                          "column": 14,
+                          "line": 83
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers.ts:83\n\n\u001b[0m \u001b[90m 81 |\u001b[39m\n \u001b[90m 82 |\u001b[39m   \u001b[90m// Wait for navigation (may go to /app or auth confirmation)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 83 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForNavigation({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 84 |\u001b[39m }\n \u001b[90m 85 |\u001b[39m\n \u001b[90m 86 |\u001b[39m \u001b[90m/**\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                            "column": 14,
+                            "line": 83
+                          },
+                          "message": "TimeoutError: page.waitForNavigation: Timeout 10000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at helpers.ts:83\n\n  81 |\n  82 |   // Wait for navigation (may go to /app or auth confirmation)\n> 83 |   await page.waitForNavigation({ timeout: 10000 })\n     |              ^\n  84 | }\n  85 |\n  86 | /**\n    at loginUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:83:14)\n    at loginAsTestUser (C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts:440:3)\n    at C:\\Coding Projects\\coaching-animator\\tests\\e2e\\profile.spec.ts:7:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-16T18:53:47.440Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Coding Projects\\coaching-animator\\test-results\\artifacts\\profile-Profile-Page-should-show-quick-links-to-galleries-webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Coding Projects\\coaching-animator\\tests\\e2e\\helpers.ts",
+                        "column": 14,
+                        "line": 83
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e8b79b4ee550a37632f1-0c63bd34717e4c1aa85c",
+              "file": "profile.spec.ts",
+              "line": 139,
               "column": 3
             }
           ]
@@ -564,11 +1411,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-02-07T21:26:27.395Z",
-    "duration": 33336.758,
-    "expected": 12,
+    "startTime": "2026-02-16T18:47:56.767Z",
+    "duration": 362512.416,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 18,
     "flaky": 0
   }
 }

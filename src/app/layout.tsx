@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
 import { Navigation } from '@/shared/components/Navigation';
-import { Analytics } from '@/lib/analytics';
+
 
 export const metadata: Metadata = {
   title: {
@@ -61,7 +61,7 @@ export default function RootLayout({
           <OfflineIndicator />
         </UserProvider>
         <Toaster position="bottom-left" />
-        <Analytics />
+
       </body>
     </html>
   );
