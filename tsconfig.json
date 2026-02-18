@@ -38,9 +38,6 @@
       ],
       "@/lib/*": [
         "./src/lib/*"
-      ],
-      "@vercel/analytics/react": [
-        "./node_modules/@vercel/analytics/dist/react/index.d.ts"
       ]
     },
     "plugins": [
