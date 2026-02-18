@@ -75,21 +75,21 @@ describe('serializeForShare', () => {
         const result = serializeForShare(mockProject);
 
         // Verify
-        expect(result.version).toBe(1);
+        expect(result.version).toBe(2);
         expect(result.canvas).toEqual({ width: 2000, height: 2000 });
 
-        // Check Entities (Filter cones, keep players/balls)
-        expect(result.entities).toHaveLength(2);
+        // Check Entities (v2 includes all entity types including cones)
+        expect(result.entities).toHaveLength(3);
         expect(result.entities.find(e => e.id === 'p1')).toBeDefined();
         expect(result.entities.find(e => e.id === 'b1')).toBeDefined();
-        expect(result.entities.find(e => e.id === 'c1')).toBeUndefined();
+        expect(result.entities.find(e => e.id === 'c1')).toBeDefined();
 
         // Check Frames
         expect(result.frames).toHaveLength(2);
 
         // Frame 1
         expect(result.frames[0].t).toBe(0);
-        expect(result.frames[0].updates).toHaveLength(2);
+        expect(result.frames[0].updates).toHaveLength(3);
         expect(result.frames[0].updates.find(u => u.id === 'p1')?.x).toBe(100);
 
         // Frame 2

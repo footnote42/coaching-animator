@@ -99,8 +99,6 @@ describe('ProjectStore - newProject', () => {
 
         const updatedState = useProjectStore.getState();
         expect(updatedState.project?.settings).toEqual({
-            showGrid: true,
-            gridSpacing: 50,
             defaultTransitionDuration: 2000,
             exportResolution: '720p',
         });
