@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 68,
+    "totalEntries": 71,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-16T19:49:38Z",
+    "lastEntry": "2026-02-18T19:55:06Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1422,6 +1422,59 @@
       "details": {
         "field": "status",
         "operation": "complete"
+      }
+    },
+    {
+      "id": "log_363df9fa048e",
+      "timestamp": "2026-02-18T19:35:23Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T024",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-18T19:35:10Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c2ebc483364c",
+      "timestamp": "2026-02-18T19:35:36Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T025",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-18T19:35:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c161071ab8f7",
+      "timestamp": "2026-02-18T19:55:06Z",
+      "sessionId": "session_20260216_150424_873c6e",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Batch 4 housekeeping complete: T024/T025 marked done, unit tests fixed (48/48), stale plans archived, HANDOFF-2026-02-18.md written. Next: T022 (collection detail page UI) and T023 (version history modal)."
       }
     }
   ]

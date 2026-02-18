@@ -5,7 +5,7 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-16T18:13:31Z",
+    "lastModified": "2026-02-18T19:55:06Z",
     "totalSessionsCreated": 5
   },
   "config": {
@@ -197,7 +197,7 @@
     },
     {
       "id": "session_20260216_150424_873c6e",
-      "status": "active",
+      "status": "ended",
       "name": "V2.0 Phase 0 Execution",
       "agentId": null,
       "scope": {
@@ -227,10 +227,10 @@
         ]
       },
       "focus": {
-        "currentTask": "T015",
+        "currentTask": null,
         "currentPhase": null,
-        "previousTask": "T013",
-        "sessionNote": null,
+        "previousTask": "T015",
+        "sessionNote": "Batch 4 housekeeping complete: T024/T025 marked done, unit tests fixed (48/48), stale plans archived, HANDOFF-2026-02-18.md written. Next: T022 (collection detail page UI) and T023 (version history modal).",
         "nextAction": null,
         "focusHistory": [
           {
@@ -271,7 +271,7 @@
         ]
       },
       "startedAt": "2026-02-16T15:04:24Z",
-      "lastActivity": "2026-02-16T18:13:31Z",
+      "lastActivity": "2026-02-18T19:55:06Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
@@ -284,7 +284,8 @@
         "start_timestamp": "2026-02-16T15:04:24Z",
         "start_tokens": 0,
         "max_tokens": 200000
-      }
+      },
+      "endedAt": "2026-02-18T19:55:06Z"
     }
   ],
   "sessionHistory": []
