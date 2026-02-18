@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-16T19:54:03Z",
+  "lastUpdated": "2026-02-18T19:35:10Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "d90d4d8c046b2a39",
+    "checksum": "915475046c75fcd9",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 48,
+    "generation": 49,
     "lastModified": "2026-02-16T18:13:31Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
@@ -771,22 +771,24 @@
     {
       "id": "T024",
       "title": "UI - Video URL in editor + replay viewer",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:38Z",
-      "updatedAt": "2026-02-16T15:04:09Z",
+      "updatedAt": "2026-02-18T19:35:10Z",
       "size": "medium",
       "position": 9,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12."
+        "2026-02-16 15:03:38 UTC: Add YouTube URL input to editor metadata section. Show 'Watch Tutorial Video' link below coaching notes in ReplayViewer. Client-side YouTube URL validation. Depends on T12.",
+        "[COMPLETED 2026-02-18T19:35:10Z] Implemented YouTube video URL field in editor sidebar with validation, wired to cloud save handlers. Added Watch Tutorial Video link on replay page. All commits merged to main."
       ],
       "depends": [
         "T020"
-      ]
+      ],
+      "completedAt": "2026-02-18T19:35:10Z"
     },
     {
       "id": "T025",
