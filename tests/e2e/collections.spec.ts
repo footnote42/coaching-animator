@@ -23,8 +23,9 @@ test.describe('Collections', () => {
     expect(response.ok()).toBe(true);
 
     const data = await response.json();
-    expect(data.collection.items).toHaveLength(1);
-    expect(data.collection.items[0].animation_id).toBe(animationId);
+    // API returns { collection, animations }
+    expect(data.animations).toHaveLength(1);
+    expect(data.animations[0].id).toBe(animationId);
   });
 
   test('should display collection detail page', async ({ page }) => {
@@ -75,6 +76,6 @@ test.describe('Collections', () => {
 
     const getResponse = await page.request.get(`/api/collections/${collectionId}`);
     const data = await getResponse.json();
-    expect(data.collection.items).toHaveLength(0);
+    expect(data.animations).toHaveLength(0);
   });
 });

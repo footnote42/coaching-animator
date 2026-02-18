@@ -10,18 +10,23 @@ test.describe('Phase 0 Cleanup', () => {
     await expect(gridToggle).toHaveCount(0);
   });
 
-  test('sport dropdown should only show Rugby Union', async ({ page }) => {
+  test('sport dropdown should not show Soccer or American Football', async ({ page }) => {
     await page.goto('/app');
     await page.waitForLoadState('networkidle');
 
-    // Locate sport selector section
-    const sportSection = page.locator('text=Sport').locator('..');
+    // Wait for the sport selector to appear (labeled "Field Type")
+    const sportSelect = page.locator('#sport-selector');
+    await expect(sportSelect).toBeVisible({ timeout: 10000 });
 
-    // Verify only Rugby Union is shown
-    const sportText = await sportSection.textContent();
-    expect(sportText).toContain('Rugby Union');
-    expect(sportText).not.toContain('Soccer');
-    expect(sportText).not.toContain('American Football');
+    // Get all option text
+    const options = await sportSelect.locator('option').allTextContents();
+    const optionText = options.join(' ');
+
+    // Should contain rugby sports
+    expect(optionText).toContain('Rugby');
+    // Should NOT contain non-rugby sports (removed in Phase 0)
+    expect(optionText).not.toContain('Soccer');
+    expect(optionText).not.toContain('American Football');
   });
 
   // Marker-to-cone conversion test requires legacy fixture

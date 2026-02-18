@@ -74,7 +74,8 @@ test.describe('Video URL', () => {
     expect(response.status()).toBe(201);
 
     const data = await response.json();
-    expect(data.animation.video_url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ');
+    // API returns animation object directly
+    expect(data.video_url).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ');
   });
 
   test('should display "Watch Tutorial Video" link in replay', async ({ page }) => {

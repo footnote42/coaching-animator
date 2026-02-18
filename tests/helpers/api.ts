@@ -52,11 +52,13 @@ export async function createTestAnimation(
   });
 
   if (!response.ok()) {
-    throw new Error(`Failed to create animation: ${response.status()}`);
+    const body = await response.text();
+    throw new Error(`Failed to create animation: ${response.status()} - ${body}`);
   }
 
   const data = await response.json();
-  return data.animation.id;
+  // API returns animation object directly (not wrapped)
+  return data.id;
 }
 
 /**
@@ -70,9 +72,9 @@ export async function createTestCollection(
 ): Promise<string> {
   const response = await page.request.post('/api/collections', {
     data: {
-      title,
+      name: title,
       description: 'E2E test collection',
-      is_public: isPublic,
+      visibility: isPublic ? 'public' : 'private',
     },
   });
 
