@@ -41,6 +41,7 @@ export const viewport: Viewport = {
 
 import { OfflineIndicator } from '@/shared/components/OfflineIndicator';
 import { Toaster } from 'sonner';
+import { Analytics } from '@vercel/analytics/next';
 
 export default function RootLayout({
   children,
@@ -61,7 +62,7 @@ export default function RootLayout({
           <OfflineIndicator />
         </UserProvider>
         <Toaster position="bottom-left" />
-
+        <Analytics />
       </body>
     </html>
   );
