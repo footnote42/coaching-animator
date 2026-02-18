@@ -393,6 +393,35 @@ Comprehensive guides in the `docs/` directory:
 - **[Troubleshooting](docs/troubleshooting/)** - Debugging session persistence, production stability
 - **[Operations](docs/operations/)** - CI/CD, deployment, staging setup
 
+### E2E Tests (Playwright)
+
+Comprehensive E2E test coverage using Playwright across Chromium, Firefox, and WebKit:
+
+```bash
+# Run all E2E tests (requires dev server on localhost:3000)
+BASE_URL=http://localhost:3000 npm run e2e
+
+# Run specific test suite
+npm run e2e -- video-url.spec.ts
+
+# View HTML report
+npx playwright show-report
+```
+
+**Test Suites** (`tests/e2e/`):
+- `cleanup-v2.spec.ts` — Phase 0 cleanup verification (grid removed, Rugby Union only)
+- `mobile-replay.spec.ts` — Responsive canvas, touch targets, landscape hint
+- `collections.spec.ts` — Collections CRUD, detail page, share URL
+- `versions.spec.ts` — Version creation, history modal, restore flow
+- `templates.spec.ts` — Template tagging, gallery filter, badge, remix
+- `video-url.spec.ts` — YouTube URL validation, save, replay link display
+
+**Test Helpers** (`tests/helpers/`):
+- `auth.ts` — `loginAsTestUser`, `isLoggedIn`
+- `api.ts` — `createTestAnimation`, `createTestCollection`, `addAnimationToCollection`
+
+**Prerequisites**: Dev server running (`npm run dev`). Set `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` env vars for auth tests (defaults to `user@test.com` / `Password1!`).
+
 ### Product & Governance
 
 - **[PRD v1.0](docs/authority/PRD.md)** - Original product requirements (89% coverage)
