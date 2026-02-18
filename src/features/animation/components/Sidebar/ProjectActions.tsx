@@ -1,5 +1,6 @@
 import { Save, FolderOpen, FilePlus, Video, Loader2, Cloud } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { Input } from '@/shared/ui/input';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { downloadJson, readJsonFile, generateProjectFilename } from '@/core/utils/fileIO';
@@ -12,9 +13,24 @@ import { toast } from 'sonner';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 
+const YOUTUBE_URL_REGEX = /^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/;
+
+function validateVideoUrl(url: string): { isValid: boolean; error?: string } {
+    if (!url || url.trim() === '') {
+        return { isValid: true };
+    }
+    if (!YOUTUBE_URL_REGEX.test(url.trim())) {
+        return {
+            isValid: false,
+            error: 'Please enter a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)',
+        };
+    }
+    return { isValid: true };
+}
+
 /**
  * ProjectActions Component
- * 
+ *
  * Provides New, Open, Save, and Export buttons for project management.
  * Handles unsaved changes warnings and file I/O operations.
  */
@@ -47,6 +63,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     formatReason = '',
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [videoUrl, setVideoUrl] = useState('');
+    const [videoUrlError, setVideoUrlError] = useState('');
 
     const project = useProjectStore((state) => state.project);
     const isDirty = useProjectStore((state) => state.isDirty);
@@ -61,6 +79,30 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     const showUnsavedChangesDialog = useUIStore((state) => state.showUnsavedChangesDialog);
     const confirmPendingAction = useUIStore((state) => state.confirmPendingAction);
     const cancelPendingAction = useUIStore((state) => state.cancelPendingAction);
+
+    // Sync videoUrl with project store
+    useEffect(() => {
+        setVideoUrl(project?.videoUrl || '');
+    }, [project?.videoUrl]);
+
+    const handleVideoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setVideoUrl(e.target.value);
+        if (videoUrlError) {
+            setVideoUrlError('');
+        }
+    };
+
+    const handleVideoUrlBlur = () => {
+        const validation = validateVideoUrl(videoUrl);
+        if (!validation.isValid) {
+            setVideoUrlError(validation.error || 'Invalid URL');
+        } else {
+            setVideoUrlError('');
+            if (project) {
+                updateProjectSettings({ videoUrl: videoUrl.trim() || undefined });
+            }
+        }
+    };
 
     /**
      * Handle New Project button click
@@ -155,6 +197,47 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
     return (
         <div className="flex flex-col gap-4 p-4 border-b border-[var(--color-border)]">
+            {/* Metadata Section */}
+            <div>
+                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
+                    Metadata
+                </h3>
+
+                {/* Title Input */}
+                <div className="mb-3">
+                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
+                        Animation Title
+                    </label>
+                    <Input
+                        type="text"
+                        value={project?.name || ''}
+                        onChange={(e) => updateProjectSettings({ name: e.target.value })}
+                        placeholder="Enter animation title"
+                        disabled={!project}
+                        className="w-full text-sm"
+                    />
+                </div>
+
+                {/* Video URL Input */}
+                <div>
+                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
+                        Tutorial Video URL (YouTube)
+                    </label>
+                    <Input
+                        type="url"
+                        value={videoUrl}
+                        onChange={handleVideoUrlChange}
+                        onBlur={handleVideoUrlBlur}
+                        placeholder="https://youtube.com/watch?v=..."
+                        disabled={!project}
+                        className={`w-full text-sm ${videoUrlError ? 'border-red-500' : ''}`}
+                    />
+                    {videoUrlError && (
+                        <p className="text-xs text-red-600 mt-1">{videoUrlError}</p>
+                    )}
+                </div>
+            </div>
+
             {/* Field Settings Section */}
             <div>
                 <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
