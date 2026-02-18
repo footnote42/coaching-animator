@@ -35,6 +35,9 @@ export interface Project {
 
     /** Project-level settings */
     settings: ProjectSettings;
+
+    /** Optional YouTube tutorial video URL */
+    videoUrl?: string;
 }
 
 /**
@@ -274,6 +277,7 @@ export interface ProjectSettingsUpdate {
     defaultTransitionDuration: number;
     exportResolution: ExportResolution;
     pitchLayout?: PitchLayout;
+    videoUrl?: string;
 }
 
 export interface FrameUpdate {

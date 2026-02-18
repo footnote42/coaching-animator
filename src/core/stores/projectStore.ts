@@ -183,6 +183,7 @@ export const useProjectStore = create<ProjectStoreState>()(
                         // Update top-level project fields
                         ...(updates.name !== undefined && { name: updates.name }),
                         ...(updates.sport !== undefined && { sport: updates.sport }),
+                        ...(updates.videoUrl !== undefined && { videoUrl: updates.videoUrl }),
                         updatedAt: now,
                         // Update settings object
                         settings: {
