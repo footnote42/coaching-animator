@@ -10,6 +10,7 @@ import { getFriendlyErrorMessage } from '@/lib/error-messages';
 interface SaveToCloudModalProps {
   projectName: string;
   payload: unknown;
+  videoUrl?: string;
   onClose: () => void;
   onSuccess: (id: string) => void;
 }
@@ -27,7 +28,7 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; description: strin
   { value: 'public', label: 'Public', description: 'Visible in the public gallery' },
 ];
 
-export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: SaveToCloudModalProps) {
+export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSuccess }: SaveToCloudModalProps) {
   const [title, setTitle] = useState(projectName || 'Untitled Animation');
   const [description, setDescription] = useState('');
   const [animationType, setAnimationType] = useState<AnimationType>('tactic');
@@ -69,6 +70,7 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
         animation_type: animationType,
         visibility,
         tags: tagArray.length > 0 ? tagArray : undefined,
+        video_url: videoUrl || undefined,
         payload,
       };
 
@@ -141,6 +143,7 @@ export function SaveToCloudModal({ projectName, payload, onClose, onSuccess }: S
             animation_type: animationType,
             visibility,
             tags: tagArray.length > 0 ? tagArray : undefined,
+            video_url: videoUrl || undefined,
             payload,
           }
         });

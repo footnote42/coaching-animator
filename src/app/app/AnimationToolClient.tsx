@@ -190,6 +190,7 @@ function AnimationToolPageContent() {
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}
           payload={payload}
+          videoUrl={project?.videoUrl}
           onClose={() => setShowSaveModal(false)}
           onSuccess={handleSaveSuccess}
         />
