@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 82,
+    "totalEntries": 85,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-19T20:21:24Z",
+    "lastEntry": "2026-02-19T21:24:40Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1666,6 +1666,52 @@
       "after": null,
       "details": {
         "note": "T014 complete. Staging Supabase project created, migrations applied, Vercel Preview configured."
+      }
+    },
+    {
+      "id": "log_7cbeca88f716",
+      "timestamp": "2026-02-19T20:44:44Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T014",
+      "before": {
+        "status": "active",
+        "completedAt": "2026-02-19T20:21:14Z"
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T20:44:35Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_d7170262ed2c",
+      "timestamp": "2026-02-19T20:44:49Z",
+      "sessionId": "session_20260219_202056_370e29",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T014 complete: staging Supabase created, migrated, Vercel configured, committed."
+      }
+    },
+    {
+      "id": "log_a232776ff927",
+      "timestamp": "2026-02-19T21:24:40Z",
+      "sessionId": "session_20260219_202056_370e29",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Power cut interrupted smoke tests. T014 CLEO-complete but smoke tests pending. .env.staging.local has real credentials. Staging project: dgmkkabfksbhfxxyzorr."
       }
     }
   ]

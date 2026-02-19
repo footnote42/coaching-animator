@@ -47,15 +47,15 @@
       }
     }
   },
-  "lastUpdated": "2026-02-19T20:44:35Z",
+  "lastUpdated": "2026-02-19T20:44:42Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "372178b40b4cd21e",
+    "checksum": "5c4683b4d7f22d20",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 66,
-    "lastModified": "2026-02-19T20:44:29Z",
+    "generation": 67,
+    "lastModified": "2026-02-19T21:24:40Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 0
   },
@@ -529,12 +529,12 @@
     {
       "id": "T014",
       "title": "Create staging Supabase project",
-      "status": "done",
+      "status": "pending",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:13Z",
-      "updatedAt": "2026-02-19T20:44:35Z",
+      "updatedAt": "2026-02-19T21:24:40Z",
       "size": "medium",
       "position": 6,
       "positionVersion": 0,
@@ -557,7 +557,7 @@
           "documented": null
         },
         "lastAgent": "coder",
-        "lastUpdated": "2026-02-19T20:21:16Z",
+        "lastUpdated": "2026-02-19T20:44:42Z",
         "failureLog": []
       }
     },

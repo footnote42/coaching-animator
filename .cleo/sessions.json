@@ -5,7 +5,7 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-19T20:44:29Z",
+    "lastModified": "2026-02-19T21:24:40Z",
     "totalSessionsCreated": 6
   },
   "config": {
@@ -299,7 +299,7 @@
     },
     {
       "id": "session_20260219_202056_370e29",
-      "status": "active",
+      "status": "ended",
       "name": "T014 Staging Supabase",
       "agentId": null,
       "scope": {
@@ -310,10 +310,10 @@
         ]
       },
       "focus": {
-        "currentTask": "T014",
+        "currentTask": null,
         "currentPhase": null,
         "previousTask": "T014",
-        "sessionNote": "T014 complete. Staging Supabase project created, migrations applied, Vercel Preview configured.",
+        "sessionNote": "Power cut interrupted smoke tests. T014 CLEO-complete but smoke tests pending. .env.staging.local has real credentials. Staging project: dgmkkabfksbhfxxyzorr.",
         "nextAction": null,
         "focusHistory": [
           {
@@ -324,13 +324,13 @@
         ]
       },
       "startedAt": "2026-02-19T20:20:56Z",
-      "lastActivity": "2026-02-19T20:44:29Z",
+      "lastActivity": "2026-02-19T21:24:40Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
         "focusChanges": 1,
         "suspendCount": 0,
-        "resumeCount": 1
+        "resumeCount": 2
       },
       "startMetrics": {
         "session_id": "session_20260219_202056_370e29",
@@ -338,7 +338,7 @@
         "start_tokens": 0,
         "max_tokens": 200000
       },
-      "endedAt": null
+      "endedAt": "2026-02-19T21:24:40Z"
     }
   ],
   "sessionHistory": []
