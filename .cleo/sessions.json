@@ -5,7 +5,7 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-18T19:55:06Z",
+    "lastModified": "2026-02-19T18:51:12Z",
     "totalSessionsCreated": 5
   },
   "config": {
@@ -197,7 +197,7 @@
     },
     {
       "id": "session_20260216_150424_873c6e",
-      "status": "ended",
+      "status": "active",
       "name": "V2.0 Phase 0 Execution",
       "agentId": null,
       "scope": {
@@ -227,7 +227,7 @@
         ]
       },
       "focus": {
-        "currentTask": null,
+        "currentTask": "T022",
         "currentPhase": null,
         "previousTask": "T015",
         "sessionNote": "Batch 4 housekeeping complete: T024/T025 marked done, unit tests fixed (48/48), stale plans archived, HANDOFF-2026-02-18.md written. Next: T022 (collection detail page UI) and T023 (version history modal).",
@@ -267,17 +267,22 @@
             "taskId": "T015",
             "timestamp": "2026-02-16T18:13:31Z",
             "action": "focused"
+          },
+          {
+            "taskId": "T022",
+            "timestamp": "2026-02-19T18:51:12Z",
+            "action": "focused"
           }
         ]
       },
       "startedAt": "2026-02-16T15:04:24Z",
-      "lastActivity": "2026-02-18T19:55:06Z",
+      "lastActivity": "2026-02-19T18:51:12Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
-        "focusChanges": 7,
+        "focusChanges": 8,
         "suspendCount": 0,
-        "resumeCount": 0
+        "resumeCount": 1
       },
       "startMetrics": {
         "session_id": "session_20260216_150424_873c6e",
@@ -285,7 +290,7 @@
         "start_tokens": 0,
         "max_tokens": 200000
       },
-      "endedAt": "2026-02-18T19:55:06Z"
+      "endedAt": null
     }
   ],
   "sessionHistory": []

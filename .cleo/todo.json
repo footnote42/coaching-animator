@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-18T19:35:34Z",
+  "lastUpdated": "2026-02-19T19:11:50Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "9ee49577d4a9896c",
+    "checksum": "6b69b5f684d69126",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 52,
-    "lastModified": "2026-02-18T19:55:06Z",
+    "generation": 53,
+    "lastModified": "2026-02-19T18:51:12Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
   },
   "focus": {
-    "currentTask": "T015",
+    "currentTask": "T022",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -510,12 +510,12 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "done",
+      "status": "pending",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-16T18:16:24Z",
+      "updatedAt": "2026-02-19T18:51:12Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
@@ -731,22 +731,24 @@
     {
       "id": "T022",
       "title": "UI - Collection detail page",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T008",
       "createdAt": "2026-02-16T15:03:34Z",
-      "updatedAt": "2026-02-16T15:04:05Z",
+      "updatedAt": "2026-02-19T19:11:50Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:34 UTC: New route /collections/[id]. Layout: name, description, owner, grid of animation cards, share button. Depends on T13."
+        "2026-02-16 15:03:34 UTC: New route /collections/[id]. Layout: name, description, owner, grid of animation cards, share button. Depends on T13.",
+        "[COMPLETED 2026-02-19T19:11:50Z] Collection detail page complete: owner add/remove controls added. Hover overlay Remove button per animation card; Add Animations modal with user's saved animations; refresh on close; login redirect on 401. TypeScript clean, 48/48 tests passing."
       ],
       "depends": [
         "T021"
-      ]
+      ],
+      "completedAt": "2026-02-19T19:11:50Z"
     },
     {
       "id": "T023",

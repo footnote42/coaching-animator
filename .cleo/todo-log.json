@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 71,
+    "totalEntries": 72,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-18T19:55:06Z",
+    "lastEntry": "2026-02-19T18:51:13Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1476,6 +1476,21 @@
       "details": {
         "note": "Batch 4 housekeeping complete: T024/T025 marked done, unit tests fixed (48/48), stale plans archived, HANDOFF-2026-02-18.md written. Next: T022 (collection detail page UI) and T023 (version history modal)."
       }
+    },
+    {
+      "id": "log_e3eaa34d9c77",
+      "timestamp": "2026-02-19T18:51:13Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T015"
+      },
+      "after": {
+        "currentTask": "T022"
+      },
+      "details": null
     }
   ]
 }
