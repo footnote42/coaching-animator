@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Share2, User, Calendar, Loader2 } from 'lucide-react';
+import { Share2, User, Calendar, Loader2, Plus, Trash2, X, Check } from 'lucide-react';
 import { PublicAnimationCard } from '@/features/gallery/components/PublicAnimationCard';
+import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { AnimationType } from '@/lib/schemas/animations';
 import { useUser } from '@/lib/contexts/UserContext';
 
@@ -46,27 +47,35 @@ export default function CollectionDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [shareSuccess, setShareSuccess] = useState(false);
 
-  useEffect(() => {
-    const fetchCollection = async () => {
-      try {
-        const response = await fetch(`/api/collections/${collectionId}`);
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Collection not found');
-          }
-          throw new Error('Failed to load collection');
-        }
-        const collectionData = await response.json();
-        setData(collectionData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Owner add/remove state
+  const [removingAnimId, setRemovingAnimId] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [userAnimations, setUserAnimations] = useState<AnimationSummary[]>([]);
+  const [loadingUserAnims, setLoadingUserAnims] = useState(false);
+  const [addingAnimId, setAddingAnimId] = useState<string | null>(null);
+  const [addedAnimIds, setAddedAnimIds] = useState<Set<string>>(new Set());
 
-    fetchCollection();
+  const fetchCollection = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/collections/${collectionId}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Collection not found');
+        }
+        throw new Error('Failed to load collection');
+      }
+      const collectionData = await response.json();
+      setData(collectionData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setIsLoading(false);
+    }
   }, [collectionId]);
+
+  useEffect(() => {
+    fetchCollection();
+  }, [fetchCollection]);
 
   const handleShare = async () => {
     const url = `${window.location.origin}/collections/${collectionId}`;
@@ -107,6 +116,98 @@ export default function CollectionDetailPage() {
     router.push(`/app?remix=${animationId}`);
   };
 
+  const handleRemove = async (animationId: string) => {
+    if (!confirm('Remove this animation from the collection?')) return;
+
+    setRemovingAnimId(animationId);
+    try {
+      const response = await fetch(
+        `/api/collections/${collectionId}/animations/${animationId}`,
+        { method: 'DELETE' }
+      );
+
+      if (response.status === 401) {
+        router.push(`/login?redirect=/collections/${collectionId}`);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to remove animation');
+      }
+
+      setData(prev =>
+        prev
+          ? { ...prev, animations: prev.animations.filter(a => a.id !== animationId) }
+          : null
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to remove animation');
+    } finally {
+      setRemovingAnimId(null);
+    }
+  };
+
+  const fetchUserAnimations = async () => {
+    setLoadingUserAnims(true);
+    try {
+      const response = await fetch('/api/animations?limit=100&sort=created_at&order=desc');
+      if (response.status === 401) {
+        router.push(`/login?redirect=/collections/${collectionId}`);
+        return;
+      }
+      if (response.ok) {
+        const responseData = await response.json();
+        setUserAnimations(responseData.animations || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch user animations:', err);
+    } finally {
+      setLoadingUserAnims(false);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    setShowAddModal(true);
+    setAddedAnimIds(new Set());
+    fetchUserAnimations();
+  };
+
+  const handleAdd = async (animationId: string) => {
+    setAddingAnimId(animationId);
+    try {
+      const response = await fetch(`/api/collections/${collectionId}/animations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ animation_id: animationId }),
+      });
+
+      if (response.status === 401) {
+        router.push(`/login?redirect=/collections/${collectionId}`);
+        return;
+      }
+
+      if (response.ok || response.status === 409) {
+        // 409 = already in collection — mark as added either way
+        setAddedAnimIds(prev => new Set(prev).add(animationId));
+      } else {
+        throw new Error('Failed to add animation');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to add animation');
+    } finally {
+      setAddingAnimId(null);
+    }
+  };
+
+  const handleCloseAddModal = () => {
+    setShowAddModal(false);
+    if (addedAnimIds.size > 0) {
+      // Refresh collection to show newly added animations
+      setIsLoading(true);
+      fetchCollection();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -134,11 +235,15 @@ export default function CollectionDetailPage() {
   }
 
   const { collection, animations } = data;
+  const isOwner = user?.id === collection.user_id;
   const formattedDate = new Date(collection.created_at).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
+
+  // Build set of animation IDs already in this collection (for add modal)
+  const existingAnimIds = new Set(animations.map(a => a.id));
 
   return (
     <div className="min-h-screen bg-background">
@@ -156,19 +261,30 @@ export default function CollectionDetailPage() {
                 </p>
               )}
             </div>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 bg-text-inverse text-primary font-medium hover:bg-text-inverse/90 transition-colors"
-            >
-              <Share2 className="w-4 h-4" />
-              {shareSuccess ? 'Copied!' : 'Share'}
-            </button>
+            <div className="flex items-center gap-2">
+              {isOwner && (
+                <button
+                  onClick={handleOpenAddModal}
+                  className="flex items-center gap-2 px-4 py-2 bg-text-inverse/20 hover:bg-text-inverse/30 text-text-inverse font-medium transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Animations
+                </button>
+              )}
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 px-4 py-2 bg-text-inverse text-primary font-medium hover:bg-text-inverse/90 transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                {shareSuccess ? 'Copied!' : 'Share'}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-4 text-sm text-text-inverse/80">
             <span className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              Collection by User
+              {isOwner ? 'Your Collection' : 'Collection by User'}
             </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
@@ -189,33 +305,152 @@ export default function CollectionDetailPage() {
             <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">
               No Animations Yet
             </h2>
-            <p className="text-text-primary/70">
+            <p className="text-text-primary/70 mb-4">
               This collection is empty.
             </p>
+            {isOwner && (
+              <button
+                onClick={handleOpenAddModal}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Animations
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {animations.map((animation) => (
-              <PublicAnimationCard
-                key={animation.id}
-                animation={{
-                  ...animation,
-                  description: null,
-                  tags: [],
-                  author: { display_name: null },
-                  user_has_upvoted: false,
-                  thumbnail_url: animation.thumbnail,
-                }}
-                onView={handleView}
-                currentUserId={user?.id ?? null}
-                onUpvote={handleUpvote}
-                onLoginRequired={handleLoginRequired}
-                onRemix={handleRemix}
-              />
+              <div key={animation.id} className="relative group">
+                <PublicAnimationCard
+                  animation={{
+                    ...animation,
+                    description: null,
+                    tags: [],
+                    author: { display_name: null },
+                    user_has_upvoted: false,
+                    thumbnail_url: animation.thumbnail,
+                  }}
+                  onView={handleView}
+                  currentUserId={user?.id ?? null}
+                  onUpvote={handleUpvote}
+                  onLoginRequired={handleLoginRequired}
+                  onRemix={handleRemix}
+                />
+                {isOwner && (
+                  <button
+                    onClick={() => handleRemove(animation.id)}
+                    disabled={removingAnimId === animation.id}
+                    className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-red-600 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:opacity-50"
+                    title="Remove from collection"
+                  >
+                    {removingAnimId === animation.id ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3 h-3" />
+                    )}
+                    Remove
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         )}
       </main>
+
+      {/* Add Animations Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-surface border border-border w-full max-w-2xl max-h-[80vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h2 className="text-xl font-heading font-semibold text-text-primary">
+                Add Animations to Collection
+              </h2>
+              <button
+                onClick={handleCloseAddModal}
+                className="p-2 hover:bg-surface-warm transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {loadingUserAnims ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : userAnimations.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-text-primary/70 mb-4">
+                    You have no saved animations.
+                  </p>
+                  <a
+                    href="/app"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create Animation
+                  </a>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {userAnimations.map((anim) => {
+                    const alreadyIn = existingAnimIds.has(anim.id) || addedAnimIds.has(anim.id);
+                    const isAdding = addingAnimId === anim.id;
+
+                    return (
+                      <div
+                        key={anim.id}
+                        className="flex items-center justify-between p-3 border border-border hover:border-primary/50 transition-colors"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-text-primary truncate">
+                            {anim.title}
+                          </p>
+                          <p className="text-xs text-text-primary/60 mt-0.5 capitalize">
+                            {anim.animation_type} · {anim.frame_count} frames
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => !alreadyIn && handleAdd(anim.id)}
+                          disabled={alreadyIn || isAdding}
+                          className={`ml-3 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors ${
+                            alreadyIn
+                              ? 'bg-surface-warm text-text-primary/40 cursor-default'
+                              : 'bg-primary text-text-inverse hover:bg-primary/90 disabled:opacity-50'
+                          }`}
+                        >
+                          {isAdding ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : alreadyIn ? (
+                            <Check className="w-3.5 h-3.5" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5" />
+                          )}
+                          {alreadyIn ? 'Added' : 'Add'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-border flex justify-end">
+              <button
+                onClick={handleCloseAddModal}
+                className="px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
