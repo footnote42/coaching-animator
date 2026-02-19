@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 80,
+    "totalEntries": 82,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-19T20:20:57Z",
+    "lastEntry": "2026-02-19T20:21:24Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1633,6 +1633,39 @@
       "scope": {
         "type": "task",
         "rootTaskId": "T014"
+      }
+    },
+    {
+      "id": "log_9f1bc07ddd75",
+      "timestamp": "2026-02-19T20:21:18Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T014",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T20:21:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_031eb01b7d22",
+      "timestamp": "2026-02-19T20:21:24Z",
+      "sessionId": "session_20260219_202056_370e29",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T014 complete. Staging Supabase project created, migrations applied, Vercel Preview configured."
       }
     }
   ]

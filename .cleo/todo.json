@@ -47,17 +47,17 @@
       }
     }
   },
-  "lastUpdated": "2026-02-19T19:12:39Z",
+  "lastUpdated": "2026-02-19T20:44:35Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "7f11b39b5cd3d719",
+    "checksum": "372178b40b4cd21e",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 63,
-    "lastModified": "2026-02-19T20:20:56Z",
+    "generation": 66,
+    "lastModified": "2026-02-19T20:44:29Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 1
+    "activeSessionCount": 0
   },
   "focus": {
     "currentTask": null,
@@ -529,19 +529,37 @@
     {
       "id": "T014",
       "title": "Create staging Supabase project",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:13Z",
-      "updatedAt": "2026-02-19T20:20:56Z",
+      "updatedAt": "2026-02-19T20:44:35Z",
       "size": "medium",
       "position": 6,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-16 15:03:13 UTC: Create staging project, apply migrations, create .env.staging, document workflow."
-      ]
+        "2026-02-16 15:03:13 UTC: Create staging project, apply migrations, create .env.staging, document workflow.",
+        "[COMPLETED 2026-02-19T20:21:14Z] Staging Supabase created (coaching-animator-staging, ref: dgmkkabfksbhfxxyzorr). All 8 migrations applied via supabase db push. Vercel Preview env configured with staging Supabase keys (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY split by environment). Real values in .env.staging.local (gitignored). Supabase CLI config committed to main.",
+        "[COMPLETED 2026-02-19T20:44:35Z] Staging Supabase project created (dgmkkabfksbhfxxyzorr). All 8 migrations applied via supabase db push. Vercel Preview env vars split to use staging keys. supabase/config.toml committed. Real credentials stored in .env.staging.local (gitignored)."
+      ],
+      "completedAt": "2026-02-19T20:44:35Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-19T20:21:16Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T015",
