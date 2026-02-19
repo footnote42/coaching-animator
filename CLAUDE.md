@@ -7,7 +7,7 @@
 
 ## Current Project Context
 
-- **Current Iteration**: [005-incremental-improvements](archive/specs/005-incremental-improvements/) (14 issues: 2 critical, 5 high, 5 medium, 2 low)
+- **Current Iteration**: v2.0 Phase 0-1 complete. T014 (staging Supabase) deferred. Next: Phase 2+ planning.
 - **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
 - **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
 - **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)
