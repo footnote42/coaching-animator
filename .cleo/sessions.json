@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-19T18:51:12Z",
-    "totalSessionsCreated": 5
+    "lastModified": "2026-02-19T20:20:56Z",
+    "totalSessionsCreated": 6
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -197,7 +197,7 @@
     },
     {
       "id": "session_20260216_150424_873c6e",
-      "status": "active",
+      "status": "ended",
       "name": "V2.0 Phase 0 Execution",
       "agentId": null,
       "scope": {
@@ -227,10 +227,10 @@
         ]
       },
       "focus": {
-        "currentTask": "T022",
+        "currentTask": null,
         "currentPhase": null,
-        "previousTask": "T015",
-        "sessionNote": "Batch 4 housekeeping complete: T024/T025 marked done, unit tests fixed (48/48), stale plans archived, HANDOFF-2026-02-18.md written. Next: T022 (collection detail page UI) and T023 (version history modal).",
+        "previousTask": "T023",
+        "sessionNote": "v2.0 Phase 0-1 complete. T022 (collection detail add/remove owner controls) and T023 (version history modal) shipped. T014 (staging Supabase) deferred to infra.",
         "nextAction": null,
         "focusHistory": [
           {
@@ -272,15 +272,20 @@
             "taskId": "T022",
             "timestamp": "2026-02-19T18:51:12Z",
             "action": "focused"
+          },
+          {
+            "taskId": "T023",
+            "timestamp": "2026-02-19T19:12:09Z",
+            "action": "focused"
           }
         ]
       },
       "startedAt": "2026-02-16T15:04:24Z",
-      "lastActivity": "2026-02-19T18:51:12Z",
+      "lastActivity": "2026-02-19T19:12:47Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
-        "focusChanges": 8,
+        "focusChanges": 9,
         "suspendCount": 0,
         "resumeCount": 1
       },
@@ -290,7 +295,49 @@
         "start_tokens": 0,
         "max_tokens": 200000
       },
-      "endedAt": null
+      "endedAt": "2026-02-19T19:12:47Z"
+    },
+    {
+      "id": "session_20260219_202056_370e29",
+      "status": "active",
+      "name": "T014 Staging Supabase",
+      "agentId": null,
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T014",
+        "computedTaskIds": [
+          "T014"
+        ]
+      },
+      "focus": {
+        "currentTask": "T014",
+        "currentPhase": null,
+        "previousTask": null,
+        "sessionNote": null,
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T014",
+            "timestamp": "2026-02-19T20:20:56Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-19T20:20:56Z",
+      "lastActivity": "2026-02-19T20:20:56Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 1,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260219_202056_370e29",
+        "start_timestamp": "2026-02-19T20:20:56Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      }
     }
   ],
   "sessionHistory": []

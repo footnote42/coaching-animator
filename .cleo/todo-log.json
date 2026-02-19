@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 72,
+    "totalEntries": 80,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-19T18:51:13Z",
+    "lastEntry": "2026-02-19T20:20:57Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1491,6 +1491,149 @@
         "currentTask": "T022"
       },
       "details": null
+    },
+    {
+      "id": "log_43b03ff3bf2c",
+      "timestamp": "2026-02-19T19:12:01Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T022",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T19:11:50Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1afba53251bb",
+      "timestamp": "2026-02-19T19:12:10Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T022"
+      },
+      "after": {
+        "currentTask": "T023"
+      },
+      "details": null
+    },
+    {
+      "id": "log_e73186d1fd07",
+      "timestamp": "2026-02-19T19:12:15Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T023",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T19:12:11Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_a0f783325968",
+      "timestamp": "2026-02-19T19:12:27Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T007",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T19:12:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_7ba682f62302",
+      "timestamp": "2026-02-19T19:12:33Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T008",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T19:12:30Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0f6cc7e17372",
+      "timestamp": "2026-02-19T19:12:41Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T006",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-19T19:12:39Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c44a7b4051c9",
+      "timestamp": "2026-02-19T19:12:47Z",
+      "sessionId": "session_20260216_150424_873c6e",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "v2.0 Phase 0-1 complete. T022 (collection detail add/remove owner controls) and T023 (version history modal) shipped. T014 (staging Supabase) deferred to infra."
+      }
+    },
+    {
+      "id": "log_c42580dc446b",
+      "timestamp": "2026-02-19T20:20:57Z",
+      "sessionId": "session_20260219_202056_370e29",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T014",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T014"
+      }
     }
   ]
 }
