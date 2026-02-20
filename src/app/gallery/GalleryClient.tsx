@@ -25,6 +25,14 @@ interface PublicAnimation {
     display_name: string | null;
   };
   user_has_upvoted: boolean;
+  // Phase 2: Progressions
+  parent_animation_id?: string | null;
+  is_progression?: boolean;
+  progression_count?: number;
+  // Phase 2: Remix genealogy
+  remixed_from_id?: string | null;
+  remixed_from_title?: string | null;
+  remix_count?: number;
 }
 
 type SortField = 'created_at' | 'upvote_count';

@@ -43,8 +43,12 @@ export async function GET(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     const { data, error, count } = await supabase
       .from('saved_animations')
-      .select('id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at', { count: 'exact' })
+      .select(
+        'id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, remixed_from_id, remixed_from:remixed_from_id(title)',
+        { count: 'exact' }
+      )
       .eq('user_id', user.id)
+      .or('is_progression.eq.false,is_progression.is.null')
       .order(query.data.sort, { ascending: query.data.order === 'asc' })
       .range(query.data.offset, query.data.offset + query.data.limit - 1);
 
@@ -56,8 +60,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const animations = (data ?? []).map((row) => {
+      const { remixed_from, ...rest } = row as typeof row & { remixed_from: { title: string } | null };
+      return { ...rest, remixed_from_title: remixed_from?.title ?? null };
+    });
+
     return NextResponse.json({
-      animations: data,
+      animations,
       total: count ?? 0,
       limit: query.data.limit,
       offset: query.data.offset,
@@ -211,6 +220,10 @@ export async function POST(request: NextRequest) {
         thumbnail_url: thumbnailUrl,
         video_url: data.video_url ?? null, // V2.0: YouTube tutorial video
         current_version: '1.0', // V2.0: Initial version
+        // Phase 2: Progression fields (DB trigger validates parent is base + increments counter)
+        parent_animation_id: data.parent_animation_id ?? null,
+        is_progression: data.is_progression ?? false,
+        progression_order: data.progression_order ?? 0,
       })
       .select('id, created_at, thumbnail_url')
       .single();

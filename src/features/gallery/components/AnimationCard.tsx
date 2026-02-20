@@ -19,6 +19,15 @@ export interface AnimationSummary {
   updated_at: string;
   thumbnail_url?: string | null;
   current_version?: string; // V2.0: Current version number
+  // Phase 2: Progressions
+  parent_animation_id?: string | null;
+  progression_order?: number;       // 0 = base, 1-5 = progression
+  is_progression?: boolean;
+  progression_count?: number;       // denormalized from DB
+  // Phase 2: Remix genealogy
+  remixed_from_id?: string | null;
+  remixed_from_title?: string | null; // joined at API layer
+  remix_count?: number;
 }
 
 interface AnimationCardProps {
@@ -138,6 +147,13 @@ export function AnimationCard({
           {VISIBILITY_ICONS[animation.visibility]}
           <span>{VISIBILITY_LABELS[animation.visibility]}</span>
         </div>
+
+        {/* Phase 2: Progression set badge */}
+        {(animation.progression_count ?? 0) > 0 && (
+          <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-indigo-900/80 text-indigo-200 text-xs font-medium rounded-full">
+            +{animation.progression_count} progression{animation.progression_count !== 1 ? 's' : ''}
+          </div>
+        )}
       </div>
 
       {/* Card content */}
@@ -145,6 +161,13 @@ export function AnimationCard({
         <h3 className="font-heading font-semibold text-text-primary truncate mb-1">
           {animation.title}
         </h3>
+
+        {/* Phase 2: Remix attribution */}
+        {animation.remixed_from_title && (
+          <p className="text-xs text-text-primary/50 truncate mb-1">
+            Remixed from <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+          </p>
+        )}
 
         <div className="flex items-center gap-3 text-xs text-text-primary/70 mb-2">
           <span className="inline-flex items-center gap-1">

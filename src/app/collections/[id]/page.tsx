@@ -19,6 +19,10 @@ interface Animation {
   upvote_count: number;
   created_at: string;
   added_at: string;
+  // Phase 2: Progression fields
+  is_progression?: boolean;
+  parent_animation_id?: string | null;
+  progression_order?: number;
 }
 
 interface Collection {
@@ -245,6 +249,25 @@ export default function CollectionDetailPage() {
   // Build set of animation IDs already in this collection (for add modal)
   const existingAnimIds = new Set(animations.map(a => a.id));
 
+  // Phase 2: Group progressions under their base animations
+  const collectionAnimationIds = existingAnimIds;
+  const bases = animations.filter(a => !a.is_progression);
+  const progressionMap = new Map<string, Animation[]>();
+  const orphanProgressions: Animation[] = [];
+
+  animations
+    .filter(a => a.is_progression)
+    .sort((a, b) => (a.progression_order ?? 0) - (b.progression_order ?? 0))
+    .forEach(p => {
+      if (p.parent_animation_id && collectionAnimationIds.has(p.parent_animation_id)) {
+        const list = progressionMap.get(p.parent_animation_id) ?? [];
+        list.push(p);
+        progressionMap.set(p.parent_animation_id, list);
+      } else {
+        orphanProgressions.push(p);
+      }
+    });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -320,16 +343,98 @@ export default function CollectionDetailPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {animations.map((animation) => (
-              <div key={animation.id} className="relative group">
+            {/* Phase 2: Render base animations, each followed by their progressions */}
+            {bases.map((animation) => (
+              <div key={animation.id} className="contents">
+                {/* Base animation card */}
+                <div className="relative group">
+                  <PublicAnimationCard
+                    animation={{
+                      ...animation,
+                      description: null,
+                      tags: [],
+                      author: { display_name: null },
+                      user_has_upvoted: false,
+                      thumbnail_url: animation.thumbnail,
+                    }}
+                    onView={handleView}
+                    currentUserId={user?.id ?? null}
+                    onUpvote={handleUpvote}
+                    onLoginRequired={handleLoginRequired}
+                    onRemix={handleRemix}
+                  />
+                  {isOwner && (
+                    <button
+                      onClick={() => handleRemove(animation.id)}
+                      disabled={removingAnimId === animation.id}
+                      className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-red-600 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:opacity-50"
+                      title="Remove from collection"
+                    >
+                      {removingAnimId === animation.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-3 h-3" />
+                      )}
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                {/* Progression cards indented under base */}
+                {progressionMap.get(animation.id)?.map((prog, i) => (
+                  <div key={prog.id} className="relative group col-span-1 pl-4 border-l-2 border-indigo-500/30">
+                    <p className="text-xs text-indigo-400 font-medium mb-1">
+                      Progression {i + 1}
+                    </p>
+                    <PublicAnimationCard
+                      animation={{
+                        ...prog,
+                        description: null,
+                        tags: [],
+                        author: { display_name: null },
+                        user_has_upvoted: false,
+                        thumbnail_url: prog.thumbnail,
+                      }}
+                      onView={handleView}
+                      currentUserId={user?.id ?? null}
+                      onUpvote={handleUpvote}
+                      onLoginRequired={handleLoginRequired}
+                      onRemix={handleRemix}
+                    />
+                    {isOwner && (
+                      <button
+                        onClick={() => handleRemove(prog.id)}
+                        disabled={removingAnimId === prog.id}
+                        className="absolute top-7 left-6 z-10 flex items-center gap-1 px-2 py-1 bg-red-600 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:opacity-50"
+                        title="Remove from collection"
+                      >
+                        {removingAnimId === prog.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3 h-3" />
+                        )}
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+
+            {/* Phase 2: Orphaned progressions — parent not in this collection */}
+            {orphanProgressions.map((prog) => (
+              <div key={prog.id} className="relative group">
+                <p className="text-xs text-text-primary/40 mb-1">
+                  Progression (base not in collection)
+                </p>
                 <PublicAnimationCard
                   animation={{
-                    ...animation,
+                    ...prog,
                     description: null,
                     tags: [],
                     author: { display_name: null },
                     user_has_upvoted: false,
-                    thumbnail_url: animation.thumbnail,
+                    thumbnail_url: prog.thumbnail,
                   }}
                   onView={handleView}
                   currentUserId={user?.id ?? null}
@@ -339,12 +444,12 @@ export default function CollectionDetailPage() {
                 />
                 {isOwner && (
                   <button
-                    onClick={() => handleRemove(animation.id)}
-                    disabled={removingAnimId === animation.id}
+                    onClick={() => handleRemove(prog.id)}
+                    disabled={removingAnimId === prog.id}
                     className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 bg-red-600 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:opacity-50"
                     title="Remove from collection"
                   >
-                    {removingAnimId === animation.id ? (
+                    {removingAnimId === prog.id ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
                     ) : (
                       <Trash2 className="w-3 h-3" />
