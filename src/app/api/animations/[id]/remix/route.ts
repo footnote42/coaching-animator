@@ -63,6 +63,7 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
         duration_ms: original.duration_ms,
         frame_count: original.frame_count,
         visibility: 'private', // Remixes start as private
+        remixed_from_id: original.id, // Phase 2: track remix lineage
       })
       .select('id, title, created_at')
       .single();
