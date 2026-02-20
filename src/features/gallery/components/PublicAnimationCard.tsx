@@ -21,6 +21,14 @@ interface PublicAnimation {
   };
   user_has_upvoted: boolean;
   thumbnail_url?: string | null;
+  // Phase 2: Progressions
+  parent_animation_id?: string | null;
+  is_progression?: boolean;
+  progression_count?: number;
+  // Phase 2: Remix genealogy
+  remixed_from_id?: string | null;
+  remixed_from_title?: string | null;
+  remix_count?: number;
 }
 
 interface PublicAnimationCardProps {

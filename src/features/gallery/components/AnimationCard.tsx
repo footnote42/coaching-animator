@@ -19,6 +19,15 @@ export interface AnimationSummary {
   updated_at: string;
   thumbnail_url?: string | null;
   current_version?: string; // V2.0: Current version number
+  // Phase 2: Progressions
+  parent_animation_id?: string | null;
+  progression_order?: number;       // 0 = base, 1-5 = progression
+  is_progression?: boolean;
+  progression_count?: number;       // denormalized from DB
+  // Phase 2: Remix genealogy
+  remixed_from_id?: string | null;
+  remixed_from_title?: string | null; // joined at API layer
+  remix_count?: number;
 }
 
 interface AnimationCardProps {
