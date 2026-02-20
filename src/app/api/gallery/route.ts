@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
       user_id,
       progression_count,
       remix_count,
+      thumbnail_url,
       remixed_from_id,
       remixed_from:remixed_from_id (
         id,

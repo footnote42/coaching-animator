@@ -23,4 +23,25 @@
   <!-- Dead Ball Lines -->
   <line x1="50" y1="50" x2="50" y2="1350" stroke="#F8F9FA" stroke-width="2" />
   <line x1="1950" y1="50" x2="1950" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+
+  <!-- Goal Posts (top-down view; H-shape on each try line) -->
+  <!-- Left try line (x=200): uprights extend 40px toward dead-ball (x=50) -->
+  <line x1="200" y1="650" x2="160" y2="650" stroke="#F8F9FA" stroke-width="3" />
+  <line x1="200" y1="750" x2="160" y2="750" stroke="#F8F9FA" stroke-width="3" />
+  <line x1="200" y1="650" x2="200" y2="750" stroke="#F8F9FA" stroke-width="3" />
+
+  <!-- Right try line (x=1800): uprights extend 40px toward dead-ball (x=1950) -->
+  <line x1="1800" y1="650" x2="1840" y2="650" stroke="#F8F9FA" stroke-width="3" />
+  <line x1="1800" y1="750" x2="1840" y2="750" stroke="#F8F9FA" stroke-width="3" />
+  <line x1="1800" y1="650" x2="1800" y2="750" stroke="#F8F9FA" stroke-width="3" />
+
+  <!-- 5-yard tick lines from left try line (x=200) into field -->
+  <line x1="282" y1="50" x2="282" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
+  <line x1="364" y1="50" x2="364" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
+  <line x1="446" y1="50" x2="446" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
+
+  <!-- 5-yard tick lines from right try line (x=1800) into field -->
+  <line x1="1718" y1="50" x2="1718" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
+  <line x1="1636" y1="50" x2="1636" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
+  <line x1="1554" y1="50" x2="1554" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
 </svg>

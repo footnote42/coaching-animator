@@ -559,7 +559,23 @@ export const useProjectStore = create<ProjectStoreState>()(
             }),
 
             removeEntityGlobally: () => { },
-            propagateEntity: () => { },
+            propagateEntity: (entityId: string) => set((state) => {
+                if (!state.project) return state;
+                const currentFrameIndex = state.currentFrameIndex;
+                const source = state.project.frames[currentFrameIndex]?.entities[entityId];
+                if (!source) return state;
+                return {
+                    project: {
+                        ...state.project,
+                        frames: state.project.frames.map((frame, idx) => {
+                            if (idx <= currentFrameIndex) return frame;
+                            if (frame.entities[entityId]) return frame;
+                            return { ...frame, entities: { ...frame.entities, [entityId]: { ...source } } };
+                        }),
+                    },
+                    isDirty: true,
+                };
+            }),
 
             addAnnotation: (annotation: AnnotationCreate) => {
                 let newAnnotationId = '';

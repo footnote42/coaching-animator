@@ -6,9 +6,8 @@ import { useUIStore } from '@/core/stores/uiStore';
 import { downloadJson, readJsonFile, generateProjectFilename } from '@/core/utils/fileIO';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
-import { SportSelector } from './SportSelector';
 import { ShareButton } from './ShareButton';
-import { SportType, ExportStatus, ExportFormat } from '@/core/types';
+import { ExportStatus, ExportFormat } from '@/core/types';
 import { toast } from 'sonner';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
@@ -35,8 +34,6 @@ function validateVideoUrl(url: string): { isValid: boolean; error?: string } {
  * Handles unsaved changes warnings and file I/O operations.
  */
 export interface ProjectActionsProps {
-    currentSport: SportType;
-    onSportChange: (sport: SportType) => void;
     onExport?: (format?: ExportFormat) => void;
     exportStatus?: ExportStatus;
     exportProgress?: number;
@@ -50,8 +47,6 @@ export interface ProjectActionsProps {
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
-    currentSport,
-    onSportChange,
     onExport,
     exportStatus = 'idle',
     exportProgress = 0,
@@ -235,62 +230,6 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     {videoUrlError && (
                         <p className="text-xs text-red-600 mt-1">{videoUrlError}</p>
                     )}
-                </div>
-            </div>
-
-            {/* Field Settings Section */}
-            <div>
-                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
-                    Field Settings
-                </h3>
-                <SportSelector
-                    currentSport={currentSport}
-                    onSportChange={onSportChange}
-                />
-
-                {/* Pitch Layout Selector */}
-                <div className="mt-3">
-                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
-                        Layout
-                    </label>
-                    <div className="grid grid-cols-2 gap-1">
-                        <Button
-                            variant={(project?.settings.pitchLayout || 'standard') === 'standard' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ pitchLayout: 'standard' })}
-                            disabled={!project}
-                            className={`text-xs ${(project?.settings.pitchLayout || 'standard') === 'standard' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
-                        >
-                            Standard
-                        </Button>
-                        <Button
-                            variant={project?.settings.pitchLayout === 'attack' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ pitchLayout: 'attack' })}
-                            disabled={!project}
-                            className={`text-xs ${project?.settings.pitchLayout === 'attack' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
-                        >
-                            Attack
-                        </Button>
-                        <Button
-                            variant={project?.settings.pitchLayout === 'defence' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ pitchLayout: 'defence' })}
-                            disabled={!project}
-                            className={`text-xs ${project?.settings.pitchLayout === 'defence' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
-                        >
-                            Defence
-                        </Button>
-                        <Button
-                            variant={project?.settings.pitchLayout === 'training' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ pitchLayout: 'training' })}
-                            disabled={!project}
-                            className={`text-xs ${project?.settings.pitchLayout === 'training' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
-                        >
-                            Training
-                        </Button>
-                    </div>
                 </div>
             </div>
 

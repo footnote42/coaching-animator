@@ -46,7 +46,7 @@ export function useShareAnimation() {
 
             // Construct share URL with environment awareness
             const baseUrl = window.location.origin;
-            const shareUrl = `${baseUrl}/replay/${id}`;
+            const shareUrl = `${baseUrl}/share/${id}`;
 
             // Copy to clipboard with error handling
             try {

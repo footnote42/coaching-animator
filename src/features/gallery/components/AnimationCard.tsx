@@ -95,7 +95,7 @@ export function AnimationCard({
 
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/replay/${animation.id}`;
+    const url = `${window.location.origin}/share/${animation.id}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);

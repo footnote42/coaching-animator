@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Layer } from 'react-konva';
-import { Entity, Frame, PlaybackPosition } from '@/core/types';
+import { Entity, EntityType, Frame, PlaybackPosition } from '@/core/types';
 import { PlayerToken } from './PlayerToken';
 
 /**
@@ -134,9 +134,16 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
         return applyParentRelativePositioning(baseInterpolated);
     }, [entities, playbackPosition, frames]);
 
+    const LAYER_ORDER: Partial<Record<EntityType, number>> = {
+        cone: 0, 'tackle-bag': 1, 'tackle-shield': 1, player: 2, ball: 3,
+    };
+    const sorted = [...interpolatedEntities].sort(
+        (a, b) => (LAYER_ORDER[a.type] ?? 2) - (LAYER_ORDER[b.type] ?? 2)
+    );
+
     return (
         <Layer listening={interactive}>
-            {interpolatedEntities.map((entity: Entity & { opacity: number }) => (
+            {sorted.map((entity: Entity & { opacity: number }) => (
                 <PlayerToken
                     key={entity.id}
                     entity={entity}

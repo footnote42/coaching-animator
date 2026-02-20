@@ -215,7 +215,7 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
   }
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="relative flex flex-col items-center w-full">
       {/* Canvas — full-bleed */}
       <ShareCanvas
         frames={frames}
@@ -249,6 +249,15 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
           {currentFrameIndex + 1} / {frames.length}
         </span>
       </div>
+
+      {/* Back-to-site link */}
+      <a
+        href="/"
+        className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+      >
+        <span>🏉</span>
+        <span className="hidden sm:inline">Coaching Animator</span>
+      </a>
     </div>
   );
 }

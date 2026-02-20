@@ -31,7 +31,7 @@ import { ProjectActions } from '@/features/animation/components/Sidebar/ProjectA
 import { FrameStrip, PlaybackControls } from '@/features/animation/components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts, useExport } from '@/core/hooks';
 import { useAutoSave } from '@/core/hooks/useAutoSave';
-import { useUser } from '@/lib/contexts/UserContext';
+
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
@@ -41,7 +41,7 @@ import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
-import { SportType } from '@/core/types';
+
 import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { Toaster, toast } from 'sonner';
 
@@ -58,8 +58,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const canvasHeight = 600;
 
   const stageRef = useRef<Konva.Stage>(null);
-  const { signOut } = useUser();
-
   const {
     project,
     currentFrameIndex,
@@ -75,6 +73,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     removeFrame,
     duplicateFrame,
     addEntity,
+    propagateEntity,
     updateEntity,
     play,
     pause,
@@ -82,7 +81,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     setPlaybackSpeed,
     toggleLoop,
     updateFrame,
-    updateProjectSettings,
     addAnnotation,
   } = useProjectStore();
 
@@ -247,8 +245,18 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     addFrame();
   };
 
+  const addEntityWithPropagate = (entityData: Parameters<typeof addEntity>[0]) => {
+    const newId = addEntity(entityData);
+    if ((project?.frames.length ?? 0) > 1) {
+      toast('Add entity to all subsequent frames?', {
+        action: { label: 'Yes', onClick: () => propagateEntity(newId) },
+        cancel: { label: 'No', onClick: () => {} },
+      });
+    }
+  };
+
   const handleAddAttackPlayer = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'player',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -259,7 +267,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   };
 
   const handleAddDefensePlayer = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'player',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -270,7 +278,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   };
 
   const handleAddBall = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'ball',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -281,7 +289,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   };
 
   const handleAddCone = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'cone',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -292,7 +300,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   };
 
   const handleAddTackleShield = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'tackle-shield',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -303,7 +311,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   };
 
   const handleAddTackleBag = () => {
-    addEntity({
+    addEntityWithPropagate({
       type: 'tackle-bag',
       x: canvasWidth / 2,
       y: canvasHeight / 2,
@@ -441,10 +449,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     updateFrame(frameId, { duration: durationMs });
   };
 
-  const handleSportChange = (sport: SportType) => {
-    updateProjectSettings({ sport });
-  };
-
   const handleDrawingComplete = (points: number[], type: 'arrow' | 'line') => {
     addAnnotation({
       type,
@@ -569,45 +573,9 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   return (
     <div className="flex h-screen bg-[var(--color-surface-warm)]">
       <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
-        <div className="p-4">
-          <a href="/" className="flex items-center gap-2 mb-2 hover:opacity-80 transition-opacity">
-            <span className="text-lg">🏉</span>
-            <span className="text-sm font-medium text-tactics-white">Coaching Animator</span>
-          </a>
-          <h1 className="text-xl font-heading font-bold text-tactics-white mb-4">
-            Animation Editor
-          </h1>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <a href="/gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
-              Public Gallery
-            </a>
-            {isAuthenticated && (
-              <>
-                <span className="text-tactics-white/40">•</span>
-                <a href="/my-gallery" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
-                  My Playbook
-                </a>
-                <span className="text-tactics-white/40">•</span>
-                <a href="/profile" className="text-tactics-white/70 hover:text-tactics-white transition-colors">
-                  Profile
-                </a>
-                <span className="text-tactics-white/40">•</span>
-                <button
-                  onClick={() => signOut()}
-                  className="text-tactics-white/70 hover:text-tactics-white transition-colors"
-                >
-                  Sign Out
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
         <ErrorBoundary fallbackTitle="Sidebar Error">
           <div className="bg-tactics-white flex-1 overflow-y-auto">
             <ProjectActions
-              currentSport={project?.sport || 'rugby-union'}
-              onSportChange={handleSportChange}
               onExport={startExport}
               exportStatus={exportStatus}
               exportProgress={exportProgress}
