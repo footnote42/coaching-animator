@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Repeat } from 'lucide-react';
 import type { Frame, SportType, PitchLayout, PlaybackPosition } from '@/core/types';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
@@ -26,6 +26,7 @@ interface ReplayPayload {
 
 interface ReplayViewerProps {
   payload: unknown;
+  autoPlay?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -213,12 +214,19 @@ function ReplayCanvas({
 // ReplayViewer — orchestrator (low-frequency re-renders)
 // ---------------------------------------------------------------------------
 
-export function ReplayViewer({ payload: rawPayload }: ReplayViewerProps) {
+export function ReplayViewer({ payload: rawPayload, autoPlay }: ReplayViewerProps) {
   const payload = useMemo(() => normalizeReplayPayload(rawPayload), [rawPayload]);
   const frames = payload.frames;
 
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    if (autoPlay && frames.length > 0) {
+      const t = setTimeout(() => setIsPlaying(true), 100);
+      return () => clearTimeout(t);
+    }
+  }, [autoPlay, frames.length]);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [loopPlayback, setLoopPlayback] = useState(false);
 
