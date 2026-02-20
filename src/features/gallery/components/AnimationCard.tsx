@@ -147,6 +147,13 @@ export function AnimationCard({
           {VISIBILITY_ICONS[animation.visibility]}
           <span>{VISIBILITY_LABELS[animation.visibility]}</span>
         </div>
+
+        {/* Phase 2: Progression set badge */}
+        {(animation.progression_count ?? 0) > 0 && (
+          <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-indigo-900/80 text-indigo-200 text-xs font-medium rounded-full">
+            +{animation.progression_count} progression{animation.progression_count !== 1 ? 's' : ''}
+          </div>
+        )}
       </div>
 
       {/* Card content */}
@@ -154,6 +161,13 @@ export function AnimationCard({
         <h3 className="font-heading font-semibold text-text-primary truncate mb-1">
           {animation.title}
         </h3>
+
+        {/* Phase 2: Remix attribution */}
+        {animation.remixed_from_title && (
+          <p className="text-xs text-text-primary/50 truncate mb-1">
+            Remixed from <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+          </p>
+        )}
 
         <div className="flex items-center gap-3 text-xs text-text-primary/70 mb-2">
           <span className="inline-flex items-center gap-1">
