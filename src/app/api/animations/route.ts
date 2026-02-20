@@ -211,6 +211,10 @@ export async function POST(request: NextRequest) {
         thumbnail_url: thumbnailUrl,
         video_url: data.video_url ?? null, // V2.0: YouTube tutorial video
         current_version: '1.0', // V2.0: Initial version
+        // Phase 2: Progression fields (DB trigger validates parent is base + increments counter)
+        parent_animation_id: data.parent_animation_id ?? null,
+        is_progression: data.is_progression ?? false,
+        progression_order: data.progression_order ?? 0,
       })
       .select('id, created_at, thumbnail_url')
       .single();

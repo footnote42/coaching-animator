@@ -77,6 +77,10 @@ export const CreateAnimationSchema = z.object({
       'Invalid YouTube URL format'
     )
     .optional(),
+  // Phase 2: Progression fields
+  parent_animation_id: z.string().uuid().optional(),
+  is_progression: z.boolean().optional().default(false),
+  progression_order: z.number().int().min(0).max(5).optional().default(0),
 });
 
 export const UpdateAnimationSchema = CreateAnimationSchema.partial().extend({
