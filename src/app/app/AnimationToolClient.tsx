@@ -185,7 +185,7 @@ function AnimationToolPageContent() {
         </div>
       )}
 
-      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} />
+      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} cloudAnimationId={loadId} />
       {showSaveModal && payload && (
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}

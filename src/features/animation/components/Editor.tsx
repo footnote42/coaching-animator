@@ -40,16 +40,20 @@ import { VALIDATION } from '@/core/constants/validation';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
 import { SportType } from '@/core/types';
+import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { Toaster, toast } from 'sonner';
 
 interface EditorProps {
   isAuthenticated?: boolean;
   onSaveToCloud?: () => void;
   loadingFromCloud?: boolean;
+  /** Cloud ID of the currently loaded animation (passed from AnimationToolClient) */
+  cloudAnimationId?: string | null;
 }
 
-export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false }: EditorProps) {
+export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null }: EditorProps) {
   const canvasWidth = 800;
   const canvasHeight = 600;
 
@@ -99,6 +103,14 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
 
+  // Phase 2: Progression panel state
+  const [baseAnimationMeta, setBaseAnimationMeta] = useState<{ id: string; title: string; is_progression: boolean } | null>(null);
+  const [progressions, setProgressions] = useState<Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]>([]);
+  const [activeProgressionIndex, setActiveProgressionIndex] = useState<number>(-1); // -1 = base
+  const [showProgressionUnsavedDialog, setShowProgressionUnsavedDialog] = useState(false);
+  const [pendingProgressionIndex, setPendingProgressionIndex] = useState<number | null>(null);
+  const [isAddingProgression, setIsAddingProgression] = useState(false);
+
   const [inlineEditor, setInlineEditor] = useState<{
     entityId: string;
     position: { x: number; y: number };
@@ -122,6 +134,38 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   useAnimationLoop();
   useKeyboardShortcuts();
   useAutoSave();
+
+  // Phase 2: Fetch base animation metadata + progressions when a cloud animation is loaded
+  useEffect(() => {
+    if (!cloudAnimationId || !isAuthenticated) {
+      setBaseAnimationMeta(null);
+      setProgressions([]);
+      setActiveProgressionIndex(-1);
+      return;
+    }
+
+    // Fetch animation metadata to determine if it's a base or a progression
+    fetch(`/api/animations/${cloudAnimationId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return;
+        setBaseAnimationMeta({
+          id: data.id,
+          title: data.title,
+          is_progression: data.is_progression ?? false,
+        });
+        // Only fetch progressions for base animations (not for progressions themselves)
+        if (!data.is_progression) {
+          return fetch(`/api/animations/${cloudAnimationId}/progressions`)
+            .then(res => res.ok ? res.json() : { progressions: [] })
+            .then(({ progressions: progs }) => {
+              setProgressions(progs ?? []);
+              setActiveProgressionIndex(-1); // Base is active
+            });
+        }
+      })
+      .catch(err => console.error('[Editor] Failed to fetch progression metadata:', err));
+  }, [cloudAnimationId, isAuthenticated]);
 
   // Track viewport width for mobile warning
   useEffect(() => {
@@ -410,6 +454,118 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     setDrawingMode('none');
   };
 
+  // Phase 2: Progression handlers
+  const handleProgressionSelectRequest = (index: number) => {
+    if (index === activeProgressionIndex) return;
+    if (isDirty) {
+      setPendingProgressionIndex(index);
+      setShowProgressionUnsavedDialog(true);
+      return;
+    }
+    switchToProgression(index);
+  };
+
+  const switchToProgression = async (index: number) => {
+    setActiveProgressionIndex(index);
+    const targetId = index === -1
+      ? (baseAnimationMeta?.id ?? cloudAnimationId)
+      : progressions[index]?.id;
+    if (!targetId) return;
+    try {
+      const res = await fetch(`/api/animations/${targetId}`);
+      if (!res.ok) { toast.error('Failed to load progression'); return; }
+      const data = await res.json();
+      if (data?.payload) {
+        const projectData = {
+          ...data.payload,
+          id: data.id || crypto.randomUUID(),
+          createdAt: data.created_at || new Date().toISOString(),
+          updatedAt: data.updated_at || new Date().toISOString(),
+        };
+        loadProject(projectData);
+      }
+    } catch (err) {
+      console.error('[Editor] Failed to switch progression:', err);
+      toast.error('Failed to load progression');
+    }
+  };
+
+  const handleProgressionDiscardAndSwitch = () => {
+    setShowProgressionUnsavedDialog(false);
+    if (pendingProgressionIndex !== null) {
+      switchToProgression(pendingProgressionIndex);
+      setPendingProgressionIndex(null);
+    }
+  };
+
+  const handleAddProgression = async () => {
+    if (!cloudAnimationId || !baseAnimationMeta || isAddingProgression) return;
+    const baseId = baseAnimationMeta.is_progression
+      ? null // can't create progression of progression
+      : baseAnimationMeta.id;
+    if (!baseId) { toast.error('Can only add progressions to base animations'); return; }
+    if (progressions.length >= 5) { toast.error('Maximum 5 progressions reached'); return; }
+    if (isDirty) {
+      toast.error('Please save your changes before adding a progression');
+      return;
+    }
+
+    setIsAddingProgression(true);
+    try {
+      // Read current animation metadata for the payload
+      const currentRes = await fetch(`/api/animations/${cloudAnimationId}`);
+      if (!currentRes.ok) throw new Error('Failed to read current animation');
+      const current = await currentRes.json();
+
+      const newOrder = progressions.length + 1;
+      const body = {
+        title: `${baseAnimationMeta.title} — Progression ${newOrder}`,
+        description: current.description ?? undefined,
+        coaching_notes: current.coaching_notes ?? undefined,
+        animation_type: current.animation_type,
+        tags: current.tags ?? [],
+        payload: current.payload,
+        visibility: 'private' as const,
+        parent_animation_id: baseId,
+        is_progression: true,
+        progression_order: newOrder,
+      };
+
+      const res = await fetch('/api/animations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? 'Failed to create progression');
+      }
+
+      const newProg = await res.json();
+      toast.success(`Progression ${newOrder} created`);
+
+      // Refresh progressions list and switch to the new one
+      const progRes = await fetch(`/api/animations/${baseId}/progressions`);
+      if (progRes.ok) {
+        const { progressions: progs } = await progRes.json();
+        setProgressions(progs ?? []);
+        // Switch to the newly created progression
+        const newIndex = (progs ?? []).findIndex((p: { id: string }) => p.id === newProg.id);
+        if (newIndex >= 0) switchToProgression(newIndex);
+      }
+    } catch (err) {
+      console.error('[Editor] Add progression failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to add progression');
+    } finally {
+      setIsAddingProgression(false);
+    }
+  };
+
+  // Show progression panel only for authenticated users with a loaded cloud animation
+  // that is a base animation (not a progression itself)
+  const showProgressionPanel = isAuthenticated && cloudAnimationId && baseAnimationMeta && !baseAnimationMeta.is_progression;
+
   return (
     <div className="flex h-screen bg-[var(--color-surface-warm)]">
       <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
@@ -485,6 +641,19 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       </aside>
 
       <main className="flex-1 flex flex-col">
+        {/* Phase 2: Progression panel — shown for base cloud animations */}
+        {showProgressionPanel && (
+          <ProgressionPanel
+            baseTitle={baseAnimationMeta!.title}
+            progressions={progressions}
+            activeIndex={activeProgressionIndex}
+            onSelectRequest={handleProgressionSelectRequest}
+            onAddProgression={handleAddProgression}
+            canAdd={progressions.length < 5}
+            isAdding={isAddingProgression}
+          />
+        )}
+
         {/* Mobile editor warning */}
         {viewportWidth < 768 && !mobileWarningDismissed && (
           <div className="px-4 py-2 bg-[var(--color-accent-warm)]/10 border-b border-[var(--color-accent-warm)] text-sm text-text-primary flex items-center justify-between gap-3">
@@ -643,6 +812,18 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           </button>
         </div>
       )}
+
+      {/* Phase 2: Unsaved changes guard for progression switching */}
+      <ConfirmDialog
+        open={showProgressionUnsavedDialog}
+        onConfirm={handleProgressionDiscardAndSwitch}
+        onCancel={() => { setShowProgressionUnsavedDialog(false); setPendingProgressionIndex(null); }}
+        title="Unsaved Changes"
+        description="Switching progressions will discard your current changes. Discard and switch?"
+        confirmLabel="Discard & Switch"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
 
       <Toaster position="bottom-right" />
 
