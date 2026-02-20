@@ -55,9 +55,9 @@
     "lastSessionId": null,
     "activeSession": null,
     "generation": 67,
-    "lastModified": "2026-02-19T21:24:40Z",
+    "lastModified": "2026-02-20T17:33:27Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 0
+    "activeSessionCount": 1
   },
   "focus": {
     "currentTask": null,
@@ -564,12 +564,12 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "pending",
+      "status": "active",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-19T18:51:12Z",
+      "updatedAt": "2026-02-20T17:33:27Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
