@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 88,
+    "totalEntries": 98,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-20T23:37:36Z",
+    "lastEntry": "2026-02-20T23:42:17Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1879,6 +1879,61 @@
       "after": null,
       "details": {
         "note": "Created T026 UI/UX Audit epic with 6 child tasks (T027–T032)"
+      }
+    },
+    {
+      "id": "log_84e0fa6c679e",
+      "timestamp": "2026-02-20T23:40:41Z",
+      "sessionId": "session_20260220_234040_2c7579",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T027",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T026"
+      }
+    },
+    {
+      "id": "log_1ba0718537c4",
+      "timestamp": "2026-02-20T23:42:12Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T027",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-20T23:42:08Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0a7dc87d1ec2",
+      "timestamp": "2026-02-20T23:42:17Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T028",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-20T23:42:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
       }
     }
   ]
