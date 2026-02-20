@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 87,
+    "totalEntries": 98,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-20T17:38:49Z",
+    "lastEntry": "2026-02-20T23:42:17Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1740,6 +1740,200 @@
       "after": null,
       "details": {
         "note": "T015 complete: /share/[id] route, ShareViewer, nav guard, E2E tests. All 48 unit tests pass."
+      }
+    },
+    {
+      "id": "log-1771630624-78a2d0",
+      "timestamp": "2026-02-20T23:37:04Z",
+      "action": "task_created",
+      "taskId": "T026",
+      "actor": "system",
+      "details": {
+        "title": "UI/UX Audit — Grassroots Coach Repositioning",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "UI/UX Audit — Grassroots Coach Repositioning",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630635-152de1",
+      "timestamp": "2026-02-20T23:37:15Z",
+      "action": "task_created",
+      "taskId": "T027",
+      "actor": "system",
+      "details": {
+        "title": "Landing Page Copy Rewrite",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Landing Page Copy Rewrite",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630636-09c7b1",
+      "timestamp": "2026-02-20T23:37:16Z",
+      "action": "task_created",
+      "taskId": "T028",
+      "actor": "system",
+      "details": {
+        "title": "Hero Section A/B Copy Variants",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Hero Section A/B Copy Variants",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630637-438e5c",
+      "timestamp": "2026-02-20T23:37:17Z",
+      "action": "task_created",
+      "taskId": "T029",
+      "actor": "system",
+      "details": {
+        "title": "Onboarding Flow Audit",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Onboarding Flow Audit",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630644-16ba8a",
+      "timestamp": "2026-02-20T23:37:24Z",
+      "action": "task_created",
+      "taskId": "T030",
+      "actor": "system",
+      "details": {
+        "title": "Gallery Page Copy & Empty State",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Gallery Page Copy & Empty State",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630646-934582",
+      "timestamp": "2026-02-20T23:37:26Z",
+      "action": "task_created",
+      "taskId": "T031",
+      "actor": "system",
+      "details": {
+        "title": "Mobile Experience Audit",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Mobile Experience Audit",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771630647-2394fc",
+      "timestamp": "2026-02-20T23:37:27Z",
+      "action": "task_created",
+      "taskId": "T032",
+      "actor": "system",
+      "details": {
+        "title": "CTA Language Consistency Pass",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "CTA Language Consistency Pass",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_ca00e9380243",
+      "timestamp": "2026-02-20T23:37:36Z",
+      "sessionId": "session_20260220_173327_553766",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Created T026 UI/UX Audit epic with 6 child tasks (T027–T032)"
+      }
+    },
+    {
+      "id": "log_84e0fa6c679e",
+      "timestamp": "2026-02-20T23:40:41Z",
+      "sessionId": "session_20260220_234040_2c7579",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T027",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T026"
+      }
+    },
+    {
+      "id": "log_1ba0718537c4",
+      "timestamp": "2026-02-20T23:42:12Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T027",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-20T23:42:08Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0a7dc87d1ec2",
+      "timestamp": "2026-02-20T23:42:17Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T028",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-20T23:42:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
       }
     }
   ]

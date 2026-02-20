@@ -2,68 +2,94 @@ import { Play, Users, Share2, Download, Shield, Zap } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
+// ---------------------------------------------------------------------------
+// COPY VARIANTS — Hero Section (T028)
+//
+// Alt A — "The Grounded Coach" (ACTIVE — implemented below)
+//   Headline:  "Draw your session. Your players will get it."
+//   Sub:       "A simple tool for drawing rugby drills and plays. Move players
+//               around the pitch, build up the action frame by frame, then
+//               share a link with your squad."
+//   CTA 1:     "Start drawing — no account needed"
+//   CTA 2:     "See what others have shared"
+//
+// Alt B — "Saturday Coach"
+//   Headline:  "Show your team exactly what you mean"
+//   Sub:       "Stop describing it. Draw it. Build animated rugby plays in
+//               minutes, then send a link to your team before the weekend."
+//   CTA 1:     "Try it free — no account needed"
+//   CTA 2:     "Browse the playbook"
+//
+// Alt C — "Grassroots Movement"
+//   Headline:  "Rugby tactics, drawn by coaches like you"
+//   Sub:       "A free tool for the rugby coaching community. Draw plays,
+//               share sessions, and learn from what others have built."
+//   CTA 1:     "Start drawing free"
+//   CTA 2:     "Browse the community playbook"
+// ---------------------------------------------------------------------------
+
 const FEATURES = [
   {
     icon: Play,
-    title: 'Animate Plays',
-    description: 'Create frame-by-frame animations of rugby tactics, skills, and game situations with our intuitive drag-and-drop editor.',
+    title: 'Draw plays in motion',
+    description: 'Place players on the pitch, add frames, and show how the play unfolds. Drag, move, repeat until it looks right.',
   },
   {
     icon: Users,
-    title: 'Multiple Sports',
-    description: 'Support for Rugby Union, Rugby League, and Touch Rugby with authentic field markings and dimensions.',
+    title: 'Rugby Union, League & Touch',
+    description: 'Pick your code and the right field appears — correct markings, correct dimensions. No setup required.',
   },
   {
     icon: Share2,
-    title: 'Share & Discover',
-    description: 'Publish your animations to the community gallery and learn from plays shared by coaches worldwide.',
+    title: 'Share a link with your squad',
+    description: 'Send a link your players can open on their phones. No app download, no account needed on their end.',
   },
   {
     icon: Download,
-    title: 'Export as GIF',
-    description: 'Download your animations as high-quality GIF files to share on social media or embed in presentations.',
+    title: 'Export as a GIF',
+    description: 'Download an animated GIF to drop in a WhatsApp group, a presentation, or wherever your team communicates.',
   },
   {
     icon: Shield,
-    title: 'Works Offline',
-    description: 'Full offline support means you can create and edit animations anywhere, even without internet access.',
+    title: 'Works without internet',
+    description: 'Use it on the touchline, in a changing room, wherever. No connection needed once the page has loaded.',
   },
   {
     icon: Zap,
-    title: 'Free to Use',
-    description: 'Create up to 50 animations for free. Guest users can try the tool instantly with no signup required.',
+    title: 'Free to use',
+    description: 'No credit card, no trial period. Start drawing straight away as a guest. Create an account to save your work.',
   },
 ];
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+      {/* Hero Section — Alt A: The Grounded Coach */}
       <section className="bg-primary text-text-inverse">
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6">
-              Visualise Rugby Plays Like Never Before
+              Draw your session. Your players will get it.
             </h1>
             <p className="text-lg md:text-xl text-text-inverse/80 mb-8 max-w-2xl">
-              Create animated rugby tactics, share with your team, and explore plays from coaches around the world. Free, offline-capable, and built for coaches.
+              A simple tool for drawing rugby drills and plays. Move players around the pitch, build up the action frame by frame, then share a link with your squad.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/app"
                 className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-white font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
               >
-                Start Creating — It&apos;s Free
+                Start drawing — no account needed
               </a>
               <a
                 href="/gallery"
                 className="inline-flex items-center justify-center px-8 py-4 border-2 border-text-inverse/30 text-text-inverse font-semibold text-lg hover:bg-text-inverse/10 transition-colors"
               >
-                Browse Gallery
+                See what others have shared
               </a>
             </div>
             <p className="mt-4 text-sm text-text-inverse/60">
-              No signup required to try. Create your first animation in seconds.
+              Free to use. Nothing to install.
             </p>
           </div>
         </div>
@@ -74,10 +100,10 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-text-primary mb-4">
-              Everything You Need to Coach Better
+              Built by coaches, for coaches
             </h2>
             <p className="text-lg text-text-primary/70 max-w-2xl mx-auto">
-              Built by coaches, for coaches. Our tools help you communicate complex plays simply and effectively.
+              No steep learning curve. If you can drag a player onto a pitch, you can use this.
             </p>
           </div>
 
@@ -107,7 +133,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-text-primary mb-4">
-              Create Animations in 3 Simple Steps
+              From blank pitch to shared play in minutes
             </h2>
           </div>
 
@@ -116,27 +142,27 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-primary text-text-inverse text-2xl font-bold flex items-center justify-center mx-auto mb-4">
                 1
               </div>
-              <h3 className="text-lg font-heading font-semibold mb-2">Add Players</h3>
+              <h3 className="text-lg font-heading font-semibold mb-2">Place your players</h3>
               <p className="text-sm text-text-primary/70">
-                Drag and drop attack players, defenders, balls, and markers onto the pitch.
+                Drag attack players, defenders, a ball, and cones onto the pitch where you want them.
               </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary text-text-inverse text-2xl font-bold flex items-center justify-center mx-auto mb-4">
                 2
               </div>
-              <h3 className="text-lg font-heading font-semibold mb-2">Create Frames</h3>
+              <h3 className="text-lg font-heading font-semibold mb-2">Build the movement</h3>
               <p className="text-sm text-text-primary/70">
-                Add frames and move players to show movement. Draw arrows to indicate passing or running lines.
+                Add frames and reposition players to show how the play develops. Draw arrows for passing or running lines.
               </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary text-text-inverse text-2xl font-bold flex items-center justify-center mx-auto mb-4">
                 3
               </div>
-              <h3 className="text-lg font-heading font-semibold mb-2">Share & Export</h3>
+              <h3 className="text-lg font-heading font-semibold mb-2">Send the link</h3>
               <p className="text-sm text-text-primary/70">
-                Export as GIF, share a link, or publish to the community gallery for others to learn from.
+                Share a link, export a GIF, or post to the gallery so other coaches can learn from it too.
               </p>
             </div>
           </div>
@@ -147,23 +173,23 @@ export default function HomePage() {
       <section className="py-16 md:py-24 bg-primary text-text-inverse">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-            Ready to Transform Your Coaching?
+            Give it a go
           </h2>
           <p className="text-lg text-text-inverse/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of rugby coaches using Coaching Animator to create, share, and discover plays.
+            Free to start. No account needed to try. Create an account when you want to save your work.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/register"
+              href="/app"
               className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-white font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
             >
-              Create Free Account
+              Start drawing
             </a>
             <a
-              href="/app"
+              href="/register"
               className="inline-flex items-center justify-center px-8 py-4 border-2 border-text-inverse/30 text-text-inverse font-semibold text-lg hover:bg-text-inverse/10 transition-colors"
             >
-              Try Without Signup
+              Create free account
             </a>
           </div>
         </div>

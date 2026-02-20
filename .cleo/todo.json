@@ -47,17 +47,17 @@
       }
     }
   },
-  "lastUpdated": "2026-02-19T20:44:42Z",
+  "lastUpdated": "2026-02-20T23:42:15Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "5c4683b4d7f22d20",
+    "checksum": "991a7b7abfb9d631",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 67,
-    "lastModified": "2026-02-20T17:38:49Z",
+    "generation": 71,
+    "lastModified": "2026-02-20T23:40:40Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 0
+    "activeSessionCount": 1
   },
   "focus": {
     "currentTask": null,
@@ -569,7 +569,7 @@
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-20T17:38:49Z",
+      "updatedAt": "2026-02-20T23:37:36Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
@@ -932,6 +932,159 @@
         "lastUpdated": "2026-02-18T19:35:34Z",
         "failureLog": []
       }
+    },
+    {
+      "id": "T026",
+      "title": "UI/UX Audit — Grassroots Coach Repositioning",
+      "status": "pending",
+      "priority": "medium",
+      "type": "epic",
+      "parentId": null,
+      "createdAt": "2026-02-20T23:37:04Z",
+      "updatedAt": "2026-02-20T23:37:04Z",
+      "size": "medium",
+      "position": 3,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:04 UTC: Full audit and redesign of tone, copy, and UX to match grassroots rugby coaches. Three positioning alternatives analysed: A=Grounded Coach (recommended), B=Saturday Coach, C=Grassroots Movement. See conversation 2026-02-20."
+      ]
+    },
+    {
+      "id": "T027",
+      "title": "Landing Page Copy Rewrite",
+      "status": "done",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:14Z",
+      "updatedAt": "2026-02-20T23:42:08Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:14 UTC: Implement Alt A ('Grounded Coach') direction. Hero: 'Draw your session. Show your team.' or similar grounded language. CTA borrowed from Alt B ('Try it free — no account needed'). Remove grandiose language. File: src/app/page.tsx",
+        "[COMPLETED 2026-02-20T23:42:08Z] Rewrote all landing page copy to Alt A (Grounded Coach) direction. Hero: 'Draw your session. Your players will get it.' Features and CTA sections updated to match grounded tone. Removed false social proof ('thousands of coaches'). File: src/app/page.tsx"
+      ],
+      "completedAt": "2026-02-20T23:42:08Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-20T23:42:10Z",
+        "failureLog": []
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Hero Section A/B Copy Variants",
+      "status": "done",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:15Z",
+      "updatedAt": "2026-02-20T23:42:14Z",
+      "size": "medium",
+      "position": 2,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:15 UTC: Document all three positioning alternatives (A=Grounded Coach, B=Saturday Coach, C=Grassroots Movement) as testable variants — inline comments or separate constants. Enables future A/B testing without re-discovery. File: src/app/page.tsx",
+        "[COMPLETED 2026-02-20T23:42:14Z] All three hero copy variants (A/B/C) documented as inline comments at top of src/app/page.tsx under COPY VARIANTS block. Enables future A/B testing without re-discovery."
+      ],
+      "completedAt": "2026-02-20T23:42:14Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-20T23:42:15Z",
+        "failureLog": []
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Onboarding Flow Audit",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:17Z",
+      "updatedAt": "2026-02-20T23:37:17Z",
+      "size": "medium",
+      "position": 3,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:17 UTC: Audit first-run experience after 'Start Drawing' CTA. Is the editor clear to a grassroots coach? Check empty state, tooltips, first-interaction affordances. No assumed rugby knowledge. Assess and document friction points."
+      ]
+    },
+    {
+      "id": "T030",
+      "title": "Gallery Page Copy & Empty State",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:24Z",
+      "updatedAt": "2026-02-20T23:37:24Z",
+      "size": "medium",
+      "position": 4,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:24 UTC: Reframe gallery with 'Browse the Playbook' or equivalent grassroots-coach language. Design empty state for when gallery is thin — avoid 'nothing here' dead ends. File: src/app/gallery/page.tsx"
+      ]
+    },
+    {
+      "id": "T031",
+      "title": "Mobile Experience Audit",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:25Z",
+      "updatedAt": "2026-02-20T23:37:25Z",
+      "size": "medium",
+      "position": 5,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:26 UTC: Audit CTA placement, hero rendering, and touch targets on small screens. Landing page must work on a coach's phone at the side of a pitch. Check: hero text size, button tap targets, scroll experience. File: src/app/page.tsx + CSS"
+      ]
+    },
+    {
+      "id": "T032",
+      "title": "CTA Language Consistency Pass",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T026",
+      "createdAt": "2026-02-20T23:37:27Z",
+      "updatedAt": "2026-02-20T23:37:27Z",
+      "size": "medium",
+      "position": 6,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-20 23:37:27 UTC: Final pass to align all CTAs across all pages to the new tone established by T027. Check: landing page, gallery, my-gallery, app page, share page. No mixed messaging between 'Create' and 'Draw' and 'Animate'. Files: src/app/**/page.tsx"
+      ]
     }
   ],
   "labels": {}
