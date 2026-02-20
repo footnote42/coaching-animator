@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
 
     // Build query for public animations only
+    // Phase 2: filter out progression children (show one card per progression set)
+    // and join remix attribution in the same flat SELECT
     let dbQuery = supabase
       .from('saved_animations')
       .select(`
@@ -45,12 +47,20 @@ export async function GET(request: NextRequest) {
       upvote_count,
       created_at,
       user_id,
+      progression_count,
+      remix_count,
+      remixed_from_id,
+      remixed_from:remixed_from_id (
+        id,
+        title
+      ),
       user_profiles (
         display_name
       )
     `, { count: 'exact' })
       .eq('visibility', 'public')
-      .is('hidden_at', null);
+      .is('hidden_at', null)
+      .eq('is_progression', false);
 
     // Text search
     if (q) {
@@ -122,6 +132,10 @@ export async function GET(request: NextRequest) {
       upvote_count: number;
       created_at: string;
       user_id: string;
+      progression_count: number;
+      remix_count: number;
+      remixed_from_id: string | null;
+      remixed_from: { id: string; title: string } | { id: string; title: string }[] | null;
       user_profiles: { display_name: string | null } | null;
     }
 
@@ -130,6 +144,11 @@ export async function GET(request: NextRequest) {
       const profiles = animation.user_profiles;
       const profile = Array.isArray(profiles) ? profiles[0] : profiles;
       const authorName = profile?.display_name ?? 'Anonymous';
+
+      // Flatten remixed_from join into a title string
+      const remixedFrom = Array.isArray(animation.remixed_from)
+        ? animation.remixed_from[0]
+        : animation.remixed_from;
 
       return {
         id: animation.id,
@@ -142,6 +161,10 @@ export async function GET(request: NextRequest) {
         upvote_count: animation.upvote_count,
         created_at: animation.created_at,
         user_id: animation.user_id,
+        progression_count: animation.progression_count,
+        remix_count: animation.remix_count,
+        remixed_from_id: animation.remixed_from_id,
+        remixed_from_title: remixedFrom?.title ?? null,
         author: {
           display_name: authorName,
         },
