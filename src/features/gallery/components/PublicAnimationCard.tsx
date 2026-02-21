@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2 } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
+import { RemixButton } from '@/shared/ui/RemixButton';
 
 interface PublicAnimation {
   id: string;
@@ -184,7 +186,18 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
         {/* Phase 2: Remix attribution */}
         {animation.remixed_from_title && (
           <p className="text-xs text-text-primary/50 truncate mb-1">
-            Remixed from <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+            Remixed from{' '}
+            {animation.remixed_from_id ? (
+              <Link
+                href={`/replay/${animation.remixed_from_id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-text-primary/70 hover:text-primary hover:underline"
+              >
+                {animation.remixed_from_title}
+              </Link>
+            ) : (
+              <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+            )}
           </p>
         )}
 
@@ -245,6 +258,11 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
             {remixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
             {remixing ? 'Creating...' : 'Use Template'}
           </button>
+        )}
+
+        {/* Phase 2: Remix button for non-template animations */}
+        {!isTemplate && (
+          <RemixButton animationId={animation.id} redirectOnUnauth="/gallery" />
         )}
       </div>
     </div>

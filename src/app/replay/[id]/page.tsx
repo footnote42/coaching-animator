@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import dynamic from 'next/dynamic';
 import { Video } from 'lucide-react';
+import { ReplayActions } from './ReplayActions';
 const ReplayViewer = dynamic(() => import('@/features/animation/components/ReplayViewer').then(m => m.ReplayViewer), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-surface h-[300px] w-full flex items-center justify-center text-text-primary/50">Loading replay viewer...</div>
@@ -64,7 +65,12 @@ export default async function ReplayPage({ params }: PageProps) {
       upvote_count,
       view_count,
       created_at,
-      user_id
+      user_id,
+      remixed_from_id,
+      remixed_from:remixed_from_id (
+        id,
+        title
+      )
     `)
     .eq('id', id)
     .is('hidden_at', null)
@@ -74,6 +80,13 @@ export default async function ReplayPage({ params }: PageProps) {
   if (!animation) {
     notFound();
   }
+
+  // Flatten remixed_from join
+  type RemixedFrom = { id: string; title: string };
+  const remixedFromRaw = (animation as unknown as { remixed_from: RemixedFrom | RemixedFrom[] | null }).remixed_from;
+  const remixedFrom = Array.isArray(remixedFromRaw) ? remixedFromRaw[0] : remixedFromRaw;
+  const remixedFromId: string | null = remixedFrom?.id ?? null;
+  const remixedFromTitle: string | null = remixedFrom?.title ?? null;
 
   // Fetch author display name separately
   let authorDisplayName: string | null = null;
@@ -164,20 +177,17 @@ export default async function ReplayPage({ params }: PageProps) {
       {/* Footer */}
       <footer className="border-t border-border bg-surface-warm">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center">
-          <p className="text-sm text-text-primary/70">
+          <p className="text-sm text-text-primary/70 mb-4">
             Created with{' '}
             <a href="/" className="text-primary hover:underline">
               Visualise Your Own Play
             </a>
           </p>
-          <p className="mt-2">
-            <a
-              href="/app"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
-            >
-              Create Your Own Animation
-            </a>
-          </p>
+          <ReplayActions
+            animationId={animation.id}
+            remixedFromId={remixedFromId}
+            remixedFromTitle={remixedFromTitle}
+          />
         </div>
       </footer>
     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import NextLink from 'next/link';
 import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check, History } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
@@ -165,7 +166,18 @@ export function AnimationCard({
         {/* Phase 2: Remix attribution */}
         {animation.remixed_from_title && (
           <p className="text-xs text-text-primary/50 truncate mb-1">
-            Remixed from <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+            Remixed from{' '}
+            {animation.remixed_from_id ? (
+              <NextLink
+                href={`/replay/${animation.remixed_from_id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-text-primary/70 hover:text-primary hover:underline"
+              >
+                {animation.remixed_from_title}
+              </NextLink>
+            ) : (
+              <span className="text-text-primary/70">{animation.remixed_from_title}</span>
+            )}
           </p>
         )}
 
