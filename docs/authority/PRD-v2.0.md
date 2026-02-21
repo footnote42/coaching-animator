@@ -45,6 +45,7 @@ Transform Coaching Animator from a personal animation tool into a **rugby coachi
 - ✅ **Template Library** - Gallery badge for starting positions
 - ✅ **Club Personalization** - Badges, default strip colors, affiliation metadata
 - ✅ **YouTube Video Links** - Coaching notes with video tutorial links
+- ✅ **Mobile-First UX Architecture** - Bottom navigation, adaptive canvas, and touch-optimized controls
 
 **Enhanced Features:**
 - ✅ **Mobile Replay Optimization** - Responsive canvas, touch-friendly controls (keep basic editing with warning)
@@ -790,6 +791,26 @@ export function useExport() {
 - **Legacy Issue HIGH-002**: 30% of users (Safari/iOS) cannot export animations with WebM-only format
 - **User Impact**: Make-or-break feature for mobile coaches (WhatsApp sharing to players)
 - **Constitutional Alignment**: Respects **VI.1 Accessibility** (free tier must provide genuine value on all devices)
+
+### 5.12 Mobile-First UX Architecture (STRATEGIC PIVOT)
+
+| ID | Requirement | Priority | Notes |
+|----|-------------|----------|-------|
+| **F-UX-01** | **Adaptive Bottom Navigation**: Editor view uses bottom tab bar (Create, Playbook, Explore, Profile) | P0 | Replaces top-nav in editor |
+| **F-UX-02** | **Fit-to-Width Canvas**: Konva Stage scales dynamically to `window.innerWidth` | P0 | Eliminates horizontal scroll |
+| **F-UX-03** | **Bottom-Sheet Tool Trays**: Sidebar components move to toggleable bottom trays on mobile | P0 | Keeps tools in "Thumb Zone" |
+| **F-UX-04** | **Touch Context Menus**: Implement long-press/swipe gestures for delete/duplicate | P1 | Replaces right-click dependency |
+| **F-UX-05** | **Tactical Depth Cues**: Use hard-edged shadows (2px offset) for floating UI elements | P1 | Improves touch target clarity |
+| **F-UX-06** | **Coach-to-Coach Messaging**: Rewrite landing page with practical, grounded tone | P1 | Aligns with grassroots persona |
+
+**User Story:**
+> As a **coach on the pitch**, I want to **edit my plays with one hand (my thumb)** so that I can **quickly adjust tactics without putting my phone down**.
+
+**Acceptance Criteria:**
+- Editor is fully usable on iPhone/Pixel without zooming or scrolling.
+- All high-frequency buttons (Add Frame, Play, Save) are in the bottom 40% of the screen.
+- Long-pressing a player token opens the action menu (Duplicate/Delete).
+- Landing page headline focuses on "Rugby Tactics, Simplified" instead of grandiose claims.
 
 ---
 
@@ -1823,26 +1844,23 @@ if (count >= 5) {
 
 ## 11. Migration & Deployment
 
-### 11.1 Phased Rollout Strategy (Updated for Staging & Export Format)
+### 11.1 Phased Rollout Strategy (Updated for Staging & Mobile-First UX)
 
-**Phase 0 (v2.0-prep): Staging Environment Setup + Export Format Infrastructure** (1 week - PREREQUISITE)
+**Phase 0 (v2.0-prep): Staging + Mobile-First Foundation** (2 weeks - PREREQUISITE)
 - Create staging Supabase project with clone of production schema
-- Set up staging environment configuration (`.env.staging`)
-- Configure CI/CD pipeline for automated staging deployments
-- Implement browser detection utility (`lib/browser-detect.ts`) for export format selection
-- Add GIF export fallback using gif.js library
-- Create staging deployment playbook and migration testing workflow
-- Testing: Verify migrations work on staging data before production
-- **Why This Phase Matters**: Organizations tier (Phase 3) requires safe testing environment. Export format (legacy audit HIGH-002) affects iOS coaching use case. Staging needed before Hampshire RFU pilot.
+- **Adaptive Canvas**: Implement `fit-to-width` scaling for Konva Stage (F-UX-02)
+- **Editor Nav**: Implement Bottom Tab Bar for editor view (F-UX-01)
+- **Messaging**: Rewrite landing page copy for "Coach-to-Coach" tone (F-UX-06)
+- **Export Foundation**: Browser detection + GIF fallback (HIGH-002)
+- Testing: Verify responsive canvas across iPhone/Android viewports
 
-**Phase 1 (v2.0): Collections + Version Control + Template Library + Export Formats** (2.5 weeks)
+**Phase 1 (v2.0): Collections + Version Control + Mobile Trays** (2 weeks)
+- **Mobile Trays**: Transition EntityPalette to bottom sheets (F-UX-03)
 - New tables: `collections`, `collection_items`, `animation_versions`
 - New columns: `video_url`, `tags` (for templates)
-- New endpoints: Collections CRUD, Version history, Export format endpoints
-- New utilities: Browser detection (`lib/browser-detect.ts`), GIF export fallback
-- UI: Collection cards, version history modal, template filter, export format selector
-- Testing: E2E tests for collections, versions, export formats on Safari/iOS
-- **Legacy Audit Integration**: Resolves HIGH-002 (Safari/iOS export), partially addresses OPS-003 (health checks)
+- UI: Collection cards, version history modal, template filter
+- Testing: E2E tests for collections and versions on Safari/iOS
+- **Legacy Audit Integration**: Resolves HIGH-002 (Safari/iOS export)
 
 **Phase 2 (v2.1): Progressions + Remix Genealogy** (1.5 weeks)
 - New columns: `parent_animation_id`, `progression_order`, `is_progression`, `remixed_from_id`, `remix_count`
@@ -2369,5 +2387,102 @@ export const VALIDATION = {
 - v3.0 planning with AI text-to-animation
 
 ---
+
+# Amendment Log: v2.1
+
+**Version:** 2.1
+**Date:** 20 February 2026
+**Author:** Wayne Ellis
+**Status:** Active
+**Source:** Post-deployment quality review of backlog sprint (commit `83dfce4`)
+
+---
+
+## Amendment A2.1-1 — Bug: Admin Animations Search Pagination
+
+**Severity:** Bug (P1)
+**Affected file:** `src/app/api/admin/animations/route.ts`
+
+The `.range()` clause is applied to the Supabase query before the `.ilike()` search filter, meaning paginated results when a search term is present are incorrect. The range slices the unfiltered dataset first, then filters, so page 2 of a search will return wrong rows.
+
+**Required fix:** Apply `.ilike()` before `.range()` in the query chain.
+
+---
+
+## Amendment A2.1-2 — Bug: Entity Propagation Missing from Duplicate Action
+
+**Severity:** Medium
+**Affected file:** `src/features/animation/components/Editor.tsx`
+
+`handleContextMenuDuplicate` calls `addEntity()` directly, bypassing `addEntityWithPropagate()`. On a multi-frame animation, duplicating an entity via the context menu silently adds it to only the current frame with no propagation offer — inconsistent with the palette add flow.
+
+**Required fix:** Replace the `addEntity()` call in `handleContextMenuDuplicate` with `addEntityWithPropagate()`.
+
+---
+
+## Amendment A2.1-3 — UX: Back-to-Site Link Positioning on Share Page
+
+**Severity:** Medium
+**Affected file:** `src/features/animation/components/ShareViewer.tsx`
+
+The back-to-site link uses `absolute bottom-4 right-4` but its containing element (`relative flex flex-col items-center w-full`) is content-height only, not viewport-height. On short or single-frame animations the link appears immediately below the controls rather than at the bottom of the viewport.
+
+**Required fix:** Either position relative to the viewport (e.g. `fixed bottom-4 right-4`) or move the link outside the `ShareViewer` into the share page layout where a viewport-relative anchor is appropriate.
+
+---
+
+## Amendment A2.1-4 — UX: Editor Sidebar Green Header Artifact
+
+**Severity:** Low
+**Affected file:** `src/features/animation/components/Editor.tsx`
+
+Removing the logo/nav block from the sidebar left the `bg-pitch-green` `<aside>` with no visible content above the white `bg-tactics-white` scroll area. This renders as a thin green strip at the top of the sidebar that serves no purpose.
+
+**Required fix:** Either remove the green background from `<aside>` (use `bg-tactics-white` for the full sidebar), or add a minimal header (e.g. app name or back-to-gallery link) to intentionally occupy that space.
+
+---
+
+## Amendment A2.1-5 — Performance: EntityLayer LAYER_ORDER Constant
+
+**Severity:** Low
+**Affected file:** `src/features/animation/components/Canvas/EntityLayer.tsx`
+
+`LAYER_ORDER` is defined inside the component render function and recreated on every render cycle. As a pure constant it should be hoisted to module scope.
+
+**Required fix:** Move `LAYER_ORDER` outside the component to module level.
+
+---
+
+## Amendment A2.1-6 — UX: Mobile Nav Dropdown Animation
+
+**Severity:** Low
+**Affected file:** `src/shared/components/Navigation.tsx`
+
+The mobile hamburger menu appears and disappears with no transition — the dropdown renders/unmounts instantly. A subtle slide or fade would match the polish level of the rest of the UI.
+
+**Required fix:** Add a CSS transition to the mobile dropdown, e.g. using Tailwind's `animate-in slide-in-from-top-2` or a simple height transition with `overflow-hidden`.
+
+---
+
+## Amendment A2.1-7 — Visual: 5-Yard Lines Overlap 22m Lines on SVG Pitch
+
+**Severity:** Low
+**Affected file:** `public/assets/fields/rugby-union.svg`
+
+The 3rd 5-yard tick line from each try line (`x=446` from left, `x=1554` from right) sits only 6px from the 22m line (`x=440`, `x=1560`). At rendered canvas scale these visually merge into a double-line artifact. In a real rugby union pitch, the 15m line (not 5-yard increments all the way to 22m) is the relevant marking in that zone.
+
+**Required fix (option A):** Drop the 3rd tick line from each side so ticks only go to 10 yards (2 lines per side).
+**Required fix (option B):** Replace with accurate markings — 5m, 10m, 15m from each try line, stopping before the 22m zone.
+
+---
+
+## Amendment A2.1-8 — Data: Admin Animations Table Fetches Unused user_id
+
+**Severity:** Low
+**Affected file:** `src/app/api/admin/animations/route.ts`
+
+`user_id` is included in the SELECT but is not rendered in the admin UI table. This is either dead weight in the response payload or unfinished intent (showing the author).
+
+**Required fix:** Either remove `user_id` from the SELECT, or surface it in the table as an "Author ID" column (or join to `user_profiles` for a display name).
 
 **Document End**
