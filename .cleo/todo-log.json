@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 109,
+    "totalEntries": 114,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-21T08:57:49Z",
+    "lastEntry": "2026-02-21T09:06:10Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -2446,6 +2446,106 @@
       },
       "details": {
         "operation": "update"
+      }
+    },
+    {
+      "id": "log_30219718c5c5",
+      "timestamp": "2026-02-21T09:02:54Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T036",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T09:02:46Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_dee07361a675",
+      "timestamp": "2026-02-21T09:02:58Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T037",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T09:02:56Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_25f8d8573396",
+      "timestamp": "2026-02-21T09:05:48Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T038",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T09:05:46Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_dac3e5bad5c3",
+      "timestamp": "2026-02-21T09:05:53Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T039",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T09:05:51Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0605a67ba209",
+      "timestamp": "2026-02-21T09:06:10Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T035",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T09:06:07Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
       }
     }
   ]

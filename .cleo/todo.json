@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-21T09:02:46Z",
+  "lastUpdated": "2026-02-21T09:18:11Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "6373c27a37dd2351",
+    "checksum": "dd9e93c407ff541d",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 89,
+    "generation": 99,
     "lastModified": "2026-02-21T08:38:10Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
@@ -1213,19 +1213,36 @@
     {
       "id": "T035",
       "title": "Template Library (PRD §5.9)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "task",
       "parentId": null,
       "createdAt": "2026-02-21T08:55:58Z",
-      "updatedAt": "2026-02-21T08:55:58Z",
+      "updatedAt": "2026-02-21T09:06:07Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:55:58 UTC: Gallery badge for starting positions. Templates are animations with 'template' in tags array. Phase 1: only orgs create templates. Phase 2: any user. DB: tags column already exists on saved_animations. Gallery already has templatesOnly checkbox wired to API. Needs: template badge on cards, 'Use Template' button (remix alias), API route to filter by tag, admin/org ability to tag animations as templates. Refs: PRD §5.9, Constitution §V.9"
-      ]
+        "2026-02-21 08:55:58 UTC: Gallery badge for starting positions. Templates are animations with 'template' in tags array. Phase 1: only orgs create templates. Phase 2: any user. DB: tags column already exists on saved_animations. Gallery already has templatesOnly checkbox wired to API. Needs: template badge on cards, 'Use Template' button (remix alias), API route to filter by tag, admin/org ability to tag animations as templates. Refs: PRD §5.9, Constitution §V.9",
+        "[COMPLETED 2026-02-21T09:06:07Z] All 4 child tasks complete. Template Library feature fully implemented: badge, API filter, Use Template button with remix flow, admin tagging UI."
+      ],
+      "completedAt": "2026-02-21T09:06:07Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T09:06:09Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T036",
@@ -1244,58 +1261,124 @@
         "2026-02-21 08:56:04 UTC: Add blue 'Template' pill badge to PublicAnimationCard when animation.tags includes 'template'. Position: top-left overlay. Use Badge component from shadcn. File: src/app/gallery/GalleryClient.tsx or PublicAnimationCard component.",
         "[COMPLETED 2026-02-21T09:02:46Z] Already implemented: PublicAnimationCard.tsx:140-145 renders blue Template pill badge"
       ],
-      "completedAt": "2026-02-21T09:02:46Z"
+      "completedAt": "2026-02-21T09:02:46Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T09:02:53Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T037",
       "title": "Wire gallery API to filter by template tag",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T035",
       "createdAt": "2026-02-21T08:56:29Z",
-      "updatedAt": "2026-02-21T08:56:29Z",
+      "updatedAt": "2026-02-21T09:02:56Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:56:29 UTC: Gallery API route already receives tags param. Verify /api/gallery handles tags=template query param and filters saved_animations WHERE 'template' = ANY(tags). The GalleryClient already sends this param."
-      ]
+        "2026-02-21 08:56:29 UTC: Gallery API route already receives tags param. Verify /api/gallery handles tags=template query param and filters saved_animations WHERE 'template' = ANY(tags). The GalleryClient already sends this param.",
+        "[COMPLETED 2026-02-21T09:02:56Z] Already implemented: gallery API route.ts:76-82 handles tags=template filter"
+      ],
+      "completedAt": "2026-02-21T09:02:56Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T09:02:56Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T038",
       "title": "'Use Template' button on template cards",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T035",
       "createdAt": "2026-02-21T08:56:31Z",
-      "updatedAt": "2026-02-21T08:56:31Z",
+      "updatedAt": "2026-02-21T09:05:46Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:56:31 UTC: Add 'Use Template' button to template animation cards/detail view. This is an alias for Remix — clones the animation to the user's personal gallery. Reuse existing remix logic. PRD F-TMPL-04."
-      ]
+        "2026-02-21 08:56:31 UTC: Add 'Use Template' button to template animation cards/detail view. This is an alias for Remix — clones the animation to the user's personal gallery. Reuse existing remix logic. PRD F-TMPL-04.",
+        "[COMPLETED 2026-02-21T09:05:46Z] Fixed remix flow: GalleryClient calls POST /api/animations/[id]/remix then navigates to /app?load=newId. Added loading state to Use Template button."
+      ],
+      "completedAt": "2026-02-21T09:05:46Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T09:05:47Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T039",
       "title": "Admin template tagging UI",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T035",
       "createdAt": "2026-02-21T08:56:32Z",
-      "updatedAt": "2026-02-21T08:56:32Z",
+      "updatedAt": "2026-02-21T09:05:51Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:56:32 UTC: Admin or org users need ability to add/remove 'template' tag on animations. Phase 1: admin-only via existing admin dashboard. Add a toggle or tag editor to the animation management view. Constitution §V.9: only verified orgs in Phase 1."
-      ]
+        "2026-02-21 08:56:32 UTC: Admin or org users need ability to add/remove 'template' tag on animations. Phase 1: admin-only via existing admin dashboard. Add a toggle or tag editor to the animation management view. Constitution §V.9: only verified orgs in Phase 1.",
+        "[COMPLETED 2026-02-21T09:05:51Z] Added PATCH endpoint to admin animations API for toggling template tag. Admin animations table now shows tags column and Template toggle button."
+      ],
+      "completedAt": "2026-02-21T09:05:51Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T09:05:52Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T040",
@@ -1317,19 +1400,21 @@
     {
       "id": "T041",
       "title": "DB migration: add club columns to user_profiles",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T040",
       "createdAt": "2026-02-21T08:56:54Z",
-      "updatedAt": "2026-02-21T08:56:54Z",
+      "updatedAt": "2026-02-21T09:18:11Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:56:54 UTC: Add 4 columns: club_name TEXT (max 100), club_badge_url TEXT, primary_strip_color TEXT (hex regex check), secondary_strip_color TEXT (hex regex check). Supabase migration in supabase/migrations/. Update RLS policies if needed."
-      ]
+        "2026-02-21 08:56:54 UTC: Add 4 columns: club_name TEXT (max 100), club_badge_url TEXT, primary_strip_color TEXT (hex regex check), secondary_strip_color TEXT (hex regex check). Supabase migration in supabase/migrations/. Update RLS policies if needed.",
+        "[COMPLETED 2026-02-21T09:18:11Z] Migration 20260221000000_club_personalization.sql adds club_name, primary_strip_color, secondary_strip_color to user_profiles with hex validation constraints."
+      ],
+      "completedAt": "2026-02-21T09:18:11Z"
     },
     {
       "id": "T042",
