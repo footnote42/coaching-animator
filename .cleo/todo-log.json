@@ -2126,6 +2126,222 @@
         "field": "status",
         "operation": "complete"
       }
+    },
+    {
+      "id": "log-1771664158-35dabb",
+      "timestamp": "2026-02-21T08:55:58Z",
+      "action": "task_created",
+      "taskId": "T035",
+      "actor": "system",
+      "details": {
+        "title": "Template Library (PRD §5.9)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Template Library (PRD §5.9)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1771664165-f6a06f",
+      "timestamp": "2026-02-21T08:56:05Z",
+      "action": "task_created",
+      "taskId": "T036",
+      "actor": "system",
+      "details": {
+        "title": "Template badge on gallery cards",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Template badge on gallery cards",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664190-48ab4f",
+      "timestamp": "2026-02-21T08:56:30Z",
+      "action": "task_created",
+      "taskId": "T037",
+      "actor": "system",
+      "details": {
+        "title": "Wire gallery API to filter by template tag",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Wire gallery API to filter by template tag",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664191-6ff142",
+      "timestamp": "2026-02-21T08:56:31Z",
+      "action": "task_created",
+      "taskId": "T038",
+      "actor": "system",
+      "details": {
+        "title": "'Use Template' button on template cards",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "'Use Template' button on template cards",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664192-ecd7df",
+      "timestamp": "2026-02-21T08:56:32Z",
+      "action": "task_created",
+      "taskId": "T039",
+      "actor": "system",
+      "details": {
+        "title": "Admin template tagging UI",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Admin template tagging UI",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664199-b35e4c",
+      "timestamp": "2026-02-21T08:56:39Z",
+      "action": "task_created",
+      "taskId": "T040",
+      "actor": "system",
+      "details": {
+        "title": "Club Personalization (PRD §5.6)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Club Personalization (PRD §5.6)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1771664214-8cbd4b",
+      "timestamp": "2026-02-21T08:56:54Z",
+      "action": "task_created",
+      "taskId": "T041",
+      "actor": "system",
+      "details": {
+        "title": "DB migration: add club columns to user_profiles",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "DB migration: add club columns to user_profiles",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664216-6a0095",
+      "timestamp": "2026-02-21T08:56:56Z",
+      "action": "task_created",
+      "taskId": "T042",
+      "actor": "system",
+      "details": {
+        "title": "Profile settings UI for club branding",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Profile settings UI for club branding",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664217-b1aade",
+      "timestamp": "2026-02-21T08:56:57Z",
+      "action": "task_created",
+      "taskId": "T043",
+      "actor": "system",
+      "details": {
+        "title": "Editor: default player colors from club profile",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Editor: default player colors from club profile",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664224-88a2cf",
+      "timestamp": "2026-02-21T08:57:04Z",
+      "action": "task_created",
+      "taskId": "T044",
+      "actor": "system",
+      "details": {
+        "title": "Rugby-Only Pivot (PRD §5.7)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Rugby-Only Pivot (PRD §5.7)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664233-b7bbca",
+      "timestamp": "2026-02-21T08:57:13Z",
+      "action": "task_created",
+      "taskId": "T045",
+      "actor": "system",
+      "details": {
+        "title": "Add VISIBLE_SPORTS feature flag constant",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Add VISIBLE_SPORTS feature flag constant",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771664234-b04acf",
+      "timestamp": "2026-02-21T08:57:14Z",
+      "action": "task_created",
+      "taskId": "T046",
+      "actor": "system",
+      "details": {
+        "title": "Filter sport selector and gallery by VISIBLE_SPORTS",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Filter sport selector and gallery by VISIBLE_SPORTS",
+        "status": "pending",
+        "priority": "medium"
+      }
     }
   ]
 }
