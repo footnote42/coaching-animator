@@ -456,7 +456,7 @@ page.click('[data-testid="save-cloud"]')
 - **Playwright Docs**: https://playwright.dev
 - **Project Spec**: `specs/003-online-platform/spec.md`
 - **API Contracts**: `docs/architecture/api-contracts.md`
-- **Architecture**: `docs/architecture/auth-patterns.md`, `.specify/memory/constitution.md`
+- **Architecture**: `docs/architecture/auth-patterns.md`, `docs/authority/constitution.md`
 - **E2E Guide**: `docs/testing/e2e-guide.md`
 
 ---

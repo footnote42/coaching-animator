@@ -11,7 +11,7 @@
 - **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
 - **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
 - **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)
-- **Authority Docs**: [PRD v1.0](docs/authority/PRD.md) (89% coverage), [PRD v2.0 DRAFT](docs/authority/PRD-v2.0.md), [Constitution v3.3](docs/authority/constitution.md), [V2 Vision](docs/authority/V2_VISION.md)
+- **Authority Docs**: [PRD v2.0](docs/authority/PRD-v2.0.md), [Constitution v3.4.0](docs/authority/constitution.md), [Roadmap](docs/authority/ROADMAP.md)
 
 ## Environment
 
@@ -170,13 +170,14 @@ npx tsc --noEmit
 - **SSR Awareness**: Next.js App Router relies on browser/server cookie sync. Always use provided Supabase clients (`lib/supabase/`) to prevent session drift
 - **Auth Resilience**: Use 15s timeout for auth initialization in `UserContext` to account for mobile/network latency
 
-## Constitutional Constraints (v3.3)
+## Constitutional Constraints (v3.4.0)
 
 **Tiered Architecture** (Cloud-First Model):
 - **Tier 0 (Guest)**: 10-frame local editing, JSON export only, no cloud persistence
 - **Tier 1 (Authenticated)**: Cloud storage, personal gallery, 50 animations max per user
 - **Tier 2 (Public/Link-Shared)**: Link sharing (read-only replay), public gallery browsing, upvoting
 - **Tier 3 (Admin)**: Moderation, user management
+- **Tier 4 (Organizational)**: Club accounts, team management (Phase 3)
 
 **Absolute Prohibitions**:
 - No telemetry, analytics, or tracking
@@ -216,13 +217,10 @@ When generating handoff prompts for next task/session, **always include**:
 - **[docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md)** - Supabase auth implementation
 
 **Product & Governance**:
-- **[docs/authority/PRD.md](docs/authority/PRD.md)** - Product Requirements v1.0 (89% coverage)
-- **[docs/authority/PRD-v2.0.md](docs/authority/PRD-v2.0.md)** - DRAFT: Rugby coaching platform vision
-- **[docs/authority/constitution.md](docs/authority/constitution.md)** - v3.3 governance rules
-- **[docs/authority/V2_VISION.md](docs/authority/V2_VISION.md)** - Future roadmap
-
-**Current Work**:
-- **[archive/specs/005-incremental-improvements/](archive/specs/005-incremental-improvements/)** - Current iteration (14 issues)
+- **[docs/authority/PRD-v2.0.md](docs/authority/PRD-v2.0.md)** - Product Requirements (active authority)
+- **[docs/authority/constitution.md](docs/authority/constitution.md)** - v3.4.0 governance rules
+- **[docs/authority/ROADMAP.md](docs/authority/ROADMAP.md)** - Phased development plan
+- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Notable changes from v2.0 onward
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

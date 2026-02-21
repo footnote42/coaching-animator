@@ -1,8 +1,8 @@
 # Coaching Animator Documentation
 
-**Last Updated**: 2026-02-11
-**Project Status**: 111/111 development tasks complete (95% of total)
-**Current Phase**: Spec 005 - Incremental Improvements (82% complete)
+**Last Updated**: 2026-02-21
+**Project Status**: v2.0 Phase 0-1 complete. Phase 2 (Progressions & Remix Genealogy) next.
+**Architecture**: Feature-based — `src/core/`, `src/features/`, `src/shared/`
 
 ---
 
@@ -10,332 +10,95 @@
 
 **New to the project?** Start here:
 1. [Getting Started Guide](development/getting-started.md) - Setup and first run
-2. [CLAUDE.md](../CLAUDE.md) - Comprehensive development guidelines
+2. [CLAUDE.md](../CLAUDE.md) - Development guidelines
 3. [Project README](../README.md) - User-facing overview
 
 ---
 
-## Documentation Structure
+## Authority Documents
 
-### Foundation Documents
+These govern the project's direction and constraints:
 
-These documents define the project's core principles and requirements:
+- **[PRD-v2.0](authority/PRD-v2.0.md)** - Product Requirements Document (active, rugby coaching platform)
+- **[Constitution](authority/constitution.md)** - v3.4.0 governance, tiered model (Tier 0-4), absolute prohibitions
+- **[Roadmap](authority/ROADMAP.md)** - Phased development plan linking PRD, Constitution, and vision
+- **[Changelog](CHANGELOG.md)** - Notable changes from v2.0 onward
 
-- **[Constitution](../docs/authority/constitution.md)** - Core governance, architectural principles, and tiered feature model (Tier 0-3)
-- **[PRD](../docs/authority/PRD.md)** - Product Requirements Document (sections 16-22 cover online platform)
-- **[CLAUDE.md](../CLAUDE.md)** - Auto-generated comprehensive development guidelines
+---
 
-### PRD Analysis & Alignment
+## Architecture
 
-Comprehensive analysis of implementation vs. requirements:
-
-- **[PRD Alignment Report](PRD_ALIGNMENT_REPORT.md)** - Executive summary of PRD coverage
-  - **89% alignment score** (76/85 requirements implemented)
-  - Zero P0 critical gaps
-  - Scope evolution analysis
-  - Risk assessment and recommendations
-  - Stakeholder communication templates
-
-- **[PRD Mapping](PRD_MAPPING.md)** - Requirements traceability matrix
-  - Line-by-line mapping of 85 PRD requirements to implementation
-  - Status indicators (✅ Implemented, 🟡 Partial, ❌ Missing)
-  - Implementation file references
-  - Beyond-PRD features documented
-  - Coverage metrics by category
-
-- **[PRD Gap Analysis](PRD_GAP_ANALYSIS.md)** - Prioritized backlog of missing features
-  - 2 P1 high-priority gaps (Safari export, community guidelines)
-  - 3 P2 medium-priority gaps (acceptable deferral)
-  - 4 P3 Phase 2 features (following system, etc.)
-  - Gap resolution roadmap (Sprint 1, Sprint 2, Phase 2)
-  - Risk assessment by gap
-
-### Architecture
-
-Deep dive into system design and implementation details:
-
-- **[Database Schema](architecture/database-schema.md)** - Supabase PostgreSQL tables, RLS policies, and relationships
-  - Tables: user_profiles, saved_animations, upvotes, content_reports, follows, rate_limits
-  - RLS policies for access control
-  - Quota enforcement triggers
-
+- **[Database Schema](architecture/database-schema.md)** - Supabase PostgreSQL tables, RLS policies, relationships
 - **[API Contracts](architecture/api-contracts.md)** - RESTful endpoint specifications
-  - Authentication endpoints
-  - Animation CRUD operations
-  - Gallery and search endpoints
-  - Social features (upvote, remix)
-  - Moderation and reporting
-  - User profile management
-  - Error response formats
-  - Zod validation schemas
-
 - **[Auth Patterns](architecture/auth-patterns.md)** - Supabase authentication guide
-  - Browser and server client setup
-  - Middleware auth refresh
-  - Client-side context management
-  - Protected routes patterns
-  - Session persistence
-  - Common auth errors and solutions
+- **[Migration History](architecture/migration-history.md)** - Database migration log
 
-### Development
+---
 
-Guides for developers working on the project:
+## Development
 
-- **[Getting Started](development/getting-started.md)** - Setup guide for new developers
-  - Prerequisites and installation
-  - Environment configuration
-  - Running the dev server
-  - Project structure overview
-  - Common commands
-  - Understanding authentication
-  - Development workflow
+- **[Getting Started](development/getting-started.md)** - Setup, environment, first run
+- **[Patterns](development/patterns.md)** - Code patterns and conventions
+- **[Tech Stack](development/tech-stack.md)** - Framework and library details
 
-### Testing
+---
 
-Test infrastructure and strategies:
+## Testing
 
 - **[Testing Strategy](testing/strategy.md)** - Overall E2E testing approach
-  - Test coverage (3 user story groups)
-  - Test execution commands
-  - Test infrastructure and files
-  - Environment variables
-  - Debugging failed tests
-  - Performance baselines
-  - CI/CD integration
-  - Known limitations and future improvements
+- **[E2E Guide](testing/e2e-guide.md)** - Playwright test reference
 
-- **[E2E Guide](testing/e2e-guide.md)** - Playwright E2E testing quick reference
-  - Test coverage overview
-  - Setup and configuration
-  - Running tests (local, CI/CD, various modes)
-  - Test structure and best practices
-  - Debugging and troubleshooting
-  - Performance baselines
-  - Reporting formats
+---
 
-### Troubleshooting
+## Operations
 
-Reference guides for debugging production issues:
+- **[CI/CD Setup](ci-cd-setup.md)** - GitHub Actions and Vercel deployment
+- **[Staging Setup](staging-setup.md)** - Staging environment configuration
+- **[Operations](operations.md)** - Backup and recovery runbook
+
+---
+
+## Troubleshooting
 
 - **[Session Persistence](troubleshooting/session-persistence.md)** - Debugging auth session issues
-  - Problem statement and symptoms
-  - Root causes and solutions
-  - Investigation areas
-  - Key files and patterns
-  - Debugging checklist
-  - Common scenarios with fixes
-
-- **[Production Stability](troubleshooting/production-stability.md)** - API stability debugging guide
-  - Critical suspects (Service Worker, Next.js version, Middleware)
-  - Summary of attempted fixes
-  - Recommended next steps
-  - Error patterns to watch
-  - Debug API routes
-  - Environment variables checklist
+- **[Production Stability](troubleshooting/production-stability.md)** - API stability debugging
+- **[Safari/iOS Export](technical/safari-ios-export.md)** - Safari export research
 
 ---
 
-## Active Specifications
+## Feature Module Documentation
 
-### Current Iteration
+Each feature module has its own comprehensive README:
 
-- **Spec Folder**: `specs/005-incremental-improvements/`
-- **Status**: In progress (9/14 issues resolved)
-- **Previous Spec**: `specs/004-post-launch-improvements/` (Phase 13 - Production Deployment)
-
-### Historical Specifications
-
-All completed iterations are archived:
-- **003-online-platform** (✅ Complete): User accounts, cloud storage, galleries, upvoting, moderation
-- **002-clean-iteration** (✅ Complete): Basic animation, save/load, export, link sharing (Tier 2)
-- **001-vite-migration** (✅ Complete): Initial Vite-based animation tool
-
-See `archive/specs/` for full archived documentation.
-
----
-
-## Technology Stack
-
-### Frontend
-- **Framework**: Next.js 14 App Router + PWA (@serwist/next)
-- **UI**: React 18 + Tailwind CSS v4
-- **Canvas**: React-Konva
-- **State**: Zustand
-- **Authentication**: Supabase Auth (@supabase/ssr)
-
-### Backend
-- **Database**: Supabase PostgreSQL with Row Level Security
-- **API**: Next.js Route Handlers (App Router)
-- **Hosting**: Vercel
-
-### Testing
-- **Unit Tests**: Vitest
-- **E2E Tests**: Playwright
-
-### Tools
-- **Type Safety**: TypeScript 5
-- **Linting**: ESLint
-- **Package Manager**: npm
-
----
-
-## Key Database Tables
-
-| Table | Purpose | Status |
-|-------|---------|--------|
-| `user_profiles` | User metadata, display name, role, quota | ✅ Live |
-| `saved_animations` | User animations with metadata and payload | ✅ Live |
-| `upvotes` | User-animation upvote relationships | ✅ Live |
-| `content_reports` | Moderation queue for reported animations | ✅ Live |
-| `follows` | User follower relationships | ⏳ Phase 2 (UI deferred) |
-| `rate_limits` | Persistent rate limiting | ✅ Live |
-
-See [Database Schema](architecture/database-schema.md) for SQL definitions and RLS policies.
-
----
-
-## Key API Endpoints
-
-| Endpoint | Auth | Purpose |
-|----------|------|---------|
-| `GET/POST /api/animations` | Required | User animation CRUD |
-| `GET /api/gallery` | Optional | Public gallery search |
-| `POST /api/animations/[id]/upvote` | Required | Toggle upvote |
-| `POST /api/animations/[id]/remix` | Required | Clone animation |
-| `POST /api/report` | Required | Report animation |
-| `GET/POST /api/admin/reports` | Admin | Moderation queue |
-| `GET/PUT /api/user/profile` | Required | User profile |
-
-See [API Contracts](architecture/api-contracts.md) for full specifications.
-
----
-
-## Development Principles
-
-### Quality & Stability
-
-- **Shift Left Testing**: Run `npm run lint` and `npx tsc --noEmit` locally before pushing
-- **Diagnostic Logging**: Use structured logging (e.g., `[Gallery API] Error: details`)
-- **Infrastructure Safety**: Use `staging` branch for high-risk auth/middleware/schema changes
-- **SSR Awareness**: Always use provided Supabase clients to prevent session drift
-- **Auth Resilience**: Use 15s timeout in UserContext to handle mobile/network latency
-
-### Architectural Constraints
-
-- **Cloud-First Model**: All persistent storage requires Supabase backend
-- **No Telemetry**: No analytics or tracking
-- **Email-Only Auth**: No third-party identity providers
-- **Quota System**: 50 animations per user (Tier 1)
-- **RLS Enforced**: Row-level security policies control all data access
-
----
-
-## Getting Help
-
-1. **Read the Docs**: Start with this README and navigate to relevant sections
-2. **Check CLAUDE.md**: Comprehensive development guidelines
-3. **Search Issues**: Many common questions already have answers
-4. **Review Recent Commits**: Understand recent changes and patterns
-5. **Consult Constitution**: For governance and architectural decisions
-
----
-
-## Documentation Index by Role
-
-### For New Developers
-1. [Getting Started](development/getting-started.md)
-2. [CLAUDE.md](../CLAUDE.md)
-3. [Auth Patterns](architecture/auth-patterns.md)
-4. [API Contracts](architecture/api-contracts.md)
-
-### For Frontend Engineers
-1. [Auth Patterns](architecture/auth-patterns.md)
-2. [API Contracts](architecture/api-contracts.md)
-3. [Database Schema](architecture/database-schema.md)
-4. [Testing Strategy](testing/strategy.md)
-
-### For Backend Engineers
-1. [Database Schema](architecture/database-schema.md)
-2. [API Contracts](architecture/api-contracts.md)
-3. [Testing Strategy](testing/strategy.md)
-
-### For DevOps/Infrastructure
-1. [CLAUDE.md](../CLAUDE.md) (Operations section)
-2. [Production Stability](troubleshooting/production-stability.md)
-3. `docs/operations/` (existing documentation)
-
-### For QA/Testing
-1. [Testing Strategy](testing/strategy.md)
-2. [E2E Guide](testing/e2e-guide.md)
-3. [Troubleshooting Guides](troubleshooting/)
-
-### For Project Managers
-1. [PRD Alignment Report](PRD_ALIGNMENT_REPORT.md) ⭐ Start here
-2. [PRD Gap Analysis](PRD_GAP_ANALYSIS.md)
-3. [PRD Mapping](PRD_MAPPING.md)
-4. [Constitution](../.specify/memory/constitution.md)
-5. [PRD](../.specify/memory/PRD.md)
-6. [CLAUDE.md](../CLAUDE.md) (Project Status section)
-
----
-
-## Common Documentation Searches
-
-**How do I...?**
-
-- Setup the project → [Getting Started](development/getting-started.md)
-- Understand authentication → [Auth Patterns](architecture/auth-patterns.md)
-- Add a new API endpoint → [API Contracts](architecture/api-contracts.md)
-- Run tests → [Testing Strategy](testing/strategy.md) or [E2E Guide](testing/e2e-guide.md)
-- Debug a session issue → [Session Persistence](troubleshooting/session-persistence.md)
-- Find API endpoints → [API Contracts](architecture/api-contracts.md)
-- Understand database structure → [Database Schema](architecture/database-schema.md)
-- Know what features are Tier 1 vs Tier 2 → [Constitution](../.specify/memory/constitution.md)
-- Understand sharing/replay → See "Sharing & Replay Feature" below
-- Check PRD alignment and coverage → [PRD Alignment Report](PRD_ALIGNMENT_REPORT.md)
-- Find missing features → [PRD Gap Analysis](PRD_GAP_ANALYSIS.md)
+| Module | README | Lines |
+|--------|--------|-------|
+| Animation | [src/features/animation/README.md](../src/features/animation/README.md) | ~3,800 |
+| Gallery | [src/features/gallery/README.md](../src/features/gallery/README.md) | ~1,100 |
+| Core | [src/core/README.md](../src/core/README.md) | ~2,900 |
+| Shared UI | [src/shared/README.md](../src/shared/README.md) | ~1,900 |
 
 ---
 
 ## Sharing & Replay Feature
 
-Animations can be shared via read-only replay links. This is how it works end-to-end:
+Animations can be shared via read-only replay links:
 
-### How Users Share Animations
+1. **Create**: User creates animation in the editor at `/app`
+2. **Save**: User saves to cloud (requires authentication)
+3. **Publish**: User sets visibility to `public` or `link-shared`
+4. **Share**: Animation accessible at `/replay/[id]` (read-only replay)
 
-1. **Create**: User creates an animation in the editor at `/app`
-2. **Save to Cloud**: User saves to cloud via "Save to Cloud" modal (requires authentication)
-3. **Publish**: User sets visibility to `public` or `link-shared` (from My Gallery or editor)
-4. **Share**: Animation is accessible at `/replay/[id]` — a read-only replay page
+### Shared Canvas Components
 
-### Replay Viewer Architecture
+These components are shared between Editor (`/app`) and Replay (`/replay/[id]`). When modifying, test both routes:
 
-The replay page (`/replay/[id]`) renders animations using **shared canvas components** from the editor:
-
-| Component | Location | Purpose |
-|-----------|----------|---------|
-| `Stage` | `src/components/Canvas/Stage.tsx` | Konva Stage wrapper |
-| `Field` | `src/components/Canvas/Field.tsx` | Sport-specific pitch SVG |
-| `EntityLayer` | `src/components/Canvas/EntityLayer.tsx` | Entity rendering + interpolation |
-| `AnnotationLayer` | `src/components/Canvas/AnnotationLayer.tsx` | Arrow/Line annotations |
-| `PlayerToken` | `src/components/Canvas/PlayerToken.tsx` | Individual entity shapes |
-| `useReplayAnimationLoop` | `src/hooks/useReplayAnimationLoop.ts` | Store-free RAF animation |
-
-The `ReplayViewer` (`app/replay/[id]/ReplayViewer.tsx`) orchestrates these components with:
-- **`normalizeReplayPayload()`** — backward compatibility for older database payloads
-- **`ReplayCanvas`** — internal component isolating 60fps renders from controls
-- **Playback controls** — play/pause, prev/next frame, speed (0.5x/1x/2x), loop toggle
-
-### Key API Endpoints
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/animations/[id]` | Fetch animation payload (public/link-shared) |
-| `POST /api/share` | Generate shareable link |
-
-### When Modifying Shared Components
-
-These canvas components are shared between the editor (`/app`) and replay (`/replay/[id]`). When modifying them, test both routes. See [CLAUDE.md](../CLAUDE.md) "Shared Canvas Components" section.
+| Component | Location |
+|-----------|----------|
+| Stage | `src/features/animation/components/Canvas/Stage.tsx` |
+| Field | `src/features/animation/components/Canvas/Field.tsx` |
+| EntityLayer | `src/features/animation/components/Canvas/EntityLayer.tsx` |
+| AnnotationLayer | `src/features/animation/components/Canvas/AnnotationLayer.tsx` |
+| PlayerToken | `src/features/animation/components/Canvas/PlayerToken.tsx` |
 
 ---
 
@@ -344,86 +107,67 @@ These canvas components are shared between the editor (`/app`) and replay (`/rep
 ```
 docs/
 ├── README.md                          # This file
-├── PRD_ALIGNMENT_REPORT.md            # Executive summary (89% coverage)
-├── PRD_MAPPING.md                     # Requirements traceability matrix
-├── PRD_GAP_ANALYSIS.md                # Prioritized backlog
+├── CHANGELOG.md                       # v2.0+ changelog
+├── authority/
+│   ├── PRD-v2.0.md                    # Product Requirements (active)
+│   ├── constitution.md                # Governance v3.4.0
+│   └── ROADMAP.md                     # Phased development plan
 ├── architecture/
-│   ├── database-schema.md             # Supabase PostgreSQL tables and RLS
+│   ├── database-schema.md             # Supabase tables and RLS
 │   ├── api-contracts.md               # API endpoint specifications
-│   └── auth-patterns.md               # Supabase auth guide
+│   ├── auth-patterns.md               # Supabase auth guide
+│   └── migration-history.md           # DB migration log
 ├── development/
-│   └── getting-started.md             # Setup guide for new developers
+│   ├── getting-started.md             # Setup guide
+│   ├── patterns.md                    # Code conventions
+│   └── tech-stack.md                  # Framework details
 ├── testing/
-│   ├── strategy.md                    # Overall testing approach
-│   └── e2e-guide.md                   # Playwright E2E tests reference
+│   ├── strategy.md                    # Testing approach
+│   └── e2e-guide.md                   # Playwright reference
 ├── troubleshooting/
-│   ├── session-persistence.md         # Debugging auth session issues
-│   └── production-stability.md        # API stability debugging
-└── operations/
-    ├── ci-cd-setup.md                 # GitHub Actions and Vercel
-    ├── staging-setup.md               # Staging environment
-    └── operations.md                  # Backup and recovery
-
-specs/
-├── 004-post-launch-improvements/      # Current iteration
-└── archive/
-    └── specs/
-        ├── 003-online-platform/       # Completed
-        ├── 002-clean-iteration/       # Completed
-        └── 001-vite-migration/        # Completed
-
-.specify/
-├── memory/
-│   ├── constitution.md                # Core governance
-│   └── PRD.md                         # Product requirements
-└── templates/                         # Workflow templates
-
-Root Files:
-├── CLAUDE.md                          # Auto-generated dev guidelines
-├── README.md                          # User-facing project overview
-├── package.json                       # Dependencies and scripts
-└── middleware.ts                      # Auth refresh
+│   ├── session-persistence.md         # Auth session debugging
+│   └── production-stability.md        # API stability
+├── technical/
+│   └── safari-ios-export.md           # Safari export research
+├── ci-cd-setup.md                     # GitHub Actions + Vercel
+├── staging-setup.md                   # Staging environment
+└── operations.md                      # Backup and recovery
 ```
 
 ---
 
-## Recent Changes
+## Documentation by Role
 
-**2026-02-11**: PRD alignment analysis complete
-- Created comprehensive PRD mapping (85 requirements traced)
-- Generated gap analysis (2 P1, 3 P2, 4 P3 gaps identified)
-- Published alignment report (89% coverage score)
-- All analysis documents linked in this index
+### For New Developers
+1. [Getting Started](development/getting-started.md)
+2. [CLAUDE.md](../CLAUDE.md)
+3. [Auth Patterns](architecture/auth-patterns.md)
 
-**2026-01-31**: Documentation reorganization
-- Created centralized `/docs/` structure
-- Extracted architecture docs from specs
-- Moved troubleshooting guides from root
-- Moved testing strategy from root
-- Created developer getting-started guide
-- Linked all documentation in this index
+### For Frontend Engineers
+1. [Patterns](development/patterns.md)
+2. [API Contracts](architecture/api-contracts.md)
+3. [Database Schema](architecture/database-schema.md)
 
-**2026-01-30**: 003-online-platform complete
-- All 111 development tasks completed
-- Full Next.js migration with user accounts
-- Cloud storage, galleries, upvoting, moderation
-- Started Phase 13 - Production Deployment
+### For DevOps/Infrastructure
+1. [CI/CD Setup](ci-cd-setup.md)
+2. [Operations](operations.md)
+3. [Production Stability](troubleshooting/production-stability.md)
 
----
+### For QA/Testing
+1. [Testing Strategy](testing/strategy.md)
+2. [E2E Guide](testing/e2e-guide.md)
 
-## Quick Links
-
-- **[Getting Started](development/getting-started.md)** - First thing to read
-- **[CLAUDE.md](../CLAUDE.md)** - Comprehensive guidelines
-- **[Auth Patterns](architecture/auth-patterns.md)** - How auth works
-- **[API Contracts](architecture/api-contracts.md)** - All endpoints
-- **[Database Schema](architecture/database-schema.md)** - Data model
-- **[Testing Strategy](testing/strategy.md)** - How to test
-- **[Constitution](../.specify/memory/constitution.md)** - Core principles
-- **[GitHub Issues](https://github.com/your-org/coaching-animator/issues)** - Questions & bugs
+### For Project Managers
+1. [Roadmap](authority/ROADMAP.md)
+2. [PRD-v2.0](authority/PRD-v2.0.md)
+3. [Constitution](authority/constitution.md)
 
 ---
 
-**Project**: Coaching Animator
-**Status**: Active Development (Phase 13)
-**Last Updated**: 2026-01-31
+## Maintenance & Archive
+
+Historical documentation is preserved in `.gitignored` archive directories:
+- **`archive/v1-docs/`** — PRD v1.0, alignment reports, V2 Vision, historical bug audits
+- **`archive/completed-phases/`** — v1.0 changelog, session handoffs, completed phase artifacts
+- **`archive/specs/`** — Specifications 001-006 (all completed)
+- **`archive/implementation_plans/`** — Phase-by-phase implementation plans

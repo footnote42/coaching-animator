@@ -225,5 +225,5 @@ setTimeout(() => {
 
 - **Auth Patterns**: `docs/architecture/auth-patterns.md`
 - **CLAUDE.md**: `CLAUDE.md` - Development guidelines
-- **Constitution**: `.specify/memory/constitution.md`
+- **Constitution**: `docs/authority/constitution.md`
 - **Supabase Docs**: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side-rendering)

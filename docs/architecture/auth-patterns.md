@@ -602,7 +602,7 @@ console.log('Current user:', user);
 
 ## Related Documentation
 
-- **Constitution**: `.specify/memory/constitution.md` - Auth tier definitions
+- **Constitution**: `docs/authority/constitution.md` - Auth tier definitions
 - **API Contracts**: `docs/architecture/api-contracts.md` - Auth endpoints
 - **CLAUDE.md**: `CLAUDE.md` - Comprehensive dev guidelines
 - **Supabase Docs**: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side-rendering)

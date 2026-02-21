@@ -704,4 +704,4 @@ export async function POST(request: NextRequest) {
 
 - **Full API Spec**: `archive/specs/003-online-platform/contracts/api-contracts.md`
 - **Database Schema**: `docs/architecture/database-schema.md`
-- **Constitution**: `.specify/memory/constitution.md`
+- **Constitution**: `docs/authority/constitution.md`

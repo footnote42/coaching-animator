@@ -312,8 +312,8 @@ See `docs/testing/strategy.md` and `docs/testing/e2e-guide.md` for details.
   - [Production Stability](../troubleshooting/production-stability.md)
 
 - **Governance**:
-  - [Constitution](../../.specify/memory/constitution.md) - Core principles
-  - [PRD](../../.specify/memory/PRD.md) - Product requirements
+  - [Constitution](../../docs/authority/constitution.md) - Core principles
+  - [PRD](../../docs/authority/PRD-v2.0.md) - Product requirements
   - [CLAUDE.md](../../CLAUDE.md) - Auto-generated guidelines
 
 ---

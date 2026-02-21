@@ -466,4 +466,4 @@ export async function checkQuota(userId: string): Promise<boolean> {
 
 - **Full Data Model Spec**: `archive/specs/003-online-platform/data-model.md`
 - **API Contracts**: `docs/architecture/api-contracts.md`
-- **Constitution**: `.specify/memory/constitution.md`
+- **Constitution**: `docs/authority/constitution.md`

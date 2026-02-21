@@ -249,7 +249,7 @@ After each fix attempt:
 - **Auth Patterns**: `docs/architecture/auth-patterns.md`
 - **Session Persistence**: `docs/troubleshooting/session-persistence.md`
 - **CLAUDE.md**: `CLAUDE.md` - Development guidelines
-- **Constitution**: `.specify/memory/constitution.md`
+- **Constitution**: `docs/authority/constitution.md`
 
 ---
 
