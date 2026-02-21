@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 101,
+    "totalEntries": 104,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-21T08:38:10Z",
+    "lastEntry": "2026-02-21T08:42:28Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1990,6 +1990,102 @@
         "currentTask": "T026"
       },
       "details": null
+    },
+    {
+      "id": "log-1771663288-bad427",
+      "timestamp": "2026-02-21T08:41:28Z",
+      "action": "task_created",
+      "taskId": "T033",
+      "actor": "system",
+      "details": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771663295-e844fe",
+      "timestamp": "2026-02-21T08:41:35Z",
+      "action": "task_created",
+      "taskId": "T034",
+      "actor": "system",
+      "details": {
+        "title": "Mobile layout audit — CTA placement and hero rendering",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Mobile layout audit — CTA placement and hero rendering",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_8990ff8d437d",
+      "timestamp": "2026-02-21T08:42:22Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T030",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T08:42:19Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6306c7888479",
+      "timestamp": "2026-02-21T08:42:25Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T031",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T08:42:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2b00f0eccf58",
+      "timestamp": "2026-02-21T08:42:28Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T032",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T08:42:27Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
     }
   ]
 }

@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-21T08:25:42Z",
+  "lastUpdated": "2026-02-21T08:44:48Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "f247179150257480",
+    "checksum": "e1b612e524783e4e",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 75,
+    "generation": 82,
     "lastModified": "2026-02-21T08:38:10Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
@@ -1038,69 +1038,156 @@
     {
       "id": "T029",
       "title": "Onboarding Flow Audit",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T026",
       "createdAt": "2026-02-20T23:37:17Z",
-      "updatedAt": "2026-02-20T23:37:17Z",
+      "updatedAt": "2026-02-21T08:44:48Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-20 23:37:17 UTC: Audit first-run experience after 'Start Drawing' CTA. Is the editor clear to a grassroots coach? Check empty state, tooltips, first-interaction affordances. No assumed rugby knowledge. Assess and document friction points."
-      ]
+        "2026-02-20 23:37:17 UTC: Audit first-run experience after 'Start Drawing' CTA. Is the editor clear to a grassroots coach? Check empty state, tooltips, first-interaction affordances. No assumed rugby knowledge. Assess and document friction points.",
+        "[COMPLETED 2026-02-21T08:44:48Z] Audit complete. Structural first-run experience work deferred to T033 (child task)."
+      ],
+      "completedAt": "2026-02-21T08:44:48Z"
     },
     {
       "id": "T030",
       "title": "Gallery Page Copy & Empty State",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T026",
       "createdAt": "2026-02-20T23:37:24Z",
-      "updatedAt": "2026-02-20T23:37:24Z",
+      "updatedAt": "2026-02-21T08:42:19Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-20 23:37:24 UTC: Reframe gallery with 'Browse the Playbook' or equivalent grassroots-coach language. Design empty state for when gallery is thin — avoid 'nothing here' dead ends. File: src/app/gallery/page.tsx"
-      ]
+        "2026-02-20 23:37:24 UTC: Reframe gallery with 'Browse the Playbook' or equivalent grassroots-coach language. Design empty state for when gallery is thin — avoid 'nothing here' dead ends. File: src/app/gallery/page.tsx",
+        "[COMPLETED 2026-02-21T08:42:19Z] Gallery header renamed to 'The Playbook', subtitle and empty state copy updated to match grassroots coach voice. Committed in feat(T026)."
+      ],
+      "completedAt": "2026-02-21T08:42:19Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T08:42:20Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T031",
       "title": "Mobile Experience Audit",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T026",
       "createdAt": "2026-02-20T23:37:25Z",
-      "updatedAt": "2026-02-20T23:37:25Z",
+      "updatedAt": "2026-02-21T08:42:23Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-20 23:37:26 UTC: Audit CTA placement, hero rendering, and touch targets on small screens. Landing page must work on a coach's phone at the side of a pitch. Check: hero text size, button tap targets, scroll experience. File: src/app/page.tsx + CSS"
-      ]
+        "2026-02-20 23:37:26 UTC: Audit CTA placement, hero rendering, and touch targets on small screens. Landing page must work on a coach's phone at the side of a pitch. Check: hero text size, button tap targets, scroll experience. File: src/app/page.tsx + CSS",
+        "[COMPLETED 2026-02-21T08:42:23Z] Structural audit deferred to T034 (child task). Simple copy/layout issues resolved in feat(T026) commit."
+      ],
+      "completedAt": "2026-02-21T08:42:23Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T08:42:24Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T032",
       "title": "CTA Language Consistency Pass",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T026",
       "createdAt": "2026-02-20T23:37:27Z",
-      "updatedAt": "2026-02-20T23:37:27Z",
+      "updatedAt": "2026-02-21T08:42:27Z",
       "size": "medium",
       "position": 6,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-20 23:37:27 UTC: Final pass to align all CTAs across all pages to the new tone established by T027. Check: landing page, gallery, my-gallery, app page, share page. No mixed messaging between 'Create' and 'Draw' and 'Animate'. Files: src/app/**/page.tsx"
+        "2026-02-20 23:37:27 UTC: Final pass to align all CTAs across all pages to the new tone established by T027. Check: landing page, gallery, my-gallery, app page, share page. No mixed messaging between 'Create' and 'Draw' and 'Animate'. Files: src/app/**/page.tsx",
+        "[COMPLETED 2026-02-21T08:42:27Z] CTA language consistency pass complete: 'Nothing to install' replaces inaccurate offline claim, gallery copy aligned to Playbook terminology throughout. Committed in feat(T026)."
+      ],
+      "completedAt": "2026-02-21T08:42:27Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T08:42:28Z",
+        "failureLog": []
+      }
+    },
+    {
+      "id": "T033",
+      "title": "First-run experience after email confirmation",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T029",
+      "createdAt": "2026-02-21T08:41:28Z",
+      "updatedAt": "2026-02-21T08:41:28Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-21 08:41:28 UTC: After confirming email, user lands in /app with no guidance. Needs a first-run UX design: welcome message, brief tooltip or modal explaining the 3-step flow (place players → build frames → share link), and a dismissible prompt to save work. Design required before implementation."
+      ]
+    },
+    {
+      "id": "T034",
+      "title": "Mobile layout audit — CTA placement and hero rendering",
+      "status": "pending",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T031",
+      "createdAt": "2026-02-21T08:41:35Z",
+      "updatedAt": "2026-02-21T08:41:35Z",
+      "size": "medium",
+      "position": 1,
+      "positionVersion": 0,
+      "phase": "setup",
+      "notes": [
+        "2026-02-21 08:41:35 UTC: Structural audit of mobile experience: (1) hero section CTA button tap targets and stacking on small viewports, (2) feature card grid collapse behaviour, (3) gallery card touch targets, (4) editor bottom nav ergonomics per V.10. Requires device/viewport testing before implementation."
       ]
     }
   ],
