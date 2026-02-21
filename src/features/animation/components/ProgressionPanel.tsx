@@ -1,6 +1,20 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 
 interface ProgressionPanelProps {
@@ -9,8 +23,58 @@ interface ProgressionPanelProps {
   activeIndex: number; // -1 = base
   onSelectRequest: (index: number) => void; // triggers dirty-state check in parent
   onAddProgression: () => void;
+  onReorder: (newOrder: Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]) => void;
   canAdd: boolean; // false when progression_count >= 5
   isAdding: boolean; // true while the add async operation is in flight
+}
+
+interface SortablePillProps {
+  prog: Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>;
+  index: number;
+  isActive: boolean;
+  onSelectRequest: (index: number) => void;
+}
+
+function SortablePill({ prog, index, isActive, onSelectRequest }: SortablePillProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: prog.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="shrink-0 flex items-center"
+    >
+      <button
+        onClick={() => onSelectRequest(index)}
+        className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border transition-colors ${
+          isActive
+            ? 'bg-primary text-text-inverse border-primary'
+            : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
+        }`}
+        title={prog.title}
+      >
+        {/* Drag handle */}
+        <span
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-current opacity-40 hover:opacity-70 -ml-0.5"
+          onClick={e => e.stopPropagation()}
+          aria-label="Drag to reorder"
+        >
+          <GripVertical className="w-3 h-3" />
+        </span>
+        P{prog.progression_order ?? index + 1}
+      </button>
+    </div>
+  );
 }
 
 export function ProgressionPanel({
@@ -19,14 +83,36 @@ export function ProgressionPanel({
   activeIndex,
   onSelectRequest,
   onAddProgression,
+  onReorder,
   canAdd,
   isAdding,
 }: ProgressionPanelProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = progressions.findIndex(p => p.id === active.id);
+    const newIndex = progressions.findIndex(p => p.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = [...progressions];
+    const [moved] = reordered.splice(oldIndex, 1);
+    reordered.splice(newIndex, 0, moved);
+
+    // Reassign progression_order (1-based)
+    const withNewOrder = reordered.map((p, i) => ({ ...p, progression_order: i + 1 }));
+    onReorder(withNewOrder);
+  };
+
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-surface)] border-b border-[var(--color-border)] overflow-x-auto">
       <span className="text-xs text-text-primary/50 shrink-0">Progressions:</span>
 
-      {/* Base pill */}
+      {/* Base pill — fixed, not draggable */}
       <button
         onClick={() => onSelectRequest(-1)}
         className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
@@ -39,21 +125,20 @@ export function ProgressionPanel({
         Base
       </button>
 
-      {/* Progression pills */}
-      {progressions.map((prog, i) => (
-        <button
-          key={prog.id}
-          onClick={() => onSelectRequest(i)}
-          className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
-            activeIndex === i
-              ? 'bg-primary text-text-inverse border-primary'
-              : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
-          }`}
-          title={prog.title}
-        >
-          P{prog.progression_order ?? i + 1}
-        </button>
-      ))}
+      {/* Sortable progression pills */}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={progressions.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+          {progressions.map((prog, i) => (
+            <SortablePill
+              key={prog.id}
+              prog={prog}
+              index={i}
+              isActive={activeIndex === i}
+              onSelectRequest={onSelectRequest}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       {/* Add progression button */}
       <button

@@ -496,6 +496,37 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     }
   };
 
+  const handleProgressionReorder = async (
+    newOrder: Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]
+  ) => {
+    if (!baseAnimationMeta) return;
+    // Optimistic update
+    setProgressions(newOrder);
+    try {
+      const res = await fetch(
+        `/api/animations/${baseAnimationMeta.id}/progressions/reorder`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order: newOrder.map(p => ({ id: p.id, progression_order: p.progression_order })),
+          }),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error?.message ?? 'Reorder failed');
+      }
+    } catch (err) {
+      console.error('[Editor] Progression reorder failed:', err);
+      toast.error('Failed to save new order');
+      // Revert: re-fetch from server
+      fetch(`/api/animations/${baseAnimationMeta.id}/progressions`)
+        .then(r => r.ok ? r.json() : { progressions: [] })
+        .then(({ progressions: progs }) => setProgressions(progs ?? []));
+    }
+  };
+
   const handleProgressionDiscardAndSwitch = () => {
     setShowProgressionUnsavedDialog(false);
     if (pendingProgressionIndex !== null) {
@@ -619,6 +650,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
             activeIndex={activeProgressionIndex}
             onSelectRequest={handleProgressionSelectRequest}
             onAddProgression={handleAddProgression}
+            onReorder={handleProgressionReorder}
             canAdd={progressions.length < 5}
             isAdding={isAddingProgression}
           />

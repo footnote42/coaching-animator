@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { requireAuth, isAuthError } from '@/lib/server/auth';
+import { getUser } from '@/lib/server/auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -12,23 +12,25 @@ interface RouteParams {
 /**
  * GET /api/animations/[id]/progressions
  * Returns all progressions for a base animation, ordered by progression_order.
- * Requires auth — user must own the base animation.
+ * Access rules:
+ *   - Owner: always allowed
+ *   - Public/link_shared base animation: allowed for anyone (unauthenticated too)
+ *   - Private base animation: owner only
  */
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = params;
-    const authResult = await requireAuth();
-    if (isAuthError(authResult)) return authResult;
-    const user = authResult;
+
+    const user = await getUser(); // null when unauthenticated
 
     const supabase = await createSupabaseServerClient();
 
-    // Verify the base animation exists and belongs to this user
+    // Fetch the base animation to check ownership and visibility
     const { data: base, error: baseError } = await supabase
       .from('saved_animations')
-      .select('id, is_progression')
+      .select('id, user_id, is_progression, visibility')
       .eq('id', id)
-      .eq('user_id', user.id)
+      .is('hidden_at', null)
       .single();
 
     if (baseError || !base) {
@@ -45,12 +47,24 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // Access control: owner, or public/link_shared base
+    const isOwner = user?.id === base.user_id;
+    const isPubliclyAccessible = base.visibility === 'public' || base.visibility === 'link_shared';
+
+    if (!isOwner && !isPubliclyAccessible) {
+      return NextResponse.json(
+        { error: { code: 'UNAUTHORIZED', message: 'You do not have access to this animation' } },
+        { status: 401 }
+      );
+    }
+
     // Fetch all progressions for this base animation
     const { data: progressions, error: progError } = await supabase
       .from('saved_animations')
       .select('id, title, description, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, thumbnail_url, progression_order, current_version')
       .eq('parent_animation_id', id)
       .eq('is_progression', true)
+      .is('hidden_at', null)
       .order('progression_order', { ascending: true });
 
     if (progError) {
