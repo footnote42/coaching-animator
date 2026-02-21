@@ -142,9 +142,9 @@ export async function DELETE(request: NextRequest) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
+  const { error, count } = await supabase
     .from('saved_animations')
-    .delete()
+    .delete({ count: 'exact' })
     .eq('id', body.id);
 
   if (error) {
@@ -152,6 +152,13 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       { error: { code: 'DB_ERROR', message: 'Failed to delete animation' } },
       { status: 500 }
+    );
+  }
+
+  if (count === 0) {
+    return NextResponse.json(
+      { error: { code: 'NOT_FOUND', message: 'Animation not found or already deleted' } },
+      { status: 404 }
     );
   }
 
