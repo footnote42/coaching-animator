@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-20T23:42:15Z",
+  "lastUpdated": "2026-02-21T08:25:02Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "991a7b7abfb9d631",
+    "checksum": "07d0ea74bc80d168",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 71,
+    "generation": 72,
     "lastModified": "2026-02-20T23:40:40Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
@@ -564,21 +564,22 @@
     {
       "id": "T015",
       "title": "Mobile replay optimization (P0 - MAKE-OR-BREAK)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "subtask",
       "parentId": "T007",
       "createdAt": "2026-02-16T15:03:16Z",
-      "updatedAt": "2026-02-20T23:37:36Z",
+      "updatedAt": "2026-02-21T08:25:02Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
         "2026-02-16 15:03:16 UTC: F-MOB-01: Responsive canvas (280px-800px, 4:3). F-MOB-02: Touch targets 48x48px. F-MOB-03: Landscape hint. F-MOB-04: Mobile editor warning. F-MOB-05: Notes mobile layout. Test at 375x667 and 412x915.",
-        "[COMPLETED 2026-02-16T18:16:24Z] All 5 mobile requirements implemented. F-MOB-01/02 already done. F-MOB-03 landscape hint made dismissable. F-MOB-04 mobile editor warning added. F-MOB-05 coaching notes added to replay viewer with mobile-friendly layout. Verified with lint and tsc."
+        "[COMPLETED 2026-02-16T18:16:24Z] All 5 mobile requirements implemented. F-MOB-01/02 already done. F-MOB-03 landscape hint made dismissable. F-MOB-04 mobile editor warning added. F-MOB-05 coaching notes added to replay viewer with mobile-friendly layout. Verified with lint and tsc.",
+        "[COMPLETED 2026-02-21T08:25:02Z] All 5 mobile requirements completed 2026-02-16. Status sync only."
       ],
-      "completedAt": "2026-02-16T18:16:24Z"
+      "completedAt": "2026-02-21T08:25:02Z"
     },
     {
       "id": "T016",
