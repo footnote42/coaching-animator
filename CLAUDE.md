@@ -7,7 +7,7 @@
 
 ## Current Project Context
 
-- **Current Iteration**: v2.0 Phase 2 **in progress** — Remix UI complete (T047–T051 ✓: RemixButton, gallery CTAs, replay CTAs, attribution links). Next: Progressions.
+- **Current Iteration**: v2.0 Phase 2 **in progress** — Progressions core complete (T048–T050 ✓: drag-drop reorder, gallery badge+link, /progression/[id] view). Next: T051 E2E tests, then T052–T054 Remix Genealogy, then T044–T046 Rugby Pivot.
 - **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
 - **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
 - **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)

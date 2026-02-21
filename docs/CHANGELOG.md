@@ -10,10 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] — v2.0 Phase 2: Progressions & Remix Genealogy
 
+### Added (2026-02-21)
+- **Progression drag-drop reorder** (T048): `@dnd-kit/sortable` pills with ⠿ drag handles in `ProgressionPanel`; `PATCH /api/animations/[id]/progressions/reorder` with ownership validation and optimistic UI + server revert
+- **Progression set detail page** (T050): `/progression/[id]` — vertical numbered sequence (Base → P1 → P5), thumbnail + Watch button per step
+- **Progression badge links** (T049/T050): `+N progressions` badges on `AnimationCard` and `PublicAnimationCard` now link to `/progression/[id]`
+- **Public progressions API** (T050): `GET /api/animations/[id]/progressions` now accessible for public/link_shared base animations (previously owner-only)
+
 ### In Progress
-- Animation progressions (ordered drill sequences)
-- Remix genealogy tree visualization
-- Progression builder UI
+- T051: E2E tests — progression workflow
+- T052–T054: Remix genealogy visualization (remix count, A→B→C breadcrumb)
+- T044–T046: Rugby-only pivot (VISIBLE_SPORTS feature flag)
+- T033: First-run experience after email confirmation
+- T034: Mobile layout audit
 
 ### Planned
 - GIF export (Safari compatibility)
