@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 98,
+    "totalEntries": 101,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-20T23:42:17Z",
+    "lastEntry": "2026-02-21T08:38:10Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1935,6 +1935,61 @@
         "field": "status",
         "operation": "complete"
       }
+    },
+    {
+      "id": "log_5bfb8164911d",
+      "timestamp": "2026-02-21T08:25:10Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T015",
+      "before": {
+        "status": "pending",
+        "completedAt": "2026-02-16T18:16:24Z"
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T08:25:02Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c17f47c7a174",
+      "timestamp": "2026-02-21T08:25:43Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T014",
+      "before": {
+        "status": "pending",
+        "completedAt": "2026-02-19T20:44:35Z"
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T08:25:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_b29b7bfae109",
+      "timestamp": "2026-02-21T08:38:10Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T027"
+      },
+      "after": {
+        "currentTask": "T026"
+      },
+      "details": null
     }
   ]
 }
