@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 // COPY VARIANTS — Hero Section (T028)
 //
 // Alt A — "The Grounded Coach" (ACTIVE — implemented below)
-//   Headline:  "Draw your session. Your players will get it."
+//   Headline:  "Stop explaining. Start showing."
 //   Sub:       "A simple tool for drawing rugby drills and plays. Move players
 //               around the pitch, build up the action frame by frame, then
 //               share a link with your squad."
@@ -69,7 +69,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6">
-              Draw your session. Your players will get it.
+              Stop explaining. Start showing.
             </h1>
             <p className="text-lg md:text-xl text-text-inverse/80 mb-8 max-w-2xl">
               A simple tool for drawing rugby drills and plays. Move players around the pitch, build up the action frame by frame, then share a link with your squad.
