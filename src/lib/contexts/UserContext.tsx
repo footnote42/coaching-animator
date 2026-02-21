@@ -12,6 +12,9 @@ interface UserProfile {
   role: UserRole;
   animation_count: number;
   max_animations: number;
+  club_name: string | null;
+  primary_strip_color: string | null;
+  secondary_strip_color: string | null;
 }
 
 interface UserContextValue {
@@ -40,7 +43,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, display_name, role, animation_count, max_animations')
+        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color')
         .eq('id', userId)
         .single();
 
@@ -61,6 +64,9 @@ export function UserProvider({ children }: UserProviderProps) {
           role: 'user',
           animation_count: 0,
           max_animations: 50,
+          club_name: null,
+          primary_strip_color: null,
+          secondary_strip_color: null,
         });
         return;
       }
@@ -74,6 +80,9 @@ export function UserProvider({ children }: UserProviderProps) {
           role: data.role || 'user',
           animation_count: data.animation_count || 0,
           max_animations: data.max_animations || 50,
+          club_name: data.club_name || null,
+          primary_strip_color: data.primary_strip_color || null,
+          secondary_strip_color: data.secondary_strip_color || null,
         };
         console.log('[UserContext] Setting profile state:', newProfile);
         setProfile(newProfile);
@@ -92,6 +101,9 @@ export function UserProvider({ children }: UserProviderProps) {
         role: 'user',
         animation_count: 0,
         max_animations: 50,
+        club_name: null,
+        primary_strip_color: null,
+        secondary_strip_color: null,
       });
     }
 

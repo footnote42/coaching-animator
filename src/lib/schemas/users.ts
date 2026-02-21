@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
+const hexColorRegex = /^#[0-9A-Fa-f]{6}$/;
+
 export const UpdateProfileSchema = z.object({
   display_name: z.string().max(50).optional().nullable(),
+  club_name: z.string().max(100).optional().nullable(),
+  primary_strip_color: z.string().regex(hexColorRegex, 'Must be a hex color like #FF0000').optional().nullable(),
+  secondary_strip_color: z.string().regex(hexColorRegex, 'Must be a hex color like #FF0000').optional().nullable(),
 });
 
 export const UserRoleSchema = z.enum(['user', 'admin']);

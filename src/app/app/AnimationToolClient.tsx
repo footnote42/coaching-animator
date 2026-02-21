@@ -45,7 +45,7 @@ function AnimationToolPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadId = searchParams.get('load');
-  const { user, loading } = useUser();
+  const { user, profile, loading } = useUser();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastLoadedId, setLastLoadedId] = useState<string | null>(null);
 
@@ -185,7 +185,7 @@ function AnimationToolPageContent() {
         </div>
       )}
 
-      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} cloudAnimationId={loadId} />
+      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} cloudAnimationId={loadId} stripColors={profile?.primary_strip_color && profile?.secondary_strip_color ? { attack: profile.primary_strip_color, defense: profile.secondary_strip_color } : undefined} />
       {showSaveModal && payload && (
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}

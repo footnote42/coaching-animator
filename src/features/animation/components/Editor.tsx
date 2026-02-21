@@ -51,9 +51,11 @@ interface EditorProps {
   loadingFromCloud?: boolean;
   /** Cloud ID of the currently loaded animation (passed from AnimationToolClient) */
   cloudAnimationId?: string | null;
+  /** Club strip colors from user profile (overrides default player colors) */
+  stripColors?: { attack: string; defense: string };
 }
 
-export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null }: EditorProps) {
+export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null, stripColors }: EditorProps) {
   const canvasWidth = 800;
   const canvasHeight = 600;
 
@@ -261,7 +263,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'attack',
-      color: EntityColors.getDefault('player', 'attack'),
+      color: stripColors?.attack || EntityColors.getDefault('player', 'attack'),
       label: '',
     });
   };
@@ -272,7 +274,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       team: 'defense',
-      color: EntityColors.getDefault('player', 'defense'),
+      color: stripColors?.defense || EntityColors.getDefault('player', 'defense'),
       label: '',
     });
   };

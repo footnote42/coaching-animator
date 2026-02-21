@@ -13,6 +13,9 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
+  const [clubName, setClubName] = useState('');
+  const [primaryColor, setPrimaryColor] = useState('');
+  const [secondaryColor, setSecondaryColor] = useState('');
 
   // OAuth / Password Management State
   const [password, setPassword] = useState('');
@@ -25,6 +28,9 @@ export default function ProfilePage() {
     console.log('[Profile] profile.animation_count:', profile?.animation_count);
     if (profile) {
       setDisplayName(profile.display_name || '');
+      setClubName(profile.club_name || '');
+      setPrimaryColor(profile.primary_strip_color || '');
+      setSecondaryColor(profile.secondary_strip_color || '');
     }
   }, [profile]);
 
@@ -48,10 +54,15 @@ export default function ProfilePage() {
     setSuccess(null);
 
     try {
-      console.log('[Profile] Saving display name:', displayName.trim());
+      console.log('[Profile] Saving profile...');
       const { ok, status, error: apiError } = await putWithRetry(
         '/api/user/profile',
-        { display_name: displayName.trim() || null }
+        {
+          display_name: displayName.trim() || null,
+          club_name: clubName.trim() || null,
+          primary_strip_color: primaryColor || null,
+          secondary_strip_color: secondaryColor || null,
+        }
       );
 
       console.log('[Profile] API response - ok:', ok, 'status:', status);
@@ -206,6 +217,73 @@ export default function ProfilePage() {
               <p className="mt-1 text-xs text-gray-500">
                 This name will be shown on your public animations. Leave blank to stay anonymous.
               </p>
+            </div>
+
+            {/* Club Branding */}
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Club Branding</h3>
+              <p className="text-xs text-gray-500 mb-4">
+                Set your club details. Strip colours will be used as default player colours in the editor.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Club Name
+                  </label>
+                  <input
+                    type="text"
+                    id="clubName"
+                    value={clubName}
+                    onChange={(e) => setClubName(e.target.value)}
+                    maxLength={100}
+                    placeholder="e.g. Hampshire RFC"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="primaryColor" className="block text-sm font-medium text-gray-700 mb-1">
+                      Primary Strip Colour
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="primaryColor"
+                        value={primaryColor || '#3b82f6'}
+                        onChange={(e) => setPrimaryColor(e.target.value)}
+                        className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-500">{primaryColor || 'Not set'}</span>
+                      {primaryColor && (
+                        <button type="button" onClick={() => setPrimaryColor('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">Default colour for attack players</p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="secondaryColor" className="block text-sm font-medium text-gray-700 mb-1">
+                      Secondary Strip Colour
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        id="secondaryColor"
+                        value={secondaryColor || '#ef4444'}
+                        onChange={(e) => setSecondaryColor(e.target.value)}
+                        className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-500">{secondaryColor || 'Not set'}</span>
+                      {secondaryColor && (
+                        <button type="button" onClick={() => setSecondaryColor('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">Default colour for defense players</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="pt-4 border-t">
