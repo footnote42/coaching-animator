@@ -1,0 +1,148 @@
+{
+  "entries": [
+    {
+      "id": "log-1771700271-f1dd12",
+      "timestamp": "2026-02-21T18:57:51Z",
+      "action": "task_created",
+      "taskId": "T047",
+      "actor": "system",
+      "details": {
+        "title": "Phase 2: Drill Progressions",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 2: Drill Progressions",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1771700289-caaca6",
+      "timestamp": "2026-02-21T18:58:09Z",
+      "action": "task_created",
+      "taskId": "T048",
+      "actor": "system",
+      "details": {
+        "title": "Progression editor panel — create & reorder progressions",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Progression editor panel — create & reorder progressions",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771700300-8ba02f",
+      "timestamp": "2026-02-21T18:58:20Z",
+      "action": "task_created",
+      "taskId": "T049",
+      "actor": "system",
+      "details": {
+        "title": "Gallery card: aggregate progression set (badge + expand)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Gallery card: aggregate progression set (badge + expand)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771700309-0ea770",
+      "timestamp": "2026-02-21T18:58:29Z",
+      "action": "task_created",
+      "taskId": "T050",
+      "actor": "system",
+      "details": {
+        "title": "Collection detail: base + progressions vertical sequence",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Collection detail: base + progressions vertical sequence",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771700317-d14f7a",
+      "timestamp": "2026-02-21T18:58:37Z",
+      "action": "task_created",
+      "taskId": "T051",
+      "actor": "system",
+      "details": {
+        "title": "E2E tests — Progression workflow",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "E2E tests — Progression workflow",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771700327-a091e2",
+      "timestamp": "2026-02-21T18:58:47Z",
+      "action": "task_created",
+      "taskId": "T052",
+      "actor": "system",
+      "details": {
+        "title": "Phase 2: Remix Genealogy Visualization",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 2: Remix Genealogy Visualization",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1771700335-25aae0",
+      "timestamp": "2026-02-21T18:58:55Z",
+      "action": "task_created",
+      "taskId": "T053",
+      "actor": "system",
+      "details": {
+        "title": "Remix count display on original animation card",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Remix count display on original animation card",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1771700345-4158b6",
+      "timestamp": "2026-02-21T18:59:05Z",
+      "action": "task_created",
+      "taskId": "T054",
+      "actor": "system",
+      "details": {
+        "title": "Remix genealogy breadcrumb chain (A→B→C)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Remix genealogy breadcrumb chain (A→B→C)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    }
+  ]
+}
