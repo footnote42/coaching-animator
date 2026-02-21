@@ -7,7 +7,7 @@
 
 ## Current Project Context
 
-- **Current Iteration**: v2.0 Phase 0-1 **fully complete** (T014 staging ✓, T015 mobile share route ✓). Next: Phase 2 — Progressions + Remix Genealogy.
+- **Current Iteration**: v2.0 Phase 2 **in progress** — Remix UI complete (T047–T051 ✓: RemixButton, gallery CTAs, replay CTAs, attribution links). Next: Progressions.
 - **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
 - **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
 - **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)
@@ -99,6 +99,7 @@ When modifying, test BOTH `/app` (editor) AND `/replay/[id]` (replay) routes:
 | `/app` | `src/app/app/page.tsx` | `src/features/animation/components/Editor.tsx` |
 | `/replay/[id]` | `src/app/replay/[id]/page.tsx` | `src/features/animation/components/ReplayViewer.tsx` |
 | `/gallery` | `src/app/gallery/page.tsx` | `src/features/gallery/components/PublicAnimationCard.tsx` |
+| `/gallery` (logic) | `src/app/gallery/GalleryClient.tsx` | All gallery state, filters, upvote/remix handlers |
 | `/my-gallery` | `src/app/my-gallery/page.tsx` | `src/features/gallery/components/AnimationCard.tsx` |
 
 ## Entity Color Service (Anti-Pattern Enforcement)
@@ -223,4 +224,12 @@ When generating handoff prompts for next task/session, **always include**:
 - **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Notable changes from v2.0 onward
 
 <!-- MANUAL ADDITIONS START -->
+## Supabase Join Flattening
+
+Foreign-key joins may return `object | object[] | null` depending on the relationship type. Always flatten before use:
+
+```typescript
+const raw = animation.remixed_from; // RemixedFrom | RemixedFrom[] | null
+const record = Array.isArray(raw) ? raw[0] : raw;
+```
 <!-- MANUAL ADDITIONS END -->
