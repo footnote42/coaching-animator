@@ -31,6 +31,7 @@ interface AdminAnimation {
   title: string;
   animation_type: string;
   visibility: string;
+  tags: string[];
   created_at: string;
   user_id: string;
 }
@@ -51,6 +52,7 @@ function AnimationsTab() {
   const [offset, setOffset] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminAnimation | null>(null);
+  const [togglingTemplate, setTogglingTemplate] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const LIMIT = 20;
 
@@ -109,6 +111,28 @@ function AnimationsTab() {
     }
   };
 
+  const handleToggleTemplate = async (anim: AdminAnimation) => {
+    const isTemplate = anim.tags?.includes('template') ?? false;
+    setTogglingTemplate(anim.id);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/animations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: anim.id, isTemplate: !isTemplate }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || 'Failed to update');
+      setAnimations(prev => prev.map(a =>
+        a.id === anim.id ? { ...a, tags: data.tags } : a
+      ));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to toggle template');
+    } finally {
+      setTogglingTemplate(null);
+    }
+  };
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric', month: 'short', day: 'numeric',
@@ -151,6 +175,7 @@ function AnimationsTab() {
               <th className="pb-2 font-medium">Type</th>
               <th className="pb-2 font-medium">Visibility</th>
               <th className="pb-2 font-medium">Created</th>
+              <th className="pb-2 font-medium">Template</th>
               <th className="pb-2" />
             </tr>
           </thead>
@@ -171,6 +196,19 @@ function AnimationsTab() {
                   </span>
                 </td>
                 <td className="py-2 pr-4 text-gray-500">{formatDate(anim.created_at)}</td>
+                <td className="py-2 pr-4">
+                  <button
+                    onClick={() => handleToggleTemplate(anim)}
+                    disabled={togglingTemplate === anim.id}
+                    className={`px-2.5 py-1 text-xs font-medium rounded transition-colors disabled:opacity-50 ${
+                      anim.tags?.includes('template')
+                        ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    }`}
+                  >
+                    {togglingTemplate === anim.id ? '...' : anim.tags?.includes('template') ? 'Template' : 'Set Template'}
+                  </button>
+                </td>
                 <td className="py-2 text-right">
                   <button
                     onClick={() => setConfirmDelete(anim)}

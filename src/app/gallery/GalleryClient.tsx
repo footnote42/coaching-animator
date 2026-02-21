@@ -195,9 +195,32 @@ function GalleryContent() {
     router.push('/login?redirect=/gallery');
   };
 
-  const handleRemix = (id: string) => {
-    // V2.0: Navigate to editor with animation loaded for remixing
-    router.push(`/app?remix=${id}`);
+  const [remixingId, setRemixingId] = useState<string | null>(null);
+
+  const handleRemix = async (id: string) => {
+    if (!currentUserId) {
+      router.push('/login?redirect=/gallery');
+      return;
+    }
+
+    setRemixingId(id);
+    try {
+      const response = await fetch(`/api/animations/${id}/remix`, { method: 'POST' });
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error?.message || 'Failed to create remix');
+        return;
+      }
+
+      // Navigate to editor with the new remixed animation
+      router.push(`/app?load=${data.id}`);
+    } catch (err) {
+      console.error('[Gallery] Remix error:', err);
+      alert('Failed to create remix. Please try again.');
+    } finally {
+      setRemixingId(null);
+    }
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -348,6 +371,7 @@ function GalleryContent() {
                   onUpvote={handleUpvote}
                   onLoginRequired={handleLoginRequired}
                   onRemix={handleRemix}
+                  remixing={remixingId === animation.id}
                 />
               ))}
             </div>

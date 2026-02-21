@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
   let dbQuery = supabase
     .from('saved_animations')
-    .select('id, title, animation_type, visibility, created_at, user_id', { count: 'exact' })
+    .select('id, title, animation_type, visibility, tags, created_at, user_id', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(query.data.offset, query.data.offset + query.data.limit - 1);
 
@@ -46,6 +46,78 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({ animations: data ?? [], total: count ?? 0 });
+}
+
+const ToggleTemplateSchema = z.object({
+  id: z.string().uuid(),
+  isTemplate: z.boolean(),
+});
+
+export async function PATCH(request: NextRequest) {
+  const authResult = await requireAdmin();
+  if (isAuthError(authResult)) return authResult;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: { code: 'INVALID_BODY', message: 'Invalid JSON body' } },
+      { status: 400 }
+    );
+  }
+
+  const parsed = ToggleTemplateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: { code: 'INVALID_PARAMS', message: parsed.error.message } },
+      { status: 400 }
+    );
+  }
+
+  const { id, isTemplate } = parsed.data;
+  const supabase = await createSupabaseServerClient();
+
+  // Fetch current tags
+  const { data: animation, error: fetchError } = await supabase
+    .from('saved_animations')
+    .select('tags')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !animation) {
+    return NextResponse.json(
+      { error: { code: 'NOT_FOUND', message: 'Animation not found' } },
+      { status: 404 }
+    );
+  }
+
+  const currentTags: string[] = animation.tags || [];
+  const hasTemplate = currentTags.includes('template');
+
+  let newTags: string[];
+  if (isTemplate && !hasTemplate) {
+    newTags = [...currentTags, 'template'];
+  } else if (!isTemplate && hasTemplate) {
+    newTags = currentTags.filter(t => t !== 'template');
+  } else {
+    newTags = currentTags; // No change needed
+  }
+
+  const { error: updateError } = await supabase
+    .from('saved_animations')
+    .update({ tags: newTags })
+    .eq('id', id);
+
+  if (updateError) {
+    console.error('[Admin Animations API] PATCH error:', updateError);
+    return NextResponse.json(
+      { error: { code: 'DB_ERROR', message: 'Failed to update tags' } },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ success: true, tags: newTags });
 }
 
 export async function DELETE(request: NextRequest) {

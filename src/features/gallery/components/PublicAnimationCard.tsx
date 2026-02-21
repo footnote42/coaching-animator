@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Clock, Layers, ThumbsUp, Play, User, Copy } from 'lucide-react';
+import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2 } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
 
 interface PublicAnimation {
@@ -38,6 +38,7 @@ interface PublicAnimationCardProps {
   onUpvote?: (id: string) => Promise<{ upvoted: boolean; upvote_count: number } | null>;
   onLoginRequired?: () => void;
   onRemix?: (id: string) => void; // V2.0: Clone/remix animation (templates)
+  remixing?: boolean;
 }
 
 const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
@@ -66,7 +67,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote, onLoginRequired, onRemix }: PublicAnimationCardProps) {
+export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote, onLoginRequired, onRemix, remixing }: PublicAnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [hasUpvoted, setHasUpvoted] = useState(animation.user_has_upvoted);
   const [upvoteCount, setUpvoteCount] = useState(animation.upvote_count);
@@ -236,12 +237,13 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onRemix(animation.id);
+              if (!remixing) onRemix(animation.id);
             }}
-            className="w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+            disabled={remixing}
+            className="w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
           >
-            <Copy className="w-4 h-4" />
-            Use Template
+            {remixing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
+            {remixing ? 'Creating...' : 'Use Template'}
           </button>
         )}
       </div>
