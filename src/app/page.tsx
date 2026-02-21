@@ -51,8 +51,8 @@ const FEATURES = [
   },
   {
     icon: Shield,
-    title: 'Works without internet',
-    description: 'Use it on the touchline, in a changing room, wherever. No connection needed once the page has loaded.',
+    title: 'Nothing to install',
+    description: 'It runs in your browser — no download, no app store. Open it on your phone, tablet, or laptop and start drawing.',
   },
   {
     icon: Zap,

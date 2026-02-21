@@ -2,74 +2,30 @@
 ================================================================================
 SYNC IMPACT REPORT
 ================================================================================
-Version change: 3.2.0 → 3.3.0 (MINOR - Organizational Tier & Privacy-Preserving Metrics)
+Version change: 3.3.0 → 3.4.0 (MINOR - Mobile-First Ergonomics & Tactical Depth)
 
 Modified principles:
-- Section V: Added new Tier 4 for organizational features with governance safeguards
-- Section V.6: Updated Absolute Prohibitions to permit privacy-preserving server-side metrics
+- Section III: Added Progressive Disclosure override for mobile viewports
+- Section IV: Permitted hard-edged "Tactical Shadows" for interactive depth
+- Section V: Added V.10 Mobile-First Adaptive Architecture
 
-Added sections:
-- V.6.1 Privacy-Preserving Server-Side Metrics (Permitted Exception)
-- V.2.4 Organizational Features (Tier 4 - Organizations)
-- V.7 Remix Licensing & Attribution
-- V.8 External Links & Third-Party Content
-- V.9 Template Curation & Starting Positions
-
-Rationale for Amendment (CA-2026-002):
-- Unblocks PRD v2.0 implementation (organizational features, mobile metrics)
-- Hampshire RFU partnership requires organizational tier with governance safeguards
-- Mobile replay optimization requires privacy-preserving viewport metrics for analytics
-- Remix genealogy and templates require licensing clarification (CC-BY-SA 4.0)
-- YouTube tutorials and external links require privacy-protective policy
+Rationale for Amendment (CA-2026-003):
+- Pivot to mobile-first usage requires ergonomic overrides
+- 2-click rule (Section III) creates clutter on small screens; progressive disclosure prioritized
+- No-shadow rule (Section IV) hinders depth perception on touch; hard-edged shadows improve clarity
+- Desktop-first sidebar-canvas model replaced by adaptive bottom-oriented UI
 
 Key Safeguards:
-- Privacy-preserving metrics: aggregated only, no user IDs, no third-party sharing
-- Organizational tier: manual verification, member privacy, audit trails
-- Remix licensing: CC-BY-SA 4.0 with attribution, genealogy display
-- External links: no embeds (no tracking pixels), links only with security headers
-- Template curation: quality standards, organizational control → community
+- Shadows MUST be hard-edged (no blur) to maintain schematic aesthetic
+- Bottom navigation restricted to editor view to maximize vertical pixels
+- Progressive disclosure MUST remain contextual to avoid hidden-feature frustration
 
 Constitutional Alignment:
-- ✅ Maintains "No telemetry" (metrics aggregated, no user tracking)
-- ✅ Maintains "Minimal data collection" (organizational metadata only)
-- ✅ Maintains "User data ownership" (member data protected, export rights)
-- ✅ Maintains "Privacy-first" (member activity not tracked by org admins)
-- ✅ Respects "Grassroots Coach Advocacy" (unlimited quota serves educational mission)
+- ✅ Maintains "Rugby-Centric" metaphors
+- ✅ Maintains "Warm Tactical Professionalism"
+- ✅ Enhances "Intuitive UX" for the primary mobile use case
 
-Previous Amendment: 3.1.0 → 3.2.0 (OAuth Authentication Providers - CA-2026-001)
-
-================================================================================
-
-Previous Amendment: 2.1.0 → 3.0.0 (MAJOR - User Accounts & Online Platform)
-
-Modified principles:
-- Principle V: Added Tier 3 (Authenticated Features) for user accounts and cloud storage
-- Principle V.6: Updated Absolute Prohibitions to permit email/password accounts while maintaining privacy safeguards
-
-Added sections:
-- V.2.1 User Account Features (Tier 3 - Authenticated)
-- VI. Grassroots Coach Advocacy (new core principle)
-- Website Design Tokens (new design system section)
-
-Removed sections:
-- "No persistent user accounts" from V.6 Absolute Prohibitions
-
-Rationale for Amendment:
-- Grassroots coaches need cloud storage to access animations across devices
-- Public gallery enables peer learning and community building
-- User accounts required for content ownership, moderation, and social features
-- Privacy safeguards maintained: email-only auth, minimal profile data, GDPR compliance
-- Tier 1 (offline core) remains sacred and unaffected
-
-Templates requiring updates:
-- ✅ plan-template.md - Compatible (supports tiered architecture)
-- ✅ spec-template.md - Compatible (supports authenticated features)
-- ✅ tasks-template.md - Compatible (supports phased implementation)
-
-Follow-up TODOs:
-- Update PRD.md with new sections (16-21) for accounts, gallery, hosting, security
-- Create MIGRATION_PLAN.md for Next.js migration
-- Implement database schema for users, animations, upvotes, reports
+Previous Amendment: 3.2.0 → 3.3.0 (Organizational Tier & Privacy-Preserving Metrics - CA-2026-002)
 ================================================================================
 -->
 
@@ -105,7 +61,7 @@ The application MUST communicate through sport-appropriate visual metaphors and 
 Every interaction MUST minimize the steps between coach intent and on-screen result.
 
 - **Drag-and-Drop First**: Primary interactions MUST be achievable via direct manipulation
-- **Discoverability**: All features MUST be accessible within 2 clicks from the main canvas
+- **Discoverability**: All features MUST be accessible within 2 clicks from the main canvas (Except on Mobile, see V.10)
 - **Progressive Disclosure**: Advanced options MUST be hidden by default, revealed contextually
 - **Immediate Feedback**: Actions MUST produce visible results within 100ms
 - **Error Prevention**: The UI MUST prevent invalid states rather than report them after the fact
@@ -130,7 +86,7 @@ The visual design MUST embody a warm, professional coaching environment that ins
 - **Borders & Shapes**:
   - Sharp corners only (border-radius: 0 or negligible)
   - 1px "schematic" borders for visual separation
-  - No drop shadows; use borders or background contrast instead
+  - No soft drop shadows; hard-edged "Tactical Shadows" (2px offset, no blur) are permitted to indicate interactive depth on mobile
 - **Imagery**:
   - Pitch diagrams, tactical arrows, and formation overlays
   - No stock photography or generic illustrations
@@ -377,7 +333,7 @@ The application adopts a **tiered feature architecture** with cloud-first persis
 **Rejection Criteria (Automatic Disqualification)**:
 - Features sending telemetry to third parties (violates "No Telemetry")
 - Features with indefinite retention of PII beyond user request
-- Features requiring third-party identity providers (violates "Email-only Auth")
+- Features requiring third-party identity providers for tracking or analytics (OAuth authentication for login is permitted under Section V.2.3 — Google, Apple, GitHub only)
 - Features monetizing user data or requiring paid access to core features
 
 #### V.6 Absolute Prohibitions (Updated v3.3 - Privacy-Preserving Metrics & Organizational Features)
@@ -640,6 +596,28 @@ The application exists to **empower grassroots sports coaches** - volunteers, pa
 - Organizational control (Phase 1) ensures initial quality, then opens to community (Phase 2)
 - Moderation prevents template spam (e.g., non-starter animations tagged as templates)
 
+#### V.10 Mobile-First Adaptive Architecture (CA-2026-003)
+
+**The application MUST adapt its interface to prioritize touch ergonomics on mobile viewports (< 768px):**
+
+1. **Navigation Hierarchy**
+   - **Editor View**: MUST hide the global top-nav to maximize vertical space.
+   - **Primary Actions**: MUST use a Bottom Tab Bar for "Create", "Playbook", "Explore", and "Profile".
+   - **Progressive Disclosure**: High-frequency tools MUST be accessible via bottom-oriented floating palettes or trays.
+
+2. **Touch Ergonomics**
+   - **Hit Areas**: Interactive tokens (players, balls) MUST have a minimum transparent touch target of 44x44px.
+   - **Gestures**: Critical context actions (Delete, Duplicate) MUST be accessible via long-press or swipe gestures as native touch alternatives to right-click/double-click.
+   - **Thumb Zone**: 80% of interactive controls MUST reside in the bottom 40% of the viewport.
+
+3. **Adaptive Canvas**
+   - **Scaling**: The tactical canvas MUST scale to fit the viewport width (`scale-to-width`) while maintaining the 4:3 aspect ratio.
+   - **Orientation**: UI MUST provide visual cues for "Landscape Recommended" when the viewport height is insufficient for critical editor controls.
+
+**Rationale:**
+- Pivot to mobile-first usage demands an ergonomic paradigm shift.
+- Maximizing "Tactical Real Estate" on small screens is a functional priority over desktop-consistency.
+
 ## Governance
 
 ### Amendment Procedure
@@ -661,4 +639,4 @@ The application exists to **empower grassroots sports coaches** - volunteers, pa
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 3.3.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-02-14 (Organizational Tier & Privacy-Preserving Metrics - Amendment CA-2026-002)
+**Version**: 3.4.1 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-02-21 (Patch: Clarify V.5 OAuth rejection criterion to align with V.2.3 permitted providers)

@@ -209,10 +209,10 @@ function GalleryContent() {
       <header className="border-b border-border bg-primary text-text-inverse">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-heading font-bold mb-2">
-            Public Gallery
+            The Playbook
           </h1>
           <p className="text-text-inverse/80">
-            Explore rugby animations shared by coaches worldwide
+            Drills and plays shared by coaches. Open one to watch it on the pitch.
           </p>
         </div>
       </header>
@@ -229,7 +229,7 @@ function GalleryContent() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search animations..."
+                  placeholder="Search drills and plays..."
                   className="w-full pl-10 pr-4 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
                 />
               </div>
@@ -398,12 +398,12 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean | string; onC
     <div className="text-center py-20">
       <div className="text-6xl mb-4">🏉</div>
       <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">
-        {hasFilters ? 'No Animations Found' : 'Gallery is Empty'}
+        {hasFilters ? 'No drills found' : 'The Playbook is empty'}
       </h2>
       <p className="text-text-primary/70 mb-6 max-w-md mx-auto">
         {hasFilters
           ? 'Try adjusting your filters or search terms'
-          : 'Be the first to share your rugby animations with the community!'}
+          : 'Nothing shared yet. Be the first coach to add a drill.'}
       </p>
       {hasFilters ? (
         <button
