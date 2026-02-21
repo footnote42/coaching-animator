@@ -4,9 +4,9 @@
   "project": "coaching-animator",
   "_meta": {
     "schemaVersion": "2.4.0",
-    "totalEntries": 106,
+    "totalEntries": 109,
     "firstEntry": "2026-02-13T10:33:13Z",
-    "lastEntry": "2026-02-21T08:45:00Z",
+    "lastEntry": "2026-02-21T08:57:49Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -2341,6 +2341,111 @@
         "title": "Filter sport selector and gallery by VISIBLE_SPORTS",
         "status": "pending",
         "priority": "medium"
+      }
+    },
+    {
+      "id": "log_3cdb0cb47ea6",
+      "timestamp": "2026-02-21T08:57:35Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T033",
+      "before": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_dfeeac2a61af",
+      "timestamp": "2026-02-21T08:57:48Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T033",
+      "before": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "First-run experience after email confirmation",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_04ee1af83231",
+      "timestamp": "2026-02-21T08:57:49Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T034",
+      "before": {
+        "title": "Mobile layout audit — CTA placement and hero rendering",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Mobile layout audit — CTA placement and hero rendering",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "setup",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]

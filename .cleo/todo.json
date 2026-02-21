@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-21T08:57:26Z",
+  "lastUpdated": "2026-02-21T09:02:46Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "7c6b6a25275d3618",
+    "checksum": "6373c27a37dd2351",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 86,
+    "generation": 89,
     "lastModified": "2026-02-21T08:38:10Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
@@ -1181,14 +1181,15 @@
       "type": "subtask",
       "parentId": "T029",
       "createdAt": "2026-02-21T08:41:28Z",
-      "updatedAt": "2026-02-21T08:57:26Z",
+      "updatedAt": "2026-02-21T08:57:47Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
         "2026-02-21 08:41:28 UTC: After confirming email, user lands in /app with no guidance. Needs a first-run UX design: welcome message, brief tooltip or modal explaining the 3-step flow (place players → build frames → share link), and a dismissible prompt to save work. Design required before implementation.",
-        "2026-02-21 08:57:26 UTC: Full scope: After email confirmation, user lands in /app with empty canvas and no guidance. Need a welcome modal/toast explaining the 3-step flow: (1) Place players and objects, (2) Build frames for animation, (3) Share via link. Should only show once (localStorage flag). Consider: empty-state illustration on canvas, tooltip highlights on key buttons. Must not block power users — dismissible immediately."
+        "2026-02-21 08:57:26 UTC: Full scope: After email confirmation, user lands in /app with empty canvas and no guidance. Need a welcome modal/toast explaining the 3-step flow: (1) Place players and objects, (2) Build frames for animation, (3) Share via link. Should only show once (localStorage flag). Consider: empty-state illustration on canvas, tooltip highlights on key buttons. Must not block power users — dismissible immediately.",
+        "2026-02-21 08:57:47 UTC: Subtasks (implement as checklist): (1) Welcome modal component — dismissible Dialog shown on first /app visit, localStorage 'hasSeenWelcome' flag, 3-step content (place entities → build frames → share link). (2) Empty canvas guidance — subtle text overlay when canvas has no entities: 'Start by placing players from the toolbar', disappears on first entity add."
       ]
     },
     {
@@ -1199,13 +1200,14 @@
       "type": "subtask",
       "parentId": "T031",
       "createdAt": "2026-02-21T08:41:35Z",
-      "updatedAt": "2026-02-21T08:41:35Z",
+      "updatedAt": "2026-02-21T08:57:48Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:41:35 UTC: Structural audit of mobile experience: (1) hero section CTA button tap targets and stacking on small viewports, (2) feature card grid collapse behaviour, (3) gallery card touch targets, (4) editor bottom nav ergonomics per V.10. Requires device/viewport testing before implementation."
+        "2026-02-21 08:41:35 UTC: Structural audit of mobile experience: (1) hero section CTA button tap targets and stacking on small viewports, (2) feature card grid collapse behaviour, (3) gallery card touch targets, (4) editor bottom nav ergonomics per V.10. Requires device/viewport testing before implementation.",
+        "2026-02-21 08:57:48 UTC: Full scope: Structural audit of mobile experience across all routes. Subtasks (implement as checklist): (1) Hero CTA tap targets — ensure minimum 44x44px touch targets on landing page CTAs. (2) Feature card grid — verify graceful collapse to single column on mobile, no horizontal overflow. (3) Gallery card touch targets — card actions (view, remix, upvote) must be tappable without mis-taps. (4) Editor bottom nav — per constitution §V.10, mobile editor should use bottom navigation bar for key actions. (5) Canvas touch interaction — verify pinch-zoom, drag entities work on mobile Safari/Chrome."
       ]
     },
     {
@@ -1228,19 +1230,21 @@
     {
       "id": "T036",
       "title": "Template badge on gallery cards",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T035",
       "createdAt": "2026-02-21T08:56:04Z",
-      "updatedAt": "2026-02-21T08:56:04Z",
+      "updatedAt": "2026-02-21T09:02:46Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 08:56:04 UTC: Add blue 'Template' pill badge to PublicAnimationCard when animation.tags includes 'template'. Position: top-left overlay. Use Badge component from shadcn. File: src/app/gallery/GalleryClient.tsx or PublicAnimationCard component."
-      ]
+        "2026-02-21 08:56:04 UTC: Add blue 'Template' pill badge to PublicAnimationCard when animation.tags includes 'template'. Position: top-left overlay. Use Badge component from shadcn. File: src/app/gallery/GalleryClient.tsx or PublicAnimationCard component.",
+        "[COMPLETED 2026-02-21T09:02:46Z] Already implemented: PublicAnimationCard.tsx:140-145 renders blue Template pill badge"
+      ],
+      "completedAt": "2026-02-21T09:02:46Z"
     },
     {
       "id": "T037",
