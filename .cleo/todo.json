@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-23T20:56:51Z",
+  "lastUpdated": "2026-02-23T21:29:18Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "46b42c194f3ed633",
+    "checksum": "bf60b707ac142211",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 113,
-    "lastModified": "2026-02-23T20:50:49Z",
+    "generation": 119,
+    "lastModified": "2026-02-23T20:58:19Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": "T051",
+    "currentTask": "T054",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -1712,7 +1712,22 @@
         "2026-02-21 18:58:37 UTC: PRD §12.1: test('Progression workflow'): create base animation, add 3 progressions, reorder via drag-drop, verify gallery shows single card with badge, open detail page and verify base+3 progressions in sequence. Also test 5-progression limit enforcement (6th add should be disabled/rejected).",
         "[COMPLETED 2026-02-23T20:56:51Z] Added missing E2E tests: reorder API, 5-limit enforcement, /progression/[id] page check. Existing tests covered API ordering, gallery filtering, and editor panel."
       ],
-      "completedAt": "2026-02-23T20:56:51Z"
+      "completedAt": "2026-02-23T20:56:51Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-23T20:57:07Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T052",
@@ -1722,7 +1737,7 @@
       "type": "task",
       "parentId": null,
       "createdAt": "2026-02-21T18:58:46Z",
-      "updatedAt": "2026-02-21T18:58:46Z",
+      "updatedAt": "2026-02-23T20:57:32Z",
       "size": "medium",
       "position": 8,
       "positionVersion": 0,
@@ -1734,29 +1749,46 @@
     {
       "id": "T053",
       "title": "Remix count display on original animation card",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T052",
       "createdAt": "2026-02-21T18:58:55Z",
-      "updatedAt": "2026-02-21T18:58:55Z",
+      "updatedAt": "2026-02-23T20:58:10Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-21 18:58:55 UTC: F-RMX-05: On gallery cards and replay page, show '5 remixes' count when remix_count > 0. remix_count column already exists and is incremented by DB trigger on INSERT. UI: small badge or text below title on AnimationCard.tsx and PublicAnimationCard.tsx. Also show on replay viewer header. Fetch: remix_count is already a column in saved_animations, include in API response."
-      ]
+        "2026-02-21 18:58:55 UTC: F-RMX-05: On gallery cards and replay page, show '5 remixes' count when remix_count > 0. remix_count column already exists and is incremented by DB trigger on INSERT. UI: small badge or text below title on AnimationCard.tsx and PublicAnimationCard.tsx. Also show on replay viewer header. Fetch: remix_count is already a column in saved_animations, include in API response.",
+        "[COMPLETED 2026-02-23T20:58:10Z] Added remix_count badge to AnimationCard, PublicAnimationCard (bottom-right overlay), and replay page header. Data was already in API."
+      ],
+      "completedAt": "2026-02-23T20:58:10Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-23T20:58:11Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T054",
       "title": "Remix genealogy breadcrumb chain (A→B→C)",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T052",
       "createdAt": "2026-02-21T18:59:04Z",
-      "updatedAt": "2026-02-21T18:59:04Z",
+      "updatedAt": "2026-02-23T21:29:18Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
@@ -1765,8 +1797,10 @@
         "T053"
       ],
       "notes": [
-        "2026-02-21 18:59:04 UTC: F-RMX-04: For animations with 3+ remix generations, show full chain as breadcrumb. Need recursive/iterative lookup: given animation C's remixed_from_id=B, fetch B's remixed_from_id=A. Cap at ~5 hops to avoid infinite loops. Component: RemixChain.tsx — horizontal breadcrumb 'Original Title → Remix 1 → Remix 2 → Current'. Each node is a link to /replay/[id]. Show on replay page header and gallery card tooltip/expand. API: may need /api/animations/[id]/lineage endpoint that resolves chain server-side."
-      ]
+        "2026-02-21 18:59:04 UTC: F-RMX-04: For animations with 3+ remix generations, show full chain as breadcrumb. Need recursive/iterative lookup: given animation C's remixed_from_id=B, fetch B's remixed_from_id=A. Cap at ~5 hops to avoid infinite loops. Component: RemixChain.tsx — horizontal breadcrumb 'Original Title → Remix 1 → Remix 2 → Current'. Each node is a link to /replay/[id]. Show on replay page header and gallery card tooltip/expand. API: may need /api/animations/[id]/lineage endpoint that resolves chain server-side.",
+        "[COMPLETED 2026-02-23T21:29:18Z] Created /api/animations/[id]/lineage endpoint (walks remixed_from_id chain up to 5 hops). Created RemixChain.tsx client component rendering A→B→C breadcrumb. Wired into ReplayActions on replay page."
+      ],
+      "completedAt": "2026-02-23T21:29:18Z"
     }
   ],
   "labels": {}

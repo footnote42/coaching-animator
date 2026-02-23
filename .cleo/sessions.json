@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-23T20:50:49Z",
-    "totalSessionsCreated": 9
+    "lastModified": "2026-02-23T20:58:19Z",
+    "totalSessionsCreated": 10
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -438,7 +438,7 @@
     },
     {
       "id": "session_20260223_204825_9f6b57",
-      "status": "active",
+      "status": "ended",
       "name": "Phase 2 Progressions — E2E + Remix + Rugby",
       "agentId": null,
       "scope": {
@@ -453,10 +453,10 @@
         ]
       },
       "focus": {
-        "currentTask": "T051",
+        "currentTask": null,
         "currentPhase": null,
         "previousTask": "T051",
-        "sessionNote": null,
+        "sessionNote": "T051 done. Moving to T052 epic for T053/T054.",
         "nextAction": null,
         "focusHistory": [
           {
@@ -477,7 +477,7 @@
         ]
       },
       "startedAt": "2026-02-23T20:48:25Z",
-      "lastActivity": "2026-02-23T20:50:49Z",
+      "lastActivity": "2026-02-23T20:57:22Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
@@ -488,6 +488,61 @@
       "startMetrics": {
         "session_id": "session_20260223_204825_9f6b57",
         "start_timestamp": "2026-02-23T20:48:25Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      },
+      "endedAt": "2026-02-23T20:57:22Z"
+    },
+    {
+      "id": "session_20260223_205727_236b45",
+      "status": "active",
+      "name": "Phase 2 Remix Genealogy",
+      "agentId": null,
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T052",
+        "computedTaskIds": [
+          "T052",
+          "T053",
+          "T054"
+        ]
+      },
+      "focus": {
+        "currentTask": "T054",
+        "currentPhase": null,
+        "previousTask": "T053",
+        "sessionNote": null,
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T052",
+            "timestamp": "2026-02-23T20:57:27Z",
+            "action": "focused"
+          },
+          {
+            "taskId": "T053",
+            "timestamp": "2026-02-23T20:57:32Z",
+            "action": "focused"
+          },
+          {
+            "taskId": "T054",
+            "timestamp": "2026-02-23T20:58:19Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-23T20:57:27Z",
+      "lastActivity": "2026-02-23T20:58:19Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 3,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260223_205727_236b45",
+        "start_timestamp": "2026-02-23T20:57:27Z",
         "start_tokens": 0,
         "max_tokens": 200000
       }
