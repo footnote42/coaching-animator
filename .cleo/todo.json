@@ -47,17 +47,17 @@
       }
     }
   },
-  "lastUpdated": "2026-02-21T20:22:42Z",
+  "lastUpdated": "2026-02-21T20:22:59Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "ce3c25e57ae75e7b",
+    "checksum": "7ea864d3b3ba9818",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 107,
-    "lastModified": "2026-02-21T08:38:10Z",
+    "generation": 112,
+    "lastModified": "2026-02-23T20:48:25Z",
     "multiSessionEnabled": true,
-    "activeSessionCount": 1
+    "activeSessionCount": 2
   },
   "focus": {
     "currentTask": null,
@@ -1570,12 +1570,12 @@
     {
       "id": "T047",
       "title": "Phase 2: Drill Progressions",
-      "status": "pending",
+      "status": "active",
       "priority": "high",
       "type": "task",
       "parentId": null,
       "createdAt": "2026-02-21T18:57:51Z",
-      "updatedAt": "2026-02-21T18:57:51Z",
+      "updatedAt": "2026-02-23T20:48:25Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
@@ -1601,17 +1601,32 @@
         "2026-02-21 18:58:08 UTC: F-PROG-01,02,03: In Editor.tsx sidebar, add a 'Progressions' panel. Allows saving current animation as base, then adding up to 5 child progressions linked via parent_animation_id FK. Children reorderable via drag-drop (updates progression_order). UI: list of progression cards with drag handle, 'Add Progression' button (disabled at 5), 'Save as Base' toggle. API: POST /api/animations with parent_animation_id + progression_order + is_progression=true.",
         "[COMPLETED 2026-02-21T20:22:42Z] dnd-kit installed, ProgressionPanel sortable pills with drag handles, PATCH /progressions/reorder API, optimistic reorder in Editor"
       ],
-      "completedAt": "2026-02-21T20:22:42Z"
+      "completedAt": "2026-02-21T20:22:42Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T20:22:50Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T049",
       "title": "Gallery card: aggregate progression set (badge + expand)",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T047",
       "createdAt": "2026-02-21T18:58:19Z",
-      "updatedAt": "2026-02-21T18:58:19Z",
+      "updatedAt": "2026-02-21T20:22:53Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
@@ -1620,18 +1635,35 @@
         "T048"
       ],
       "notes": [
-        "2026-02-21 18:58:19 UTC: F-PROG-04: Gallery should show ONE card per progression set. If an animation has children (is_progression=false and has progressions), show '+ N progressions' badge. Query: fetch base animations only (is_progression=false), include count of children. Clicking badge expands in-place OR navigates to collection detail. Key files: src/features/gallery/components/AnimationCard.tsx, PublicAnimationCard.tsx, GalleryClient.tsx. API: update /api/animations to include progression_count."
-      ]
+        "2026-02-21 18:58:19 UTC: F-PROG-04: Gallery should show ONE card per progression set. If an animation has children (is_progression=false and has progressions), show '+ N progressions' badge. Query: fetch base animations only (is_progression=false), include count of children. Clicking badge expands in-place OR navigates to collection detail. Key files: src/features/gallery/components/AnimationCard.tsx, PublicAnimationCard.tsx, GalleryClient.tsx. API: update /api/animations to include progression_count.",
+        "[COMPLETED 2026-02-21T20:22:53Z] Already shipped: badge in AnimationCard + PublicAnimationCard, gallery API filters progressions, progression_count in response. Badge made into Link to /progression/[id]"
+      ],
+      "completedAt": "2026-02-21T20:22:53Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T20:22:55Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T050",
       "title": "Collection detail: base + progressions vertical sequence",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T047",
       "createdAt": "2026-02-21T18:58:28Z",
-      "updatedAt": "2026-02-21T18:58:28Z",
+      "updatedAt": "2026-02-21T20:22:58Z",
       "size": "medium",
       "position": 3,
       "positionVersion": 0,
@@ -1640,8 +1672,25 @@
         "T049"
       ],
       "notes": [
-        "2026-02-21 18:58:29 UTC: F-PROG-05: Collection detail page (or new progression-set detail page) shows base animation at top followed by progressions in order. Each section is a replay viewer or thumbnail with title. Route: /progression/[id] or reuse /collections/[id]. Key files: src/app/collections/[id]/page.tsx. Consider whether to reuse collections page or create dedicated progression view. The replay viewer is already shareable, so embed it inline for each step."
-      ]
+        "2026-02-21 18:58:29 UTC: F-PROG-05: Collection detail page (or new progression-set detail page) shows base animation at top followed by progressions in order. Each section is a replay viewer or thumbnail with title. Route: /progression/[id] or reuse /collections/[id]. Key files: src/app/collections/[id]/page.tsx. Consider whether to reuse collections page or create dedicated progression view. The replay viewer is already shareable, so embed it inline for each step.",
+        "[COMPLETED 2026-02-21T20:22:58Z] New /progression/[id] page (vertical sequence, numbered steps, Watch buttons). Progressions API broadened to public/link_shared access. Badges in both card components are now links."
+      ],
+      "completedAt": "2026-02-21T20:22:58Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-21T20:22:59Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T051",

@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-21T08:38:10Z",
-    "totalSessionsCreated": 8
+    "lastModified": "2026-02-23T20:48:25Z",
+    "totalSessionsCreated": 9
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -432,6 +432,52 @@
       "startMetrics": {
         "session_id": "session_20260220_234040_2c7579",
         "start_timestamp": "2026-02-20T23:40:40Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      }
+    },
+    {
+      "id": "session_20260223_204825_9f6b57",
+      "status": "active",
+      "name": "Phase 2 Progressions — E2E + Remix + Rugby",
+      "agentId": null,
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T047",
+        "computedTaskIds": [
+          "T047",
+          "T048",
+          "T049",
+          "T050",
+          "T051"
+        ]
+      },
+      "focus": {
+        "currentTask": "T047",
+        "currentPhase": null,
+        "previousTask": null,
+        "sessionNote": null,
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T047",
+            "timestamp": "2026-02-23T20:48:25Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-23T20:48:25Z",
+      "lastActivity": "2026-02-23T20:48:25Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 1,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260223_204825_9f6b57",
+        "start_timestamp": "2026-02-23T20:48:25Z",
         "start_tokens": 0,
         "max_tokens": 200000
       }

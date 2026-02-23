@@ -143,6 +143,86 @@
         "status": "pending",
         "priority": "medium"
       }
+    },
+    {
+      "id": "log_7f31b75dde46",
+      "timestamp": "2026-02-21T20:22:52Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T048",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T20:22:42Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2d50cc8a960c",
+      "timestamp": "2026-02-21T20:22:56Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T049",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T20:22:53Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ed2fa2a3c8f5",
+      "timestamp": "2026-02-21T20:23:00Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T050",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-21T20:22:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c52b3bf4a0ea",
+      "timestamp": "2026-02-23T20:48:25Z",
+      "sessionId": "session_20260223_204825_9f6b57",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T047",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T047"
+      }
     }
-  ]
+  ],
+  "_meta": {
+    "totalEntries": 4,
+    "lastEntry": "2026-02-23T20:48:25Z",
+    "firstEntry": "2026-02-21T20:22:52Z"
+  }
 }
