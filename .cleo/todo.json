@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-21T20:22:59Z",
+  "lastUpdated": "2026-02-23T20:56:51Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "7ea864d3b3ba9818",
+    "checksum": "46b42c194f3ed633",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 112,
-    "lastModified": "2026-02-23T20:48:25Z",
+    "generation": 113,
+    "lastModified": "2026-02-23T20:50:49Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 2
   },
   "focus": {
-    "currentTask": null,
+    "currentTask": "T051",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -1570,12 +1570,12 @@
     {
       "id": "T047",
       "title": "Phase 2: Drill Progressions",
-      "status": "active",
+      "status": "pending",
       "priority": "high",
       "type": "task",
       "parentId": null,
       "createdAt": "2026-02-21T18:57:51Z",
-      "updatedAt": "2026-02-23T20:48:25Z",
+      "updatedAt": "2026-02-23T20:48:31Z",
       "size": "medium",
       "position": 7,
       "positionVersion": 0,
@@ -1695,12 +1695,12 @@
     {
       "id": "T051",
       "title": "E2E tests — Progression workflow",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T047",
       "createdAt": "2026-02-21T18:58:36Z",
-      "updatedAt": "2026-02-21T18:58:36Z",
+      "updatedAt": "2026-02-23T20:56:51Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
@@ -1709,8 +1709,10 @@
         "T050"
       ],
       "notes": [
-        "2026-02-21 18:58:37 UTC: PRD §12.1: test('Progression workflow'): create base animation, add 3 progressions, reorder via drag-drop, verify gallery shows single card with badge, open detail page and verify base+3 progressions in sequence. Also test 5-progression limit enforcement (6th add should be disabled/rejected)."
-      ]
+        "2026-02-21 18:58:37 UTC: PRD §12.1: test('Progression workflow'): create base animation, add 3 progressions, reorder via drag-drop, verify gallery shows single card with badge, open detail page and verify base+3 progressions in sequence. Also test 5-progression limit enforcement (6th add should be disabled/rejected).",
+        "[COMPLETED 2026-02-23T20:56:51Z] Added missing E2E tests: reorder API, 5-limit enforcement, /progression/[id] page check. Existing tests covered API ordering, gallery filtering, and editor panel."
+      ],
+      "completedAt": "2026-02-23T20:56:51Z"
     },
     {
       "id": "T052",

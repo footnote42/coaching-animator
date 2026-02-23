@@ -218,11 +218,41 @@
         "type": "epic",
         "rootTaskId": "T047"
       }
+    },
+    {
+      "id": "log_5701e58ea3bf",
+      "timestamp": "2026-02-23T20:48:31Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T047"
+      },
+      "after": {
+        "currentTask": "T051"
+      },
+      "details": null
+    },
+    {
+      "id": "log_7ebdae2d0117",
+      "timestamp": "2026-02-23T20:50:49Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T051"
+      },
+      "after": {
+        "currentTask": "T051"
+      },
+      "details": null
     }
   ],
   "_meta": {
-    "totalEntries": 4,
-    "lastEntry": "2026-02-23T20:48:25Z",
+    "totalEntries": 6,
+    "lastEntry": "2026-02-23T20:50:49Z",
     "firstEntry": "2026-02-21T20:22:52Z"
   }
 }

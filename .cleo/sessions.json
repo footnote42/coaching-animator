@@ -5,7 +5,7 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-23T20:48:25Z",
+    "lastModified": "2026-02-23T20:50:49Z",
     "totalSessionsCreated": 9
   },
   "config": {
@@ -453,9 +453,9 @@
         ]
       },
       "focus": {
-        "currentTask": "T047",
+        "currentTask": "T051",
         "currentPhase": null,
-        "previousTask": null,
+        "previousTask": "T051",
         "sessionNote": null,
         "nextAction": null,
         "focusHistory": [
@@ -463,15 +463,25 @@
             "taskId": "T047",
             "timestamp": "2026-02-23T20:48:25Z",
             "action": "focused"
+          },
+          {
+            "taskId": "T051",
+            "timestamp": "2026-02-23T20:48:31Z",
+            "action": "focused"
+          },
+          {
+            "taskId": "T051",
+            "timestamp": "2026-02-23T20:50:49Z",
+            "action": "focused"
           }
         ]
       },
       "startedAt": "2026-02-23T20:48:25Z",
-      "lastActivity": "2026-02-23T20:48:25Z",
+      "lastActivity": "2026-02-23T20:50:49Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
-        "focusChanges": 1,
+        "focusChanges": 3,
         "suspendCount": 0,
         "resumeCount": 0
       },
