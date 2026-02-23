@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { RemixButton } from '@/shared/ui/RemixButton';
+import { RemixChain } from '@/shared/ui/RemixChain';
 
 interface ReplayActionsProps {
   animationId: string;
@@ -12,6 +13,10 @@ interface ReplayActionsProps {
 export function ReplayActions({ animationId, remixedFromId, remixedFromTitle }: ReplayActionsProps) {
   return (
     <div className="flex flex-col items-center gap-3">
+      {/* Phase 2: Remix genealogy chain (≥3 generations) */}
+      <RemixChain animationId={animationId} />
+
+      {/* Fallback single-level attribution when no deep chain */}
       {remixedFromTitle && (
         <p className="text-sm text-text-primary/60">
           Remixed from{' '}

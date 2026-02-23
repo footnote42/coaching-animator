@@ -158,6 +158,13 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           </Link>
         )}
 
+        {/* Phase 2: Remix count badge */}
+        {(animation.remix_count ?? 0) > 0 && (
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-surface/80 text-text-primary/70 text-xs font-medium rounded-full">
+            {animation.remix_count} remix{animation.remix_count !== 1 ? 'es' : ''}
+          </div>
+        )}
+
         {/* Upvote button */}
         {!isOwner && (
           <button

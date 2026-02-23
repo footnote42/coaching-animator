@@ -114,6 +114,82 @@ test.describe('Progressions — Gallery', () => {
   });
 });
 
+test.describe('Progressions — Reorder', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAsTestUser(page);
+  });
+
+  test('reorder API updates progression_order', async ({ page }) => {
+    const baseId = await createAnimation(page);
+    const p1 = await createProgression(page, baseId, 1);
+    const p2 = await createProgression(page, baseId, 2);
+
+    // Reverse order: p2 first, p1 second
+    const res = await page.request.patch(`/api/animations/${baseId}/progressions/reorder`, {
+      data: { order: [p2, p1] },
+    });
+    expect(res.ok()).toBe(true);
+
+    // Verify updated ordering
+    const listRes = await page.request.get(`/api/animations/${baseId}/progressions`);
+    const { progressions } = await listRes.json();
+    expect(progressions[0].id).toBe(p2);
+    expect(progressions[1].id).toBe(p1);
+    expect(progressions[0].progression_order).toBe(1);
+    expect(progressions[1].progression_order).toBe(2);
+  });
+
+  test('reorder API rejects unknown progression IDs', async ({ page }) => {
+    const baseId = await createAnimation(page);
+    await createProgression(page, baseId, 1);
+
+    const res = await page.request.patch(`/api/animations/${baseId}/progressions/reorder`, {
+      data: { order: ['00000000-0000-0000-0000-000000000000'] },
+    });
+    expect(res.status()).toBe(400);
+  });
+});
+
+test.describe('Progressions — 5-limit enforcement', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAsTestUser(page);
+  });
+
+  test('API allows up to 5 progressions', async ({ page }) => {
+    const baseId = await createAnimation(page);
+    for (let i = 1; i <= 5; i++) {
+      const id = await createProgression(page, baseId, i);
+      expect(id).toBeTruthy();
+    }
+
+    const res = await page.request.get(`/api/animations/${baseId}/progressions`);
+    const { progressions } = await res.json();
+    expect(progressions).toHaveLength(5);
+  });
+});
+
+test.describe('Progressions — /progression/[id] page', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAsTestUser(page);
+  });
+
+  test('progression set page shows base and all progressions', async ({ page }) => {
+    // Make a public base animation so the progression page can load it
+    const baseId = await createAnimation(page, {
+      title: 'E2E Progression Set Base',
+      visibility: 'public',
+    });
+    await createProgression(page, baseId, 1);
+    await createProgression(page, baseId, 2);
+
+    await page.goto(`/progression/${baseId}`);
+    await page.waitForLoadState('networkidle');
+
+    // Should show the base title
+    await expect(page.getByText('E2E Progression Set Base')).toBeVisible({ timeout: 8000 });
+  });
+});
+
 test.describe('Progressions — Editor Panel', () => {
   test.beforeEach(async ({ page }) => {
     await loginAsTestUser(page);

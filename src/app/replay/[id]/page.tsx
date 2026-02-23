@@ -63,6 +63,7 @@ export default async function ReplayPage({ params }: PageProps) {
       frame_count,
       visibility,
       upvote_count,
+      remix_count,
       view_count,
       created_at,
       user_id,
@@ -126,6 +127,12 @@ export default async function ReplayPage({ params }: PageProps) {
             <span>{animation.frame_count} frames</span>
             <span className="hidden sm:inline">•</span>
             <span>{animation.upvote_count} upvotes</span>
+            {(animation.remix_count ?? 0) > 0 && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <span>{animation.remix_count} remix{animation.remix_count !== 1 ? 'es' : ''}</span>
+              </>
+            )}
           </div>
           {animation.tags && animation.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
