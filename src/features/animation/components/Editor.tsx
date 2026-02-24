@@ -41,6 +41,7 @@ import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
+import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
 
 import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { Toaster, toast } from 'sonner';
@@ -605,6 +606,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
 
   return (
     <div className="flex h-screen bg-[var(--color-surface-warm)]">
+      <FirstRunModal />
       <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
         <ErrorBoundary fallbackTitle="Sidebar Error">
           <div className="bg-tactics-white flex-1 overflow-y-auto">
