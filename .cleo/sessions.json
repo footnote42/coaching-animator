@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-23T20:58:19Z",
-    "totalSessionsCreated": 10
+    "lastModified": "2026-02-24T21:10:32Z",
+    "totalSessionsCreated": 11
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -495,7 +495,7 @@
     },
     {
       "id": "session_20260223_205727_236b45",
-      "status": "active",
+      "status": "ended",
       "name": "Phase 2 Remix Genealogy",
       "agentId": null,
       "scope": {
@@ -508,10 +508,10 @@
         ]
       },
       "focus": {
-        "currentTask": "T054",
+        "currentTask": null,
         "currentPhase": null,
-        "previousTask": "T053",
-        "sessionNote": null,
+        "previousTask": "T054",
+        "sessionNote": "T051 E2E tests, T053 remix count badges, T054 lineage API + RemixChain all complete. T052 epic done.",
         "nextAction": null,
         "focusHistory": [
           {
@@ -532,7 +532,7 @@
         ]
       },
       "startedAt": "2026-02-23T20:57:27Z",
-      "lastActivity": "2026-02-23T20:58:19Z",
+      "lastActivity": "2026-02-23T21:32:15Z",
       "suspendedAt": null,
       "stats": {
         "tasksCompleted": 0,
@@ -543,6 +543,51 @@
       "startMetrics": {
         "session_id": "session_20260223_205727_236b45",
         "start_timestamp": "2026-02-23T20:57:27Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      },
+      "endedAt": "2026-02-23T21:32:15Z"
+    },
+    {
+      "id": "session_20260224_211032_a4256c",
+      "status": "active",
+      "name": "Rugby Pivot Closeout",
+      "agentId": null,
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T044",
+        "computedTaskIds": [
+          "T044",
+          "T045",
+          "T046"
+        ]
+      },
+      "focus": {
+        "currentTask": "T044",
+        "currentPhase": null,
+        "previousTask": null,
+        "sessionNote": null,
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T044",
+            "timestamp": "2026-02-24T21:10:32Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-24T21:10:32Z",
+      "lastActivity": "2026-02-24T21:10:32Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 1,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260224_211032_a4256c",
+        "start_timestamp": "2026-02-24T21:10:32Z",
         "start_tokens": 0,
         "max_tokens": 200000
       }

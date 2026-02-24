@@ -346,11 +346,79 @@
         "currentTask": "T054"
       },
       "details": null
+    },
+    {
+      "id": "log_a35fc0fb47b9",
+      "timestamp": "2026-02-23T21:29:25Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T054",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-23T21:29:18Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_32e90d4059b3",
+      "timestamp": "2026-02-23T21:29:34Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T052",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-23T21:29:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1207d6482958",
+      "timestamp": "2026-02-23T21:32:15Z",
+      "sessionId": "session_20260223_205727_236b45",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T051 E2E tests, T053 remix count badges, T054 lineage API + RemixChain all complete. T052 epic done."
+      }
+    },
+    {
+      "id": "log_44c396e1b76d",
+      "timestamp": "2026-02-24T21:10:32Z",
+      "sessionId": "session_20260224_211032_a4256c",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T044",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T044"
+      }
     }
   ],
   "_meta": {
-    "totalEntries": 20,
-    "lastEntry": "2026-02-23T20:58:20Z",
+    "totalEntries": 24,
+    "lastEntry": "2026-02-24T21:10:32Z",
     "firstEntry": "2026-02-21T18:57:51Z",
     "entriesPruned": 0
   }
