@@ -414,11 +414,132 @@
         "type": "epic",
         "rootTaskId": "T044"
       }
+    },
+    {
+      "id": "log_90543b9294d7",
+      "timestamp": "2026-02-24T21:10:49Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T045",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:10:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9c6b89a0ff8c",
+      "timestamp": "2026-02-24T21:10:54Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T046",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:10:51Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0b2c8ead751a",
+      "timestamp": "2026-02-24T21:10:58Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T044",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:10:56Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_8327895f440b",
+      "timestamp": "2026-02-24T21:11:06Z",
+      "sessionId": "session_20260224_211032_a4256c",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T044-T046 closed: Rugby Pivot verified and complete"
+      }
+    },
+    {
+      "id": "log_5cf00abf981c",
+      "timestamp": "2026-02-24T21:11:18Z",
+      "sessionId": "session_20260224_211118_77c67b",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T033",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "task",
+        "rootTaskId": "T033"
+      }
+    },
+    {
+      "id": "log_077465b6444f",
+      "timestamp": "2026-02-24T21:15:35Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T033",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:15:33Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_32f9e0d63d36",
+      "timestamp": "2026-02-24T21:15:43Z",
+      "sessionId": "session_20260224_211118_77c67b",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T033 complete: FirstRunModal created and wired into Editor"
+      }
     }
   ],
   "_meta": {
-    "totalEntries": 24,
-    "lastEntry": "2026-02-24T21:10:32Z",
+    "totalEntries": 31,
+    "lastEntry": "2026-02-24T21:15:43Z",
     "firstEntry": "2026-02-21T18:57:51Z",
     "entriesPruned": 0
   }
