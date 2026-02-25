@@ -1,4 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
+import { config } from 'dotenv'
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+// Load local E2E env (BASE_URL=http://localhost:3000 by default)
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
+config({ path: resolve(__dirname, 'tests/e2e/.env.local') })
 
 /**
  * Playwright Configuration for coaching-animator E2E Tests
