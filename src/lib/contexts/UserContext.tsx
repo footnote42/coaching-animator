@@ -15,6 +15,7 @@ interface UserProfile {
   club_name: string | null;
   primary_strip_color: string | null;
   secondary_strip_color: string | null;
+  club_badge_url: string | null;
 }
 
 interface UserContextValue {
@@ -43,7 +44,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color')
+        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color, club_badge_url')
         .eq('id', userId)
         .single();
 
@@ -67,6 +68,7 @@ export function UserProvider({ children }: UserProviderProps) {
           club_name: null,
           primary_strip_color: null,
           secondary_strip_color: null,
+          club_badge_url: null,
         });
         return;
       }
@@ -83,6 +85,7 @@ export function UserProvider({ children }: UserProviderProps) {
           club_name: data.club_name || null,
           primary_strip_color: data.primary_strip_color || null,
           secondary_strip_color: data.secondary_strip_color || null,
+          club_badge_url: data.club_badge_url || null,
         };
         console.log('[UserContext] Setting profile state:', newProfile);
         setProfile(newProfile);
@@ -104,6 +107,7 @@ export function UserProvider({ children }: UserProviderProps) {
         club_name: null,
         primary_strip_color: null,
         secondary_strip_color: null,
+        club_badge_url: null,
       });
     }
 
