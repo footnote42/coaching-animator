@@ -7,6 +7,7 @@ export const UpdateProfileSchema = z.object({
   club_name: z.string().max(100).optional().nullable(),
   primary_strip_color: z.string().regex(hexColorRegex, 'Must be a hex color like #FF0000').optional().nullable(),
   secondary_strip_color: z.string().regex(hexColorRegex, 'Must be a hex color like #FF0000').optional().nullable(),
+  club_badge_url: z.string().url('Must be a valid URL').optional().nullable(),
 });
 
 export const UserRoleSchema = z.enum(['user', 'admin']);

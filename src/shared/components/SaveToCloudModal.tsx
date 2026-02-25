@@ -105,11 +105,7 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
       if (!result.ok || !result.data) {
         // Client errors (400-499): Show error in modal, DO NOT queue offline
         if (result.status >= 400 && result.status < 500) {
-          setError(
-            result.status === 400
-              ? 'Invalid animation data. Please try again or contact support.'
-              : result.error || 'Failed to save animation'
-          );
+          setError(result.error || 'Invalid animation data. Please try again or contact support.');
           return;
         }
 

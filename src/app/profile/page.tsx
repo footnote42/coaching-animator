@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+
+const BADGE_MAX_BYTES = 500 * 1024; // 500 KB
+const BADGE_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -16,6 +20,10 @@ export default function ProfilePage() {
   const [clubName, setClubName] = useState('');
   const [primaryColor, setPrimaryColor] = useState('');
   const [secondaryColor, setSecondaryColor] = useState('');
+  const [clubBadgeUrl, setClubBadgeUrl] = useState<string | null>(null);
+  const [badgeUploading, setBadgeUploading] = useState(false);
+  const [badgeError, setBadgeError] = useState<string | null>(null);
+  const badgeInputRef = useRef<HTMLInputElement>(null);
 
   // OAuth / Password Management State
   const [password, setPassword] = useState('');
@@ -31,6 +39,7 @@ export default function ProfilePage() {
       setClubName(profile.club_name || '');
       setPrimaryColor(profile.primary_strip_color || '');
       setSecondaryColor(profile.secondary_strip_color || '');
+      setClubBadgeUrl(profile.club_badge_url ?? null);
     }
   }, [profile]);
 
@@ -82,6 +91,72 @@ export default function ProfilePage() {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleBadgeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setBadgeError(null);
+
+    if (!BADGE_ALLOWED_TYPES.includes(file.type)) {
+      setBadgeError('Only PNG, JPG, and SVG files are allowed.');
+      return;
+    }
+    if (file.size > BADGE_MAX_BYTES) {
+      setBadgeError('File must be under 500 KB.');
+      return;
+    }
+
+    setBadgeUploading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const ext = file.name.split('.').pop() ?? 'png';
+      const path = `${user.id}/badge.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('club-badges')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw new Error(uploadError.message);
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('club-badges')
+        .getPublicUrl(path);
+
+      const { ok, error: apiError } = await putWithRetry('/api/user/profile', {
+        club_badge_url: publicUrl,
+      });
+
+      if (!ok) throw new Error(apiError || 'Failed to save badge URL');
+
+      setClubBadgeUrl(publicUrl);
+      await refreshProfile();
+    } catch (err) {
+      setBadgeError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setBadgeUploading(false);
+      // Reset input so the same file can be re-selected if needed
+      if (badgeInputRef.current) badgeInputRef.current.value = '';
+    }
+  };
+
+  const handleBadgeRemove = async () => {
+    if (!user) return;
+    setBadgeError(null);
+    setBadgeUploading(true);
+    try {
+      const { ok, error: apiError } = await putWithRetry('/api/user/profile', {
+        club_badge_url: null,
+      });
+      if (!ok) throw new Error(apiError || 'Failed to remove badge');
+      setClubBadgeUrl(null);
+      await refreshProfile();
+    } catch (err) {
+      setBadgeError(err instanceof Error ? err.message : 'Remove failed');
+    } finally {
+      setBadgeUploading(false);
     }
   };
 
@@ -227,6 +302,62 @@ export default function ProfilePage() {
               </p>
 
               <div className="space-y-4">
+                {/* Club Badge */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Club Badge
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {clubBadgeUrl ? (
+                        <Image
+                          src={clubBadgeUrl}
+                          alt="Club badge"
+                          width={64}
+                          height={64}
+                          className="object-contain w-full h-full"
+                          unoptimized
+                        />
+                      ) : (
+                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        ref={badgeInputRef}
+                        type="file"
+                        id="clubBadge"
+                        accept="image/png,image/jpeg,image/svg+xml"
+                        onChange={handleBadgeUpload}
+                        disabled={badgeUploading}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="clubBadge"
+                        className={`px-3 py-1.5 text-sm border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {badgeUploading ? 'Uploading...' : clubBadgeUrl ? 'Change Badge' : 'Upload Badge'}
+                      </label>
+                      {clubBadgeUrl && (
+                        <button
+                          type="button"
+                          onClick={handleBadgeRemove}
+                          disabled={badgeUploading}
+                          className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">PNG, JPG or SVG, max 500 KB</p>
+                  {badgeError && (
+                    <p className="mt-1 text-xs text-red-600">{badgeError}</p>
+                  )}
+                </div>
+
                 <div>
                   <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-1">
                     Club Name
