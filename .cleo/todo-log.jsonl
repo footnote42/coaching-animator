@@ -550,11 +550,105 @@
         "type": "task",
         "rootTaskId": "T034"
       }
+    },
+    {
+      "id": "log_c8438fc89e35",
+      "timestamp": "2026-02-24T21:21:43Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T034",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:21:34Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_55e35fc18fb6",
+      "timestamp": "2026-02-24T21:21:43Z",
+      "sessionId": "session_20260224_211810_24de13",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T034 audit complete: no regressions found"
+      }
+    },
+    {
+      "id": "log_786dd830dd0c",
+      "timestamp": "2026-02-24T21:26:04Z",
+      "sessionId": "session_20260224_212604_09ddd6",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": "T047",
+      "before": null,
+      "after": null,
+      "details": "Multi-session started",
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T047"
+      }
+    },
+    {
+      "id": "log_9f8a044c9acc",
+      "timestamp": "2026-02-24T21:26:08Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T047",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-24T21:26:05Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_60cede7af722",
+      "timestamp": "2026-02-24T21:26:09Z",
+      "sessionId": "session_20260224_212604_09ddd6",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T047 epic closed"
+      }
+    },
+    {
+      "id": "log_e427f4ef1959",
+      "timestamp": "2026-02-25T21:38:11Z",
+      "sessionId": "session_20260220_234040_2c7579",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "UI/UX audit complete, closing session to start new work"
+      }
     }
   ],
   "_meta": {
-    "totalEntries": 32,
-    "lastEntry": "2026-02-24T21:18:11Z",
+    "totalEntries": 38,
+    "lastEntry": "2026-02-25T21:38:11Z",
     "firstEntry": "2026-02-21T18:57:51Z",
     "entriesPruned": 0
   }
