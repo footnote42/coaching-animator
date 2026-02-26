@@ -4,11 +4,19 @@ import { test, expect } from '@playwright/test'
  * Share Route E2E Tests
  *
  * Validates the /share/[id] mobile-optimised watch experience:
+ *
+ * Original (pre-T055):
  * - Auto-play starts within 500ms of load (no user interaction required)
  * - Navigation bar is absent from DOM
  * - Canvas fills viewport width on 375px (no horizontal overflow)
- * - Play/pause button meets ≥48px touch target requirement
- * - Pause and restart controls are functional
+ *
+ * T055 additions (mobile redesign):
+ * - No vertical scroll — canvas + controls fit within 100dvh
+ * - FloatingRemote pill is visible and positioned within canvas bounds
+ * - Drag handle (GripVertical) is present in the pill
+ * - Play/pause button meets ≥44px touch target (Apple HIG minimum)
+ * - Double-tap play button resets to start and resumes
+ * - Back-to-site link present and positioned bottom-left
  *
  * Regression: /replay/[id] must still render nav (checked here too).
  */
@@ -53,11 +61,10 @@ test.describe('Share route — auto-play', () => {
     await page.goto(`/share/${testAnimationId}`)
     await page.waitForSelector('canvas', { state: 'visible', timeout: 10000 })
 
-    // Wait for canvas to be present, then check that a play/pause toggle appears in playing state
     // ShareViewer sets isPlaying=true after 100ms; by 500ms it should be playing
     await page.waitForTimeout(500)
 
-    // The button label switches to "Pause" when playing
+    // FloatingRemote switches to Pause aria-label when playing
     const pauseButton = page.locator('button[aria-label="Pause"]')
     await expect(pauseButton).toBeVisible({ timeout: 500 })
   })
@@ -90,11 +97,26 @@ test.describe('Share route — no navigation chrome', () => {
 })
 
 // ============================================================================
-// Mobile viewport — canvas and touch targets
+// Mobile viewport — no scroll (T055 core requirement)
 // ============================================================================
 
-test.describe('Share route — mobile viewport (375×667)', () => {
+test.describe('Share route — no scroll on mobile (T055)', () => {
   test.use({ viewport: { width: 375, height: 667 } })
+
+  test('page has no vertical scroll on 375×667 viewport', async ({ page }) => {
+    test.skip(!testAnimationId, 'No test animation available')
+
+    await page.goto(`/share/${testAnimationId}`)
+    await page.waitForSelector('canvas', { state: 'visible', timeout: 10000 })
+
+    // Wait for ResizeObserver to settle canvas dimensions
+    await page.waitForTimeout(500)
+
+    const hasVerticalScroll = await page.evaluate(
+      () => document.documentElement.scrollHeight > window.innerHeight
+    )
+    expect(hasVerticalScroll).toBe(false)
+  })
 
   test('canvas fills viewport width without horizontal overflow', async ({ page }) => {
     test.skip(!testAnimationId, 'No test animation available')
@@ -102,7 +124,6 @@ test.describe('Share route — mobile viewport (375×667)', () => {
     await page.goto(`/share/${testAnimationId}`)
     await page.waitForSelector('canvas', { state: 'visible', timeout: 10000 })
 
-    // Poll until canvas resizes from SSR default
     const canvas = page.locator('canvas').first()
     await expect
       .poll(
@@ -127,8 +148,34 @@ test.describe('Share route — mobile viewport (375×667)', () => {
     )
     expect(hasHorizontalScroll).toBe(false)
   })
+})
 
-  test('play/pause button meets 48×48px touch target requirement', async ({ page }) => {
+// ============================================================================
+// FloatingRemote — presence and layout (T055)
+// ============================================================================
+
+test.describe('Share route — FloatingRemote (T055)', () => {
+  test.use({ viewport: { width: 375, height: 667 } })
+
+  test('FloatingRemote pill is visible after load', async ({ page }) => {
+    test.skip(!testAnimationId, 'No test animation available')
+
+    await page.goto(`/share/${testAnimationId}`)
+    // Wait for auto-play to resolve (pill renders immediately but play button label depends on state)
+    await page.waitForSelector('button[aria-label="Pause"], button[aria-label="Play"]', {
+      state: 'visible',
+      timeout: 10000,
+    })
+
+    const playButton = page
+      .locator('button[aria-label="Pause"]')
+      .or(page.locator('button[aria-label="Play"]'))
+      .first()
+
+    await expect(playButton).toBeVisible()
+  })
+
+  test('play/pause button meets 44×44px touch target minimum (Apple HIG)', async ({ page }) => {
     test.skip(!testAnimationId, 'No test animation available')
 
     await page.goto(`/share/${testAnimationId}`)
@@ -144,16 +191,57 @@ test.describe('Share route — mobile viewport (375×667)', () => {
 
     const box = await playButton.boundingBox()
     expect(box).not.toBeNull()
-    expect(box!.width).toBeGreaterThanOrEqual(48)
-    expect(box!.height).toBeGreaterThanOrEqual(48)
+    expect(box!.width).toBeGreaterThanOrEqual(44)
+    expect(box!.height).toBeGreaterThanOrEqual(44)
+  })
+
+  test('FloatingRemote is positioned within viewport bounds', async ({ page }) => {
+    test.skip(!testAnimationId, 'No test animation available')
+
+    await page.goto(`/share/${testAnimationId}`)
+    await page.waitForSelector('button[aria-label="Pause"], button[aria-label="Play"]', {
+      state: 'visible',
+      timeout: 10000,
+    })
+    await page.waitForTimeout(300) // let ResizeObserver settle
+
+    const playButton = page
+      .locator('button[aria-label="Pause"]')
+      .or(page.locator('button[aria-label="Play"]'))
+      .first()
+
+    const box = await playButton.boundingBox()
+    expect(box).not.toBeNull()
+
+    // Pill must be fully within the 375×667 viewport
+    expect(box!.x).toBeGreaterThanOrEqual(0)
+    expect(box!.y).toBeGreaterThanOrEqual(0)
+    expect(box!.x + box!.width).toBeLessThanOrEqual(375)
+    expect(box!.y + box!.height).toBeLessThanOrEqual(667)
+  })
+
+  test('frame counter is visible (N/M format)', async ({ page }) => {
+    test.skip(!testAnimationId, 'No test animation available')
+
+    await page.goto(`/share/${testAnimationId}`)
+    await page.waitForSelector('button[aria-label="Pause"], button[aria-label="Play"]', {
+      state: 'visible',
+      timeout: 10000,
+    })
+
+    // Frame counter shows "1/N" format
+    const counter = page.locator('span.tabular-nums')
+    await expect(counter).toBeVisible()
+    const text = await counter.textContent()
+    expect(text).toMatch(/^\d+\/\d+$/)
   })
 })
 
 // ============================================================================
-// Controls — pause and restart
+// Controls — play/pause and double-tap reset (T055)
 // ============================================================================
 
-test.describe('Share route — controls', () => {
+test.describe('Share route — controls (T055)', () => {
   test.use({ viewport: { width: 375, height: 667 } })
 
   test('pause button stops playback', async ({ page }) => {
@@ -161,31 +249,35 @@ test.describe('Share route — controls', () => {
 
     await page.goto(`/share/${testAnimationId}`)
 
-    // Wait for auto-play to kick in
     const pauseButton = page.locator('button[aria-label="Pause"]')
     await expect(pauseButton).toBeVisible({ timeout: 2000 })
 
     await pauseButton.click()
 
-    // After pause, the button should switch to Play
     await expect(page.locator('button[aria-label="Play"]')).toBeVisible({ timeout: 1000 })
   })
 
-  test('restart button resumes playback from beginning', async ({ page }) => {
+  test('double-tap play button resets to start and resumes', async ({ page }) => {
     test.skip(!testAnimationId, 'No test animation available')
 
     await page.goto(`/share/${testAnimationId}`)
 
-    // Pause first
+    // Wait for auto-play
     const pauseButton = page.locator('button[aria-label="Pause"]')
     await expect(pauseButton).toBeVisible({ timeout: 2000 })
-    await pauseButton.click()
 
-    // Click Restart
-    await page.locator('button[aria-label="Restart"]').click()
+    // Double-tap within 300ms — use dispatchEvent for precise timing
+    const playBtn = page.locator('button[aria-label="Pause"]').first()
+    await playBtn.click()
+    await playBtn.click() // second click within Playwright's natural timing (~50ms)
 
-    // Should be playing again
-    await expect(page.locator('button[aria-label="Pause"]')).toBeVisible({ timeout: 1000 })
+    // After double-tap reset, animation resumes (Pause label visible again)
+    await expect(page.locator('button[aria-label="Pause"]')).toBeVisible({ timeout: 1500 })
+
+    // Frame counter should show 1/N (reset to start)
+    const counter = page.locator('span.tabular-nums')
+    const text = await counter.textContent()
+    expect(text).toMatch(/^1\//)
   })
 
   test('coaching notes and frame strip absent from DOM', async ({ page }) => {
@@ -194,10 +286,23 @@ test.describe('Share route — controls', () => {
     await page.goto(`/share/${testAnimationId}`)
     await page.waitForLoadState('networkidle')
 
-    // No "Coaching Notes" heading
     await expect(page.getByRole('heading', { name: /coaching notes/i })).toHaveCount(0)
-
-    // No speed buttons (0.5x / 2x are share-stripped)
     await expect(page.locator('button', { hasText: '0.5x' })).toHaveCount(0)
+  })
+})
+
+// ============================================================================
+// Back-to-site link (T055)
+// ============================================================================
+
+test.describe('Share route — back-to-site link (T055)', () => {
+  test('back-to-site link is present and points to home', async ({ page }) => {
+    test.skip(!testAnimationId, 'No test animation available')
+
+    await page.goto(`/share/${testAnimationId}`)
+    await page.waitForLoadState('networkidle')
+
+    const link = page.locator('a[href="/"]').first()
+    await expect(link).toBeVisible()
   })
 })

@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { Frame, SportType, PitchLayout, PlaybackPosition } from '@/core/types';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
 import { EntityLayer } from '@/features/animation/components/Canvas/EntityLayer';
 import { AnnotationLayer } from '@/features/animation/components/Canvas/AnnotationLayer';
+import { FloatingRemote } from '@/features/animation/components/Canvas/FloatingRemote';
 import { useReplayAnimationLoop } from '@/core/hooks/useReplayAnimationLoop';
-import { useCanvasSize } from '@/core/hooks/useCanvasSize';
+import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { hydrateSharePayload } from '@/core/utils/hydratePayload';
 import type { SharePayloadV1 } from '@/core/types/share';
 
@@ -107,7 +107,7 @@ function normalizeReplayPayload(raw: unknown): ReplayPayload {
 }
 
 // ---------------------------------------------------------------------------
-// ShareCanvas — full-bleed canvas, no padding
+// ShareCanvas — sized by container ref via useShareCanvasSize
 // ---------------------------------------------------------------------------
 
 interface ShareCanvasProps {
@@ -116,6 +116,8 @@ interface ShareCanvasProps {
   isPlaying: boolean;
   sport: SportType;
   pitchLayout?: PitchLayout;
+  canvasWidth: number;
+  canvasHeight: number;
   onFrameAdvance: (nextIndex: number) => void;
   onPlaybackComplete: () => void;
 }
@@ -126,10 +128,11 @@ function ShareCanvas({
   isPlaying,
   sport,
   pitchLayout,
+  canvasWidth,
+  canvasHeight,
   onFrameAdvance,
   onPlaybackComplete,
 }: ShareCanvasProps) {
-  const { width: canvasWidth, height: canvasHeight } = useCanvasSize(800, 4 / 3);
   const [playbackPosition, setPlaybackPosition] = useState<PlaybackPosition | null>(null);
 
   useReplayAnimationLoop({
@@ -148,43 +151,44 @@ function ShareCanvas({
   const frameIds = useMemo(() => frames.map((f) => f.id), [frames]);
 
   return (
-    <div style={{ width: canvasWidth }}>
-      <div className="bg-white overflow-hidden">
-        <Stage width={canvasWidth} height={canvasHeight}>
-          <Field sport={sport} width={canvasWidth} height={canvasHeight} layout={pitchLayout} />
-          <AnnotationLayer
-            annotations={currentFrame?.annotations ?? []}
-            selectedAnnotationId={null}
-            onAnnotationSelect={() => {}}
-            onContextMenu={() => {}}
-            interactive={false}
-            currentFrameId={currentFrame?.id ?? ''}
-            frameIds={frameIds}
-          />
-          <EntityLayer
-            entities={entities}
-            selectedEntityId={null}
-            onEntitySelect={() => {}}
-            onEntityMove={() => {}}
-            onEntityDoubleClick={() => {}}
-            onEntityContextMenu={() => {}}
-            interactive={false}
-            playbackPosition={playbackPosition}
-            frames={frames}
-          />
-        </Stage>
-      </div>
+    <div style={{ width: canvasWidth, height: canvasHeight }} className="bg-white overflow-hidden">
+      <Stage width={canvasWidth} height={canvasHeight}>
+        <Field sport={sport} width={canvasWidth} height={canvasHeight} layout={pitchLayout} />
+        <AnnotationLayer
+          annotations={currentFrame?.annotations ?? []}
+          selectedAnnotationId={null}
+          onAnnotationSelect={() => {}}
+          onContextMenu={() => {}}
+          interactive={false}
+          currentFrameId={currentFrame?.id ?? ''}
+          frameIds={frameIds}
+        />
+        <EntityLayer
+          entities={entities}
+          selectedEntityId={null}
+          onEntitySelect={() => {}}
+          onEntityMove={() => {}}
+          onEntityDoubleClick={() => {}}
+          onEntityContextMenu={() => {}}
+          interactive={false}
+          playbackPosition={playbackPosition}
+          frames={frames}
+        />
+      </Stage>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// ShareViewer — stripped, watch-only viewer
+// ShareViewer — full-screen, no scroll, FloatingRemote overlay
 // ---------------------------------------------------------------------------
 
 export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewerProps) {
   const payload = useMemo(() => normalizeReplayPayload(rawPayload), [rawPayload]);
   const frames = payload.frames;
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: canvasWidth, height: canvasHeight } = useShareCanvasSize(containerRef);
 
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -215,45 +219,37 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
   }
 
   return (
-    <div className="relative flex flex-col items-center w-full">
-      {/* Canvas — full-bleed */}
+    <div
+      ref={containerRef}
+      className="relative w-full h-full flex items-center justify-center"
+    >
       <ShareCanvas
         frames={frames}
         currentFrameIndex={currentFrameIndex}
         isPlaying={isPlaying}
         sport={payload.sport}
         pitchLayout={payload.settings?.pitchLayout}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
         onFrameAdvance={setCurrentFrameIndex}
         onPlaybackComplete={() => setIsPlaying(false)}
       />
 
-      {/* Minimal controls */}
-      <div className="mt-4 flex items-center gap-3">
-        <button
-          onClick={reset}
-          className="w-12 h-12 border border-white/30 text-white hover:bg-white/10 transition-colors flex items-center justify-center"
-          aria-label="Restart"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
+      <FloatingRemote
+        isPlaying={isPlaying}
+        currentFrameIndex={currentFrameIndex}
+        totalFrames={frames.length}
+        onTogglePlay={togglePlay}
+        onReset={reset}
+        containerWidth={canvasWidth}
+        containerHeight={canvasHeight}
+      />
 
-        <button
-          onClick={togglePlay}
-          className="w-12 h-12 bg-white text-black hover:bg-white/90 transition-colors flex items-center justify-center"
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-        </button>
-
-        <span className="text-sm text-white/60">
-          {currentFrameIndex + 1} / {frames.length}
-        </span>
-      </div>
-
-      {/* Back-to-site link */}
+      {/* Back-to-site link — bottom-left, away from remote's default bottom-right */}
       <a
         href="/"
-        className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+        className="absolute left-3 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+        style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}
       >
         <span>🏉</span>
         <span className="hidden sm:inline">Coaching Animator</span>
