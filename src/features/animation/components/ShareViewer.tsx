@@ -221,30 +221,34 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
   return (
     <div
       ref={containerRef}
-      className="relative w-full flex items-center justify-center"
+      className="relative w-full overflow-hidden flex items-center justify-center"
       style={{ height: '100dvh' }}
     >
-      <ShareCanvas
-        frames={frames}
-        currentFrameIndex={currentFrameIndex}
-        isPlaying={isPlaying}
-        sport={payload.sport}
-        pitchLayout={payload.settings?.pitchLayout}
-        canvasWidth={canvasWidth}
-        canvasHeight={canvasHeight}
-        onFrameAdvance={setCurrentFrameIndex}
-        onPlaybackComplete={() => setIsPlaying(false)}
-      />
+      {/* Canvas + FloatingRemote share a relative wrapper sized to the canvas,
+          so the remote's absolute position anchors to the canvas, not the viewport */}
+      <div style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}>
+        <ShareCanvas
+          frames={frames}
+          currentFrameIndex={currentFrameIndex}
+          isPlaying={isPlaying}
+          sport={payload.sport}
+          pitchLayout={payload.settings?.pitchLayout}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
+          onFrameAdvance={setCurrentFrameIndex}
+          onPlaybackComplete={() => setIsPlaying(false)}
+        />
 
-      <FloatingRemote
-        isPlaying={isPlaying}
-        currentFrameIndex={currentFrameIndex}
-        totalFrames={frames.length}
-        onTogglePlay={togglePlay}
-        onReset={reset}
-        containerWidth={canvasWidth}
-        containerHeight={canvasHeight}
-      />
+        <FloatingRemote
+          isPlaying={isPlaying}
+          currentFrameIndex={currentFrameIndex}
+          totalFrames={frames.length}
+          onTogglePlay={togglePlay}
+          onReset={reset}
+          containerWidth={canvasWidth}
+          containerHeight={canvasHeight}
+        />
+      </div>
 
       {/* Back-to-site link — bottom-left, away from remote's default bottom-right */}
       <a
