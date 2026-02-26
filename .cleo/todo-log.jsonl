@@ -1071,11 +1071,46 @@
         "currentTask": "T059"
       },
       "details": null
+    },
+    {
+      "id": "log_6243d48a05af",
+      "timestamp": "2026-02-26T18:35:44Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T059",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2026-02-26T18:35:40Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_65dbbe84e3b5",
+      "timestamp": "2026-02-26T18:37:57Z",
+      "sessionId": null,
+      "action": "session_focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T059"
+      },
+      "after": {
+        "currentTask": "T060"
+      },
+      "details": null
     }
   ],
   "_meta": {
-    "totalEntries": 51,
-    "lastEntry": "2026-02-26T18:31:11Z",
+    "totalEntries": 53,
+    "lastEntry": "2026-02-26T18:37:57Z",
     "firstEntry": "2026-02-21T18:57:51Z",
     "entriesPruned": 0
   }

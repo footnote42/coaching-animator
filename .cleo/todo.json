@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-26T18:17:42Z",
+  "lastUpdated": "2026-02-26T18:35:42Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "f972005db3f74659",
+    "checksum": "548faf6bcd58bee1",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 149,
-    "lastModified": "2026-02-26T18:31:11Z",
+    "generation": 152,
+    "lastModified": "2026-02-26T18:37:56Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
   },
   "focus": {
-    "currentTask": "T059",
+    "currentTask": "T060",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -2067,33 +2067,50 @@
     {
       "id": "T059",
       "title": "Wire FloatingRemote into ShareViewer",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T055",
       "createdAt": "2026-02-25T21:42:06Z",
-      "updatedAt": "2026-02-26T18:31:11Z",
+      "updatedAt": "2026-02-26T18:35:40Z",
       "size": "medium",
       "position": 4,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-25 21:42:06 UTC: Remove mt-4 controls block from ShareViewer. Add <FloatingRemote> as absolute overlay inside canvas wrapper. Pass isPlaying, togglePlay, reset, currentFrameIndex, frames.length, canvasWidth, canvasHeight. Back-to-site link moves to bottom-left with safe-area offset."
+        "2026-02-25 21:42:06 UTC: Remove mt-4 controls block from ShareViewer. Add <FloatingRemote> as absolute overlay inside canvas wrapper. Pass isPlaying, togglePlay, reset, currentFrameIndex, frames.length, canvasWidth, canvasHeight. Back-to-site link moves to bottom-left with safe-area offset.",
+        "[COMPLETED 2026-02-26T18:35:40Z] Wired FloatingRemote into ShareViewer. useShareCanvasSize now called at ShareViewer level, canvas dimensions passed down to both ShareCanvas and FloatingRemote. Temp fallback controls removed. lint + tsc clean."
       ],
       "depends": [
         "T057",
         "T058"
-      ]
+      ],
+      "completedAt": "2026-02-26T18:35:40Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-26T18:35:42Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T060",
       "title": "E2E tests — mobile share viewer",
-      "status": "pending",
+      "status": "active",
       "priority": "medium",
       "type": "task",
       "parentId": "T055",
       "createdAt": "2026-02-25T21:42:07Z",
-      "updatedAt": "2026-02-25T21:42:23Z",
+      "updatedAt": "2026-02-26T18:37:56Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
