@@ -221,7 +221,8 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center"
+      className="relative w-full flex items-center justify-center"
+      style={{ height: '100dvh' }}
     >
       <ShareCanvas
         frames={frames}
