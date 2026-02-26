@@ -221,8 +221,8 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden flex items-center justify-center"
-      style={{ height: '100dvh' }}
+      className="overflow-hidden flex items-center justify-center bg-black"
+      style={{ position: 'fixed', inset: 0 }}
     >
       {/* Canvas + FloatingRemote share a relative wrapper sized to the canvas,
           so the remote's absolute position anchors to the canvas, not the viewport */}
