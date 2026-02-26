@@ -47,20 +47,20 @@
       }
     }
   },
-  "lastUpdated": "2026-02-25T21:42:23Z",
+  "lastUpdated": "2026-02-26T16:48:07Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "b879620a890e11b8",
+    "checksum": "c9204e43950772ca",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 140,
-    "lastModified": "2026-02-26T16:39:31Z",
+    "generation": 144,
+    "lastModified": "2026-02-26T16:43:16Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
   },
   "focus": {
-    "currentTask": "T056",
+    "currentTask": "T057",
     "currentPhase": "setup",
     "blockedUntil": null,
     "sessionNote": null,
@@ -1959,39 +1959,58 @@
     {
       "id": "T056",
       "title": "Viewport-fit canvas sizing hook (useShareCanvasSize)",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T055",
       "createdAt": "2026-02-25T21:41:44Z",
-      "updatedAt": "2026-02-26T16:39:31Z",
+      "updatedAt": "2026-02-26T16:42:57Z",
       "size": "medium",
       "position": 1,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-25 21:41:44 UTC: Create src/core/hooks/useShareCanvasSize.ts. Uses ResizeObserver on a container ref (not window.innerHeight) to calculate canvas dimensions that fill the container while preserving 4:3 aspect ratio. Replaces useCanvasSize in ShareCanvas."
-      ]
+        "2026-02-25 21:41:44 UTC: Create src/core/hooks/useShareCanvasSize.ts. Uses ResizeObserver on a container ref (not window.innerHeight) to calculate canvas dimensions that fill the container while preserving 4:3 aspect ratio. Replaces useCanvasSize in ShareCanvas.",
+        "[COMPLETED 2026-02-26T16:42:57Z] Created src/core/hooks/useShareCanvasSize.ts — ResizeObserver on container ref, fits canvas by width or height preserving 4:3 aspect ratio."
+      ],
+      "completedAt": "2026-02-26T16:42:57Z",
+      "verification": {
+        "passed": false,
+        "round": 0,
+        "gates": {
+          "implemented": true,
+          "testsPassed": null,
+          "qaPassed": null,
+          "cleanupDone": null,
+          "securityPassed": null,
+          "documented": null
+        },
+        "lastAgent": "coder",
+        "lastUpdated": "2026-02-26T16:43:00Z",
+        "failureLog": []
+      }
     },
     {
       "id": "T057",
       "title": "Full-screen share layout (no scroll)",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T055",
       "createdAt": "2026-02-25T21:42:03Z",
-      "updatedAt": "2026-02-25T21:42:14Z",
+      "updatedAt": "2026-02-26T16:48:07Z",
       "size": "medium",
       "position": 2,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-25 21:42:03 UTC: Modify src/app/share/layout.tsx: h-[100dvh] overflow-hidden flex items-center justify-center bg-black. Update ShareViewer outer div to fill container. Pass containerRef to ShareCanvas for sizing. Depends: T056."
+        "2026-02-25 21:42:03 UTC: Modify src/app/share/layout.tsx: h-[100dvh] overflow-hidden flex items-center justify-center bg-black. Update ShareViewer outer div to fill container. Pass containerRef to ShareCanvas for sizing. Depends: T056.",
+        "[COMPLETED 2026-02-26T16:48:07Z] Updated share/layout.tsx to h-[100dvh] overflow-hidden. Rewrote ShareViewer to use containerRef + useShareCanvasSize. Removed below-canvas controls block (replaced with temp fallback awaiting FloatingRemote in T059)."
       ],
       "depends": [
         "T056"
-      ]
+      ],
+      "completedAt": "2026-02-26T16:48:07Z"
     },
     {
       "id": "T058",
