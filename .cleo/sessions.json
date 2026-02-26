@@ -5,8 +5,8 @@
   "_meta": {
     "schemaVersion": "1.0.0",
     "checksum": "",
-    "lastModified": "2026-02-25T21:38:11Z",
-    "totalSessionsCreated": 14
+    "lastModified": "2026-02-26T16:39:31Z",
+    "totalSessionsCreated": 15
   },
   "config": {
     "maxConcurrentSessions": 5,
@@ -726,6 +726,53 @@
         "max_tokens": 200000
       },
       "endedAt": "2026-02-24T21:26:09Z"
+    },
+    {
+      "id": "session_20260225_214120_350db3",
+      "status": "active",
+      "name": "Mobile Share Viewer Redesign",
+      "agentId": null,
+      "scope": {
+        "type": "epic",
+        "rootTaskId": "T055",
+        "computedTaskIds": [
+          "T055",
+          "T056",
+          "T057",
+          "T058",
+          "T059",
+          "T060"
+        ]
+      },
+      "focus": {
+        "currentTask": "T056",
+        "currentPhase": null,
+        "previousTask": null,
+        "sessionNote": null,
+        "nextAction": null,
+        "focusHistory": [
+          {
+            "taskId": "T056",
+            "timestamp": "2026-02-26T16:39:31Z",
+            "action": "focused"
+          }
+        ]
+      },
+      "startedAt": "2026-02-25T21:41:20Z",
+      "lastActivity": "2026-02-26T16:39:31Z",
+      "suspendedAt": null,
+      "stats": {
+        "tasksCompleted": 0,
+        "focusChanges": 1,
+        "suspendCount": 0,
+        "resumeCount": 0
+      },
+      "startMetrics": {
+        "session_id": "session_20260225_214120_350db3",
+        "start_timestamp": "2026-02-25T21:41:20Z",
+        "start_tokens": 0,
+        "max_tokens": 200000
+      }
     }
   ],
   "sessionHistory": []
