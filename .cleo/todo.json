@@ -47,14 +47,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-26T18:35:42Z",
+  "lastUpdated": "2026-02-26T18:44:56Z",
   "_meta": {
     "schemaVersion": "2.10.0",
-    "checksum": "548faf6bcd58bee1",
+    "checksum": "b155f45a37a59708",
     "configVersion": "2.10.0",
     "lastSessionId": null,
     "activeSession": null,
-    "generation": 152,
+    "generation": 153,
     "lastModified": "2026-02-26T18:37:56Z",
     "multiSessionEnabled": true,
     "activeSessionCount": 1
@@ -2105,22 +2105,24 @@
     {
       "id": "T060",
       "title": "E2E tests — mobile share viewer",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T055",
       "createdAt": "2026-02-25T21:42:07Z",
-      "updatedAt": "2026-02-26T18:37:56Z",
+      "updatedAt": "2026-02-26T18:44:56Z",
       "size": "medium",
       "position": 5,
       "positionVersion": 0,
       "phase": "setup",
       "notes": [
-        "2026-02-25 21:42:07 UTC: Test: no scroll on 375px viewport, canvas fills screen. Drag remote to new position. Double-tap play resets. Autoplay fires. Play/pause works. Frame counter updates."
+        "2026-02-25 21:42:07 UTC: Test: no scroll on 375px viewport, canvas fills screen. Drag remote to new position. Double-tap play resets. Autoplay fires. Play/pause works. Frame counter updates.",
+        "[COMPLETED 2026-02-26T18:44:56Z] Updated share-replay.spec.ts: removed Restart button test (replaced by double-tap), fixed aria-label selectors, added T055 test suites — no vertical scroll, FloatingRemote visibility/bounds/touch-target, frame counter, double-tap reset, back-to-site link. tsc clean."
       ],
       "depends": [
         "T059"
-      ]
+      ],
+      "completedAt": "2026-02-26T18:44:56Z"
     }
   ],
   "labels": {}
