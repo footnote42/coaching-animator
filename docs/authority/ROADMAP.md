@@ -43,7 +43,7 @@ Pivoted from personal tool to rugby coaching platform. Established cloud-first, 
 
 **PRD reference**: Sections 5.2 (Progressions), 5.5 (Remix), 7.2.1, 11.1
 
-**Status**: Progressions UI complete (T048–T050 ✓). Remaining: T051 E2E tests, T052–T054 Remix Genealogy, T044–T046 Rugby Pivot.
+**Status**: Progressions UI complete (T048–T050 ✓). Mobile share viewer redesigned (T055 ✓). Remaining: T051 E2E tests, T052–T054 Remix Genealogy, T044–T046 Rugby Pivot.
 
 ### What Phase 2 delivers
 

@@ -7,7 +7,7 @@
 
 ## Current Project Context
 
-- **Current Iteration**: v2.0 Phase 2 **in progress** — Progressions core complete (T048–T050 ✓: drag-drop reorder, gallery badge+link, /progression/[id] view). Next: T051 E2E tests, then T052–T054 Remix Genealogy, then T044–T046 Rugby Pivot.
+- **Current Iteration**: v2.0 Phase 2 **in progress** — Progressions UI (T048–T050 ✓), mobile share viewer (T055 ✓: full-screen layout, FloatingRemote, position:fixed). Next: T051 E2E tests, T052–T054 Remix Genealogy, T044–T046 Rugby Pivot.
 - **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
 - **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
 - **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)
@@ -84,23 +84,31 @@ When adding/modifying entity creation logic:
 - ❌ **Don't edit**: `src/App.tsx` (deleted during Vite cleanup)
 
 ### Shared Canvas Components
-**These components are shared between Editor and ReplayViewer.**
-When modifying, test BOTH `/app` (editor) AND `/replay/[id]` (replay) routes:
+**These components are shared between Editor, ReplayViewer, and ShareViewer.**
+When modifying, test `/app` (editor), `/replay/[id]` (replay), AND `/share/[id]` (share) routes:
 
 - `src/features/animation/components/Canvas/Stage.tsx`
 - `src/features/animation/components/Canvas/Field.tsx`
 - `src/features/animation/components/Canvas/PlayerToken.tsx`
 - `src/features/animation/components/Canvas/EntityLayer.tsx`
 - `src/features/animation/components/Canvas/AnnotationLayer.tsx`
+- `src/features/animation/components/Canvas/FloatingRemote.tsx` (share route only)
 
 ### Route → File Mapping
 | Route | Page File | Main Component |
 |-------|-----------|----------------|
 | `/app` | `src/app/app/page.tsx` | `src/features/animation/components/Editor.tsx` |
 | `/replay/[id]` | `src/app/replay/[id]/page.tsx` | `src/features/animation/components/ReplayViewer.tsx` |
+| `/share/[id]` | `src/app/share/[id]/page.tsx` | `src/features/animation/components/ShareViewer.tsx` |
 | `/gallery` | `src/app/gallery/page.tsx` | `src/features/gallery/components/PublicAnimationCard.tsx` |
 | `/gallery` (logic) | `src/app/gallery/GalleryClient.tsx` | All gallery state, filters, upvote/remix handlers |
 | `/my-gallery` | `src/app/my-gallery/page.tsx` | `src/features/gallery/components/AnimationCard.tsx` |
+
+### ShareViewer Layout Notes
+`/share/[id]` is a full-screen, no-scroll mobile-first view. Key constraints:
+- `ShareViewer` uses `position: fixed; inset: 0` — **do not** change to `h-screen` or `h-full` (breaks due to root layout Navigation sibling adding document flow)
+- Canvas is sized by `useShareCanvasSize` (ResizeObserver on container, fits 4:3 aspect to available space)
+- `FloatingRemote` is positioned relative to the canvas div, not the viewport
 
 ## Entity Color Service (Anti-Pattern Enforcement)
 

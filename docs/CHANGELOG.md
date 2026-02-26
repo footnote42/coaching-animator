@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] — v2.0 Phase 2: Progressions & Remix Genealogy
 
+### Added (2026-02-26)
+- **Mobile share viewer redesign** (T055): `/share/[id]` is now a true full-screen, no-scroll experience on mobile
+  - `useShareCanvasSize` hook — ResizeObserver on container ref, fits 4:3 canvas to available viewport space without window resize jitter
+  - `FloatingRemote` component — draggable pill overlay (pointer-capture drag, percentage-based position survives orientation changes), double-tap handle to reset, 44×44px play/pause touch target, safe-area-inset-bottom clamping
+  - `ShareViewer` uses `position: fixed; inset: 0` to escape root layout document flow (Navigation sibling no longer causes 16px y-offset)
+  - Canvas + FloatingRemote wrapped in shared relative div so remote anchors to canvas bounds, not the full viewport
+  - Back-to-site link pinned bottom-left with `env(safe-area-inset-bottom)` padding
+
 ### Added (2026-02-21)
 - **Progression drag-drop reorder** (T048): `@dnd-kit/sortable` pills with ⠿ drag handles in `ProgressionPanel`; `PATCH /api/animations/[id]/progressions/reorder` with ownership validation and optimistic UI + server revert
 - **Progression set detail page** (T050): `/progression/[id]` — vertical numbered sequence (Base → P1 → P5), thumbnail + Watch button per step
@@ -21,7 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - T052–T054: Remix genealogy visualization (remix count, A→B→C breadcrumb)
 - T044–T046: Rugby-only pivot (VISIBLE_SPORTS feature flag)
 - T033: First-run experience after email confirmation
-- T034: Mobile layout audit
 
 ### Planned
 - GIF export (Safari compatibility)
