@@ -1,37 +1,42 @@
 # Implementation Plan: [FEATURE]
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: `specs/[###-feature-name]/spec.md`
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+[Extract from feature spec: primary requirement + technical approach]
+
+---
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+**Language/Version**: TypeScript 5 · Node 22  
+**Framework**: Next.js 14 App Router (SSR + API Routes)  
+**Canvas**: Konva (react-konva) — shared across `/app`, `/replay/[id]`, `/share/[id]`  
+**State**: Zustand stores in `src/core/stores/`  
+**Backend**: Supabase (PostgreSQL + Auth + RLS) via `src/lib/supabase/`  
+**Styling**: Tailwind CSS + Radix UI primitives  
+**Testing**: Vitest (unit) · Playwright (E2E)  
+**Deploy**: Vercel (CI via GitHub Actions)  
+**Performance Goals**: Canvas interactions <100ms; API responses <500ms p95  
+**Constraints**: No telemetry; no third-party analytics; RLS on all DB tables; entity colors via EntityColors service only
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+---
 
-## Constitution Check
+## Constitutional Compliance Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+| Check | Status | Notes |
+|-------|--------|-------|
+| Tier alignment (Guest/Auth/Public/Admin) | [ ] | |
+| No telemetry or analytics | [ ] | |
+| Entity colors via EntityColors service | [ ] | |
+| Shared canvas — tested on all 3 routes | [ ] | Only if touching Canvas/ |
+| New data: privacy impact assessed | [ ] | N/A if no schema changes |
+| Supabase joins flattened before use | [ ] | Only if new queries |
+
+---
 
 ## Project Structure
 
@@ -39,66 +44,66 @@
 
 ```text
 specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+├── spec.md              # Feature specification (/speckit.specify output)
+├── plan.md              # This file (/speckit.plan output)
+├── research.md          # Phase 0 codebase research (/speckit.plan output)
+├── data-model.md        # Phase 1 schema design (/speckit.plan output)
+├── quickstart.md        # Phase 1 manual test guide (/speckit.plan output)
+├── contracts/           # API contracts, Zod schemas (/speckit.plan output)
+└── tasks.md             # Task list (/speckit.tasks output — NOT created here)
 ```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Source Code
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
+├── app/
+│   ├── [route]/
+│   │   └── page.tsx             # Route entry point (thin — delegates to feature component)
+│   └── api/
+│       └── [resource]/
+│           └── route.ts         # API route handler
+│
+├── features/
+│   └── [feature-name]/
+│       ├── components/          # React components for this feature
+│       │   └── [Component].tsx
+│       ├── services/            # Pure business logic (no React)
+│       │   └── [service].ts
+│       └── index.ts             # Public exports
+│
+├── core/
+│   ├── stores/                  # Zustand slices (e.g., projectStore.ts)
+│   ├── hooks/                   # Shared custom hooks
+│   ├── types/                   # Shared TypeScript types/interfaces
+│   └── utils/                   # Pure utility functions
+│
+├── shared/
+│   ├── components/              # Reusable cross-feature components
+│   └── ui/                      # shadcn-style UI primitives
+│
 └── lib/
+    ├── supabase/                # Supabase client factories (browser + server)
+    ├── schemas/                 # Zod validation schemas
+    ├── contexts/                # React contexts (UserContext, etc.)
+    └── server/                  # Server-only utilities
 
 tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
+├── unit/                        # Vitest unit tests (mirrors src/ structure)
 │   ├── components/
-│   ├── pages/
 │   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+└── e2e/                         # Playwright E2E tests
+    └── [feature].spec.ts
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: [Document which directories this feature touches and why]
+
+---
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+> **Fill ONLY if Constitutional Compliance Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| [e.g., direct hex color] | [reason] | [why EntityColors insufficient] |

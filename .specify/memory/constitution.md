@@ -469,13 +469,48 @@ This section codifies the Design Tokens into enforceable standards.
 
 ### File Organization
 
+```text
 src/
-├── components/       # UI components (co-located with styles/tests)
-├── hooks/            # Custom React hooks
-├── store/            # Zustand store slices
-├── utils/            # Pure utility functions
-├── types/            # Shared TypeScript interfaces
-└── constants/        # Static configuration values
+├── app/                    # Next.js App Router — pages, layouts, API routes
+│   ├── (auth)/             # Auth pages (login, register, forgot-password, reset-password)
+│   ├── api/                # API route handlers (src/app/api/[resource]/route.ts)
+│   ├── app/                # Editor page (/app route)
+│   ├── gallery/            # Public gallery
+│   ├── my-gallery/         # Personal gallery
+│   ├── replay/[id]/        # Replay viewer
+│   ├── share/[id]/         # Share viewer (position:fixed inset:0 — mobile-first)
+│   └── ...
+├── features/
+│   ├── animation/          # Editor, Canvas, Timeline, Sidebar, ReplayViewer, ShareViewer
+│   │   ├── components/     # React components (Canvas/ Sidebar/ Timeline/ sub-dirs)
+│   │   ├── services/       # Pure business logic (entityColors.ts, etc.)
+│   │   └── index.ts        # Public exports
+│   └── gallery/            # AnimationCard, PublicAnimationCard, VersionHistoryModal
+│       ├── components/
+│       └── index.ts
+├── core/
+│   ├── stores/             # Zustand slices (projectStore.ts, uiStore.ts)
+│   ├── hooks/              # Shared custom hooks (useAnimationLoop, useAutoSave, etc.)
+│   ├── types/              # Shared TypeScript interfaces
+│   ├── utils/              # Pure utility functions
+│   └── constants/          # Static config (design-tokens.ts, fields.ts, validation.ts)
+├── shared/
+│   ├── components/         # Reusable cross-feature components
+│   └── ui/                 # shadcn-style UI primitives (Button, Dialog, etc.)
+├── lib/
+│   ├── supabase/           # Supabase client factories (browser + server)
+│   ├── schemas/            # Zod validation schemas (animations.ts, collections.ts, users.ts)
+│   ├── contexts/           # React contexts (UserContext, etc.)
+│   └── server/             # Server-only utilities
+└── assets/
+    └── fields/             # Rugby pitch SVG/image assets
+
+tests/
+├── unit/                   # Vitest unit tests (mirrors src/ structure)
+│   ├── components/
+│   └── services/
+└── e2e/                    # Playwright E2E tests
+```
 
 ### VI. Grassroots Coach Advocacy
 
