@@ -28,3 +28,23 @@ node_modules
 # Archived specs and legacy files
 /archive
 .worktrees/
+
+# Test artifacts (generated, not source)
+playwright-report/
+test-results/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Supabase local state
+supabase/.temp/
+
+# IDE/AI assistant artifacts
+.cleo/
+.gemini/
+.windsurf/
+.cursor/
+.codex/
+
+# Env backups
+.env.local.bak
