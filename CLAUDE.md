@@ -1,34 +1,12 @@
-<!-- CLEO:START -->
-@.cleo/templates/AGENT-INJECTION.md
-<!-- CLEO:END -->
 # coaching-animator Development Guidelines
-
-> **📚 Comprehensive Documentation**: See [README.md](README.md), [docs/](docs/), and [feature READMEs](src/features/) for complete project documentation.
-
-## Current Project Context
-
-- **Current Iteration**: v2.0 Phase 2 **in progress** — Progressions UI (T048–T050 ✓), mobile share viewer (T055 ✓: full-screen layout, FloatingRemote, position:fixed). Next: T051 E2E tests, T052–T054 Remix Genealogy, T044–T046 Rugby Pivot.
-- **Architecture**: Feature-based (V2.0 ready) - See [README.md](README.md#project-structure-feature-based-architecture)
-- **Documentation Hub**: [docs/README.md](docs/README.md) for all guides by role
-- **Feature Modules**: [src/features/animation/](src/features/animation/README.md), [src/features/gallery/](src/features/gallery/README.md), [src/core/](src/core/README.md), [src/shared/](src/shared/README.md)
-- **Authority Docs**: [PRD v2.0](docs/authority/PRD-v2.0.md), [Constitution v3.4.0](docs/authority/constitution.md), [Roadmap](docs/authority/ROADMAP.md)
 
 ## Environment
 
-- **Platform**: Windows with PowerShell
-- **Command Usage**: Do NOT use Unix-specific commands (`ls -la`, `grep`, `cat`, `find`)
-  - Use PowerShell equivalents or cross-platform alternatives
-  - Prefer Claude Code tools (Read, Grep, Glob) over shell commands
-- **Path Separators**: Forward slashes `/` in code, backslashes `\` for Windows-only paths
+Prefer Claude Code tools (Read, Grep, Glob) over shell commands. Forward slashes in code; backslashes only for Windows-native paths.
 
-## Core Behaviors
+## Workflow
 
-After completing implementation work, **always proactively**:
-1. Update relevant documentation files (README.md, CLAUDE.md, docs/, spec files)
-2. Commit changes with descriptive messages following project conventions
-3. Push commits to remote repository
-
-**Do not wait to be asked**. Documentation updates and commits should be automatic follow-through.
+Use `/handoff` to end sessions cleanly — summarises work, writes a next-session prompt, and updates relevant docs.
 
 ## Commands (Critical - Run Before Every Push)
 
@@ -49,14 +27,6 @@ npm run build            # May fail locally without Supabase env vars (OK in CI)
 npm run start            # Production server
 ```
 
-**When to run**:
-- ✅ After fixing TypeScript errors
-- ✅ After modifying imports or dependencies
-- ✅ After refactoring shared utilities or types
-- ✅ Before any push to `main` or `staging`
-
-**CI Pipeline**: See `.github/workflows/ci.yml` for full pipeline config
-
 ## Path Aliases (Use in ALL Imports)
 
 ```typescript
@@ -70,18 +40,11 @@ import { Button } from '@/shared/ui/button';
 import { useProjectStore } from '../../core/stores/projectStore';
 ```
 
-**Configured in `tsconfig.json`**:
-- `@/core/*` → Shared utilities, hooks, stores, types, constants
-- `@/features/*` → Feature modules (animation, gallery, future: organizations, collections)
-- `@/shared/*` → Shared UI components and primitives
-- `@/lib/*` → Third-party integrations (Supabase, contexts)
-
 ## Critical File Locations
 
 ### Entity Creation Handlers
 When adding/modifying entity creation logic:
 - ✅ **Edit**: `src/features/animation/components/Editor.tsx` (handlers: `handleAddCone()`, `handleAddPlayer()`, etc.)
-- ❌ **Don't edit**: `src/App.tsx` (deleted during Vite cleanup)
 
 ### Shared Canvas Components
 **These components are shared between Editor, ReplayViewer, and ShareViewer.**
@@ -157,23 +120,8 @@ Before running E2E tests (`npm run e2e`), **always verify**:
 
 **When in doubt**: Ask user which environment to test against before executing tests.
 
-### Test Execution
-
-```bash
-# Local development testing (requires npm run dev in separate terminal)
-npm run e2e
-
-# Unit tests
-npm test -- --run
-
-# CI verification (run before pushing)
-npm run lint
-npx tsc --noEmit
-```
-
 ## Quality & Stability Guardrails
 
-- **Shift Left Testing**: Always run `npm run lint` and `npx tsc --noEmit` locally before pushing to catch build blockers early
 - **Diagnostic Logging**: Prioritize structured logging (e.g., `[Gallery API] Error: details`) over generic error messages to aid production debugging
 - **Infrastructure Safety**: Use `staging` branch for high-risk changes (Auth, Middleware, DB Schema) to verify CI/CD health before merging to `main`
 - **SSR Awareness**: Next.js App Router relies on browser/server cookie sync. Always use provided Supabase clients (`lib/supabase/`) to prevent session drift
@@ -197,41 +145,6 @@ npx tsc --noEmit
 
 **Full Governance**: See [docs/authority/constitution.md](docs/authority/constitution.md)
 
-## Session Handoff
-
-When generating handoff prompts for next task/session, **always include**:
-- Current task status and completion state
-- Relevant file paths and code locations
-- Outstanding issues or blockers
-- Next steps or dependencies
-- Any context needed for fresh session to continue seamlessly
-
-**Goal**: Next session picks up exactly where previous session left off without re-discovery.
-
----
-
-## 📚 Documentation Index
-
-**Quick Navigation**:
-- **[README.md](README.md)** - Project overview, setup, usage guide
-- **[docs/README.md](docs/README.md)** - Developer documentation hub (organized by role)
-- **[src/features/animation/README.md](src/features/animation/README.md)** - Animation feature module docs (~3,800 lines)
-- **[src/features/gallery/README.md](src/features/gallery/README.md)** - Gallery feature module docs (~1,100 lines)
-- **[src/core/README.md](src/core/README.md)** - Core utilities, hooks, stores, types (~2,900 lines)
-- **[src/shared/README.md](src/shared/README.md)** - UI component library docs (~1,900 lines)
-
-**Architecture & Specs**:
-- **[docs/architecture/database-schema.md](docs/architecture/database-schema.md)** - Supabase tables, RLS policies
-- **[docs/architecture/api-contracts.md](docs/architecture/api-contracts.md)** - API endpoint specifications
-- **[docs/architecture/auth-patterns.md](docs/architecture/auth-patterns.md)** - Supabase auth implementation
-
-**Product & Governance**:
-- **[docs/authority/PRD-v2.0.md](docs/authority/PRD-v2.0.md)** - Product Requirements (active authority)
-- **[docs/authority/constitution.md](docs/authority/constitution.md)** - v3.4.0 governance rules
-- **[docs/authority/ROADMAP.md](docs/authority/ROADMAP.md)** - Phased development plan
-- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Notable changes from v2.0 onward
-
-<!-- MANUAL ADDITIONS START -->
 ## Supabase Join Flattening
 
 Foreign-key joins may return `object | object[] | null` depending on the relationship type. Always flatten before use:
@@ -240,4 +153,10 @@ Foreign-key joins may return `object | object[] | null` depending on the relatio
 const raw = animation.remixed_from; // RemixedFrom | RemixedFrom[] | null
 const record = Array.isArray(raw) ? raw[0] : raw;
 ```
-<!-- MANUAL ADDITIONS END -->
+
+## Large Files (do not read in full)
+
+- `src/features/animation/README.md` (~3,800 lines)
+- `src/core/README.md` (~2,900 lines)
+- `src/shared/README.md` (~1,900 lines)
+- `src/features/gallery/README.md` (~1,100 lines)

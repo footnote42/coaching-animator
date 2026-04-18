@@ -1,13 +1,5 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 60
-    },
-    "app/api/**/*.tsx": {
-      "maxDuration": 60
-    }
-  }
+  "outputDirectory": ".next"
 }
