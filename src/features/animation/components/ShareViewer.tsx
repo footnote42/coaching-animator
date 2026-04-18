@@ -11,6 +11,7 @@ import { useReplayAnimationLoop } from '@/core/hooks/useReplayAnimationLoop';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { hydrateSharePayload } from '@/core/utils/hydratePayload';
 import type { SharePayloadV1 } from '@/core/types/share';
+import { EDITOR_CANVAS_WIDTH, EDITOR_CANVAS_HEIGHT } from '@/lib/canvasConstants';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -118,6 +119,8 @@ interface ShareCanvasProps {
   pitchLayout?: PitchLayout;
   canvasWidth: number;
   canvasHeight: number;
+  entityScaleX: number;
+  entityScaleY: number;
   onFrameAdvance: (nextIndex: number) => void;
   onPlaybackComplete: () => void;
 }
@@ -130,6 +133,8 @@ function ShareCanvas({
   pitchLayout,
   canvasWidth,
   canvasHeight,
+  entityScaleX,
+  entityScaleY,
   onFrameAdvance,
   onPlaybackComplete,
 }: ShareCanvasProps) {
@@ -151,7 +156,13 @@ function ShareCanvas({
   const frameIds = useMemo(() => frames.map((f) => f.id), [frames]);
 
   return (
-    <div style={{ width: canvasWidth, height: canvasHeight }} className="bg-white overflow-hidden">
+    <div
+      style={{ width: canvasWidth, height: canvasHeight }}
+      className="bg-white overflow-hidden"
+      data-testid="share-canvas"
+      data-entity-scale-x={entityScaleX}
+      data-entity-scale-y={entityScaleY}
+    >
       <Stage width={canvasWidth} height={canvasHeight}>
         <Field sport={sport} width={canvasWidth} height={canvasHeight} layout={pitchLayout} />
         <AnnotationLayer
@@ -173,6 +184,8 @@ function ShareCanvas({
           interactive={false}
           playbackPosition={playbackPosition}
           frames={frames}
+          scaleX={entityScaleX}
+          scaleY={entityScaleY}
         />
       </Stage>
     </div>
@@ -189,6 +202,8 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
 
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: canvasWidth, height: canvasHeight } = useShareCanvasSize(containerRef);
+  const entityScaleX = canvasWidth / EDITOR_CANVAS_WIDTH;
+  const entityScaleY = canvasHeight / EDITOR_CANVAS_HEIGHT;
 
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -240,6 +255,8 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
           pitchLayout={payload.settings?.pitchLayout}
           canvasWidth={canvasWidth}
           canvasHeight={canvasHeight}
+          entityScaleX={entityScaleX}
+          entityScaleY={entityScaleY}
           onFrameAdvance={setCurrentFrameIndex}
           onPlaybackComplete={() => setIsPlaying(false)}
         />

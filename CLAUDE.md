@@ -160,3 +160,9 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - `src/core/README.md` (~2,900 lines)
 - `src/shared/README.md` (~1,900 lines)
 - `src/features/gallery/README.md` (~1,100 lines)
+
+## Active Technologies
+- TypeScript 5 · Node 22 (001-fix-share-scaling)
+
+## Recent Changes
+- 001-fix-share-scaling: Added TypeScript 5 · Node 22

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-fix-share-scaling`  
 **Created**: 2026-04-18  
-**Status**: Tasked  
+**Status**: Implementing  
 **Input**: User description: "fix mobile replay scaling in ShareViewer"
 
 ## Constitutional Compliance Gate *(mandatory — check before writing requirements)*
@@ -12,7 +12,7 @@
 - [x] **No third-party analytics**: None added
 - [x] **No hardcoded colors**: No colour changes in scope
 - [x] **Privacy gate**: No new data stored
-- [x] **Shared canvas risk**: YES — touches `ShareViewer.tsx` and `useShareCanvasSize` hook. Must test `/share/[id]` thoroughly. `/app` and `/replay/[id]` share canvas sub-components but do NOT use `ShareViewer` or `useShareCanvasSize` — those are isolated to the share route.
+- [x] **Shared canvas risk**: YES — touches `ShareViewer.tsx`, `useShareCanvasSize` hook, `Canvas/Stage.tsx`, and `Canvas/EntityLayer.tsx`. Must test `/app`, `/replay/[id]`, AND `/share/[id]`.
 
 No constitutional violations.
 
@@ -69,6 +69,22 @@ The share page is a clean, full-screen viewing experience. The site navigation b
 
 ---
 
+### User Story 4 - Entity Icons Scale With Canvas (Priority: P1)
+
+When a player opens a shared animation on mobile, player tokens, cones, and balls appear correctly positioned over the rugby pitch — not clustered off-screen at their original editor-space coordinates.
+
+**Why this priority**: P1 — the canvas sizing fix (US1) makes the pitch visible, but without entity scaling the animation contains no meaningful content. A coach sharing a drill sees players positioned correctly in the editor; the player receiving the link must see the same spatial relationships on their phone.
+
+**Independent Test**: Open a `/share/[id]` URL containing a multi-player drill on iPhone 14 emulation (390×844). All player tokens and cones must appear overlaid on the pitch at proportionally correct positions — not clustered in one corner or off-screen.
+
+**Acceptance Scenarios**:
+
+1. **Given** a share link with an animation containing players and cones, **When** opened on iPhone 14 portrait (390×844), **Then** all entity icons appear at positions proportionally matching their layout on the 800×600 editor canvas.
+2. **Given** the canvas is sized to a mobile viewport, **When** entities render, **Then** their positions are scaled from 800×600 editor space to actual canvas dimensions (scaleX = canvasWidth/800, scaleY = canvasHeight/600).
+3. **Given** the `/app` editor route or `/replay/[id]` route, **When** they render, **Then** entity positions are unchanged — no scale transform applied (or scale defaults to 1×1).
+
+---
+
 ### Edge Cases
 
 - What happens on a very small viewport (e.g., SE-sized phone, 320px wide)? The canvas should scale down to fit — the pitch may be small but must be complete and unclipped.
@@ -89,6 +105,8 @@ The share page is a clean, full-screen viewing experience. The site navigation b
 - **FR-005**: The FloatingRemote playback controls MUST be fully visible and interactable within device safe areas (accounting for iOS home indicator and Android navigation bar).
 - **FR-006**: Canvas resizing in response to orientation change MUST be smooth — no visible flash of oversized canvas content.
 - **FR-007**: The fix MUST NOT affect the `/app` (editor) or `/replay/[id]` (replay viewer) routes — those are separate canvas contexts.
+- **FR-008**: Entity icons (players, cones, balls) on `/share/[id]` MUST be positioned using a scale transform that maps 800×600 editor coordinates to the actual canvas dimensions.
+- **FR-009**: The entity scale transform MUST apply only to the entity rendering layer — the Field (pitch) component MUST NOT be double-scaled.
 
 ### Frontend Requirements
 
@@ -97,6 +115,15 @@ The share page is a clean, full-screen viewing experience. The site navigation b
 - **UI-003**: No horizontal or vertical scroll must be possible on the share page.
 - **UI-004**: Sharp corners only (`rounded-none`); no soft drop shadows — existing style must be preserved.
 - **UI-005**: The `position: fixed; inset: 0` constraint on the ShareViewer outer container must be preserved (required for correct layout when the root layout's Navigation sibling is in document flow).
+
+### Canvas / Animation Requirements
+
+- **CV-001**: Canvas changes must be tested on `/app` (editor), `/replay/[id]` (replay), and `/share/[id]` (share)
+- **CV-002**: `ShareViewer` uses `position:fixed inset:0` — do not change to `h-screen`/`h-full`
+- **CV-003**: Entity colors MUST use `EntityColors.resolve()` — never hardcoded hex
+- **CV-004**: Entity icons MUST be rendered using a scale transform that maps editor coordinate space (800×600) to the actual canvas dimensions on the share route
+- **CV-005**: The scale transform MUST apply only to the entity layer — not to the Field (pitch) component, which already fills stage bounds by design
+- **CV-006**: The editor reference canvas size (800×600) MUST be extracted to a named constant — no magic numbers in the scaling code
 
 ---
 
@@ -111,3 +138,5 @@ The share page is a clean, full-screen viewing experience. The site navigation b
 - **SC-005**: Orientation change from portrait to landscape (and back) produces a correctly-sized canvas within one ResizeObserver cycle, with no visible content flash.
 - **SC-006**: `npm run lint && npx tsc --noEmit` passes with no new errors after implementation.
 - **SC-007**: All existing unit and E2E tests pass — no regressions on `/app` or `/replay/[id]` routes.
+- **SC-008**: On iPhone 14 portrait (390×844), all entity icons appear overlaid on the pitch at visually correct relative positions — confirmed by Playwright screenshot.
+- **SC-009**: Animated playback shows entities moving in sync with pitch markings — no entities drifting off-screen or clustering in a corner.

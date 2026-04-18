@@ -151,3 +151,20 @@ E2E:      npm run e2e  (requires dev server: npm run dev)
 - `position:fixed inset:0` on ShareViewer outer container must remain unchanged (spec UI-005)
 - Entity colors: no colour changes in scope
 - Pre-push gate: `npm run lint && npx tsc --noEmit` must pass (SC-006)
+
+---
+
+## Phase 6: Entity Icon Scaling (US4 — follow-on bug)
+
+**Goal**: Entity icons (players, cones, balls) appear at correct positions on the share route by applying a scale transform (canvasWidth/800, canvasHeight/600) to the entity layer only. The Field (pitch) layer is NOT scaled (it fills stage bounds by design).
+
+**Context**: Entity positions in animation payloads are stored in 800×600 editor coordinate space. `Stage.tsx` applies no `scaleX/scaleY`. This causes entities to render at editor-space pixel positions on a mobile-sized canvas, appearing clustered or off-screen. Pattern reference: `src/lib/thumbnail.ts` lines 116-120.
+
+**Independent Test**: Open Chrome DevTools → iPhone 14 emulation (390×844) → navigate to `http://localhost:3000/share/<id>`. All player tokens and cones must appear overlaid on the pitch, not clustered in a corner.
+
+- [x] T018 [US4] TDD — write a failing Playwright E2E test that navigates to `/share/<id>` on iPhone 14 viewport and asserts that at least one player entity token is visible within the canvas bounds (not outside the viewport). Confirm test is RED before any implementation.
+- [x] T019 [US4] Extract editor reference constants: create `src/lib/canvasConstants.ts` exporting `EDITOR_CANVAS_WIDTH = 800` and `EDITOR_CANVAS_HEIGHT = 600`
+- [x] T020 [US4] In `src/features/animation/components/ShareViewer.tsx`: compute `entityScaleX = canvasWidth / EDITOR_CANVAS_WIDTH` and `entityScaleY = canvasHeight / EDITOR_CANVAS_HEIGHT` from the existing `canvasSize` values; pass as props to `ShareCanvas` (or directly to `Stage`)
+- [x] T021 [US4] In `src/features/animation/components/Canvas/Stage.tsx`: accept optional `entityScaleX` and `entityScaleY` props (default 1); apply them as `scaleX/scaleY` on the Konva `<Layer>` that wraps `EntityLayer` only — the Field layer MUST remain unscaled
+- [x] T022 [US4] Confirm `/app` (editor) and `/replay/[id]` routes are unaffected: pass no entity scale props (or verify defaults to 1); manual check that entities render correctly on both routes
+- [x] T023 [US4] Run full quality gates: `npm run lint && npx tsc --noEmit`, `npm test -- --run`, `npm run e2e` — all must pass, including T018 E2E test now GREEN

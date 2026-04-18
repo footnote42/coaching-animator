@@ -4,6 +4,31 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-18 — Entity Icon Scaling Fix (Follow-on Bug)
+
+*Full detail: `docs/plans/HANDOFF-2026-04-18-entity-scaling-fix.md`*
+
+**Completed**: Entity icon scaling implementation using TDD (T018–T021). New E2E tests written (4/4 GREEN), spec extended with US4 + new FRs/CVs/SCs, all quality gates pass (lint, tsc, 50/50 unit tests, 80/80 E2E). Changes uncommitted on `001-fix-share-scaling`.
+
+**Bug fixed**: Animated icons (players, cones, balls) now render at correct scale on mobile share route. Issue: entities were at raw 800×600 editor coordinates on a ~390×292 mobile canvas. Fix: apply scaleX/scaleY transform (canvasWidth/800, canvasHeight/600) to entity layer only.
+
+**Next**: T022 (manual /app + /replay verify), T023 (confirm gates), then `speckit.superb.verify` mandatory gate.
+
+---
+
+## 2026-04-18 — Mobile Replay Scaling Implementation
+
+*Full detail: `docs/plans/HANDOFF-2026-04-18-mobile-scaling-impl.md`*
+
+**Completed**: Full SpecKit workflow (plan → tasks → implement) for `001-fix-share-scaling`.
+Three files changed: `useShareCanvasSize.ts` (lazy initializer), `share/[id]/page.tsx` (loading placeholder + dead wrapper), `ShareViewer.tsx` (zero-frames fallback). New TDD test added. 50/50 unit tests, 70/70 E2E tests passing. All changes uncommitted.
+
+**New bug discovered**: Entity icons (players, cones) appear at wrong position/scale on the share route — they render at editor coordinates rather than scaled to the new canvas size. Pitch and FloatingRemote are fine. Root cause is likely in `Stage.tsx` `scaleX/scaleY` computation. Fix required before closing spec.
+
+**Next session prompt**: See full handoff doc above.
+
+---
+
 ## 2026-04-18 — Project Direction & Infrastructure Restore
 
 **Supabase restored.** DB had been paused due to inactivity. Restored via dashboard — all data intact. Vercel deployment confirmed active.

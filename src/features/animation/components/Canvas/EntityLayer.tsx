@@ -25,6 +25,10 @@ export interface EntityLayerProps {
     playbackPosition: PlaybackPosition | null;
     /** All frames in the project for interpolation */
     frames: Frame[];
+    /** Scale factor mapping editor coordinate space to canvas dimensions (default 1) */
+    scaleX?: number;
+    /** Scale factor mapping editor coordinate space to canvas dimensions (default 1) */
+    scaleY?: number;
 }
 
 /**
@@ -48,7 +52,9 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     onEntityContextMenu,
     interactive,
     playbackPosition,
-    frames
+    frames,
+    scaleX,
+    scaleY,
 }) => {
     /**
      * Helper function to apply parent-relative positioning.
@@ -142,7 +148,7 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     );
 
     return (
-        <Layer listening={interactive}>
+        <Layer listening={interactive} scaleX={scaleX} scaleY={scaleY}>
             {sorted.map((entity: Entity & { opacity: number }) => (
                 <PlayerToken
                     key={entity.id}

@@ -1,0 +1,2 @@
+export const EDITOR_CANVAS_WIDTH = 800;
+export const EDITOR_CANVAS_HEIGHT = 600;
