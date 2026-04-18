@@ -8,7 +8,10 @@ const ShareViewer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="animate-pulse bg-white/10 h-[300px] w-full flex items-center justify-center text-white/50">
+      <div
+        className="animate-pulse bg-black flex items-center justify-center text-white/50"
+        style={{ position: 'fixed', inset: 0 }}
+      >
         Loading…
       </div>
     ),
@@ -80,9 +83,5 @@ export default async function SharePage({ params }: PageProps) {
     .update({ view_count: (animation.view_count || 0) + 1 })
     .eq('id', id);
 
-  return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-0 py-4">
-      <ShareViewer payload={animation.payload} autoPlay={true} />
-    </div>
-  );
+  return <ShareViewer payload={animation.payload} autoPlay={true} />;
 }

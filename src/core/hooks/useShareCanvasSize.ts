@@ -20,7 +20,14 @@ export function useShareCanvasSize(
   containerRef: RefObject<HTMLElement>,
   aspectRatio = 4 / 3,
 ): CanvasSize {
-  const [size, setSize] = useState<CanvasSize>({ width: 800, height: 600 });
+  const [size, setSize] = useState<CanvasSize>(() => {
+    if (typeof window === 'undefined') return { width: 800, height: 600 };
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const byWidth = { w: vw, h: vw / aspectRatio };
+    const use = byWidth.h <= vh ? byWidth : { w: vh * aspectRatio, h: vh };
+    return { width: Math.floor(use.w), height: Math.floor(use.h) };
+  });
 
   useEffect(() => {
     const el = containerRef.current;

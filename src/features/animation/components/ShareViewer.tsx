@@ -214,7 +214,12 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
 
   if (!frames.length) {
     return (
-      <div className="text-center py-20 text-white/70">No frames to display</div>
+      <div
+        className="flex items-center justify-center text-white/70"
+        style={{ position: 'fixed', inset: 0 }}
+      >
+        No frames to display
+      </div>
     );
   }
 
