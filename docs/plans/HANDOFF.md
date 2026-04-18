@@ -4,6 +4,18 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-18 — Final Scaling Verification & Phase 1 Completion
+
+*Full detail: `docs/plans/HANDOFF-2026-04-18-final-scaling-verification-completion.md`*
+
+**Completed**: Feature `001-fix-share-scaling` is fully delivered. Verified entity icon scaling on mobile viewports (320px to 390px+) using TDD. All 4 Playwright scaling tests pass green. Extra quality gates passed (lint, tsc, units). All work merged and pushed to `main`.
+
+**Core Loop Fixed**: The primary launch blocker—canvas coordinates not mapping correctly to mobile screen sizes—is resolved. Replay links now render a perfect, interactive pitch on players' phones.
+
+**Next**: Phase 2 — Launch Credibility (Landing Page Overhaul).
+
+---
+
 ## 2026-04-18 — Entity Icon Scaling Fix (Follow-on Bug)
 
 *Full detail: `docs/plans/HANDOFF-2026-04-18-entity-scaling-fix.md`*
