@@ -150,7 +150,12 @@
       "Bash(PYTHONUTF8=1 specify *)",
       "Bash(PYTHONUTF8=1 uv tool install \"specify-cli @ git+https://github.com/github/spec-kit.git@ccc44dd00aa9e075ea92ec573f31dd06560cce79\" --force)",
       "Bash(PYTHONUTF8=1 uv tool install \"specify-cli @ git+https://github.com/github/spec-kit.git@v0.7.3\" --force)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Skill(update-config)",
+      "Read(//c/Users/kenho/.claude/scripts/**)",
+      "Skill(keybindings-help)",
+      "Bash(/home/footnote42/.cleo/lib/session/context-monitor.sh:*)",
+      "Bash(git:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
