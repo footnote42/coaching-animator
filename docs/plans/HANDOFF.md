@@ -4,6 +4,21 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-19 — Design Context Setup & Authority Doc Cleanup
+
+**Completed**:
+- Installed impeccable plugin; ran `/impeccable teach` to establish design context
+- Created `.impeccable.md` — full design context: brand (direct · tactical · grassroots), aesthetic direction (coaching whiteboard tradition, anti-SaaS), palette open for rethink, Inter flagged for replacement, WCAG AA, priorities (landing page → gallery)
+- Added one-line Design Context pointer to `CLAUDE.md` (full content lives in `.impeccable.md`)
+- Reviewed constitution v3.4.1, PRD-v2.0, and ROADMAP against impeccable insights
+- **Fixed**: OAuth prohibition was wrong in both `CLAUDE.md` and `ROADMAP.md` — both said "no third-party auth providers" but constitution v3.4.1 (CA-2026-001) explicitly permits Google/Apple/GitHub OAuth. Corrected both files.
+- **Deferred to T3**: Constitution Design System hardcodes Inter and near-pure-white hex values — these conflict with impeccable direction but will be resolved during the landing page overhaul
+- Deleted stale individual handoff detail files (Phase 1 is shipped; rolling log is sufficient)
+
+**Next**: T3 — Landing page overhaul. Use `/impeccable` skills to guide design. `.impeccable.md` has the full design brief.
+
+---
+
 ## 2026-04-18 — Final Scaling Verification & Phase 1 Completion
 
 *Full detail: `docs/plans/HANDOFF-2026-04-18-final-scaling-verification-completion.md`*

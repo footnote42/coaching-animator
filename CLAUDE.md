@@ -138,10 +138,10 @@ Before running E2E tests (`npm run e2e`), **always verify**:
 
 **Absolute Prohibitions**:
 - No telemetry, analytics, or tracking
-- No third-party identity providers (Google, Facebook, etc.)
 - No third-party analytics services
 - No advertising or sponsored content
 - No paywalls for core features
+- OAuth auth providers: Google, Apple, GitHub permitted (Section V.2.3); Facebook/Meta, Twitter/X, LinkedIn, Discord prohibited
 
 **Full Governance**: See [docs/authority/constitution.md](docs/authority/constitution.md)
 
@@ -166,3 +166,7 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 
 ## Recent Changes
 - 001-fix-share-scaling: Added TypeScript 5 · Node 22
+
+## Design Context
+
+See `.impeccable.md` for full design context (brand, aesthetic direction, principles, priority areas).
