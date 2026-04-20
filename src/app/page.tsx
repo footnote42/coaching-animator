@@ -70,7 +70,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/app"
-                className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-white font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
+                className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-gray-900 font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
               >
                 Start drawing — no account needed
               </a>
@@ -171,7 +171,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/app"
-              className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-white font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-gray-900 font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
             >
               Start drawing
             </a>

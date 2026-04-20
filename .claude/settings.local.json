@@ -155,7 +155,16 @@
       "Read(//c/Users/kenho/.claude/scripts/**)",
       "Skill(keybindings-help)",
       "Bash(/home/footnote42/.cleo/lib/session/context-monitor.sh:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(.specify/extensions/git/scripts/bash/create-new-feature.sh *)",
+      "Bash(chmod +x .specify/extensions/git/scripts/bash/create-new-feature.sh)",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(BASE_URL=http://localhost:3000 npx playwright test tests/e2e/share-entity-scaling.spec.ts --project=chromium --reporter=list)",
+      "Bash(BASE_URL=http://localhost:3000 npx playwright test tests/e2e/share-entity-scaling.spec.ts::53 --project=chromium --reporter=list --timeout=20000)",
+      "Bash(BASE_URL=http://localhost:3000 npx playwright *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(wait)",
+      "Bash(echo \"PID: $!\")"
     ]
   },
   "enableAllProjectMcpServers": true,

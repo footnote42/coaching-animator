@@ -11,7 +11,7 @@
 | Document | Role | Location |
 |----------|------|----------|
 | **PRD-v2.0** | Product requirements, feature specifications | [docs/authority/PRD-v2.0.md](PRD-v2.0.md) |
-| **Constitution v3.4.1** | Governance, tiered model, absolute prohibitions | [.specify/memory/constitution.md](../../.specify/memory/constitution.md) |
+| **Constitution v3.4.2** | Governance, tiered model, absolute prohibitions | [.specify/memory/constitution.md](../../.specify/memory/constitution.md) |
 | **Issues Tracker** | Categorized issues and features by phase | [docs/issues/ISSUES.md](../issues/ISSUES.md) |
 | **Changelog** | Record of delivered changes | [docs/CHANGELOG.md](../CHANGELOG.md) |
 | **Handoff log** | Session-by-session progress record | [docs/plans/HANDOFF.md](../plans/HANDOFF.md) |
@@ -54,7 +54,7 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 
 | Task | Description | Related issues |
 |------|-------------|-----------------|
-| T3 | Landing page overhaul — tactical/hand-drawn aesthetic + design research | UX-001, UX-002, UX-003, UX-007 |
+| T3 | Landing page overhaul — tactical/hand-drawn aesthetic + design research ✅ *(delivered 2026-04-20 — Oswald headings, cream palette, typographic cards, WCAG AA contrast verified)* | UX-001, UX-002, UX-003, UX-007 |
 | T4 | Canvas credibility — standard pitch layout with yard markers | UX-006 |
 | T5 | Share workflow clarity — step-by-step guide + UX improvements | UX-008 |
 | T6 | Auth visibility — logged-in indicator or login button | UX-005 |

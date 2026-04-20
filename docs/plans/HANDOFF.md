@@ -4,6 +4,25 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-20 — Landing Page Rebrand Complete (T3 all phases) ✓
+
+**All T001–T019 complete. Feature `002-landing-rebrand` fully delivered.**
+
+Session 1 (T001–T012) — token foundation + feature cards:
+- Oswald font via `next/font/google`, cream palette tokens, typographic feature cards
+
+Session 2 (T013–T019) — verification + one fix:
+- T013/T014: Mobile 375px — PASS (no scroll, 18px body, 328×88px CTA)
+- T015: Amber CTA contrast FIXED — `text-white` (3.19:1) → `text-gray-900` (6.59:1)
+- T016: Accessibility spot-check — PASS (all combinations well above 4.5:1)
+- T017: lint + tsc — PASS (zero errors)
+- T018/T019: Nav/footer visual check + 9-section quickstart checklist — PASS
+- Spec status set to Verified; 15/15 spec requirements covered
+
+**Next**: Phase 3 — Automated UAT for core loop (see ROADMAP.md)
+
+---
+
 ## 2026-04-19 — Design Context Setup & Authority Doc Cleanup
 
 **Completed**:

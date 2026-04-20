@@ -415,9 +415,9 @@ This section codifies the Design Tokens into enforceable standards.
 | Token Name | Value | Usage |
 |------------|-------|-------|
 | `--color-primary` | `#1A3D1A` | Headers, buttons, emphasis |
-| `--color-background` | `#F8F9FA` | Page backgrounds, cards |
-| `--color-surface` | `#FFFFFF` | Input fields, content wells |
-| `--color-surface-warm` | `#F9FAFB` | Main backgrounds (warmer alternative) |
+| `--color-background` | `#F2ECD8` | Page backgrounds — warm cream (amended v3.4.2) |
+| `--color-surface` | `#FDFAF5` | Input fields, content wells — light cream |
+| `--color-surface-warm` | `#EDE6D0` | Alternating section backgrounds — deeper cream |
 | `--color-border` | `#1A3D1A` | Schematic borders, dividers |
 | `--color-accent-warm` | `#D97706` | CTAs, highlights, interactive elements |
 | `--color-text-primary` | `#111827` | Body text, labels (enhanced contrast) |
@@ -674,4 +674,4 @@ The application exists to **empower grassroots sports coaches** - volunteers, pa
 - Design tokens MUST be enforced via Tailwind configuration or CSS variables
 - Code review checklist MUST include Constitution Check items
 
-**Version**: 3.4.1 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-02-21 (Patch: Clarify V.5 OAuth rejection criterion to align with V.2.3 permitted providers)
+**Version**: 3.4.2 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-04-20 (Patch: Update Design System color tokens — background/surface/surface-warm updated to warm cream palette for landing rebrand; design rationale in .impeccable.md §Color)
