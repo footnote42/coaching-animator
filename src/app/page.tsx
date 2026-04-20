@@ -1,4 +1,3 @@
-import { Play, Users, Share2, Download, Shield, Zap } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,32 +29,26 @@ export const dynamic = 'force-dynamic';
 
 const FEATURES = [
   {
-    icon: Play,
     title: 'Draw plays in motion',
     description: 'Place players on the pitch, add frames, and show how the play unfolds. Drag, move, repeat until it looks right.',
   },
   {
-    icon: Users,
     title: 'Rugby Union, League & Touch',
     description: 'Pick your code and the right field appears — correct markings, correct dimensions. No setup required.',
   },
   {
-    icon: Share2,
     title: 'Share a link with your squad',
     description: 'Send a link your players can open on their phones. No app download, no account needed on their end.',
   },
   {
-    icon: Download,
     title: 'Export as a GIF',
     description: 'Download an animated GIF to drop in a WhatsApp group, a presentation, or wherever your team communicates.',
   },
   {
-    icon: Shield,
     title: 'Nothing to install',
     description: 'It runs in your browser — no download, no app store. Open it on your phone, tablet, or laptop and start drawing.',
   },
   {
-    icon: Zap,
     title: 'Free to use',
     description: 'No credit card, no trial period. Start drawing straight away as a guest. Create an account to save your work.',
   },
@@ -113,9 +106,6 @@ export default function HomePage() {
                 key={feature.title}
                 className="bg-surface border border-border p-6 hover:border-primary transition-colors"
               >
-                <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
-                </div>
                 <h3 className="text-lg font-heading font-semibold text-text-primary mb-2">
                   {feature.title}
                 </h3>

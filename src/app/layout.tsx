@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from 'next';
+import { Oswald } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
 import { Navigation } from '@/shared/components/Navigation';
+
+const oswald = Oswald({
+  subsets: ['latin'],
+  variable: '--font-oswald',
+  display: 'swap',
+});
 
 
 export const metadata: Metadata = {
@@ -48,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={oswald.variable} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
