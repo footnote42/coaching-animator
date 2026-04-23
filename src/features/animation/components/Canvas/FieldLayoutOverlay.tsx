@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layer, Line, Rect, Text } from 'react-konva';
 import { PitchLayout, SportType } from '@/core/types';
+import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 
 export interface FieldLayoutOverlayProps {
     layout: PitchLayout;
@@ -26,7 +27,7 @@ export const FieldLayoutOverlay: React.FC<FieldLayoutOverlayProps> = ({
 
     const overlayColor = 'rgba(255, 165, 0, 0.3)'; // Warm orange, semi-transparent
     const lineColor = 'rgba(255, 165, 0, 0.6)';
-    const textColor = '#FF6B00';
+    const textColor = DESIGN_TOKENS.colours.neutral[3];
 
     // Attack layout: Show offensive zones
     if (layout === 'attack') {

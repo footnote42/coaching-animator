@@ -123,7 +123,7 @@ export function AnimationCard({
             alt={animation.title}
             fill
             className="object-cover"
-            unoptimized // External dynamic URL from Supabase
+            loading="lazy"
             onError={(e) => {
               // Fallback to placeholder on image error
               const target = e.target as HTMLImageElement;
@@ -213,8 +213,8 @@ export function AnimationCard({
             {showCopyLink && canCopyLink && (
               <button
                 onClick={handleCopyLink}
-                className={`p-1.5 transition-colors ${copied ? 'text-green-600' : 'hover:bg-surface-warm'}`}
-                title={copied ? 'Copied!' : 'Copy Link'}
+                className={`p-2.5 transition-colors ${copied ? 'text-green-600' : 'hover:bg-surface-warm'}`}
+                aria-label={copied ? 'Copied!' : 'Copy Link'}
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
@@ -226,8 +226,8 @@ export function AnimationCard({
                     e.stopPropagation();
                     setShowVersionHistory(true);
                   }}
-                  className="p-1.5 hover:bg-surface-warm transition-colors"
-                  title="Version History"
+                  className="p-2.5 hover:bg-surface-warm transition-colors"
+                  aria-label="Version History"
                 >
                   <History className="w-4 h-4" />
                 </button>
@@ -236,8 +236,8 @@ export function AnimationCard({
                     e.stopPropagation();
                     onEdit?.(animation.id);
                   }}
-                  className="p-1.5 hover:bg-surface-warm transition-colors"
-                  title="Edit"
+                  className="p-2.5 hover:bg-surface-warm transition-colors"
+                  aria-label="Edit"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -246,8 +246,8 @@ export function AnimationCard({
                     e.stopPropagation();
                     onDelete?.(animation.id);
                   }}
-                  className="p-1.5 hover:bg-red-50 text-red-600 transition-colors"
-                  title="Delete"
+                  className="p-2.5 hover:bg-red-50 text-red-600 transition-colors"
+                  aria-label="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

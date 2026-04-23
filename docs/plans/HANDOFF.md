@@ -4,6 +4,59 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-23 — UI/UX Audit Remediation (refine-uiux.md, 11→15/20) ✓
+
+**All 7 tasks from `docs/plans/refine-uiux.md` complete. Score: 15/20.**
+
+Tasks completed:
+
+- **Task 1 `/harden`** — Accessibility: added `<main>` landmark to landing page, `aria-label` on gallery search input, `aria-label` on all 4 AnimationCard action buttons
+- **Task 2 `/optimize`** — Image performance: removed `unoptimized` prop from AnimationCard and PublicAnimationCard thumbnails; added `loading="lazy"`. Confirmed `next.config.js` wildcard already covered Supabase hostname — no config change needed
+- **Task 3 `/colorize`** — Hardcoded colors: added `--color-accent-hover: oklch(50% 0.14 60)` to `globals.css @theme`; replaced `#B45309` hover in `button.tsx` and `ProjectActions.tsx` (3 occurrences) with the new token; replaced `#FF6B00` in `FieldLayoutOverlay.tsx` with `DESIGN_TOKENS.colours.neutral[3]`; simplified `PlayerToken.tsx` ball/shield/bag `stroke` (both branches were `#1A3D1A`, same as `DESIGN_TOKENS.colours.primary`)
+- **Task 4 `/quieter`** — Removed glassmorphism: `FloatingRemote.tsx` `bg-black/60 backdrop-blur-sm border border-white/20` → `bg-black/80 border border-white/10`; `OnboardingTutorial.tsx` `bg-black/50 backdrop-blur-sm` → `bg-black/70`
+- **Task 5 `/shape`** — Removed banned border-left stripe in `collections/[id]/page.tsx` (`border-l-2 border-indigo-500/30` → `border border-border`); fixed off-brand `text-indigo-400` → `text-text-primary/60`
+- **Task 6 `/adapt`** — Touch targets: AnimationCard action buttons `p-1.5` → `p-2.5` (all 4)
+- **Task 7 `/polish`** — No further changes needed; all changes consistent with design system
+
+Lint: zero errors. TypeScript: zero errors.
+
+**Remaining issues found by `/audit` (starting point for next session)**:
+
+| Priority | Issue | Location |
+|----------|-------|----------|
+| P1 | Modal close buttons `p-1` (~24px) — below 44px touch target | `SaveToCloudModal.tsx:179`, `ReportModal.tsx:77`, `EditMetadataModal.tsx:88` |
+| P1 | Off-token grays in profile and admin pages (`text-gray-700/900`, `bg-gray-100`, `border-gray-300`) | `profile/page.tsx` (~20×), `admin/page.tsx` (~15×) |
+| P2 | CTA hover inconsistency on landing page — uses `hover:bg-accent-warm/90` not `var(--color-accent-hover)` | `page.tsx:74`, `page.tsx:175` |
+| P2 | ColorPicker swatches `w-8 h-8` (32px) — sub-44px touch target | `ColorPicker.tsx:39` |
+| P2 | No `prefers-reduced-motion` guard in `globals.css` | `globals.css` |
+| P3 | Rugby ball emoji in footer reads off-brand | `page.tsx:195` |
+
+**Next session prompt**:
+
+```
+Continue UI/UX remediation on coaching-animator. Audit score is 15/20.
+
+Remaining issues from docs/plans/HANDOFF.md (2026-04-23 entry):
+
+P1 — /adapt pass:
+1. Fix p-1 → p-2.5 on close (X) buttons in:
+   - src/shared/components/SaveToCloudModal.tsx:179
+   - src/shared/components/ReportModal.tsx:77
+   - src/shared/components/EditMetadataModal.tsx:88
+2. Fix ColorPicker.tsx:39 swatches from w-8 h-8 → w-10 h-10
+3. Add prefers-reduced-motion block to src/app/globals.css
+
+P1 — /colorize pass:
+4. Tokenize src/app/profile/page.tsx (text-gray-* → text-text-primary/*, border-gray-* → border-border, bg-gray-* → bg-surface-warm/bg-background)
+5. Same treatment for src/app/admin/page.tsx
+6. Fix hover:bg-accent-warm/90 → hover:bg-[var(--color-accent-hover)] in src/app/page.tsx:74 and :175
+
+After each pass: npm run lint && npx tsc --noEmit
+Then run /audit to verify score improvement above 15/20.
+```
+
+---
+
 ## 2026-04-20 — Landing Page Rebrand Complete (T3 all phases) ✓
 
 **All T001–T019 complete. Feature `002-landing-rebrand` fully delivered.**

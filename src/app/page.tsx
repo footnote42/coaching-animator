@@ -56,7 +56,8 @@ const FEATURES = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <main>
       {/* Hero Section — Alt A: The Grounded Coach */}
       <section className="bg-primary text-text-inverse">
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
@@ -184,6 +185,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-surface border-t border-border">
@@ -205,6 +207,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

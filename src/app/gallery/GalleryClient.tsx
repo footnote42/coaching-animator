@@ -252,6 +252,7 @@ function GalleryContent() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  aria-label="Search animations"
                   placeholder="Search drills and plays..."
                   className="w-full pl-10 pr-4 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
                 />

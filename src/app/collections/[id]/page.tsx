@@ -382,8 +382,8 @@ export default function CollectionDetailPage() {
 
                 {/* Progression cards indented under base */}
                 {progressionMap.get(animation.id)?.map((prog, i) => (
-                  <div key={prog.id} className="relative group col-span-1 pl-4 border-l-2 border-indigo-500/30">
-                    <p className="text-xs text-indigo-400 font-medium mb-1">
+                  <div key={prog.id} className="relative group col-span-1 pl-4 border border-border">
+                    <p className="text-xs text-text-primary/60 font-medium mb-1">
                       Progression {i + 1}
                     </p>
                     <PublicAnimationCard

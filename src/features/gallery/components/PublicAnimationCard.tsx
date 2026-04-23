@@ -115,7 +115,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
             alt={animation.title}
             fill
             className="object-cover"
-            unoptimized // External dynamic URL from Supabase
+            loading="lazy"
             onError={(e) => {
               // Fallback to placeholder on image error
               const target = e.target as HTMLImageElement;

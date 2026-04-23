@@ -157,7 +157,7 @@ export function FloatingRemote({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="flex items-center rounded-full bg-black/60 backdrop-blur-sm border border-white/20"
+      className="flex items-center rounded-full bg-black/80 border border-white/10"
     >
       {/* DRAG HANDLE — only this element triggers drag */}
       <div

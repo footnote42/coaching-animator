@@ -10,6 +10,7 @@
     --color-text-primary: #111827;
     --color-text-inverse: #F8F9FA;
     --color-accent-warm: #D97706;
+    --color-accent-hover: oklch(50% 0.14 60);
 
     /* Typography tokens */
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;

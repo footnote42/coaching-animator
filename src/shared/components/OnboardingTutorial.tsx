@@ -57,7 +57,7 @@ export function OnboardingTutorial({ isOpen, onClose, onComplete }: OnboardingTu
     const step = STEPS[currentStep];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
             <div className="bg-surface border border-border rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
 
                 {/* Header */}

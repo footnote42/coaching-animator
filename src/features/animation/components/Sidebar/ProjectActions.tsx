@@ -271,7 +271,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     size="sm"
                     onClick={handleSave}
                     disabled={!project || isLoading.save}
-                    className="w-full bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white"
+                    className="w-full bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white"
                 >
                     {isLoading.save ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -330,7 +330,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             size="sm"
                             onClick={() => updateProjectSettings({ exportResolution: '720p' })}
                             disabled={!project}
-                            className={`flex-1 ${project?.settings.exportResolution === '720p' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                            className={`flex-1 ${project?.settings.exportResolution === '720p' ? 'bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white' : ''}`}
                         >
                             {project?.settings.exportResolution === '720p' && '✓ '}720p
                         </Button>
@@ -339,7 +339,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                             size="sm"
                             onClick={() => updateProjectSettings({ exportResolution: '1080p' })}
                             disabled={!project}
-                            className={`flex-1 ${project?.settings.exportResolution === '1080p' ? 'bg-[var(--color-accent-warm)] hover:bg-[#B45309] text-white' : ''}`}
+                            className={`flex-1 ${project?.settings.exportResolution === '1080p' ? 'bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white' : ''}`}
                         >
                             {project?.settings.exportResolution === '1080p' && '✓ '}1080p
                         </Button>
