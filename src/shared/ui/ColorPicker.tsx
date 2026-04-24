@@ -36,7 +36,7 @@ export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
                         key={color}
                         type="button"
                         onClick={() => onChange(color)}
-                        className="w-8 h-8 border-2 transition-all hover:scale-110"
+                        className="w-10 h-10 border-2 transition-all hover:scale-110"
                         style={{
                             backgroundColor: color,
                             borderColor: value === color ? DESIGN_TOKENS.colours.primary : '#E5E7EB',

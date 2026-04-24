@@ -152,7 +152,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           <Link
             href={`/progression/${animation.id}`}
             onClick={e => e.stopPropagation()}
-            className="absolute bottom-2 left-2 px-2 py-0.5 bg-indigo-900/80 text-indigo-200 text-xs font-medium rounded-full hover:bg-indigo-700/90 transition-colors"
+            className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary/80 text-text-inverse text-xs font-medium rounded-full hover:bg-primary/70 transition-colors"
           >
             +{animation.progression_count} progression{animation.progression_count !== 1 ? 's' : ''}
           </Link>

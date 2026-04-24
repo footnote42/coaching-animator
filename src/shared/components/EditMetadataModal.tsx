@@ -85,7 +85,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
           </h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-surface-warm transition-colors"
+            className="p-2.5 hover:bg-surface-warm transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />

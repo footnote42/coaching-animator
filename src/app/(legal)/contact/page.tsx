@@ -99,7 +99,7 @@ export default function ContactPage() {
             onChange={(e) => setSubject(e.target.value)}
             required
             aria-label="Subject"
-            className="w-full px-4 py-2 border border-border focus:border-primary focus:outline-none bg-white"
+            className="w-full px-4 py-2 border border-border focus:border-primary focus:outline-none bg-surface"
           >
             <option value="">Select a subject</option>
             <option value="general">General Inquiry</option>

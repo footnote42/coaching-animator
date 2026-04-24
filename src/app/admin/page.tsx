@@ -144,13 +144,13 @@ function AnimationsTab() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <span className="text-sm text-gray-500">{total} total animations</span>
+        <span className="text-sm text-text-primary/60">{total} total animations</span>
         <input
           type="text"
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
           placeholder="Search by title…"
-          className="px-3 py-1.5 text-sm border border-gray-300 rounded-md w-56 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="px-3 py-1.5 text-sm border border-border rounded-md w-56 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>
 
@@ -162,15 +162,15 @@ function AnimationsTab() {
 
       {loading ? (
         <div className="py-12 text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto" />
-          <p className="mt-4 text-gray-500">Loading animations…</p>
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="mt-4 text-text-primary/60">Loading animations…</p>
         </div>
       ) : animations.length === 0 ? (
-        <div className="py-12 text-center text-gray-500">No animations found.</div>
+        <div className="py-12 text-center text-text-primary/60">No animations found.</div>
       ) : (
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-xs text-gray-500 border-b border-gray-200">
+            <tr className="text-left text-xs text-text-primary/60 border-b border-border">
               <th className="pb-2 font-medium">Title</th>
               <th className="pb-2 font-medium">Type</th>
               <th className="pb-2 font-medium">Visibility</th>
@@ -179,23 +179,23 @@ function AnimationsTab() {
               <th className="pb-2" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {animations.map(anim => (
               <tr key={anim.id}>
-                <td className="py-2 pr-4 font-medium text-gray-900 max-w-xs truncate">{anim.title || 'Untitled'}</td>
-                <td className="py-2 pr-4 text-gray-600">{anim.animation_type}</td>
+                <td className="py-2 pr-4 font-medium text-text-primary max-w-xs truncate">{anim.title || 'Untitled'}</td>
+                <td className="py-2 pr-4 text-text-primary/70">{anim.animation_type}</td>
                 <td className="py-2 pr-4">
                   <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                     anim.visibility === 'public'
                       ? 'bg-green-100 text-green-800'
                       : anim.visibility === 'private'
-                      ? 'bg-gray-100 text-gray-700'
+                      ? 'bg-surface-warm text-text-primary'
                       : 'bg-blue-100 text-blue-800'
                   }`}>
                     {anim.visibility}
                   </span>
                 </td>
-                <td className="py-2 pr-4 text-gray-500">{formatDate(anim.created_at)}</td>
+                <td className="py-2 pr-4 text-text-primary/60">{formatDate(anim.created_at)}</td>
                 <td className="py-2 pr-4">
                   <button
                     onClick={() => handleToggleTemplate(anim)}
@@ -203,7 +203,7 @@ function AnimationsTab() {
                     className={`px-2.5 py-1 text-xs font-medium rounded transition-colors disabled:opacity-50 ${
                       anim.tags?.includes('template')
                         ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                        : 'bg-surface-warm text-text-primary/60 hover:bg-surface-warm'
                     }`}
                   >
                     {togglingTemplate === anim.id ? '...' : anim.tags?.includes('template') ? 'Template' : 'Set Template'}
@@ -230,14 +230,14 @@ function AnimationsTab() {
           <button
             onClick={() => setOffset(o => Math.max(0, o - LIMIT))}
             disabled={!hasPrev}
-            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-40"
+            className="px-3 py-1.5 text-sm font-medium text-text-primary bg-surface-warm rounded hover:bg-surface-warm disabled:opacity-40"
           >
             Prev
           </button>
           <button
             onClick={() => setOffset(o => o + LIMIT)}
             disabled={!hasNext}
-            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-40"
+            className="px-3 py-1.5 text-sm font-medium text-text-primary bg-surface-warm rounded hover:bg-surface-warm disabled:opacity-40"
           >
             Next
           </button>
@@ -247,15 +247,15 @@ function AnimationsTab() {
       {/* Confirm delete dialog */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Animation</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-surface border border-border shadow-xl max-w-sm w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Delete Animation</h3>
+            <p className="text-sm text-text-primary/70 mb-4">
               Permanently delete <strong>&quot;{confirmDelete.title || 'Untitled'}&quot;</strong>? This cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-sm font-medium text-text-primary bg-surface-warm rounded-lg hover:bg-surface-warm"
               >
                 Cancel
               </button>
@@ -396,7 +396,7 @@ export default function AdminPage() {
       case 'inappropriate': return 'bg-red-100 text-red-800';
       case 'spam': return 'bg-yellow-100 text-yellow-800';
       case 'copyright': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-surface-warm text-text-primary';
     }
   };
 
@@ -404,14 +404,14 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background">
       <header className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-text-primary">Admin Dashboard</h1>
+          <h1 className="text-2xl font-heading font-bold text-text-primary">Admin Dashboard</h1>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-surface border border-border">
           {/* Tab bar */}
-          <div className="border-b border-gray-200 px-6">
+          <div className="border-b border-border px-6">
             <div className="flex gap-0">
               {(['reports', 'animations'] as const).map(tab => (
                 <button
@@ -419,8 +419,8 @@ export default function AdminPage() {
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === tab
-                      ? 'border-emerald-600 text-emerald-700'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-text-primary/60 hover:text-text-primary'
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -434,7 +434,7 @@ export default function AdminPage() {
             {activeTab === 'reports' && (
               <>
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-text-primary">
                     Content Reports ({total})
                   </h2>
                   <div className="flex gap-2">
@@ -443,8 +443,8 @@ export default function AdminPage() {
                         key={status}
                         onClick={() => setStatusFilter(status)}
                         className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${statusFilter === status
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-primary text-text-inverse'
+                          : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                         }`}
                       >
                         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -461,15 +461,15 @@ export default function AdminPage() {
 
                 {loading ? (
                   <div className="py-12 text-center">
-                    <div className="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto" />
-                    <p className="mt-4 text-gray-500">Loading reports...</p>
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+                    <p className="mt-4 text-text-primary/60">Loading reports...</p>
                   </div>
                 ) : reports.length === 0 ? (
                   <div className="py-12 text-center">
-                    <p className="text-gray-500">No {statusFilter} reports found.</p>
+                    <p className="text-text-primary/60">No {statusFilter} reports found.</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-200">
+                  <div className="divide-y divide-border">
                     {reports.map((report) => (
                       <div key={report.id} className="py-4">
                         <div className="flex justify-between items-start gap-4">
@@ -478,27 +478,27 @@ export default function AdminPage() {
                               <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getReasonBadgeColor(report.reason)}`}>
                                 {report.reason}
                               </span>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-text-primary/60">
                                 {formatDate(report.created_at)}
                               </span>
                             </div>
 
                             <div className="mb-2">
-                              <h3 className="font-medium text-gray-900">
+                              <h3 className="font-medium text-text-primary">
                                 {report.animation?.title || 'Deleted Animation'}
                               </h3>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-text-primary/60">
                                 by {report.animation?.author_display_name || 'Anonymous'}
                               </p>
                             </div>
 
                             {report.details && (
-                              <p className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-2">
+                              <p className="text-sm text-text-primary/70 bg-surface-warm rounded p-2 mb-2">
                                 &quot;{report.details}&quot;
                               </p>
                             )}
 
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-text-primary/60">
                               Reported by: {report.reporter?.display_name || 'Anonymous User'}
                             </p>
 
@@ -507,7 +507,7 @@ export default function AdminPage() {
                                 href={`/gallery/${report.animation.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-emerald-600 hover:text-emerald-700 mt-1 inline-block"
+                                className="text-xs text-primary hover:text-primary/80 mt-1 inline-block"
                               >
                                 View Animation →
                               </a>
@@ -519,7 +519,7 @@ export default function AdminPage() {
                               <button
                                 onClick={() => handleAction(report.id, 'dismiss')}
                                 disabled={processingId === report.id}
-                                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50"
+                                className="px-3 py-1.5 text-xs font-medium text-text-primary bg-surface-warm rounded hover:bg-surface-warm disabled:opacity-50"
                               >
                                 Dismiss
                               </button>
@@ -570,20 +570,20 @@ export default function AdminPage() {
       {/* Reason Modal */}
       {showReasonModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-surface border border-border shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
               {showReasonModal.action === 'hide' && 'Hide Animation'}
               {showReasonModal.action === 'warn_user' && 'Warn User'}
               {showReasonModal.action === 'ban_user' && 'Ban User'}
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-text-primary/70 mb-4">
               Please provide a reason for this action. This will be recorded for audit purposes.
             </p>
             <textarea
               value={actionReason}
               onChange={(e) => setActionReason(e.target.value)}
               placeholder="Enter reason..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none"
               rows={3}
             />
             <div className="flex justify-end gap-3 mt-4">
@@ -592,14 +592,14 @@ export default function AdminPage() {
                   setShowReasonModal(null);
                   setActionReason('');
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-sm font-medium text-text-primary bg-surface-warm rounded-lg hover:bg-surface-warm"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleAction(showReasonModal.reportId, showReasonModal.action, actionReason)}
                 disabled={!actionReason.trim() || processingId === showReasonModal.reportId}
-                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-text-inverse bg-primary hover:bg-primary/90 disabled:opacity-50"
               >
                 {processingId === showReasonModal.reportId ? 'Processing...' : 'Confirm'}
               </button>

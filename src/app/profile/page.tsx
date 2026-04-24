@@ -228,8 +228,8 @@ export default function ProfilePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full"></div>
+      <div className="min-h-screen bg-surface-warm flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -243,12 +243,12 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background">
       <header className="bg-surface border-b border-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>
+          <h1 className="text-2xl font-heading font-bold text-text-primary">Profile Settings</h1>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-surface border border-border p-6">
           <form onSubmit={handleSave} className="space-y-6">
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -263,7 +263,7 @@ export default function ProfilePage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1">
                 Email
               </label>
               <input
@@ -271,13 +271,13 @@ export default function ProfilePage() {
                 id="email"
                 value={user.email || ''}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-surface-warm text-text-primary/60"
               />
-              <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+              <p className="mt-1 text-xs text-text-primary/60">Email cannot be changed</p>
             </div>
 
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="displayName" className="block text-sm font-medium text-text-primary mb-1">
                 Display Name
               </label>
               <input
@@ -287,28 +287,28 @@ export default function ProfilePage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 maxLength={50}
                 placeholder="Enter a display name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-text-primary/60">
                 This name will be shown on your public animations. Leave blank to stay anonymous.
               </p>
             </div>
 
             {/* Club Branding */}
             <div className="pt-4 border-t">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Club Branding</h3>
-              <p className="text-xs text-gray-500 mb-4">
+              <h3 className="text-sm font-medium text-text-primary mb-3">Club Branding</h3>
+              <p className="text-xs text-text-primary/60 mb-4">
                 Set your club details. Strip colours will be used as default player colours in the editor.
               </p>
 
               <div className="space-y-4">
                 {/* Club Badge */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-text-primary mb-2">
                     Club Badge
                   </label>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-16 rounded-lg border border-border bg-surface-warm flex items-center justify-center overflow-hidden flex-shrink-0">
                       {clubBadgeUrl ? (
                         <Image
                           src={clubBadgeUrl}
@@ -319,7 +319,7 @@ export default function ProfilePage() {
                           unoptimized
                         />
                       ) : (
-                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-8 h-8 text-text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                         </svg>
                       )}
@@ -336,7 +336,7 @@ export default function ProfilePage() {
                       />
                       <label
                         htmlFor="clubBadge"
-                        className={`px-3 py-1.5 text-sm border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`px-3 py-1.5 text-sm border border-border rounded-lg cursor-pointer hover:bg-surface-warm ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         {badgeUploading ? 'Uploading...' : clubBadgeUrl ? 'Change Badge' : 'Upload Badge'}
                       </label>
@@ -352,14 +352,14 @@ export default function ProfilePage() {
                       )}
                     </div>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">PNG, JPG or SVG, max 500 KB</p>
+                  <p className="mt-1 text-xs text-text-primary/60">PNG, JPG or SVG, max 500 KB</p>
                   {badgeError && (
                     <p className="mt-1 text-xs text-red-600">{badgeError}</p>
                   )}
                 </div>
 
                 <div>
-                  <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="clubName" className="block text-sm font-medium text-text-primary mb-1">
                     Club Name
                   </label>
                   <input
@@ -369,13 +369,13 @@ export default function ProfilePage() {
                     onChange={(e) => setClubName(e.target.value)}
                     maxLength={100}
                     placeholder="e.g. Hampshire RFC"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="primaryColor" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="primaryColor" className="block text-sm font-medium text-text-primary mb-1">
                       Primary Strip Colour
                     </label>
                     <div className="flex items-center gap-2">
@@ -384,18 +384,18 @@ export default function ProfilePage() {
                         id="primaryColor"
                         value={primaryColor || '#3b82f6'}
                         onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                        className="w-10 h-10 rounded border border-border cursor-pointer"
                       />
-                      <span className="text-sm text-gray-500">{primaryColor || 'Not set'}</span>
+                      <span className="text-sm text-text-primary/60">{primaryColor || 'Not set'}</span>
                       {primaryColor && (
-                        <button type="button" onClick={() => setPrimaryColor('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+                        <button type="button" onClick={() => setPrimaryColor('')} className="text-xs text-text-primary/40 hover:text-text-primary/70">Clear</button>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">Default colour for attack players</p>
+                    <p className="mt-1 text-xs text-text-primary/60">Default colour for attack players</p>
                   </div>
 
                   <div>
-                    <label htmlFor="secondaryColor" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="secondaryColor" className="block text-sm font-medium text-text-primary mb-1">
                       Secondary Strip Colour
                     </label>
                     <div className="flex items-center gap-2">
@@ -404,28 +404,28 @@ export default function ProfilePage() {
                         id="secondaryColor"
                         value={secondaryColor || '#ef4444'}
                         onChange={(e) => setSecondaryColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                        className="w-10 h-10 rounded border border-border cursor-pointer"
                       />
-                      <span className="text-sm text-gray-500">{secondaryColor || 'Not set'}</span>
+                      <span className="text-sm text-text-primary/60">{secondaryColor || 'Not set'}</span>
                       {secondaryColor && (
-                        <button type="button" onClick={() => setSecondaryColor('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+                        <button type="button" onClick={() => setSecondaryColor('')} className="text-xs text-text-primary/40 hover:text-text-primary/70">Clear</button>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">Default colour for defense players</p>
+                    <p className="mt-1 text-xs text-text-primary/60">Default colour for defense players</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="pt-4 border-t">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Usage</h3>
+              <h3 className="text-sm font-medium text-text-primary mb-2">Usage</h3>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Saved Animations</span>
+                <span className="text-text-primary/70">Saved Animations</span>
                 <span className="font-medium">{animationCount} / {maxAnimations}</span>
               </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="mt-2 w-full bg-surface-warm rounded-full h-2">
                 <div
-                  className="bg-emerald-600 h-2 rounded-full transition-all"
+                  className="bg-primary h-2 rounded-full transition-all"
                   style={{ width: `${Math.min((animationCount / maxAnimations) * 100, 100)}%` }}
                 />
               </div>
@@ -435,7 +435,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -444,12 +444,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Connected Accounts Section */}
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Connected Accounts</h2>
+        <div className="mt-8 bg-surface border border-border p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Connected Accounts</h2>
 
           <div className="space-y-4">
             {/* Google Account */}
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
               <div className="flex items-center gap-3">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -458,8 +458,8 @@ export default function ProfilePage() {
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 <div>
-                  <p className="font-medium text-gray-900">Google</p>
-                  {googleIdentity && <p className="text-xs text-gray-500">Connected</p>}
+                  <p className="font-medium text-text-primary">Google</p>
+                  {googleIdentity && <p className="text-xs text-text-primary/60">Connected</p>}
                 </div>
               </div>
 
@@ -467,7 +467,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => handleUnlink(googleIdentity.identity_id)}
                   disabled={!canUnlink || saving}
-                  className="px-3 py-1 text-sm border border-gray-300 rounded text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm border border-border rounded text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   title={!canUnlink ? "Cannot unlink the only login method" : ""}
                 >
                   Unlink
@@ -476,7 +476,7 @@ export default function ProfilePage() {
                 <button
                   onClick={handleLinkGoogle}
                   disabled={isLinking}
-                  className="px-3 py-1 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                  className="px-3 py-1 text-sm border border-border rounded text-text-primary hover:bg-surface-warm"
                 >
                   Connect
                 </button>
@@ -484,11 +484,11 @@ export default function ProfilePage() {
             </div>
 
             {/* Password Management */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-md font-medium text-gray-900 mb-2">
+            <div className="mt-6 pt-6 border-t border-border">
+              <h3 className="text-base font-medium text-text-primary mb-2">
                 {hasEmailProvider ? 'Change Password' : 'Set Password'}
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-text-primary/60 mb-4">
                 {hasEmailProvider
                   ? 'Update your password associated with your email address.'
                   : 'Set a password to log in with your email address as a backup.'}
@@ -496,18 +496,18 @@ export default function ProfilePage() {
 
               <form onSubmit={handleSetPassword} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                  <label className="block text-sm font-medium text-text-primary mb-1">New Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    className="w-full px-3 py-2 border border-border rounded-lg"
                     minLength={8}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                  <label className="block text-sm font-medium text-text-primary mb-1">Confirm Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -519,7 +519,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
                 >
                   Set Password
                 </button>
@@ -529,18 +529,18 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="mt-6 bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h2>
+        <div className="mt-6 bg-surface border border-border p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Quick Links</h2>
           <div className="space-y-2">
             <a
               href="/my-gallery"
-              className="block text-emerald-600 hover:text-emerald-700"
+              className="block text-primary hover:text-primary/80"
             >
               My Playbook →
             </a>
             <a
               href="/gallery"
-              className="block text-emerald-600 hover:text-emerald-700"
+              className="block text-primary hover:text-primary/80"
             >
               Public Gallery →
             </a>

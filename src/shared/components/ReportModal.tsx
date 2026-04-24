@@ -74,7 +74,7 @@ export function ReportModal({ animationId, isOpen, onClose }: ReportModalProps) 
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-surface-warm transition-colors"
+            className="p-2.5 hover:bg-surface-warm transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />

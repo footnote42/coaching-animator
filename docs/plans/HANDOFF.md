@@ -4,6 +4,64 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-24 — UI/UX Audit Remediation (Continued: 15→15/20) & Next Phase Planning
+
+**Session work**: Fixed all P1/P2 issues from 2026-04-23 audit. Ran fresh `/audit` which scored 15/20 with a new set of systemic issues identified.
+
+**Completed this session**:
+
+1. **Fixed P1 issues from previous audit** (all 6):
+   - Modal close buttons: `p-1` → `p-2.5` in SaveToCloudModal, ReportModal, EditMetadataModal
+   - ColorPicker swatches: `w-8 h-8` → `w-10 h-10`
+   - Landing page CTA hover: `hover:bg-accent-warm/90` → `hover:bg-[var(--color-accent-hover)]` (2 occurrences)
+   - `prefers-reduced-motion` guard added to `globals.css`
+   - Profile page: 30+ gray references tokenized (`text-gray-*` → `text-text-primary/X`, `bg-gray-*` → `bg-surface-warm`, etc.)
+   - Admin page: 25+ gray references tokenized + dark spinner color (`border-emerald-600` → `border-primary`)
+   - Landing page footer: emoji removed, wordmark simplified
+   - Auth pages: Google OAuth button `bg-white hover:bg-gray-50` → `bg-surface hover:bg-surface-warm`
+   - Contact page: `bg-white` → `bg-surface`
+   - SkeletonCard: 5× `bg-gray-200` → `bg-surface-warm`
+   - Sitemap page: complete rewrite — `border-l-2` → `border-l`, grays → tokens, touch target fixed on expand button, emoji removed from filter buttons
+   - Gallery cards: `indigo-900/80 text-indigo-200` → `primary/80 text-text-inverse` (AnimationCard, PublicAnimationCard)
+
+2. **Verification**:
+   - `npm run lint` — zero errors ✓
+   - `npx tsc --noEmit` — zero errors ✓
+
+3. **Ran fresh `/audit`**:
+   - Score remains 15/20 (same as before, but different issues flagged)
+   - 4 P1, 5 P2, 3 P3 issues identified
+   - Created comprehensive audit report: `docs/issues/audit-2026-04-24-score-15-20.md`
+
+**Key findings from new audit**:
+
+| Priority | Issue | Status |
+|----------|-------|--------|
+| P1 | `rounded-lg` / `rounded-md` / `rounded` on form elements in profile/admin — violates `--border-radius: 0px` token (~15 occurrences) | Documented |
+| P1 | `bg-white` in editor-layer components (ShareViewer, Editor, ReplayViewer, ConfirmDialog, EntityContextMenu, InlineEditor, SportSelector) | Documented |
+| P1 | `bg-gray-100 text-gray-400` in FrameStrip.tsx; `text-gray-500` in ConfirmDialog.tsx | Documented |
+| P1 | Auth page `<h2>` headings missing `font-heading` (login, register, forgot-password, reset-password) | Documented |
+| P2 | Gallery search/filter: `focus:outline-none` with only `focus:border-primary` — weak keyboard indicator | Documented |
+| P2 | Admin spinners missing `role="status" aria-label="Loading"` | Documented |
+| P2 | `bg-black/50` modal overlays use pure black (banned) — should be `bg-primary/60` | Documented |
+| P2 | Template badge + remix button in PublicAnimationCard use off-token `bg-blue-600` | Documented |
+| P2 | Progress bar `transition-all` animates `width` (layout property) | Documented |
+| P3 | Inter body font monoculture (documented gap in `.impeccable.md`) | Flagged for future `/typeset` pass |
+| P3 | Admin search input `w-56` fixed width — tight on narrow viewports | Minor |
+| P3 | Auth Google button bare `rounded` may not resolve token correctly | Minor |
+
+**Next session focus** (per your instruction): Use case flow friction + new features
+
+Before diving into new features, recommend quick `/shape` + `/colorize` passes on the P1 issues above to keep the design system score healthy. These are mostly mechanical fixes (remove `rounded-*`, swap colors). Estimate 20-30 minutes total.
+
+Then pivot to use case friction analysis and feature design.
+
+**Audit findings document**: `docs/issues/audit-2026-04-24-score-15-20.md` — comprehensive, with priority sequencing and fixes outlined.
+
+Lint: zero errors. TypeScript: zero errors.
+
+---
+
 ## 2026-04-23 — UI/UX Audit Remediation (refine-uiux.md, 11→15/20) ✓
 
 **All 7 tasks from `docs/plans/refine-uiux.md` complete. Score: 15/20.**

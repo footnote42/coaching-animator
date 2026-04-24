@@ -209,7 +209,7 @@ export default function RegisterPage() {
               },
             });
           }}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-border rounded bg-white hover:bg-gray-50 transition-colors text-text-primary"
+          className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-border rounded bg-surface hover:bg-surface-warm transition-colors text-text-primary"
           aria-label="Sign up with Google"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">

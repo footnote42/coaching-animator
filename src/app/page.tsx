@@ -71,7 +71,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/app"
-                className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-gray-900 font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
+                className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-text-primary font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors"
               >
                 Start drawing — no account needed
               </a>
@@ -172,7 +172,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/app"
-              className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-gray-900 font-semibold text-lg hover:bg-accent-warm/90 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-text-primary font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors"
             >
               Start drawing
             </a>
@@ -191,8 +191,7 @@ export default function HomePage() {
       <footer className="bg-surface border-t border-border">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🏉</span>
+            <div className="flex items-center">
               <span className="font-heading font-semibold text-text-primary">Coaching Animator</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-text-primary/70">
