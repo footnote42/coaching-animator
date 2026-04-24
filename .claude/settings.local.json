@@ -172,7 +172,12 @@
       "Bash(SUPABASE_ACCESS_TOKEN=$\\(cat ~/.supabase/access-token\\) SUPABASE_DB_PASSWORD=tRDFw3dPds56OUsu supabase migration repair --status reverted 20260225210013)",
       "Bash(SUPABASE_ACCESS_TOKEN=$\\(cat ~/.supabase/access-token\\) SUPABASE_DB_PASSWORD=tRDFw3dPds56OUsu supabase migration repair --status applied 20260225000000)",
       "Bash(SUPABASE_ACCESS_TOKEN=$\\(cat ~/.supabase/access-token\\) SUPABASE_DB_PASSWORD=tRDFw3dPds56OUsu supabase migration repair --status applied 20260225000001)",
-      "Bash(SUPABASE_ACCESS_TOKEN=$\\(cat ~/.supabase/access-token\\) SUPABASE_DB_PASSWORD=tRDFw3dPds56OUsu supabase migration list)"
+      "Bash(SUPABASE_ACCESS_TOKEN=$\\(cat ~/.supabase/access-token\\) SUPABASE_DB_PASSWORD=tRDFw3dPds56OUsu supabase migration list)",
+      "Skill(gsd:create-roadmap)",
+      "Bash(xxd .specify/extensions/git/scripts/bash/create-new-feature.sh)",
+      "Bash(tr -d '\\\\r')",
+      "Bash(chmod +x /tmp/create-new-feature-fixed.sh)",
+      "Bash(npm list *)"
     ]
   },
   "enableAllProjectMcpServers": true,

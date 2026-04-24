@@ -327,6 +327,328 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+---
+
+## Legal & Compliance (new — 2026-04-24 review)
+
+### LEGAL-001 — Cookie / Consent Banner Missing
+- **Status**: `[ ]` Open
+- **Severity**: High (pre-launch legal requirement)
+- **Observed**: No cookie/consent banner exists. Site has no telemetry (constitutional constraint), but third-party scripts (fonts, Supabase SDK) may set cookies. GDPR applies to UK users; banner required before any data-collection-adjacent scripts run.
+- **Action**: Assess what cookies are actually set; implement minimal consent banner if required; document decision if no cookies set
+- **Roadmap ref**: Phase 2d (Legal & Compliance)
+
+---
+
+### LEGAL-002 — Terms of Service Needs Full Review
+- **Status**: `[ ]` Open
+- **Severity**: High (pre-launch)
+- **Observed**: ToS exists but has not been reviewed against current feature set (CC-BY-SA licensing, Tier 4 org accounts, remix genealogy, public gallery)
+- **Action**: Full review against PRD v2.0 and Constitution v3.4.2; update to reflect cloud-first architecture, content licensing model, and org account terms
+- **Roadmap ref**: Phase 2d (Legal & Compliance)
+
+---
+
+### LEGAL-003 — Privacy Policy Needs Full Review
+- **Status**: `[ ]` Open
+- **Severity**: High (pre-launch)
+- **Observed**: Privacy policy exists but has not been reviewed. Constitutional prohibition on telemetry/analytics must be reflected. Data stored in Supabase (EU region?), user emails, animation content.
+- **Action**: Full review; confirm Supabase data residency; ensure no-tracking stance is explicit; add section on org account data separation
+- **Roadmap ref**: Phase 2d (Legal & Compliance)
+
+---
+
+### CONTACT-001 — Contact Form End-to-End Verification
+- **Status**: `[ ]` Open
+- **Severity**: Medium
+- **Observed**: Contact page exists; form has not been tested end-to-end to confirm submissions are received
+- **Action**: Submit test contact form; verify delivery; confirm response address is monitored
+- **Roadmap ref**: Phase 2d (Legal & Compliance)
+
+---
+
+## Landing Page (new — 2026-04-24 review)
+
+### LANDING-001 — App Name Not Memorable
+- **Status**: `[ ]` Open
+- **Severity**: Low (brand consideration)
+- **Observed**: "Coaching Animator" is accurate but not catchy. Needs to remain sport-agnostic but maintain rugby roots.
+- **Action**: Brainstorm alternatives; test against brand principles (direct · tactical · grassroots); constitutional amendment required if name changes
+- **Roadmap ref**: Phase 2e (Landing Refinements) — lower priority than copy corrections
+
+---
+
+### LANDING-002 — Landing Background: Coaching Diagram Aesthetic
+- **Status**: `[ ]` Open
+- **Severity**: Medium (brand credibility)
+- **Observed**: Landing background should use subtle coaching diagrams in the style of the brand icon. Design spec from review:
+  > "The Tactical Ball" (The Marker Silhouette): A single, centered, utilitarian SVG-style icon of a rugby ball (prolate spheroid). Thick, hand-drawn whiteboard marker aesthetic. Ball outline: Pitch Green (#1A3D1A). Inside: Amber (#D97706) tactical markings — heavy hand-drawn X in centre, dotted line with arrowhead sweeping across indicating play direction. All lines imperfect and heavy-stroked. Zero rounded corners. Off-white textured background referencing 1980s rugby programme.
+- **Action**: Design and implement SVG tactical ball icon; use as subtle background element on landing hero
+- **Roadmap ref**: Phase 2e (Landing Refinements)
+
+---
+
+### LANDING-003 — Section 2 Card Copy Errors
+- **Status**: `[ ]` Open
+- **Severity**: Medium (credibility)
+- **Observed**: Card review from 2026-04-24:
+  - Card 1: Okay
+  - Card 2: Vague — references "code" when the audience is rugby coaches (not developers)
+  - Card 3: Okay
+  - Card 4: References export formats — this feature is deprecated; must be removed
+  - Card 5: Repetition but acceptable
+  - Card 6: "Free to use" — good, keep
+- **Action**: Rewrite card 2 copy to be rugby-specific; remove card 4 or replace with a different value proposition
+- **Roadmap ref**: Phase 2e (Landing Refinements)
+
+---
+
+### LANDING-004 — Section 3 Copy Ambiguities
+- **Status**: `[ ]` Open
+- **Severity**: Medium (UX clarity)
+- **Observed**: Section 3 card review:
+  - Card 1: "Drag?" — unclear; actual interaction is click-to-place then drag; rewrite
+  - Card 3: References "Export to GIF" — deprecated; remove
+- **Action**: Rewrite section 3 card 1 to accurately describe click/drag interaction; remove GIF export mention
+- **Roadmap ref**: Phase 2e (Landing Refinements)
+
+---
+
+## Gallery (new — 2026-04-24 review)
+
+### GALLERY-001 — Hampshire RFU Endorsement Icon
+- **Status**: `[ ]` Open
+- **Severity**: Medium (partnership credibility)
+- **Observed**: Gallery needs a Hampshire RFU endorsement icon/badge on endorsed cards. Image must be compressed to <50KB for web use.
+- **Action**: Obtain RFU image; compress to <50KB; wire up to `endorsed_by` field (see FEATURE-001 for full endorsement system); for now, display badge if field set
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook); full system in Phase 4 (FEATURE-001)
+
+---
+
+### GALLERY-002 — Share from Gallery (Copy Link + WhatsApp)
+- **Status**: `[ ]` Open
+- **Severity**: High (core workflow)
+- **Observed**: Share button on gallery card needs to: (a) produce a /share/{id} link for copy-paste, (b) offer WhatsApp share on mobile
+- **Action**: Implement share sheet: copy-to-clipboard for desktop; Web Share API for mobile (targets WhatsApp naturally); generate /share/{id} not /replay/{id}
+- **Roadmap ref**: Phase 2c (Share Workflow) — coordinate with UX-008
+
+---
+
+### GALLERY-003 — Templates Filter Untested
+- **Status**: `[ ]` Open
+- **Severity**: Medium (regression risk)
+- **Observed**: Template gallery filter exists but has not been tested post-architecture refactor
+- **Action**: Test template creation, template tagging, template filter in gallery, and template remix flow end-to-end
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
+## My Playbook (new — 2026-04-24 review)
+
+### MYPLAYBOOK-001 — No Search or Filter
+- **Status**: `[ ]` Open
+- **Severity**: Medium (usability at scale)
+- **Observed**: My Playbook has no search or filter capability; gallery has it. As coaches accumulate animations, discovery becomes difficult.
+- **Action**: Replicate gallery search and filter (by tag, title) in My Playbook view
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
+## Profile (new — 2026-04-24 review)
+
+### PROFILE-001 — Profile Page Too Functional
+- **Status**: `[ ]` Open
+- **Severity**: Low (UX polish)
+- **Observed**: Profile page feels like a raw settings form rather than a coach's profile. Lacks personality and context.
+- **Action**: UX review; consider merging with account settings; add coaching context (club, region); make it feel like a coach's card not a form
+- **Roadmap ref**: Phase 2g (Auth & Profile)
+
+---
+
+## Editor — Details Pane (new — 2026-04-24 review)
+
+### EDITOR-001 — Metadata to Pop-Out Pane
+- **Status**: `[ ]` Open
+- **Severity**: Medium (UX clarity)
+- **Observed**: Animation name and YouTube link currently live in the sidebar. Better suited to a dedicated description/metadata pop-out pane to keep sidebar focused on entity controls.
+- **Action**: Design and implement metadata pop-out; move name, description, YouTube link there; keep sidebar for entity/layer controls
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-002 — Share Button Non-Functional in Dev
+- **Status**: `[ ]` Open
+- **Severity**: High (core loop)
+- **Observed**: Share button in the editor is currently non-functional (marked "not available in development"). Should at minimum copy the /share/{id} link to clipboard or display it for manual copy.
+- **Action**: Implement clipboard copy fallback; display link in a modal; hook up to Web Share API for mobile
+- **Roadmap ref**: Phase 2c (Share Workflow)
+
+---
+
+### EDITOR-003 — Export Settings Panel: Deprecate
+- **Status**: `[ ]` Open
+- **Severity**: Medium (confusing UX)
+- **Observed**: Export settings (WebM, GIF) are still visible in the UI but the feature is deprecated per PRD v2.0. Same root cause as UX-002.
+- **Action**: Remove or hide the export settings panel; add "Export as JSON" as the only export option (guest mode); decision on future export logged in FEAT-008
+- **Roadmap ref**: Phase 2a (Editor & Canvas) — closes UX-002
+
+---
+
+### EDITOR-004 — Entity Button Styling Inconsistent
+- **Status**: `[ ]` Open
+- **Severity**: Low (polish)
+- **Observed**: Entity creation buttons (player, cone, ball, tackle bag, etc.) have inconsistent styling across entity types — sizes, hover states, icon alignment vary
+- **Action**: Audit all entity buttons against design system; standardise to a single button variant
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-005 — Tackle Bag / Tackle Shield Icons Unrecognisable
+- **Status**: `[ ]` Open
+- **Severity**: Medium (usability)
+- **Observed**: Tackle bag and tackle shield entity icons are not visually recognisable as their real-world equivalents. Colours also need amending.
+- **Action**: Redesign SVG icons for tackle bag and shield to match coaching whiteboard aesthetic; ensure EntityColors service is used for colour assignment
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-006 — Attacker/Defender Token Labels
+- **Status**: `[ ]` Open
+- **Severity**: Medium (clarity + visual noise)
+- **Observed**: Player tokens show text labels ("Attacker", "Defender") which create visual noise. Numbering is useful and should be kept. A pitch legend (Colour = Attacker / Colour = Defender) would replace the text.
+- **Action**: Remove text labels from player tokens; retain numbering; add a persistent legend on the pitch canvas
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-007 — Entity Label Typography Too Small
+- **Status**: `[ ]` Open
+- **Severity**: Medium (readability on mobile)
+- **Observed**: Entity labels (numbers on player tokens, cone labels) are too small and unclear, particularly on mobile at coaching pitchside.
+- **Action**: Increase font weight and size for entity labels; test legibility at arm's length on a mobile screen
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-008 — Team Selector Does Nothing
+- **Status**: `[ ]` Open
+- **Severity**: Medium (confusing UX)
+- **Observed**: Entity team selector control is visible but has no functional effect on the animation. Misleads users.
+- **Action**: Remove team selector from entity controls (not required per review); or wire up to colour-by-team logic if that feature is planned
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+### EDITOR-009 — Colour Selector Palette Too Large
+- **Status**: `[ ]` Open
+- **Severity**: Medium (decision paralysis)
+- **Observed**: Colour palette has too many colours that are not visually distinct from one another. Coaches don't need infinite choice — they need the six team colours on any rugby pitch.
+- **Proposed palette**: Red, Blue, White, Yellow, Green, Black
+- **Stretch goal**: Striped/hooped patterns (assess feasibility in Konva)
+- **Action**: Reduce palette to 6 distinct colours; assess striped/hooped pattern rendering
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+
+---
+
+## Pitch & Canvas (new — 2026-04-24 review)
+
+### PITCH-001 — Pitch SVG Markings Incorrect
+- **Status**: `[ ]` Open
+- **Severity**: High (credibility with coaches)
+- **Observed**: Multiple issues with the pitch SVG beyond UX-006 (yard markers):
+  - No 5-yard inner sideline markers (mandatory for coaching drills)
+  - Unexplained lines between try line and 22-yard line
+  - Posts are not recognisable as rugby 'H' posts
+- **Action**: Correct all pitch markings; ensure try lines, 22s, 10m, halfway, 5m inner markers, and H posts are all accurate and styled consistently
+- **Roadmap ref**: Phase 2a (Editor & Canvas) — supersedes/extends UX-006
+- **Note**: Shared canvas component — test on /app, /replay, /share
+
+---
+
+### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
+- **Status**: `[ ]` Open
+- **Severity**: High (desktop usability)
+- **Observed**: The editor canvas is a fixed size and does not adapt to the browser window. Coaches on different screen sizes see different amounts of pitch.
+- **Action**: Implement responsive canvas sizing in editor (`useEditorCanvasSize` ResizeObserver, matching the pattern in `useShareCanvasSize`); maintain 4:3 aspect ratio
+- **Roadmap ref**: Phase 2a (Editor & Canvas)
+- **Files**: `src/features/animation/components/Canvas/Stage.tsx`, Editor.tsx
+
+---
+
+## Playback Controls (new — 2026-04-24 review)
+
+### PLAYBACK-001 — Playback Remote Should Float and Persist
+- **Status**: `[ ]` Open
+- **Severity**: Medium (usability at pitch)
+- **Observed**: Playback controls disappear when scrolling and are fixed in document flow. Coaches at the pitch need controls always accessible.
+- **Proposal**: Floating draggable remote (drag to reposition); always-on-screen; possibly bottom-anchored by default
+- **Action**: Implement floating, draggable playback remote in editor; ensure it stays within viewport bounds
+- **Roadmap ref**: Phase 2b (Playback & Controls)
+
+---
+
+## New Features (from 2026-04-24 review)
+
+### FEAT-010 — Snap to Grid
+- **Status**: `[ ]` Open
+- **Severity**: Low (power user feature)
+- **Observed**: When building frames, coaches would benefit from snapping entity positions to a grid to maintain alignment across frames.
+- **Action**: Add optional snap-to-grid toggle; define grid resolution relative to pitch markings; snap on drag end
+- **Roadmap ref**: Phase 4 (post-launch, based on coach feedback)
+
+---
+
+### FEAT-011 — Spinning Rugby Ball Save Indicator
+- **Status**: `[ ]` Open
+- **Severity**: Low (delight)
+- **Observed**: Current save action uses a generic spinner. A spinning rugby ball would reinforce brand personality.
+- **Action**: Create or source a simple CSS/SVG animated rugby ball; replace save spinner globally
+- **Roadmap ref**: Phase 4 (low-effort delight item)
+
+---
+
+## Share Flow & Navigation (new — 2026-04-24 review)
+
+### FLOW-001 — No Share Flow from Gallery to /share/{id}
+- **Status**: `[ ]` Open
+- **Severity**: High (core loop)
+- **Observed**: Gallery "Play" button goes to /replay/{id} (unoptimised, old route). No UI path exists from gallery to the optimised /share/{id} route. These routes have meaningfully different UX (share is mobile-optimised, full-screen).
+- **Action**: Update gallery Play/Share buttons to use /share/{id}; clarify /replay vs /share distinction in code comments; consider deprecating /replay for public use
+- **Roadmap ref**: Phase 2c (Share Workflow) — coordinate with UX-008
+
+---
+
+### FLOW-002 — Share Replay Missing Context and Navigation
+- **Status**: `[ ]` Open
+- **Severity**: High (player experience)
+- **Observed**: /share/{id} shows the animation but has: no animation name, no progression navigation (next/prev for multi-drill sets), no clear link back to the site.
+- **Target UX**: Coaches check the link works → back to editor. Players see the replay → can navigate progressions → optionally visit the site (welcome page or landing).
+- **Action**: Add animation title to share view; add prev/next navigation if progressions exist; add subtle "powered by" link back to landing
+- **Roadmap ref**: Phase 2c (Share Workflow)
+
+---
+
+### FLOW-003 — Welcome Page for Players Receiving Share Links
+- **Status**: `[ ]` Open
+- **Severity**: Low (growth)
+- **Observed**: Players receiving a share link land directly in the animation with no context about what the site is or what to do next.
+- **Proposal**: Lightweight player-facing welcome page — minimal, explains what they're seeing, optional CTA to explore gallery
+- **Action**: Design and implement /welcome route; add link from /share view footer; keep it non-intrusive
+- **Roadmap ref**: Phase 4 (post-launch, after core loop is solid)
+
+---
+
+## Performance (new — 2026-04-24 review)
+
+### PERF-001 — Lighthouse Audit Baseline
+- **Status**: `[ ]` Open
+- **Severity**: Medium (pre-launch quality gate)
+- **Observed**: No Lighthouse audit has been run since the landing page rebrand (Apr 20). Chrome F12 AI assistance also available for analysis. Pre-launch baseline required.
+- **Action**: Run Lighthouse on: landing page, gallery, editor, share view; document scores; identify any Critical (red) issues; set targets (Performance >80, Accessibility >90, Best Practices >90)
+- **Roadmap ref**: Phase 3e (Performance Baseline)
+
+---
+
 ## Closed Issues
 
 *None yet.*

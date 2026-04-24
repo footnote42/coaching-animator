@@ -1,0 +1,72 @@
+name: Web Dev Agent
+version: 1.0.0
+schema: v1
+
+models:
+- name: Gemma 4 E4B
+  model: google/gemma-4-e4b
+  provider: lmstudio
+  apiBase: http://172.22.224.1:1234/v1
+  contextLength: 32768
+  roles:
+    - chat
+    - edit
+    - apply
+    - autocomplete
+
+  capabilities:
+    - tool_use
+
+  chatOptions:
+    baseSystemMessage: You are an expert web developer. Always use the <|think|> tag to reason through layout, CSS grid logic, and state management before providing code.
+
+  defaultCompletionOptions:
+    temperature: 0.1
+    maxTokens: 4096
+    reasoning: true
+
+context:
+  - provider: codebase
+  - provider: file
+  - provider: diff
+
+prompts:
+  - name: specify
+    description: Create a technical specification using Spec Kit methodology
+    prompt: |
+      Act as a Lead Systems Architect. Using the GitHub Spec Kit "Specify" phase logic:
+      1. Analyze the requirements provided in the context.
+      2. Create a comprehensive spec.md file in the specs/{branch}/ folder using the template from @.specify/templates/spec-template.md.
+      3. Focus on: Problem Statement, User Stories, Technical Constraints, and Success Criteria.
+      4. Ensure layout logic and state management are explicitly reasoned.
+      Context: {{{ input }}}
+
+  - name: plan
+    description: Generate an implementation plan from an existing spec
+    prompt: |
+      Act as a Senior Developer. Using the GitHub Spec Kit "Plan" phase logic:
+      1. Reference the @specs/{branch}/ folder and the latest spec.
+      2. Break down the implementation into a plan.md file using the template from @.specify/templates/plan-template.md.
+      3. List specific files to be created or modified.
+      4. Sequence the work to minimize breaking changes.
+      Context: {{{ input }}}
+
+  - name: task
+    description: Break a plan into actionable atomic tasks
+    prompt: |
+      Review the current @specs/{branch}/plan.md. 
+      1. Generate a list of atomic tasks in a task.md file using the template from @.specify/templates/task-template.md.
+      2. Each task must be small enough to implement in a single turn.
+      3. Include specific code paths and component names for our Web Dev project.
+      Context: {{{ input }}}
+
+  - name: implement
+    description: Execute a specific task from the task list
+    prompt: |
+      You are now in the "Implementation" phase of Spec Kit.
+      1. Review the @specs/{branch}/spec.md, @specs/{branch}/plan.md, and the specific task from @specs/{branch}/tasks.md.
+      2. Reasoning: Use your <|think|> tag to plan the CSS/State logic.
+      3. Code: Provide the implementation for the current task only.
+      4. Verify: Ensure the code meets the Success Criteria defined in the spec.
+      Context: {{{ input }}}
+

@@ -1,8 +1,9 @@
 # Coaching Animator Roadmap
 
-**Last Updated**: 2026-04-19  
+**Version**: 3.0  
+**Last Updated**: 2026-04-24  
 **Status**: Active authority document  
-**Previous roadmap**: `docs/archive/ROADMAP-2026-02-21.md`
+**Previous roadmap**: `docs/archive/ROADMAP-2026-04-19.md`
 
 ---
 
@@ -26,7 +27,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 
 - Specs 001-005 complete (`archive/specs/`)
 - PRD v1.0: 89% coverage (76/85 requirements)
-- Deliverables: drag-drop editor, keyframe animation, video export, Supabase auth, public gallery, upvoting, link sharing, admin moderation
+- Deliverables: drag-drop editor, keyframe animation, Supabase auth, public gallery, upvoting, link sharing, admin moderation
 
 ### v2.0 — Rugby Coaching Platform (Feb 2026–present)
 
@@ -34,6 +35,7 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 
 - **Phase 0**: Infrastructure rescue ✅ (Supabase restored, Vercel active)
 - **Phase 1**: Mobile replay scaling fix ✅ (SHIPPED 2026-04-18)
+- **Phase 2 — T3**: Landing page rebrand ✅ (SHIPPED 2026-04-20 — Oswald headings, warm cream palette, typographic cards, WCAG AA contrast)
 
 ---
 
@@ -41,8 +43,21 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 
 **Infrastructure**: Supabase healthy. Vercel active.  
 **User base**: Pre-launch — no external users yet.  
-**Primary usage pattern**: Desktop edit / mobile view. Coaches build sessions at a desk; show players animations on their phone at the pitch.  
-**Critical blocker**: RESOLVED ✅ (2026-04-18 — mobile replay scaling fixed).
+**Primary usage pattern**: Desktop edit / mobile view. Coaches build sessions at a desk; players receive a share link on their phone at the pitch.
+
+---
+
+## v1 Launch Definition
+
+A successful v1 launch requires all of the following:
+
+1. **Core loop working** ✅ — desktop edit, save, share link, mobile replay renders correctly
+2. **Landing page credible** ✅ — tactical rebrand shipped 2026-04-20
+3. **Editor & canvas credible** — pitch markings accurate, entity UX coherent (Phase 2a–2b)
+4. **Share workflow clear** — share button works, /share/{id} reachable from gallery (Phase 2c)
+5. **Legal compliant** — cookies assessed, ToS and Privacy Policy reviewed (Phase 2d)
+6. **Basic user guide** — coaches self-onboard in <5 minutes (Phase 2h)
+7. **Security hardened** — rate limiting, injection prevention, auth tokens (Phase 3b)
 
 ---
 
@@ -50,86 +65,82 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 
 ### Phase 2 — Launch Credibility (current priority)
 
-**Goal**: First impression makes a grassroots rugby coach think "this was made for me." Core loop is clear, onboarding is seamless, design feels rugby-informed.
+**Goal**: Every part of the product a coach will touch before committing to the tool is credible, correct, and legally compliant. Broken into execution sub-areas; each maps to a speckit spec.
 
-| Task | Description | Related issues |
-|------|-------------|-----------------|
-| T3 | Landing page overhaul — tactical/hand-drawn aesthetic + design research ✅ *(delivered 2026-04-20 — Oswald headings, cream palette, typographic cards, WCAG AA contrast verified)* | UX-001, UX-002, UX-003, UX-007 |
-| T4 | Canvas credibility — standard pitch layout with yard markers | UX-006 |
-| T5 | Share workflow clarity — step-by-step guide + UX improvements | UX-008 |
-| T6 | Auth visibility — logged-in indicator or login button | UX-005 |
-| T7 | Basic inline user guide — coaches figure it out in <5 minutes | — |
-| T8 | Coaching pedagogy taster — `/help/apes` info page | COACHING-PEDAGOGY.md |
-| T9 | Gallery UX improvements — carousel + visual previews | UX-004, UX-009 |
+**Suggested execution order** (within Phase 2):
 
-**Open issues for this phase**: See [docs/issues/ISSUES.md](../issues/ISSUES.md) for UX-001 through UX-009.
+| Order | Sub-area | Scope summary | Key issues |
+|-------|----------|---------------|------------|
+| 1 | **2d — Legal & Compliance** | Cookie banner, ToS, Privacy Policy, contact verification | LEGAL-001, LEGAL-002, LEGAL-003, CONTACT-001 |
+| 2 | **2a — Editor & Canvas** | Pitch SVG, canvas scaling, entity styling, colour palette, labels, team selector, export deprecation | PITCH-001, PITCH-002, EDITOR-001–009, UX-006 |
+| 3 | **2b — Playback & Controls** | Floating draggable remote; sticky controls | PLAYBACK-001 |
+| 4 | **2c — Share Workflow** | Share button fix, /share/{id} from gallery, replay navigation, WhatsApp | EDITOR-002, FLOW-001, FLOW-002, UX-008, GALLERY-002 |
+| 5 | **2e — Landing Refinements** | Background tactical ball icon, Section 2/3 card copy corrections | LANDING-001–004 |
+| 6 | **2f — Gallery & My Playbook** | Endorsement icon, templates test, My Playbook search/filter, visual previews | GALLERY-001, GALLERY-003, MYPLAYBOOK-001, UX-004, UX-009 |
+| 7 | **2g — Auth & Profile** | Auth state indicator in header, profile UX | UX-005, PROFILE-001 |
+| 8 | **2h — User Guide** | Inline onboarding, help page; coaching pedagogy taster | (T7), T8 |
 
-**Design direction for Phase 2**: Tactical/hand-drawn aesthetic. Lean into the whiteboard/marker coaching tradition. One clear CTA. No heavy animations, no trackers (constitutional constraint).
-
----
-
-### Phase 3 — Quality Safety Net & Security Hardening
-
-**Goal**: Automated UAT catches regressions. Security review passed. Pre-beta readiness confirmed.
-
-| Task | Description | Related issues |
-|------|-------------|-----------------|
-| T10 | Full security review — rate limiting, SQL injection, XSS, CSRF, auth tokens | SEC-001, SEC-002, SEC-003 |
-| T11 | Core-loop E2E spec — create → save → share → verify mobile replay | — |
-| T12 | CI gate on canvas/ShareViewer PRs — prevents silent mobile regressions | — |
-| T13 | Animation layering control — set z-order, cones always first | FEAT-006 |
-| T14 | Search & keyword discoverability — gallery search by tags | FEAT-007 |
-
-**Open issues for this phase**: See [docs/issues/ISSUES.md](../issues/ISSUES.md) for SEC-001, SEC-002, SEC-003, FEAT-006, FEAT-007.
+**Open issues**: See [docs/issues/ISSUES.md](../issues/ISSUES.md) for full details on each issue above.
 
 ---
 
-### Phase 4 — Growth (post-v1, after real coach feedback)
+### Phase 3 — Stability, Security & Technical Debt
 
-**Goal**: Expand capabilities based on real coach usage and feedback.
+**Goal**: Automated safety net catches regressions. Security review passed. Technical debt addressed before user base grows. Pre-beta readiness confirmed.
 
-| Task | Description | Related issues |
-|------|-------------|-----------------|
-| — | Revisit priorities once app is in coaches' hands | — |
+| Sub-area | Scope | Key issues |
+|----------|-------|------------|
+| **3a — Technical Debt** | Editor.tsx refactor (853 lines → decomposed), projectStore.ts selectors (eliminate re-render storms) | — |
+| **3b — Security Hardening** | Rate limiting, SQL injection, XSS, CSRF, auth tokens, env variable audit | SEC-001, SEC-002, SEC-003 |
+| **3c — E2E Core Loop** | Create → save → share → verify mobile replay CI gate | — |
+| **3d — Search & Layering** | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
+| **3e — Performance Baseline** | Lighthouse audit across all routes; establish pre-beta targets | PERF-001 |
 
-**Tentative priorities**:
-
-1. **AI animation spike** — Natural language → animation JSON. First test: warm-up grid (validates schema before complex plays). Time-box to 1 session to assess feasibility.
-2. **Simplicity audit** — Walk through with "5 minutes to figure it out" bar. Fix top 3 friction points.
-3. **Mobile editor** — Only if real coaches confirm desktop-first doesn't fit their workflow.
-4. **User guide hosting** — Evolve from inline help to a `/help` page.
-5. **Endorsed animations** — Highlight animations endorsed by Hampshire RFU (FEATURE-001).
-6. **Roadmap page** — Public roadmap for credibility (FEATURE-002).
-7. **Kit visualization library** — Additional entities (tackle bags, shields, posts, etc.) (FEATURE-010).
-8. **Export format decision** — GIF only, MP4, or server-side rendering (FEAT-008).
-9. **Offline capability** — Read-only offline, with sync on reconnect (FEAT-009).
-10. **Club accounts / team management** — Tier 4 from constitution; post-user-base.
-
-**Open issues for this phase**: See [docs/issues/ISSUES.md](../issues/ISSUES.md) for FEATURE-001, FEATURE-002, FEATURE-010, FEAT-008, FEAT-009, DESIGN-001.
+**Sequence**: 3a (debt) before 3b (security) — a 853-line component is harder to audit than a decomposed one.
 
 ---
 
-## Phase 5+ — Coaching Education Platform (Aspiration)
+### Phase 4 — Growth (post-v1 launch)
 
-**Strategic pivot**: Transform from animation tool to integrated coaching education system. Embed pedagogical frameworks to elevate coaches' practice.
+**Goal**: Expand capabilities based on real coach usage and feedback. Do not build Phase 4 features before v1 launch.
+
+**Tentative priorities** (revisit after coach feedback):
+
+1. **Simplicity audit** — walk through with "5 minutes to figure it out" bar; fix top 3 friction points
+2. **AI animation spike** — natural language → animation JSON; time-box to 1 session to assess feasibility
+3. **Kit visualization library** — additional entities (tackle bags, shields, posts, etc.) (FEATURE-010)
+4. **Export format decision** — deliberate decision: drop / GIF / MP4 / server-side (FEAT-008)
+5. **Endorsed animations** — Hampshire RFU endorsement badge system (FEATURE-001)
+6. **Offline capability** — read-only offline with sync on reconnect (FEAT-009)
+7. **Roadmap page** — public roadmap for credibility (FEATURE-002)
+8. **Snap to grid** — entity snapping during frame construction (FEAT-010)
+9. **Welcome page for players** — lightweight landing after share link (FLOW-003)
+10. **Spinning ball save indicator** — brand delight (FEAT-011)
+11. **Club accounts / team management** — Tier 4 from constitution; post-user-base (Constitution §V.4)
+
+---
+
+### Phase 5+ — Coaching Education Platform (Aspiration)
+
+**Goal**: Transform from animation tool to integrated coaching education system. Embed pedagogical frameworks to elevate coaches' practice.
 
 **Exploration focus**:
 - Validate coaching frameworks (APES, Progression/Regression, Tell-Sell-Ask-Delegate) with grassroots coaches
 - Prototype drill metadata schema with pedagogical tags
-- Design session design tool with coaching balance visualization
-- Investigate coaching guides and contextualized learning
-
-**Phase 2 taster** (optional): Single info page (e.g., `/help/apes`) explaining one framework as credibility signal.
+- Design session design tool with coaching balance visualiser
+- Investigate coaching guides and contextualised learning
 
 **Research & validation required**: See `docs/coaching-frameworks/COACHING-PEDAGOGY.md` for detailed exploration roadmap.
 
-**Open issues**: ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005 in `docs/issues/ISSUES.md`
+**Open issues**: ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005
 
 ---
 
 ## Development Strategy
 
 **Workflow**: SpecKit spec-driven development. Every feature: `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → implement → `/speckit.verify`.
+
+**Phase 2 sub-areas**: Each sub-area (2a–2h) should become its own speckit spec before implementation begins.
 
 **Multi-agent**: Claude for architecture, specs, and complex debugging. Copilot/Antigravity for mechanical task execution from `tasks.md`. Any agent can resume cold from spec + plan + tasks.
 
@@ -139,19 +150,9 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 
 ---
 
-## v1 Launch Definition
-
-A successful v1 launch requires:
-1. **Core loop working** — desktop edit, share link, mobile replay renders correctly without zooming ✅
-2. **Landing page credible** — a coach who doesn't know the project would trust it (Phase 2)
-3. **Basic user guide** — <5 minutes to understand the app without help (Phase 2)
-4. **Security hardened** — rate limiting, SQL injection prevention, CSRF protection (Phase 3)
-
----
-
 ## Constitutional Constraints
 
-All phases must comply with [Constitution v3.4.1](.specify/memory/constitution.md):
+All phases must comply with [Constitution v3.4.2](.specify/memory/constitution.md):
 
 | Tier | Access Level |
 |------|-------------|
@@ -161,4 +162,4 @@ All phases must comply with [Constitution v3.4.1](.specify/memory/constitution.m
 | 3 (Admin) | Moderation, user management |
 | 4 (Organizational) | Club accounts, team management — Phase 4+ |
 
-**Absolute prohibitions**: No telemetry, no third-party analytics, no advertising, no paywalls for core features. OAuth auth: Google/Apple/GitHub permitted (V.2.3); Facebook/Meta/Twitter prohibited.
+**Absolute prohibitions**: No telemetry, no third-party analytics, no advertising, no paywalls for core features. OAuth: Google/Apple/GitHub permitted; Facebook/Meta/Twitter prohibited.
