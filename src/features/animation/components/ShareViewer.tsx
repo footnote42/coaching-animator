@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { BrandIcon } from '@/shared/components/BrandIcon';
 import type { Frame, SportType, PitchLayout, PlaybackPosition } from '@/core/types';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
@@ -278,7 +279,10 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
         className="absolute left-3 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
         style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}
       >
-        <span>🏉</span>
+        <BrandIcon 
+          variant="share-viewer" 
+          className="brightness-0 invert opacity-60"
+        />
         <span className="hidden sm:inline">Coaching Animator</span>
       </a>
     </div>

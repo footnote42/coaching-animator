@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { BrandIcon } from './BrandIcon';
 import { X, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 
@@ -80,7 +81,9 @@ export function OnboardingTutorial({ isOpen, onClose, onComplete }: OnboardingTu
                 <div className="p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-2xl">
                         {currentStep === 0 ? '👋' :
-                            currentStep === 1 ? '🏉' :
+                            currentStep === 1 ? (
+                                <BrandIcon variant="tutorial" />
+                            ) :
                                 currentStep === 2 ? '🎬' : '🚀'}
                     </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { BrandIcon } from './BrandIcon';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
@@ -39,7 +40,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
       <nav className={`sticky top-0 z-50 border-b border-border bg-surface ${className}`}>
         <div className="max-w-6xl mx-auto px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🏉</span>
+            <BrandIcon variant="header" priority />
             <span className="font-heading font-bold text-lg text-primary">Coaching Animator</span>
           </Link>
         </div>
@@ -134,7 +135,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl">🏉</span>
+          <BrandIcon variant="header" priority />
           <span className="font-heading font-bold text-lg text-primary">Coaching Animator</span>
         </Link>
 

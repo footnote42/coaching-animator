@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
+import { BrandIcon } from '@/shared/components/BrandIcon';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, ArrowUpDown, Loader2, X } from 'lucide-react';
 import { PublicAnimationCard } from '@/features/gallery/components/PublicAnimationCard';
@@ -421,7 +422,9 @@ export default function GalleryPage() {
 function EmptyState({ hasFilters, onClear }: { hasFilters: boolean | string; onClear: () => void }) {
   return (
     <div className="text-center py-20">
-      <div className="text-6xl mb-4">🏉</div>
+      <div className="mb-6 flex justify-center">
+        <BrandIcon variant="empty-state" />
+      </div>
       <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">
         {hasFilters ? 'No drills found' : 'The Playbook is empty'}
       </h2>

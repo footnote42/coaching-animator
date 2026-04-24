@@ -10,6 +10,10 @@ export async function GET(
 ) {
   const { id } = params;
 
+  // Load logo for OG image
+  const logoUrl = new URL('../../../../../public/assets/logo.png', import.meta.url);
+  const logoData = await fetch(logoUrl).then(res => res.arrayBuffer());
+
   try {
     const supabase = await createSupabaseServerClient();
 
@@ -71,12 +75,23 @@ export async function GET(
           >
             <div
               style={{
+                display: 'flex',
+                alignItems: 'center',
                 fontSize: 24,
                 fontWeight: 600,
                 color: '#D97706',
               }}
             >
-              🏉 Coaching Animator
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                src={logoData as any} 
+                width="32" 
+                height="32" 
+                style={{ marginRight: 12 }} 
+                alt=""
+              />
+              Coaching Animator
             </div>
           </div>
 
@@ -197,6 +212,15 @@ export async function GET(
             fontFamily: 'Inter, sans-serif',
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            src={logoData as any} 
+            width="64" 
+            height="64" 
+            style={{ marginBottom: 20 }} 
+            alt=""
+          />
           <div style={{ fontSize: 48, fontWeight: 'bold' }}>Coaching Animator</div>
           <div style={{ fontSize: 24, marginTop: 16, opacity: 0.8 }}>Rugby Play Visualization</div>
         </div>

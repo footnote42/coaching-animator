@@ -40,6 +40,10 @@ import { Button } from '@/shared/ui/button';
 import { useProjectStore } from '../../core/stores/projectStore';
 ```
 
+## Branding & Assets
+
+- **Brand Icon**: The `BrandIcon` component (`src/shared/components/BrandIcon.tsx`) is the **single source of truth** for the site logo. Use it for all brand representations (Header, Empty States, Onboarding) to ensure consistent scaling and optimization.
+
 ## Critical File Locations
 
 ### Entity Creation Handlers

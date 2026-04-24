@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { BrandIcon } from '@/shared/components/BrandIcon';
 import { useParams, useRouter } from 'next/navigation';
 import { Share2, User, Calendar, Loader2, Plus, Trash2, X, Check } from 'lucide-react';
 import { PublicAnimationCard } from '@/features/gallery/components/PublicAnimationCard';
@@ -324,7 +325,9 @@ export default function CollectionDetailPage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {animations.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">🏉</div>
+            <div className="mb-6 flex justify-center">
+              <BrandIcon variant="empty-state" />
+            </div>
             <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">
               No Animations Yet
             </h2>
