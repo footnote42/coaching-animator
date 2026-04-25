@@ -27,9 +27,20 @@ interface ReplayPayload {
   settings: { pitchLayout?: PitchLayout; [key: string]: unknown };
 }
 
+interface NavigationItem {
+  id: string;
+  label: string;
+}
+
 interface ShareViewerProps {
   payload: unknown;
   autoPlay?: boolean;
+  /** Server-provided title — takes precedence over payload.name */
+  animationTitle?: string;
+  /** Full ordered nav set including base + progressions */
+  fullNavigationSet?: NavigationItem[];
+  /** ID of the currently-displayed animation within fullNavigationSet */
+  currentAnimationId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -199,7 +210,13 @@ function ShareCanvas({
 // ShareViewer — full-screen, no scroll, FloatingRemote overlay
 // ---------------------------------------------------------------------------
 
-export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewerProps) {
+export function ShareViewer({
+  payload: rawPayload,
+  autoPlay = true,
+  animationTitle,
+  fullNavigationSet,
+  currentAnimationId,
+}: ShareViewerProps) {
   const payload = useMemo(() => normalizeReplayPayload(rawPayload), [rawPayload]);
   const frames = payload.frames;
 
@@ -250,6 +267,16 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
       {/* Canvas + FloatingRemote share a relative wrapper sized to the canvas,
           so the remote's absolute position anchors to the canvas, not the viewport */}
       <div style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}>
+        {/* Animation title — top-center gradient overlay (T005) */}
+        <div
+          className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"
+          style={{ zIndex: 10 }}
+        >
+          <h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-center">
+            {animationTitle ?? payload.name}
+          </h1>
+        </div>
+
         <ShareCanvas
           frames={frames}
           currentFrameIndex={currentFrameIndex}
@@ -273,6 +300,45 @@ export function ShareViewer({ payload: rawPayload, autoPlay = true }: ShareViewe
           containerWidth={canvasWidth}
           containerHeight={canvasHeight}
         />
+
+        {/* Progression navigation bar — bottom-center (T007) */}
+        {fullNavigationSet && fullNavigationSet.length > 1 && (() => {
+          const currentIndex = fullNavigationSet.findIndex((n) => n.id === currentAnimationId);
+          const prevItem = currentIndex > 0 ? fullNavigationSet[currentIndex - 1] : null;
+          const nextItem = currentIndex < fullNavigationSet.length - 1 ? fullNavigationSet[currentIndex + 1] : null;
+          return (
+            <div
+              className="absolute left-0 right-0 flex justify-center items-center gap-3 px-4"
+              style={{ zIndex: 20, bottom: 'calc(48px + env(safe-area-inset-bottom, 0px))' }}
+            >
+              {prevItem ? (
+                <a
+                  href={`/share/${prevItem.id}`}
+                  className="px-3 py-1 bg-black/60 text-white/80 text-xs font-mono hover:bg-black/80 transition-colors"
+                  aria-label={`Previous: ${prevItem.label}`}
+                >
+                  &#8592; Prev
+                </a>
+              ) : (
+                <span className="px-3 py-1 text-xs font-mono text-transparent select-none">&#8592; Prev</span>
+              )}
+              <span className="px-3 py-1 bg-black/80 text-white text-xs font-mono">
+                {currentIndex + 1} / {fullNavigationSet.length}
+              </span>
+              {nextItem ? (
+                <a
+                  href={`/share/${nextItem.id}`}
+                  className="px-3 py-1 bg-black/60 text-white/80 text-xs font-mono hover:bg-black/80 transition-colors"
+                  aria-label={`Next: ${nextItem.label}`}
+                >
+                  Next &#8594;
+                </a>
+              ) : (
+                <span className="px-3 py-1 text-xs font-mono text-transparent select-none">Next &#8594;</span>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Back-to-site link — bottom-left, away from remote's default bottom-right */}

@@ -65,14 +65,16 @@ export default async function SharePage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
+  // T006a — fetch animation with progression fields
   const { data: animation } = await supabase
     .from('saved_animations')
-    .select('id, title, payload, view_count')
+    .select('id, title, payload, view_count, parent_animation_id, is_progression, progression_order')
     .eq('id', id)
     .is('hidden_at', null)
     .in('visibility', ['public', 'link_shared'])
     .single();
 
+  // T006a — null guard: render 404 page (SC-005, FR-010)
   if (!animation) {
     notFound();
   }
@@ -83,5 +85,65 @@ export default async function SharePage({ params }: PageProps) {
     .update({ view_count: (animation.view_count || 0) + 1 })
     .eq('id', id);
 
-  return <ShareViewer payload={animation.payload} autoPlay={true} />;
+  // T006b — build fullNavigationSet for progression nav
+  type NavItem = { id: string; label: string };
+  let fullNavigationSet: NavItem[] = [];
+
+  if (animation.is_progression && animation.parent_animation_id) {
+    // This is a progression — fetch the base animation and sibling progressions
+    const [baseResult, siblingsResult] = await Promise.all([
+      supabase
+        .from('saved_animations')
+        .select('id, title')
+        .eq('id', animation.parent_animation_id)
+        .is('hidden_at', null)
+        .in('visibility', ['public', 'link_shared'])
+        .single(),
+      supabase
+        .from('saved_animations')
+        .select('id, title, progression_order')
+        .eq('parent_animation_id', animation.parent_animation_id)
+        .eq('is_progression', true)
+        .is('hidden_at', null)
+        .in('visibility', ['public', 'link_shared'])
+        .order('progression_order', { ascending: true }),
+    ]);
+
+    const base = baseResult.data;
+    const siblings = siblingsResult.data ?? [];
+
+    if (base) {
+      fullNavigationSet = [
+        { id: base.id, label: base.title ?? 'Base' },
+        ...siblings.map((s) => ({ id: s.id, label: s.title ?? `Progression ${s.progression_order}` })),
+      ];
+    }
+  } else if (!animation.is_progression) {
+    // This is a base animation — fetch its progressions
+    const { data: progressions } = await supabase
+      .from('saved_animations')
+      .select('id, title, progression_order')
+      .eq('parent_animation_id', id)
+      .eq('is_progression', true)
+      .is('hidden_at', null)
+      .in('visibility', ['public', 'link_shared'])
+      .order('progression_order', { ascending: true });
+
+    if (progressions && progressions.length > 0) {
+      fullNavigationSet = [
+        { id: animation.id, label: animation.title ?? 'Base' },
+        ...progressions.map((p) => ({ id: p.id, label: p.title ?? `Progression ${p.progression_order}` })),
+      ];
+    }
+  }
+
+  return (
+    <ShareViewer
+      payload={animation.payload}
+      animationTitle={animation.title}
+      autoPlay={true}
+      fullNavigationSet={fullNavigationSet.length > 1 ? fullNavigationSet : undefined}
+      currentAnimationId={id}
+    />
+  );
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2 } from 'lucide-react';
+import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2, Share2, Check } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
 import { RemixButton } from '@/shared/ui/RemixButton';
 
@@ -74,6 +74,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
   const [hasUpvoted, setHasUpvoted] = useState(animation.user_has_upvoted);
   const [upvoteCount, setUpvoteCount] = useState(animation.upvote_count);
   const [isUpvoting, setIsUpvoting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const isOwner = currentUserId && animation.user_id === currentUserId;
   const isTemplate = animation.tags.includes('template'); // V2.0: Check if template
@@ -97,6 +98,28 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
       }
     } finally {
       setIsUpvoting(false);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/share/${animation.id}`;
+
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ url, title: animation.title });
+        return;
+      } catch {
+        // AbortError or unsupported — fall through to clipboard
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard also failed — silent
     }
   };
 
@@ -275,6 +298,20 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
         {!isTemplate && (
           <RemixButton animationId={animation.id} redirectOnUnauth="/gallery" />
         )}
+
+        {/* Share action */}
+        <button
+          onClick={handleShare}
+          className="w-full flex items-center justify-center gap-2 py-2 border border-border hover:border-primary text-sm font-medium transition-colors mt-1"
+          aria-label={copied ? 'Link copied' : 'Share animation'}
+          id={`share-card-${animation.id}`}
+        >
+          {copied ? (
+            <><Check className="w-4 h-4" /> Copied</>
+          ) : (
+            <><Share2 className="w-4 h-4" /> Share</>
+          )}
+        </button>
       </div>
     </div>
   );

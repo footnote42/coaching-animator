@@ -168,7 +168,7 @@ function GalleryContent() {
   const hasFilters = search || type || templatesOnly;
 
   const handleView = (id: string) => {
-    router.push(`/replay/${id}`);
+    router.push(`/share/${id}`);
   };
 
   const handleUpvote = async (id: string): Promise<{ upvoted: boolean; upvote_count: number } | null> => {
