@@ -177,7 +177,9 @@
       "Bash(xxd .specify/extensions/git/scripts/bash/create-new-feature.sh)",
       "Bash(tr -d '\\\\r')",
       "Bash(chmod +x /tmp/create-new-feature-fixed.sh)",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(cat)",
+      "Read(//tmp/**)"
     ]
   },
   "enableAllProjectMcpServers": true,
