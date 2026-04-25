@@ -331,33 +331,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Legal & Compliance (new — 2026-04-24 review)
 
-### LEGAL-001 — Cookie / Consent Banner Missing
-- **Status**: `[ ]` Open
-- **Severity**: High (pre-launch legal requirement)
-- **Observed**: No cookie/consent banner exists. Site has no telemetry (constitutional constraint), but third-party scripts (fonts, Supabase SDK) may set cookies. GDPR applies to UK users; banner required before any data-collection-adjacent scripts run.
-- **Action**: Assess what cookies are actually set; implement minimal consent banner if required; document decision if no cookies set
-- **Roadmap ref**: Phase 2d (Legal & Compliance)
-
----
-
-### LEGAL-002 — Terms of Service Needs Full Review
-- **Status**: `[ ]` Open
-- **Severity**: High (pre-launch)
-- **Observed**: ToS exists but has not been reviewed against current feature set (CC-BY-SA licensing, Tier 4 org accounts, remix genealogy, public gallery)
-- **Action**: Full review against PRD v2.0 and Constitution v3.4.2; update to reflect cloud-first architecture, content licensing model, and org account terms
-- **Roadmap ref**: Phase 2d (Legal & Compliance)
-
----
-
-### LEGAL-003 — Privacy Policy Needs Full Review
-- **Status**: `[ ]` Open
-- **Severity**: High (pre-launch)
-- **Observed**: Privacy policy exists but has not been reviewed. Constitutional prohibition on telemetry/analytics must be reflected. Data stored in Supabase (EU region?), user emails, animation content.
-- **Action**: Full review; confirm Supabase data residency; ensure no-tracking stance is explicit; add section on org account data separation
-- **Roadmap ref**: Phase 2d (Legal & Compliance)
-
----
-
 ### CONTACT-001 — Contact Form End-to-End Verification
 - **Status**: `[ ]` Open
 - **Severity**: Medium
@@ -651,7 +624,24 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Closed Issues
 
-*None yet.*
+### LEGAL-001 — Cookie / Consent Banner Missing
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 0, 003-legal-compliance)
+- **Summary**: Cookie audit completed; site has no telemetry per constitutional constraint. Third-party scripts (fonts, Supabase SDK) assessed. Decision documented.
+
+---
+
+### LEGAL-002 — Terms of Service Needs Full Review
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 0, 003-legal-compliance)
+- **Summary**: ToS fully reviewed against PRD v2.0 and Constitution v3.4.2. Updated to reflect cloud-first architecture, content licensing model, and org account terms.
+
+---
+
+### LEGAL-003 — Privacy Policy Needs Full Review
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 0, 003-legal-compliance)
+- **Summary**: Privacy policy fully reviewed. Supabase data residency confirmed. Constitutional prohibition on telemetry/analytics explicit. Section added for org account data separation.
 
 ---
 
