@@ -9,7 +9,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Phase 2: Launch Credibility
 
 ### 🔴 UX-001 — Welcome Popup Button Contrast
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
 - **Severity**: High (accessibility)
 - **Observed**: Dark text on dark green background in welcome popup button — difficult to read
 - **Location**: Welcome popup ("Share a replay link with your squad" button)
@@ -20,7 +20,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-010 — Progression Buttons Missing for New Animations
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
 - **Severity**: Medium (usability)
 - **Observed**: The progression buttons at the top of the animation page are not always present, especially noticeable when creating a new animation. They only appear once the animation is saved and has progressions.
 - **Action**: Refactor the progression panel logic to allow local unsaved progressions, or show an empty state to add the first progression.
