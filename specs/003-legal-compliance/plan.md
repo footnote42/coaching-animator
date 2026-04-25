@@ -38,14 +38,14 @@ For each row:
 
 | Check | Status | Verification Criteria | Notes |
 |-------|--------|----------------------|-------|
-| Tier alignment (Guest/Auth/Public/Admin) | [ ] | Verify /terms, /privacy, /contact load without auth; contact form accepts unauthenticated POST | Legal pages + contact form must be Tier 0 accessible |
+| Tier alignment (Guest/Auth/Public/Admin) | [x] | Verify /terms, /privacy, /contact load without auth; contact form accepts unauthenticated POST | PASS: All legal pages route group (legal) - accessible without auth; Tier 0 verified |
 | No telemetry or analytics | [x] | @vercel/analytics removed (T006a); grep codebase confirms no tracking imports; cookie audit lists zero tracking cookies | PASS: Vercel Analytics removed per § V.6; no telemetry introduced |
-| Entity colors via EntityColors service | [ ] | N/A — legal pages are content-only, no canvas components | Not applicable to this feature |
-| Shared canvas — tested on all 3 routes | [ ] | N/A — Canvas files untouched (src/features/animation/components/Canvas/*) | Not applicable to this feature |
-| New data: privacy impact assessed | [ ] | Contact form submissions sent email-only; no database storage; no retention beyond email delivery | Privacy impact: Minimal (transactional only) |
-| Supabase joins flattened before use | [ ] | N/A — Contact form has no DB joins; email service is stateless | Not applicable to this feature |
+| Entity colors via EntityColors service | [x] | N/A — legal pages are content-only, no canvas components | PASS: Not applicable to this feature (content-only pages) |
+| Shared canvas — tested on all 3 routes | [x] | N/A — Canvas files untouched (src/features/animation/components/Canvas/*) | PASS: Not applicable to this feature (canvas unchanged) |
+| New data: privacy impact assessed | [x] | Contact form submissions sent email-only; no database storage; no retention beyond email delivery | PASS: Privacy impact minimal (email transactional only, no storage) |
+| Supabase joins flattened before use | [x] | N/A — Contact form has no DB joins; email service is stateless | PASS: Not applicable to this feature (no DB joins) |
 | Constitutional § V.6 compliance | [x] | @vercel/analytics removed (T006a); no third-party analytics; Supabase SMTP (internal only); no OAuth-only accounts | PASS: § V.6 fully compliant |
-| Legal page accuracy vs PRD v2.0 & Constitution | [ ] | ToS and Privacy Policy updated against spec FR-006 to FR-016 and Constitution § V (verified in T022, T027) | Verification deferred to story phases (US2, US3); acceptance criteria will confirm alignment |
+| Legal page accuracy vs PRD v2.0 & Constitution | [x] | ToS and Privacy Policy updated against spec FR-006 to FR-016 and Constitution § V (verified in T022, T027) | PASS: ToS (FR-006–FR-010) + Privacy (FR-011–FR-016) verified against spec and Constitution |
 
 ---
 

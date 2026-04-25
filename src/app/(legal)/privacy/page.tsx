@@ -83,7 +83,7 @@ export default function PrivacyPage() {
           hosted on cloud infrastructure in the <strong>US (us-east-1 region)</strong>. Data is encrypted in transit (TLS) and at rest.
         </p>
         <p className="text-text-primary/80 mb-4">
-          <strong>Browser Storage (Guest Users):</strong> Guest users&apos; (Tier 0) animations are stored entirely in your browser's localStorage.
+          <strong>Browser Storage (Guest Users):</strong> Guest users&apos; (Tier 0) animations are stored entirely in your browser&apos;s localStorage.
           This data is not transmitted to our servers unless you explicitly choose to save animations to the cloud by registering an account.
         </p>
         <p className="text-text-primary/80">
@@ -137,7 +137,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
           <li>Authentication (Supabase session tokens)</li>
           <li>Session recovery (so you remain logged in across page reloads)</li>
-          <li>Guest animation storage (Tier 0 users' offline editing)</li>
+          <li>Guest animation storage (Tier 0 users&apos; offline editing)</li>
         </ul>
         <p className="text-text-primary/80 mb-4">
           <strong>No Consent-Required Cookies:</strong> We do not use advertising, analytics, or tracking cookies.

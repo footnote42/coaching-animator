@@ -69,10 +69,10 @@ export default function TermsPage() {
         </ul>
         <h3 className="text-lg font-semibold text-text-primary mb-3">Remixed Animations & Attribution</h3>
         <p className="text-text-primary/80 mb-4">
-          If you remix another coach's animation, you must:
+          If you remix another coach&apos;s animation, you must:
         </p>
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
-          <li>Credit the original creator in your animation's metadata or description</li>
+          <li>Credit the original creator in your animation&apos;s metadata or description</li>
           <li>Release your remix under CC-BY-SA 4.0</li>
           <li>Understand that others may remix your remix under the same license</li>
         </ul>
