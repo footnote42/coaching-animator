@@ -34,7 +34,7 @@ Manual test:  npm run dev (port 3000)
 
 **Purpose**: Confirm baseline is clean before any changes land.
 
-- [ ] T001 Verify `npm run lint && npx tsc --noEmit` passes on branch `006-share-workflow` with zero errors before writing any code
+- [x] T001 Verify `npm run lint && npx tsc --noEmit` passes on branch `006-share-workflow` with zero errors before writing any code
 
 ---
 
@@ -48,15 +48,15 @@ Manual test:  npm run dev (port 3000)
 
 ### Implementation for User Story 1
 
-- [ ] T002 [US1] Create `src/app/api/share/route.ts`: POST handler that calls `requireAuth()`, validates body with `validatePayloadSize()`, upserts to `saved_animations` with `visibility: 'link_shared'`, `title: body.name || 'Untitled Animation'`, `user_id: user.id`, `animation_type: 'tactic'`, `frame_count: body.frames.length`, `duration_ms` computed from frames, returns `{ id: string }`. Error responses: 401 (no auth), 413 (payload too large), 429 (rate limit via `checkRateLimit()`), 500 (DB error). Pattern: follow `src/app/api/animations/route.ts` POST handler.
+- [x] T002 [US1] Create `src/app/api/share/route.ts`: POST handler that calls `requireAuth()`, validates body with `validatePayloadSize()`, upserts to `saved_animations` with `visibility: 'link_shared'`, `title: body.name || 'Untitled Animation'`, `user_id: user.id`, `animation_type: 'tactic'`, `frame_count: body.frames.length`, `duration_ms` computed from frames, returns `{ id: string }`. Error responses: 401 (no auth), 413 (payload too large), 429 (rate limit via `checkRateLimit()`), 500 (DB error). Pattern: follow `src/app/api/animations/route.ts` POST handler.
 
-- [ ] T003 [US1] Enhance `src/features/animation/components/Sidebar/ShareButton.tsx`:
+- [x] T003 [US1] Enhance `src/features/animation/components/Sidebar/ShareButton.tsx`:
   (a) **Auth guard**: Before calling `shareAnimation()`, check whether the user is authenticated (read from the existing auth context/store). If not authenticated, render a short inline prompt instead of the share modal: "Sign in to share this animation with your players." Include a sign-in button (route to `/auth/signin`) and a dismiss option. Do not call `shareAnimation()` in this branch. This satisfies FR-009 and SC-001 for guest users.
   (b) Remove the `PRIVACY_NOTICE_KEY` localStorage check and the "stored for 90 days" `toast.info` entirely.
   (c) After `shareAnimation()` succeeds, check `typeof navigator.share === 'function'` at call time. If true, call `navigator.share({ url, title: project.name })`; if that throws `AbortError`, fall through to modal.
   (d) Open a `Dialog` (from `src/shared/ui/`) with: title "Share Link", explanation text "Send this link to your players — they can watch the animation on their phone, no account needed.", readonly URL input showing the full `/share/{id}` URL, copy button with `Check` icon on success, dismiss button. Apply `rounded-none` to the Dialog content element (UI-003).
 
-- [ ] T004 [US1] Verify User Story 1: run `npm run lint && npx tsc --noEmit` — zero new errors
+- [x] T004 [US1] Verify User Story 1: run `npm run lint && npx tsc --noEmit` — zero new errors
 
 **Checkpoint**: Editor share fully functional. Test independently before continuing.
 
@@ -70,15 +70,15 @@ Manual test:  npm run dev (port 3000)
 
 ### Implementation for User Story 2
 
-- [ ] T005 [P] [US2] Add title overlay to `src/features/animation/components/ShareViewer.tsx`: add `animationTitle?: string` prop to `ShareViewerProps`. Inside the `<div style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}>` wrapper, render a `<div className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" style={{ zIndex: 10 }}>` containing `<h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-center">` with `{animationTitle ?? payload.name}` as content. The `animationTitle` prop (server-provided) takes precedence; `payload.name` is the fallback.
+- [x] T005 [P] [US2] Add title overlay to `src/features/animation/components/ShareViewer.tsx`: add `animationTitle?: string` prop to `ShareViewerProps`. Inside the `<div style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}>` wrapper, render a `<div className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" style={{ zIndex: 10 }}>` containing `<h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-center">` with `{animationTitle ?? payload.name}` as content. The `animationTitle` prop (server-provided) takes precedence; `payload.name` is the fallback.
 
-- [ ] T006 [P] [US2] Extend server query in `src/app/share/[id]/page.tsx`:
+- [x] T006 [P] [US2] Extend server query in `src/app/share/[id]/page.tsx`:
   (a) **Null guard**: Immediately after the `.single()` call, check if `data` is null (animation missing, hidden, or wrong visibility). If so, call Next.js `notFound()` to render the project's 404 page. This satisfies FR-010 and SC-005. Verify with test URL `/share/00000000-0000-0000-0000-000000000000` — expect a 404 page, no console error, no white screen.
   (b) Add `parent_animation_id, is_progression, progression_order` to the existing `.select()` call. Then compute a `fullNavigationSet: { id: string; label: string }[]` array where slot 0 is always the base animation and subsequent slots are progressions ordered by `progression_order`. If `animation.is_progression` is true, fetch siblings via `parent_animation_id`; the base animation record (for slot 0) is fetched separately via `parent_animation_id`. If `animation.is_progression` is false (base), fetch children via `.eq('parent_animation_id', id)`. Filter all fetched records to `.is('hidden_at', null).in('visibility', ['public', 'link_shared'])`. Pass `fullNavigationSet` and `currentAnimationId` (the current `id`) as props to `ShareViewer`. Pass `animationTitle={animation.title}` as the authoritative title prop.
 
-- [ ] T007 [US2] Add progression navigation bar to `src/features/animation/components/ShareViewer.tsx`: add `fullNavigationSet?: { id: string; label: string }[]` and `currentAnimationId?: string` props to `ShareViewerProps`. When `fullNavigationSet.length > 1`, find `currentIndex = fullNavigationSet.findIndex(n => n.id === currentAnimationId)`. Render `prevItem = fullNavigationSet[currentIndex - 1]` and `nextItem = fullNavigationSet[currentIndex + 1]`. Bottom-center nav bar: `<div className="absolute bottom-0 left-0 right-0 flex justify-center gap-3 px-4" style={{ zIndex: 20, bottom: 'calc(48px + env(safe-area-inset-bottom, 0px))' }}>` containing conditional `<a href={/share/${prevItem.id}}>← Prev</a>`, `<span>{currentIndex + 1} / {fullNavigationSet.length}</span>`, and conditional `<a href={/share/${nextItem.id}}>Next →</a>`. Use `<a href>` not `router.push` for clean full-page navigation. Style: `bg-black/60 text-white/80 text-xs font-mono px-3 py-1` for prev/next; `bg-black/80 text-white` for counter. Positioned above FloatingRemote. Depends on T005 (same file).
+- [x] T007 [US2] Add progression navigation bar to `src/features/animation/components/ShareViewer.tsx`: add `fullNavigationSet?: { id: string; label: string }[]` and `currentAnimationId?: string` props to `ShareViewerProps`. When `fullNavigationSet.length > 1`, find `currentIndex = fullNavigationSet.findIndex(n => n.id === currentAnimationId)`. Render `prevItem = fullNavigationSet[currentIndex - 1]` and `nextItem = fullNavigationSet[currentIndex + 1]`. Bottom-center nav bar positioned above FloatingRemote. Use `<a href>` not `router.push` for clean full-page navigation.
 
-- [ ] T008 [US2] Verify User Story 2: run `npm run lint && npx tsc --noEmit` — zero new errors
+- [x] T008 [US2] Verify User Story 2: run `npm run lint && npx tsc --noEmit` — zero new errors
 
 **Checkpoint**: Share view shows title and progression nav. Test independently before continuing.
 
@@ -92,11 +92,11 @@ Manual test:  npm run dev (port 3000)
 
 ### Implementation for User Story 3
 
-- [ ] T009 [P] [US3] Fix gallery routing in `src/app/gallery/GalleryClient.tsx`: on line 171, change `router.push(\`/replay/${id}\`)` to `router.push(\`/share/${id}\`)`. One-line change only.
+- [x] T009 [P] [US3] Fix gallery routing in `src/app/gallery/GalleryClient.tsx`: on line 171, change `router.push(\`/replay/${id}\`)` to `router.push(\`/share/${id}\`)`. One-line change only.
 
-- [ ] T010 [P] [US3] Add share action to `src/features/gallery/components/PublicAnimationCard.tsx`: add `const [copied, setCopied] = useState(false)` state. Add `handleShare` async function: build `url = \`${window.location.origin}/share/${animation.id}\``; try `navigator.share({ url, title: animation.title })` if `typeof navigator.share === 'function'` (returns early on success); fallback: `navigator.clipboard.writeText(url)`, then `setCopied(true)`, `setTimeout(() => setCopied(false), 2000)`. Add a share icon button (`Share2` from `lucide-react`) to the card's action row. When `copied` is true, show `Check` icon instead of `Share2`. Mirror the `handleCopyLink` pattern from `src/features/gallery/components/AnimationCard.tsx:97–106`. Call `e.stopPropagation()` at the top of `handleShare` to prevent card click-through.
+- [x] T010 [P] [US3] Add share action to `src/features/gallery/components/PublicAnimationCard.tsx`: add `const [copied, setCopied] = useState(false)` state. Add `handleShare` async function: build `url = \`${window.location.origin}/share/${animation.id}\``; try `navigator.share({ url, title: animation.title })` if `typeof navigator.share === 'function'` (returns early on success); fallback: `navigator.clipboard.writeText(url)`, then `setCopied(true)`, `setTimeout(() => setCopied(false), 2000)`. Add a share icon button (`Share2` from `lucide-react`) to the card's action row. When `copied` is true, show `Check` icon instead of `Share2`. Call `e.stopPropagation()` at the top of `handleShare` to prevent card click-through.
 
-- [ ] T011 [US3] Verify User Story 3: run `npm run lint && npx tsc --noEmit` — zero new errors
+- [x] T011 [US3] Verify User Story 3: run `npm run lint && npx tsc --noEmit` — zero new errors
 
 **Checkpoint**: Gallery routing and share action both work. Test independently before continuing.
 
@@ -110,7 +110,7 @@ Manual test:  npm run dev (port 3000)
 - [ ] T013 [P] Manual verify `/share/[id]` route on mobile (or DevTools mobile emulation): title overlay visible at top, FloatingRemote functional, progression nav appears if applicable, layout has no horizontal scroll, `position:fixed` container intact
 - [ ] T014 [P] Manual verify `/gallery`: play overlay routes to `/share/{id}`, Share icon on cards produces correct URL
 - [ ] T015 Manual verify `/replay/[id]` route: still renders correctly (route stays in codebase, must not be broken)
-- [ ] T016 Run `npm run lint && npx tsc --noEmit` — zero new errors across all changed files
+- [x] T016 Run `npm run lint && npx tsc --noEmit` — zero new errors across all changed files
 - [ ] T017 Run `npm test -- --run` — all existing unit tests pass (no regressions from ShareViewer prop additions)
 
 ---
