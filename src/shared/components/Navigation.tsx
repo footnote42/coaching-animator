@@ -120,7 +120,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           </Link>
 
           <Link
-            href="/register"
+            href="/app"
             className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
           >
             Get Started

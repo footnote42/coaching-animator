@@ -19,12 +19,23 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### EDITOR-010 — Progression Buttons Missing for New Animations
+- **Status**: `[ ]` Open
+- **Severity**: Medium (usability)
+- **Observed**: The progression buttons at the top of the animation page are not always present, especially noticeable when creating a new animation. They only appear once the animation is saved and has progressions.
+- **Action**: Refactor the progression panel logic to allow local unsaved progressions, or show an empty state to add the first progression.
+- **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
 
+### EDITOR-011 — Team Colour Selection & Legend Alignment
+- **Status**: `[ ]` Open
+- **Severity**: Low (UX clarity)
+- **Observed**: The legend indicates team colours, but there's no option to change the team colours and immediately have those selections amend the colours of the entities on the pitch.
+- **Action**: Implement a UI for selecting team colours globally for the animation, and connect it to the EntityColors resolution logic.
+- **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
-
 ## Phase 2–3: Gallery UX
 
 ### UX-004 — Gallery Cards Lack Visual Preview

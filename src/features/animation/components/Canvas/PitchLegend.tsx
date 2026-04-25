@@ -14,6 +14,7 @@ export const PitchLegend: React.FC<PitchLegendProps> = ({ height }) => {
   return (
     <Layer listening={false}>
       <Group x={16} y={height - 52}>
+        <Rect width={84} height={48} x={-8} y={-8} fill="rgba(0,0,0,0.5)" cornerRadius={4} />
         {/* Attack Row */}
         <Group y={0}>
           <Rect width={12} height={12} fill={attackColor} cornerRadius={2} />
