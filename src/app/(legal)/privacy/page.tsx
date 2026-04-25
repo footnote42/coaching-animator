@@ -8,25 +8,41 @@ export default function PrivacyPage() {
     <article className="prose prose-slate max-w-none">
       <h1 className="text-3xl font-heading font-bold text-text-primary mb-8">Privacy Policy</h1>
 
-      <p className="text-text-primary/70 mb-8">Last updated: January 2026</p>
+      <p className="text-text-primary/70 mb-8">Last updated: April 2026</p>
+
+      <section className="mb-8 p-4 bg-blue-50 border-l-4 border-primary">
+        <h2 className="text-lg font-heading font-semibold text-text-primary mb-2">No Telemetry, Analytics, or Tracking</h2>
+        <p className="text-text-primary/80">
+          <strong>We do not collect telemetry data, usage analytics, or advertising tracking.</strong> Your use of Coaching Animator
+          is private. We do not monitor which plays you create, how long you use the service, or share your usage data with third parties.
+        </p>
+      </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">1. Information We Collect</h2>
-        <p className="text-text-primary/80 mb-4">We collect information in the following ways:</p>
+        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">1. What Personal Data We Collect</h2>
+        <p className="text-text-primary/80 mb-4">We collect only the minimum data necessary to provide the Service:</p>
 
         <h3 className="text-lg font-semibold text-text-primary mb-2">Information you provide:</h3>
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
-          <li>Email address when you create an account</li>
-          <li>Display name (optional)</li>
+          <li>Email address (when you create an account)</li>
+          <li>Display name (optional; for public gallery attribution)</li>
           <li>Animation content you create and save</li>
-          <li>Reports you submit about other content</li>
         </ul>
 
-        <h3 className="text-lg font-semibold text-text-primary mb-2">Information collected automatically:</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">Technical information (for service operation only):</h3>
+        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
+          <li>IP address (for rate limiting and abuse prevention; not logged long-term)</li>
+          <li>Session authentication tokens (managed by Supabase, not stored locally by us)</li>
+        </ul>
+
+        <p className="text-text-primary/80 mb-4">
+          <strong>What we explicitly do NOT collect:</strong>
+        </p>
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li>Usage data (pages visited, features used)</li>
-          <li>Device information (browser type, operating system)</li>
-          <li>IP address for rate limiting and security</li>
+          <li>Usage analytics (which animations you view, which features you use)</li>
+          <li>Device information (browser type, operating system, screen size)</li>
+          <li>Behavioral tracking or user journey data</li>
+          <li>Cookies for advertising or analytics purposes</li>
         </ul>
       </section>
 
@@ -61,24 +77,31 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">3. Data Storage</h2>
+        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">3. Data Storage & Residency</h2>
         <p className="text-text-primary/80 mb-4">
-          Your data is stored securely using Supabase, which provides enterprise-grade security.
-          Animation data is stored in cloud databases with appropriate encryption and access controls.
+          <strong>Cloud Storage (Registered Users):</strong> Your data is stored on Supabase, which uses PostgreSQL databases
+          hosted on cloud infrastructure in the <strong>US (us-east-1 region)</strong>. Data is encrypted in transit (TLS) and at rest.
+        </p>
+        <p className="text-text-primary/80 mb-4">
+          <strong>Browser Storage (Guest Users):</strong> Guest users&apos; (Tier 0) animations are stored entirely in your browser&apos;s localStorage.
+          This data is not transmitted to our servers unless you explicitly choose to save animations to the cloud by registering an account.
         </p>
         <p className="text-text-primary/80">
-          Guest users&apos; animations are stored locally in browser storage and are not transmitted to our servers
-          unless explicitly shared.
+          <strong>Data Processors:</strong> Supabase is our primary data processor. We do not share your data with third-party analytics
+          or marketing vendors.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">4. Data Sharing</h2>
-        <p className="text-text-primary/80 mb-4">We do not sell your personal information. We may share data with:</p>
+        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">4. Data Sharing & Sales</h2>
+        <p className="text-text-primary/80 mb-4">
+          <strong>We do not sell, rent, or trade your personal data.</strong> We do not sell your data to advertisers, data brokers, or any third parties.
+        </p>
+        <p className="text-text-primary/80 mb-4">We may share data only in these limited circumstances:</p>
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li>Service providers who help us operate the Service (e.g., hosting, analytics)</li>
-          <li>Law enforcement when required by law</li>
-          <li>Other users, when you make content public</li>
+          <li><strong>Service providers:</strong> Supabase (database and authentication hosting); they are contractually bound not to use your data for their own purposes</li>
+          <li><strong>Law enforcement:</strong> Only if required by law, with a valid legal order</li>
+          <li><strong>Public content:</strong> Your public gallery animations are visible to all users and licensed under CC-BY-SA 4.0</li>
         </ul>
       </section>
 
@@ -107,10 +130,21 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">7. Cookies</h2>
+        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">7. Cookies & Browser Storage</h2>
         <p className="text-text-primary/80 mb-4">
-          We use essential cookies for authentication and session management. We do not use
-          tracking cookies for advertising purposes.
+          <strong>Strictly Necessary Cookies:</strong> We use session cookies and localStorage only for:
+        </p>
+        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
+          <li>Authentication (Supabase session tokens)</li>
+          <li>Session recovery (so you remain logged in across page reloads)</li>
+          <li>Guest animation storage (Tier 0 users&apos; offline editing)</li>
+        </ul>
+        <p className="text-text-primary/80 mb-4">
+          <strong>No Consent-Required Cookies:</strong> We do not use advertising, analytics, or tracking cookies.
+          No banner is displayed because no cookie consent is required — all cookies are strictly necessary for core functionality.
+        </p>
+        <p className="text-text-primary/80">
+          See our <a href="/terms" className="text-primary hover:underline">Terms of Service</a> for details on how your data is stored and managed.
         </p>
       </section>
 

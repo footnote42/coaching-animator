@@ -268,6 +268,13 @@ This project follows a spec-driven development workflow with comprehensive docum
 
 ### Current Project Status
 
+**Legal & Compliance (003-legal-compliance)**: ✅ MVP Complete (Phases 3–5)
+- ✅ Cookie audit report (no banner required — all items strictly necessary)
+- ✅ Terms of Service updated (CC-BY-SA 4.0, tiered model, remix requirements)
+- ✅ Privacy Policy updated (no telemetry, data residency, deletion timeline)
+- ✅ Constitutional Compliance Check passed (all 8 items verified)
+- ⏳ Contact form (Phase 2.1 — optional, post-MVP)
+
 **Online Platform (003-online-platform)**: ✅ Complete (111/111 tasks)
 - ✅ User accounts, cloud storage, galleries
 - ✅ Social features (upvoting, reporting)
