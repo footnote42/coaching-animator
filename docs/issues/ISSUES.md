@@ -36,6 +36,24 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
+
+### EDITOR-012 — Entity Spawning & Persistence Logic
+- **Status**: `[ ]` Open
+- **Severity**: Medium (UX friction)
+- **Observed**: When adding entities to an existing multi-frame animation, they are currently placed in the centre of the pitch for *every* frame. This requires the user to move or delete them on every frame individually.
+- **Action**: Change spawning logic: an entity should be placed only in the frame where it was added. It should then maintain that same position in all *subsequent* frames by default, awaiting user movement, rather than resetting to centre on every frame.
+- **Roadmap ref**: Phase 2 (Editor & Canvas)
+
+---
+
+### EDITOR-014 — Entity Spawn Offsetting
+- **Status**: `[ ]` Open
+- **Severity**: Low (usability)
+- **Observed**: Adding multiple entities without moving the first results in them sitting directly on top of each other at the centre of the pitch, making selection difficult.
+- **Action**: Implement a spawn offset; if the centre point is already occupied by a just-added entity that hasn't been moved, offset the next entity slightly.
+- **Roadmap ref**: Phase 2 (Editor & Canvas)
+
+---
 ## Phase 2–3: Gallery UX
 
 ### UX-004 — Gallery Cards Lack Visual Preview
@@ -101,6 +119,28 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
   2. Design carousel UI (swipe/click through animations in a pack)
   3. Add visual badges or icons for pack variants
 - **Roadmap ref**: Phase 2–3 (nice-to-have for launch, improves discoverability)
+
+---
+
+### UX-010 — Progression Workflow & Gallery Integration
+- **Status**: `[ ]` Open
+- **Severity**: High (core workflow)
+- **Observed**: Progression workflow is not intuitive. Progressions currently sit as standalone animations in the gallery, cluttering the view.
+- **Action**: 
+  - Update save feature to allow saving directly to a "parent" animation.
+  - Remove standalone progression animations from the main gallery; they should only be accessible via the parent.
+  - Inherit parent metadata and descriptors automatically.
+  - Auto-generate title as `{Parent Title} {part n}`.
+- **Roadmap ref**: Phase 2c (Share Workflow)
+
+---
+
+### UX-011 — Entity Depth & Visual Indicators
+- **Status**: `[ ]` Open
+- **Severity**: Low (visual polish)
+- **Observed**: Entities look "flat" on the pitch. It's not always clear how they are layered or that they are distinct from the background.
+- **Action**: Add subtle shadows or depth indicators to entities (players, balls, kit) to give a sense of depth and separation from the pitch surface.
+- **Roadmap ref**: Phase 2 (Visual Excellence)
 
 ---
 
@@ -443,6 +483,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Observed**: Playback controls disappear when scrolling and are fixed in document flow. Coaches at the pitch need controls always accessible.
 - **Proposal**: Floating draggable remote (drag to reposition); always-on-screen; possibly bottom-anchored by default
 - **Action**: Implement floating, draggable playback remote in editor; ensure it stays within viewport bounds
+- **Roadmap ref**: Phase 2b (Playback & Controls)
+
+---
+
+### EDITOR-013 — Unified Floating Editor Controls
+- **Status**: `[ ]` Open
+- **Severity**: High (mobile usability)
+- **Observed**: Users still have to scroll to see the bottom edge of the pitch or the timeline controls (add frame, pace, loop, etc.). These should be part of the persistent viewport overlay.
+- **Action**: Expand the floating playback remote (from 007) to include all core frame controls: add frame, change pace, toggle loop, and ghosting. This eliminates the need for the fixed footer on smaller viewports.
 - **Roadmap ref**: Phase 2b (Playback & Controls)
 
 ---
