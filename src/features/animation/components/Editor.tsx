@@ -34,8 +34,11 @@ import { useAutoSave } from '@/core/hooks/useAutoSave';
 
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
+import { useEditorContextMenuHandlers } from '@/features/animation/components/hooks/useEditorContextMenuHandlers';
+import { useEditorProgressionHandlers } from '@/features/animation/components/hooks/useEditorProgressionHandlers';
+import { useEditorEntityHandlers } from '@/features/animation/components/hooks/useEditorEntityHandlers';
+import { useEditorPlaybackHandlers } from '@/features/animation/components/hooks/useEditorPlaybackHandlers';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
-import { EntityColors } from '@/features/animation/services/entityColors';
 import { VALIDATION } from '@/core/constants/validation';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
@@ -43,8 +46,7 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
 import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
 
-import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
-import { Toaster, toast } from 'sonner';
+import { Toaster } from 'sonner';
 
 interface EditorProps {
   isAuthenticated?: boolean;
@@ -61,72 +63,109 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const canvasHeight = 600;
 
   const stageRef = useRef<Konva.Stage>(null);
-  const {
-    project,
-    currentFrameIndex,
-    isPlaying,
-    playbackSpeed,
-    loopPlayback,
-    playbackPosition,
-    isDirty,
-    newProject,
-    loadProject,
-    addFrame,
-    setCurrentFrame,
-    removeFrame,
-    duplicateFrame,
-    addEntity,
-    propagateEntity,
-    updateEntity,
-    play,
-    pause,
-    reset,
-    setPlaybackSpeed,
-    toggleLoop,
-    updateFrame,
-    addAnnotation,
-  } = useProjectStore();
+  const project = useProjectStore(s => s.project);
+  const currentFrameIndex = useProjectStore(s => s.currentFrameIndex);
+  const isPlaying = useProjectStore(s => s.isPlaying);
+  const playbackSpeed = useProjectStore(s => s.playbackSpeed);
+  const loopPlayback = useProjectStore(s => s.loopPlayback);
+  const playbackPosition = useProjectStore(s => s.playbackPosition);
+  const isDirty = useProjectStore(s => s.isDirty);
+  const newProject = useProjectStore(s => s.newProject);
+  const removeFrame = useProjectStore.getState().removeFrame;
+  const duplicateFrame = useProjectStore.getState().duplicateFrame;
+  const updateEntity = useProjectStore(s => s.updateEntity);
+  const play = useProjectStore.getState().play;
+  const pause = useProjectStore.getState().pause;
+  const reset = useProjectStore.getState().reset;
+  const setPlaybackSpeed = useProjectStore.getState().setPlaybackSpeed;
+  const toggleLoop = useProjectStore.getState().toggleLoop;
+  const setCurrentFrame = useProjectStore.getState().setCurrentFrame;
 
-  const {
-    selectedEntityId,
-    selectEntity,
-    deselectAll,
-    showGhosts,
-    toggleGhosts,
-    selectedAnnotationId,
-    selectAnnotation,
-    drawingMode,
-    setDrawingMode,
-  } = useUIStore();
+  const selectedEntityId = useUIStore(s => s.selectedEntityId);
+  const showGhosts = useUIStore(s => s.showGhosts);
+  const toggleGhosts = useUIStore.getState().toggleGhosts;
+  const selectedAnnotationId = useUIStore(s => s.selectedAnnotationId);
+  const selectAnnotation = useUIStore.getState().selectAnnotation;
+  const drawingMode = useUIStore(s => s.drawingMode);
+  const setDrawingMode = useUIStore(s => s.setDrawingMode);
 
   const { exportStatus, exportProgress, exportError, startExport, canExport, recommendedFormat, formatReason } = useExport(stageRef);
+
+  const {
+    inlineEditor,
+    contextMenu,
+    setContextMenu,
+    annotationContextMenu,
+    setAnnotationContextMenu,
+    handleEntitySelect,
+    handleEntityMove,
+    handleEntityDoubleClick,
+    handleEntityContextMenu,
+    handleInlineEditorConfirm,
+    handleInlineEditorCancel,
+    handleContextMenuDuplicate,
+    handleContextMenuDelete,
+    handleContextMenuEditLabel,
+    handleAnnotationContextMenu,
+    handleAnnotationContextMenuDelete,
+    handleCanvasClick,
+  } = useEditorContextMenuHandlers({ project, currentFrameIndex, stageRef });
+
+  const {
+    baseAnimationMeta,
+    setBaseAnimationMeta,
+    progressions,
+    setProgressions,
+    activeProgressionIndex,
+    setActiveProgressionIndex,
+    showProgressionUnsavedDialog,
+    setShowProgressionUnsavedDialog,
+    setPendingProgressionIndex,
+    isAddingProgression,
+    showProgressionPanel,
+    handleProgressionSelectRequest,
+    handleProgressionReorder,
+    handleProgressionDiscardAndSwitch,
+    handleAddProgression,
+  } = useEditorProgressionHandlers({ cloudAnimationId, isAuthenticated });
 
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
 
-  // Phase 2: Progression panel state
-  const [baseAnimationMeta, setBaseAnimationMeta] = useState<{ id: string; title: string; is_progression: boolean } | null>(null);
-  const [progressions, setProgressions] = useState<Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]>([]);
-  const [activeProgressionIndex, setActiveProgressionIndex] = useState<number>(-1); // -1 = base
-  const [showProgressionUnsavedDialog, setShowProgressionUnsavedDialog] = useState(false);
-  const [pendingProgressionIndex, setPendingProgressionIndex] = useState<number | null>(null);
-  const [isAddingProgression, setIsAddingProgression] = useState(false);
+  const {
+    showGuestLimitModal,
+    setShowGuestLimitModal,
+    handleRecoverProject,
+    handleSkipRecovery,
+    handleAddAttackPlayer,
+    handleAddDefensePlayer,
+    handleAddBall,
+    handleAddCone,
+    handleAddTackleShield,
+    handleAddTackleBag,
+  } = useEditorEntityHandlers({
+    setShowRecoveryDialog,
+    recoveredProject,
+    setRecoveredProject,
+    stripColors,
+    canvasWidth,
+    canvasHeight,
+  });
 
-  const [inlineEditor, setInlineEditor] = useState<{
-    entityId: string;
-    position: { x: number; y: number };
-    initialValue: string;
-  } | null>(null);
+  const {
+    handleAddFrame,
+    handlePreviousFrame,
+    handleNextFrame,
+    handleFrameDurationChange,
+    handleDrawingComplete,
+  } = useEditorPlaybackHandlers({
+    isAuthenticated,
+    setShowGuestLimitModal,
+  });
 
-  const [contextMenu, setContextMenu] = useState<{
-    entityId: string;
-    position: { x: number; y: number };
-  } | null>(null);
-
-  const [annotationContextMenu, setAnnotationContextMenu] = useState<{
-    annotationId: string;
-    position: { x: number; y: number };
-  } | null>(null);
+  const maxFrames = isAuthenticated
+    ? VALIDATION.PROJECT.MAX_FRAMES
+    : VALIDATION.PROJECT.GUEST_MAX_FRAMES;
 
   // Mobile editor warning state
   const [mobileWarningDismissed, setMobileWarningDismissed] = useState(false);
@@ -166,7 +205,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         }
       })
       .catch(err => console.error('[Editor] Failed to fetch progression metadata:', err));
-  }, [cloudAnimationId, isAuthenticated]);
+  }, [cloudAnimationId, isAuthenticated, setBaseAnimationMeta, setProgressions, setActiveProgressionIndex]);
 
   // Track viewport width for mobile warning
   useEffect(() => {
@@ -213,396 +252,9 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     }
   }, [project, newProject, loadingFromCloud]);
 
-  const handleRecoverProject = () => {
-    if (recoveredProject) {
-      const result = loadProject(recoveredProject);
-      if (!result.success) {
-        toast.error(`Failed to recover project:\n${result.errors.join('\n')}`);
-        newProject();
-      }
-    }
-    setShowRecoveryDialog(false);
-    setRecoveredProject(null);
-  };
-
-  const handleSkipRecovery = () => {
-    setShowRecoveryDialog(false);
-    setRecoveredProject(null);
-    newProject();
-  };
-
-  const [showGuestLimitModal, setShowGuestLimitModal] = useState(false);
-
-  const maxFrames = isAuthenticated
-    ? VALIDATION.PROJECT.MAX_FRAMES
-    : VALIDATION.PROJECT.GUEST_MAX_FRAMES;
-
-  const handleAddFrame = () => {
-    if (!project) return;
-    if (project.frames.length >= maxFrames) {
-      if (!isAuthenticated) {
-        setShowGuestLimitModal(true);
-      }
-      return;
-    }
-    addFrame();
-  };
-
-  const addEntityWithPropagate = (entityData: Parameters<typeof addEntity>[0]) => {
-    const newId = addEntity(entityData);
-    if ((project?.frames.length ?? 0) > 1) {
-      toast('Add entity to all subsequent frames?', {
-        action: { label: 'Yes', onClick: () => propagateEntity(newId) },
-        cancel: { label: 'No', onClick: () => {} },
-      });
-    }
-  };
-
-  const handleAddAttackPlayer = () => {
-    addEntityWithPropagate({
-      type: 'player',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'attack',
-      color: stripColors?.attack || EntityColors.getDefault('player', 'attack'),
-      label: '',
-    });
-  };
-
-  const handleAddDefensePlayer = () => {
-    addEntityWithPropagate({
-      type: 'player',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'defense',
-      color: stripColors?.defense || EntityColors.getDefault('player', 'defense'),
-      label: '',
-    });
-  };
-
-  const handleAddBall = () => {
-    addEntityWithPropagate({
-      type: 'ball',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'neutral',
-      color: EntityColors.getDefault('ball'),
-      label: '',
-    });
-  };
-
-  const handleAddCone = () => {
-    addEntityWithPropagate({
-      type: 'cone',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'neutral',
-      color: EntityColors.getDefault('cone'),
-      label: '',
-    });
-  };
-
-  const handleAddTackleShield = () => {
-    addEntityWithPropagate({
-      type: 'tackle-shield',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'neutral',
-      color: EntityColors.getDefault('tackle-shield'),
-      label: '',
-    });
-  };
-
-  const handleAddTackleBag = () => {
-    addEntityWithPropagate({
-      type: 'tackle-bag',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      team: 'neutral',
-      color: EntityColors.getDefault('tackle-bag'),
-      label: '',
-    });
-  };
-
-  const handleEntitySelect = (entityId: string) => {
-    selectEntity(entityId);
-  };
-
-  const handleEntityMove = (entityId: string, x: number, y: number) => {
-    updateEntity(entityId, { x, y });
-  };
-
   const currentFrame = project?.frames[currentFrameIndex];
   const entities = currentFrame ? Object.values(currentFrame.entities) : [];
   const annotations = currentFrame ? currentFrame.annotations : [];
-
-  const handleEntityDoubleClick = (entityId: string) => {
-    const entity = entities.find((e) => e.id === entityId);
-    if (!entity || !stageRef.current) return;
-
-    const canvasElement = stageRef.current.container();
-    const rect = canvasElement.getBoundingClientRect();
-
-    const screenX = rect.left + entity.x;
-    const screenY = rect.top + entity.y;
-
-    setInlineEditor({
-      entityId,
-      position: { x: screenX - 40, y: screenY - 15 },
-      initialValue: entity.label || '',
-    });
-  };
-
-  const handleEntityContextMenu = (entityId: string, event: { x: number; y: number }) => {
-    if (!stageRef.current) return;
-
-    const canvasElement = stageRef.current.container();
-    const rect = canvasElement.getBoundingClientRect();
-
-    setContextMenu({
-      entityId,
-      position: {
-        x: rect.left + event.x,
-        y: rect.top + event.y,
-      },
-    });
-  };
-
-  const handleInlineEditorConfirm = (value: string) => {
-    if (inlineEditor) {
-      updateEntity(inlineEditor.entityId, { label: value });
-    }
-    setInlineEditor(null);
-  };
-
-  const handleInlineEditorCancel = () => {
-    setInlineEditor(null);
-  };
-
-  const handleContextMenuDuplicate = () => {
-    if (!contextMenu || !project) return;
-    const frame = project.frames[currentFrameIndex];
-    if (!frame) return;
-
-    const entity = frame.entities[contextMenu.entityId];
-    if (!entity) return;
-
-    addEntity({
-      type: entity.type,
-      x: entity.x + 30,
-      y: entity.y + 30,
-      team: entity.team,
-      color: entity.color,
-      label: entity.label,
-    });
-  };
-
-  const handleContextMenuDelete = () => {
-    if (!contextMenu) return;
-    const { removeEntity } = useProjectStore.getState();
-    removeEntity(contextMenu.entityId);
-    deselectAll();
-  };
-
-  const handleContextMenuEditLabel = () => {
-    if (!contextMenu) return;
-    handleEntityDoubleClick(contextMenu.entityId);
-  };
-
-  const handleAnnotationContextMenu = (annotationId: string, event: { x: number; y: number }) => {
-    if (!stageRef.current) return;
-
-    const canvasElement = stageRef.current.container();
-    const rect = canvasElement.getBoundingClientRect();
-
-    setAnnotationContextMenu({
-      annotationId,
-      position: {
-        x: rect.left + event.x,
-        y: rect.top + event.y,
-      },
-    });
-  };
-
-  const handleAnnotationContextMenuDelete = () => {
-    if (!annotationContextMenu) return;
-    const { removeAnnotation } = useProjectStore.getState();
-    removeAnnotation(annotationContextMenu.annotationId);
-    deselectAll();
-    setAnnotationContextMenu(null);
-  };
-
-  const handleCanvasClick = () => {
-    deselectAll();
-  };
-
-  const handlePreviousFrame = () => {
-    if (currentFrameIndex > 0) {
-      setCurrentFrame(currentFrameIndex - 1);
-    }
-  };
-
-  const handleNextFrame = () => {
-    if (project && currentFrameIndex < project.frames.length - 1) {
-      setCurrentFrame(currentFrameIndex + 1);
-    }
-  };
-
-  const handleFrameDurationChange = (frameId: string, durationMs: number) => {
-    updateFrame(frameId, { duration: durationMs });
-  };
-
-  const handleDrawingComplete = (points: number[], type: 'arrow' | 'line') => {
-    addAnnotation({
-      type,
-      points,
-      color: DESIGN_TOKENS.colours.annotation,
-    });
-    setDrawingMode('none');
-  };
-
-  // Phase 2: Progression handlers
-  const handleProgressionSelectRequest = (index: number) => {
-    if (index === activeProgressionIndex) return;
-    if (isDirty) {
-      setPendingProgressionIndex(index);
-      setShowProgressionUnsavedDialog(true);
-      return;
-    }
-    switchToProgression(index);
-  };
-
-  const switchToProgression = async (index: number) => {
-    setActiveProgressionIndex(index);
-    const targetId = index === -1
-      ? (baseAnimationMeta?.id ?? cloudAnimationId)
-      : progressions[index]?.id;
-    if (!targetId) return;
-    try {
-      const res = await fetch(`/api/animations/${targetId}`);
-      if (!res.ok) { toast.error('Failed to load progression'); return; }
-      const data = await res.json();
-      if (data?.payload) {
-        const projectData = {
-          ...data.payload,
-          id: data.id || crypto.randomUUID(),
-          createdAt: data.created_at || new Date().toISOString(),
-          updatedAt: data.updated_at || new Date().toISOString(),
-        };
-        loadProject(projectData);
-      }
-    } catch (err) {
-      console.error('[Editor] Failed to switch progression:', err);
-      toast.error('Failed to load progression');
-    }
-  };
-
-  const handleProgressionReorder = async (
-    newOrder: Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]
-  ) => {
-    if (!baseAnimationMeta) return;
-    // Optimistic update
-    setProgressions(newOrder);
-    try {
-      const res = await fetch(
-        `/api/animations/${baseAnimationMeta.id}/progressions/reorder`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            order: newOrder.map(p => ({ id: p.id, progression_order: p.progression_order })),
-          }),
-        }
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err?.error?.message ?? 'Reorder failed');
-      }
-    } catch (err) {
-      console.error('[Editor] Progression reorder failed:', err);
-      toast.error('Failed to save new order');
-      // Revert: re-fetch from server
-      fetch(`/api/animations/${baseAnimationMeta.id}/progressions`)
-        .then(r => r.ok ? r.json() : { progressions: [] })
-        .then(({ progressions: progs }) => setProgressions(progs ?? []));
-    }
-  };
-
-  const handleProgressionDiscardAndSwitch = () => {
-    setShowProgressionUnsavedDialog(false);
-    if (pendingProgressionIndex !== null) {
-      switchToProgression(pendingProgressionIndex);
-      setPendingProgressionIndex(null);
-    }
-  };
-
-  const handleAddProgression = async () => {
-    if (!cloudAnimationId || !baseAnimationMeta || isAddingProgression) return;
-    const baseId = baseAnimationMeta.is_progression
-      ? null // can't create progression of progression
-      : baseAnimationMeta.id;
-    if (!baseId) { toast.error('Can only add progressions to base animations'); return; }
-    if (progressions.length >= 5) { toast.error('Maximum 5 progressions reached'); return; }
-    if (isDirty) {
-      toast.error('Please save your changes before adding a progression');
-      return;
-    }
-
-    setIsAddingProgression(true);
-    try {
-      // Read current animation metadata for the payload
-      const currentRes = await fetch(`/api/animations/${cloudAnimationId}`);
-      if (!currentRes.ok) throw new Error('Failed to read current animation');
-      const current = await currentRes.json();
-
-      const newOrder = progressions.length + 1;
-      const body = {
-        title: `${baseAnimationMeta.title} — Progression ${newOrder}`,
-        description: current.description ?? undefined,
-        coaching_notes: current.coaching_notes ?? undefined,
-        animation_type: current.animation_type,
-        tags: current.tags ?? [],
-        payload: current.payload,
-        visibility: 'private' as const,
-        parent_animation_id: baseId,
-        is_progression: true,
-        progression_order: newOrder,
-      };
-
-      const res = await fetch('/api/animations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err?.error?.message ?? 'Failed to create progression');
-      }
-
-      const newProg = await res.json();
-      toast.success(`Progression ${newOrder} created`);
-
-      // Refresh progressions list and switch to the new one
-      const progRes = await fetch(`/api/animations/${baseId}/progressions`);
-      if (progRes.ok) {
-        const { progressions: progs } = await progRes.json();
-        setProgressions(progs ?? []);
-        // Switch to the newly created progression
-        const newIndex = (progs ?? []).findIndex((p: { id: string }) => p.id === newProg.id);
-        if (newIndex >= 0) switchToProgression(newIndex);
-      }
-    } catch (err) {
-      console.error('[Editor] Add progression failed:', err);
-      toast.error(err instanceof Error ? err.message : 'Failed to add progression');
-    } finally {
-      setIsAddingProgression(false);
-    }
-  };
-
-  // Show progression panel only for authenticated users with a loaded cloud animation
-  // that is a base animation (not a progression itself)
-  const showProgressionPanel = isAuthenticated && cloudAnimationId && baseAnimationMeta && !baseAnimationMeta.is_progression;
 
   return (
     <div className="flex h-screen bg-[var(--color-surface-warm)]">
