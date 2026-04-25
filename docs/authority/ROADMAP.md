@@ -1,7 +1,7 @@
 # Coaching Animator Roadmap
 
 **Version**: 3.0  
-**Last Updated**: 2026-04-24  
+**Last Updated**: 2026-04-25  
 **Status**: Active authority document  
 **Previous roadmap**: `docs/archive/ROADMAP-2026-04-19.md`
 
@@ -36,6 +36,7 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 - **Phase 0**: Infrastructure rescue ✅ (Supabase restored, Vercel active)
 - **Phase 1**: Mobile replay scaling fix ✅ (SHIPPED 2026-04-18)
 - **Phase 2 — T3**: Landing page rebrand ✅ (SHIPPED 2026-04-20 — Oswald headings, warm cream palette, typographic cards, WCAG AA contrast)
+- **Phase 3 — T3a**: Technical debt refactor ✅ (SHIPPED 2026-04-25 — Editor.tsx 852→504 lines, 4 domain hooks extracted, 25 granular store selectors, 73/73 tests passing)
 
 ---
 
@@ -90,13 +91,13 @@ A successful v1 launch requires all of the following:
 
 | Sub-area | Scope | Key issues |
 |----------|-------|------------|
-| **3a — Technical Debt** | Editor.tsx refactor (853 lines → decomposed), projectStore.ts selectors (eliminate re-render storms) | — |
+| **3a — Technical Debt** ✅ | Editor.tsx 852→504 lines (41% reduction). 4 hooks: `useEditorContextMenuHandlers`, `useEditorEntityHandlers`, `useEditorProgressionHandlers`, `useEditorPlaybackHandlers`. 25 granular store selectors replacing 2 broad destructures. Shipped 2026-04-25. | — |
 | **3b — Security Hardening** | Rate limiting, SQL injection, XSS, CSRF, auth tokens, env variable audit | SEC-001, SEC-002, SEC-003 |
 | **3c — E2E Core Loop** | Create → save → share → verify mobile replay CI gate | — |
 | **3d — Search & Layering** | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
 | **3e — Performance Baseline** | Lighthouse audit across all routes; establish pre-beta targets | PERF-001 |
 
-**Sequence**: 3a (debt) before 3b (security) — a 853-line component is harder to audit than a decomposed one.
+**Sequence**: 3a (debt) before 3b (security) — a 504-line component is easier to audit than the original 852-line monolith.
 
 ---
 

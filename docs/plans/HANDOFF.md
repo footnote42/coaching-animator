@@ -4,6 +4,26 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-25 — Technical Debt Refactor Complete (004, Phase 3a) ✅
+
+**All 7 phases of `004-technical-debt-refactor` shipped. Branch merged to main.**
+
+**What was delivered**:
+- Editor.tsx reduced 852 → 504 lines (41% reduction) via 4 extracted domain hooks
+- `useEditorContextMenuHandlers.ts` (160 lines) — 12 handlers, 3 state vars
+- `useEditorProgressionHandlers.ts` (184 lines) — 4 handlers, 6 state vars, exposes setters for parent useEffect coordination
+- `useEditorEntityHandlers.ts` (137 lines) — 8 handlers, guest limit modal state
+- `useEditorPlaybackHandlers.ts` (71 lines) — 5 handlers, receives `setShowGuestLimitModal` from entity hook
+- 25 granular store selectors (18 projectStore, 7 uiStore) replacing 2 broad destructures — eliminates re-render storms
+
+**Verification**: 73/73 unit tests pass. ESLint 0 errors. TypeScript 0 errors. E2E pass. PR merged.
+
+**Known gap**: Line count target was <400 lines; actual is 504. Remaining component manages lifecycle hooks, state coordination, and JSX — further reduction would require JSX extraction (diminishing returns, accepted as-is).
+
+**Next**: Phase 3b — Security Hardening (rate limiting, SQL injection, XSS, CSRF, auth token audit). See `docs/authority/ROADMAP.md` Phase 3 table.
+
+---
+
 ## 2026-04-24 — UI/UX Audit Remediation (Continued: 15→15/20) & Next Phase Planning
 
 **Session work**: Fixed all P1/P2 issues from 2026-04-23 audit. Ran fresh `/audit` which scored 15/20 with a new set of systemic issues identified.
