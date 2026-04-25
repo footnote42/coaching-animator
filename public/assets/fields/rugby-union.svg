@@ -2,46 +2,36 @@
   <!-- Pitch Background -->
   <rect width="2000" height="1400" fill="#1A3D1A" />
   
-  <!-- Boundary Line -->
+  <!-- Boundary Line (Touchlines & Dead Ball Lines) -->
   <rect x="50" y="50" width="1900" height="1300" fill="none" stroke="#F8F9FA" stroke-width="2" />
+  
+  <!-- Try Lines -->
+  <line x1="200" y1="50" x2="200" y2="1350" stroke="#F8F9FA" stroke-width="3" />
+  <line x1="1800" y1="50" x2="1800" y2="1350" stroke="#F8F9FA" stroke-width="3" />
+  
+  <!-- 22m Lines -->
+  <line x1="440" y1="50" x2="440" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+  <line x1="1560" y1="50" x2="1560" y2="1350" stroke="#F8F9FA" stroke-width="2" />
   
   <!-- Halfway Line -->
   <line x1="1000" y1="50" x2="1000" y2="1350" stroke="#F8F9FA" stroke-width="2" />
   
-  <!-- 22m Lines -->
-  <line x1="440" y1="50" x2="440" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10,10" />
-  <line x1="1560" y1="50" x2="1560" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10,10" />
-  
   <!-- 10m Lines -->
-  <line x1="800" y1="50" x2="800" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="5,5" />
-  <line x1="1200" y1="50" x2="1200" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="5,5" />
+  <line x1="800" y1="50" x2="800" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10 10" />
+  <line x1="1200" y1="50" x2="1200" y2="1350" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10 10" />
   
-  <!-- Try Lines -->
-  <line x1="200" y1="50" x2="200" y2="1350" stroke="#A0A0A0" stroke-width="3" />
-  <line x1="1800" y1="50" x2="1800" y2="1350" stroke="#A0A0A0" stroke-width="3" />
-  
-  <!-- Dead Ball Lines -->
-  <line x1="50" y1="50" x2="50" y2="1350" stroke="#F8F9FA" stroke-width="2" />
-  <line x1="1950" y1="50" x2="1950" y2="1350" stroke="#F8F9FA" stroke-width="2" />
+  <!-- 5m Gang Lines -->
+  <line x1="200" y1="130" x2="1800" y2="130" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10 10" />
+  <line x1="200" y1="1270" x2="1800" y2="1270" stroke="#F8F9FA" stroke-width="2" stroke-dasharray="10 10" />
 
   <!-- Goal Posts (top-down view; H-shape on each try line) -->
-  <!-- Left try line (x=200): uprights extend 40px toward dead-ball (x=50) -->
-  <line x1="200" y1="650" x2="160" y2="650" stroke="#F8F9FA" stroke-width="3" />
-  <line x1="200" y1="750" x2="160" y2="750" stroke="#F8F9FA" stroke-width="3" />
+  <!-- Left try line (x=200): uprights at y=650 and y=750, crossbar along x=200 -->
+  <rect x="190" y="649" width="20" height="2" fill="#F8F9FA" />
+  <rect x="190" y="749" width="20" height="2" fill="#F8F9FA" />
   <line x1="200" y1="650" x2="200" y2="750" stroke="#F8F9FA" stroke-width="3" />
 
-  <!-- Right try line (x=1800): uprights extend 40px toward dead-ball (x=1950) -->
-  <line x1="1800" y1="650" x2="1840" y2="650" stroke="#F8F9FA" stroke-width="3" />
-  <line x1="1800" y1="750" x2="1840" y2="750" stroke="#F8F9FA" stroke-width="3" />
+  <!-- Right try line (x=1800) -->
+  <rect x="1790" y="649" width="20" height="2" fill="#F8F9FA" />
+  <rect x="1790" y="749" width="20" height="2" fill="#F8F9FA" />
   <line x1="1800" y1="650" x2="1800" y2="750" stroke="#F8F9FA" stroke-width="3" />
-
-  <!-- 5-yard tick lines from left try line (x=200) into field -->
-  <line x1="282" y1="50" x2="282" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
-  <line x1="364" y1="50" x2="364" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
-  <line x1="446" y1="50" x2="446" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
-
-  <!-- 5-yard tick lines from right try line (x=1800) into field -->
-  <line x1="1718" y1="50" x2="1718" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
-  <line x1="1636" y1="50" x2="1636" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
-  <line x1="1554" y1="50" x2="1554" y2="1350" stroke="#F8F9FA" stroke-width="1" stroke-dasharray="4 8" opacity="0.5" />
 </svg>

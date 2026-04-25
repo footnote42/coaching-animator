@@ -168,6 +168,11 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 ## Active Technologies
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
+## Current Feature
+- **005-editor-canvas** — Editor & Canvas Credibility (Phase 2a)
+- Plan: `specs/005-editor-canvas/plan.md`
+- Spec: `specs/005-editor-canvas/spec.md`
+
 ## Recent Changes
 - 001-fix-share-scaling: Added TypeScript 5 · Node 22
 

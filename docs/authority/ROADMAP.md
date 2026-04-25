@@ -37,6 +37,7 @@ Pivoted from personal tool to rugby coaching platform. Cloud-first, mobile-first
 - **Phase 1**: Mobile replay scaling fix ✅ (SHIPPED 2026-04-18)
 - **Phase 2 — T3**: Landing page rebrand ✅ (SHIPPED 2026-04-20 — Oswald headings, warm cream palette, typographic cards, WCAG AA contrast)
 - **Phase 3 — T3a**: Technical debt refactor ✅ (SHIPPED 2026-04-25 — Editor.tsx 852→504 lines, 4 domain hooks extracted, 25 granular store selectors, 73/73 tests passing)
+- **Phase 2 — T3b**: Editor & Canvas credibility ✅ (SHIPPED 2026-04-25 — Correct pitch SVG, responsive canvas, tactical 6-color palette, tackle shield/bag icons, pitch legend, metadata dialog)
 
 ---
 
@@ -54,7 +55,7 @@ A successful v1 launch requires all of the following:
 
 1. **Core loop working** ✅ — desktop edit, save, share link, mobile replay renders correctly
 2. **Landing page credible** ✅ — tactical rebrand shipped 2026-04-20
-3. **Editor & canvas credible** — pitch markings accurate, entity UX coherent (Phase 2a–2b)
+3. **Editor & canvas credible** ✅ — pitch markings accurate, entity UX coherent (Phase 2a) Shipped 2026-04-25
 4. **Share workflow clear** — share button works, /share/{id} reachable from gallery (Phase 2c)
 5. **Legal compliant** — cookies assessed, ToS and Privacy Policy reviewed (Phase 2d)
 6. **Basic user guide** — coaches self-onboard in <5 minutes (Phase 2h)
@@ -73,7 +74,7 @@ A successful v1 launch requires all of the following:
 | Order | Sub-area | Scope summary | Key issues |
 |-------|----------|---------------|------------|
 | 1 | **2d — Legal & Compliance** | Cookie banner, ToS, Privacy Policy, contact verification | LEGAL-001, LEGAL-002, LEGAL-003, CONTACT-001 |
-| 2 | **2a — Editor & Canvas** | Pitch SVG, canvas scaling, entity styling, colour palette, labels, team selector, export deprecation | PITCH-001, PITCH-002, EDITOR-001–009, UX-006 |
+| 2 | **2a — Editor & Canvas** ✅ | Pitch SVG, canvas scaling, entity styling, colour palette, labels, team selector, export deprecation | PITCH-001, PITCH-002, EDITOR-001–009, UX-006 |
 | 3 | **2b — Playback & Controls** | Floating draggable remote; sticky controls | PLAYBACK-001 |
 | 4 | **2c — Share Workflow** | Share button fix, /share/{id} from gallery, replay navigation, WhatsApp | EDITOR-002, FLOW-001, FLOW-002, UX-008, GALLERY-002 |
 | 5 | **2e — Landing Refinements** | Background tactical ball icon, Section 2/3 card copy corrections | LANDING-001–004 |

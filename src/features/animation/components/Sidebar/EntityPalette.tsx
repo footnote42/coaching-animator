@@ -58,7 +58,7 @@ export function EntityPalette({
       <h3 className="text-sm font-semibold text-pitch-green mb-2">Entities</h3>
       <div className="flex flex-col gap-2">
         <Button
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={onAddAttackPlayer}
           className="justify-start"
@@ -67,7 +67,7 @@ export function EntityPalette({
           + Attack Player
         </Button>
         <Button
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={onAddDefensePlayer}
           className="justify-start"

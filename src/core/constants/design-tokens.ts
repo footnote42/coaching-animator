@@ -47,3 +47,5 @@ export const DESIGN_TOKENS = {
         borderWidth: 1,
     },
 } as const;
+
+export const TACTICAL_PALETTE = ['#DC2626', '#2563EB', '#FFFFFF', '#EAB308', '#16A34A', '#111827'] as const;

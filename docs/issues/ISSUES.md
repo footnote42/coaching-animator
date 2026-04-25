@@ -19,25 +19,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-002 — Export Settings Outdated (WebM/GIF)
-- **Status**: `[ ]` Open
-- **Severity**: Medium (confusing UX)
-- **Observed**: Export settings panel still references WebM and GIF formats — unclear if feature is live, deprecated, or in-progress
-- **Location**: Animation studio panel → export settings
-- **Files**: Find export component
-- **Action**: Either clarify export roadmap in UI or hide/deprecate the feature to avoid user confusion
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
 
 ---
 
-### UX-003 — YouTube Linking Discoverability
-- **Status**: `[ ]` Open
-- **Severity**: Low (feature hidden, not broken)
-- **Observed**: Option to link to YouTube video sits in animation page menu panel — users unlikely to find it
-- **Location**: Animation page menu panel
-- **Preferred location**: Details pane/popup when filling in animation metadata
-- **Action**: Move YouTube link option to metadata UI
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
 
 ---
 
@@ -66,18 +50,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-006 — Pitch Layout Not Standardized
-- **Status**: `[ ]` Open
-- **Severity**: Medium (authenticity/credibility)
-- **Observed**: Canvas pitch needs standard rugby field layout for credibility with coaches. Missing visual landmarks.
-- **Spec**: Add horizontal lines and yard markers:
-  - Try lines (full width, 5m from end)
-  - 22-yard line
-  - 10-yard line
-  - 5-meter inner markers along both long sides
-- **Action**: Design and implement standard pitch grid background
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
-- **Note**: May affect Stage.tsx shared canvas component — test on /app, /replay, /share
 
 ---
 
@@ -438,14 +410,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-## Editor — Details Pane (new — 2026-04-24 review)
-
-### EDITOR-001 — Metadata to Pop-Out Pane
-- **Status**: `[ ]` Open
-- **Severity**: Medium (UX clarity)
-- **Observed**: Animation name and YouTube link currently live in the sidebar. Better suited to a dedicated description/metadata pop-out pane to keep sidebar focused on entity controls.
-- **Action**: Design and implement metadata pop-out; move name, description, YouTube link there; keep sidebar for entity/layer controls
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
 
 ---
 
@@ -457,94 +421,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Roadmap ref**: Phase 2c (Share Workflow)
 
 ---
-
-### EDITOR-003 — Export Settings Panel: Deprecate
-- **Status**: `[ ]` Open
-- **Severity**: Medium (confusing UX)
-- **Observed**: Export settings (WebM, GIF) are still visible in the UI but the feature is deprecated per PRD v2.0. Same root cause as UX-002.
-- **Action**: Remove or hide the export settings panel; add "Export as JSON" as the only export option (guest mode); decision on future export logged in FEAT-008
-- **Roadmap ref**: Phase 2a (Editor & Canvas) — closes UX-002
-
----
-
-### EDITOR-004 — Entity Button Styling Inconsistent
-- **Status**: `[ ]` Open
-- **Severity**: Low (polish)
-- **Observed**: Entity creation buttons (player, cone, ball, tackle bag, etc.) have inconsistent styling across entity types — sizes, hover states, icon alignment vary
-- **Action**: Audit all entity buttons against design system; standardise to a single button variant
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-### EDITOR-005 — Tackle Bag / Tackle Shield Icons Unrecognisable
-- **Status**: `[ ]` Open
-- **Severity**: Medium (usability)
-- **Observed**: Tackle bag and tackle shield entity icons are not visually recognisable as their real-world equivalents. Colours also need amending.
-- **Action**: Redesign SVG icons for tackle bag and shield to match coaching whiteboard aesthetic; ensure EntityColors service is used for colour assignment
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-### EDITOR-006 — Attacker/Defender Token Labels
-- **Status**: `[ ]` Open
-- **Severity**: Medium (clarity + visual noise)
-- **Observed**: Player tokens show text labels ("Attacker", "Defender") which create visual noise. Numbering is useful and should be kept. A pitch legend (Colour = Attacker / Colour = Defender) would replace the text.
-- **Action**: Remove text labels from player tokens; retain numbering; add a persistent legend on the pitch canvas
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-### EDITOR-007 — Entity Label Typography Too Small
-- **Status**: `[ ]` Open
-- **Severity**: Medium (readability on mobile)
-- **Observed**: Entity labels (numbers on player tokens, cone labels) are too small and unclear, particularly on mobile at coaching pitchside.
-- **Action**: Increase font weight and size for entity labels; test legibility at arm's length on a mobile screen
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-### EDITOR-008 — Team Selector Does Nothing
-- **Status**: `[ ]` Open
-- **Severity**: Medium (confusing UX)
-- **Observed**: Entity team selector control is visible but has no functional effect on the animation. Misleads users.
-- **Action**: Remove team selector from entity controls (not required per review); or wire up to colour-by-team logic if that feature is planned
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-### EDITOR-009 — Colour Selector Palette Too Large
-- **Status**: `[ ]` Open
-- **Severity**: Medium (decision paralysis)
-- **Observed**: Colour palette has too many colours that are not visually distinct from one another. Coaches don't need infinite choice — they need the six team colours on any rugby pitch.
-- **Proposed palette**: Red, Blue, White, Yellow, Green, Black
-- **Stretch goal**: Striped/hooped patterns (assess feasibility in Konva)
-- **Action**: Reduce palette to 6 distinct colours; assess striped/hooped pattern rendering
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-
----
-
-## Pitch & Canvas (new — 2026-04-24 review)
-
-### PITCH-001 — Pitch SVG Markings Incorrect
-- **Status**: `[ ]` Open
-- **Severity**: High (credibility with coaches)
-- **Observed**: Multiple issues with the pitch SVG beyond UX-006 (yard markers):
-  - No 5-yard inner sideline markers (mandatory for coaching drills)
-  - Unexplained lines between try line and 22-yard line
-  - Posts are not recognisable as rugby 'H' posts
-- **Action**: Correct all pitch markings; ensure try lines, 22s, 10m, halfway, 5m inner markers, and H posts are all accurate and styled consistently
-- **Roadmap ref**: Phase 2a (Editor & Canvas) — supersedes/extends UX-006
-- **Note**: Shared canvas component — test on /app, /replay, /share
-
----
-
-### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
-- **Status**: `[ ]` Open
-- **Severity**: High (desktop usability)
-- **Observed**: The editor canvas is a fixed size and does not adapt to the browser window. Coaches on different screen sizes see different amounts of pitch.
-- **Action**: Implement responsive canvas sizing in editor (`useEditorCanvasSize` ResizeObserver, matching the pattern in `useShareCanvasSize`); maintain 4:3 aspect ratio
-- **Roadmap ref**: Phase 2a (Editor & Canvas)
-- **Files**: `src/features/animation/components/Canvas/Stage.tsx`, Editor.tsx
 
 ---
 
@@ -642,6 +518,97 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Status**: `[x]` Closed
 - **Completed**: 2026-04-25 (Phase 0, 003-legal-compliance)
 - **Summary**: Privacy policy fully reviewed. Supabase data residency confirmed. Constitutional prohibition on telemetry/analytics explicit. Section added for org account data separation.
+
+---
+
+### UX-002 — Export Settings Outdated (WebM/GIF)
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Export settings block removed from sidebar. Deprecated features hidden to avoid confusion.
+
+---
+
+### UX-003 — YouTube Linking Discoverability
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Moved YouTube URL field from sidebar to dedicated Metadata dialog.
+
+---
+
+### UX-006 — Pitch Layout Not Standardized
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Redesigned pitch SVG with correct try lines, 22m, 10m, halfway, and 5m gang lines.
+
+---
+
+### EDITOR-001 — Metadata to Pop-Out Pane
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Animation name and YouTube link moved to dedicated `MetadataSheet` dialog.
+
+---
+
+### EDITOR-003 — Export Settings Panel: Deprecate
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Removed export settings panel from ProjectActions.
+
+---
+
+### EDITOR-004 — Entity Button Styling Inconsistent
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Standardized all entity palette buttons to `variant="outline"`.
+
+---
+
+### EDITOR-005 — Tackle Bag / Tackle Shield Icons Unrecognisable
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Redesigned tackle shield and tackle bag icons using coaching whiteboard aesthetic shapes.
+
+---
+
+### EDITOR-006 — Attacker/Defender Token Labels
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Removed "Attacker/Defender" text from tokens and replaced with a persistent `PitchLegend` on the canvas.
+
+---
+
+### EDITOR-007 — Entity Label Typography Too Small
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Increased player label font size to 14 bold for better mobile legibility.
+
+---
+
+### EDITOR-008 — Team Selector Does Nothing
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Removed non-functional team selector from EntityProperties.
+
+---
+
+### EDITOR-009 — Colour Selector Palette Too Large
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Reduced color picker palette to 6 distinct tactical colors.
+
+---
+
+### PITCH-001 — Pitch SVG Markings Incorrect
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Rewrote `rugby-union.svg` with standards-correct lines and H-shaped posts.
+
+---
+
+### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
+- **Summary**: Implemented `useEditorCanvasSize` hook using ResizeObserver to ensure responsive canvas in the editor.
 
 ---
 

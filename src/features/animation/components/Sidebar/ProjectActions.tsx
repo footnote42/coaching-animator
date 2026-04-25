@@ -1,31 +1,17 @@
-import { Save, FolderOpen, FilePlus, Video, Loader2, Cloud } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
-import { Input } from '@/shared/ui/input';
+import { Save, FolderOpen, FilePlus, Loader2, Cloud, Settings } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { downloadJson, readJsonFile, generateProjectFilename } from '@/core/utils/fileIO';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { ShareButton } from './ShareButton';
-import { ExportStatus, ExportFormat } from '@/core/types';
+import { MetadataSheet } from './MetadataSheet';
+
 import { toast } from 'sonner';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 
-const YOUTUBE_URL_REGEX = /^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/;
-
-function validateVideoUrl(url: string): { isValid: boolean; error?: string } {
-    if (!url || url.trim() === '') {
-        return { isValid: true };
-    }
-    if (!YOUTUBE_URL_REGEX.test(url.trim())) {
-        return {
-            isValid: false,
-            error: 'Please enter a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)',
-        };
-    }
-    return { isValid: true };
-}
 
 /**
  * ProjectActions Component
@@ -34,39 +20,22 @@ function validateVideoUrl(url: string): { isValid: boolean; error?: string } {
  * Handles unsaved changes warnings and file I/O operations.
  */
 export interface ProjectActionsProps {
-    onExport?: (format?: ExportFormat) => void;
-    exportStatus?: ExportStatus;
-    exportProgress?: number;
-    exportError?: string | null;
-    canExport?: boolean;
     isAuthenticated?: boolean;
     onSaveToCloud?: () => void;
-    recommendedFormat?: 'webm' | 'gif';
-    formatReason?: string;
-    exportFormat?: ExportFormat;
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
-    onExport,
-    exportStatus = 'idle',
-    exportProgress = 0,
-    exportError = null,
-    canExport = false,
     isAuthenticated = false,
     onSaveToCloud,
-    recommendedFormat = 'webm',
-    formatReason = '',
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [videoUrl, setVideoUrl] = useState('');
-    const [videoUrlError, setVideoUrlError] = useState('');
+    const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false);
 
     const project = useProjectStore((state) => state.project);
     const isDirty = useProjectStore((state) => state.isDirty);
     const saveProject = useProjectStore((state) => state.saveProject);
     const loadProject = useProjectStore((state) => state.loadProject);
     const newProject = useProjectStore((state) => state.newProject);
-    const updateProjectSettings = useProjectStore((state) => state.updateProjectSettings);
 
     const isLoading = useUIStore((state) => state.isLoading);
     const setLoadingState = useUIStore((state) => state.setLoadingState);
@@ -75,29 +44,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     const confirmPendingAction = useUIStore((state) => state.confirmPendingAction);
     const cancelPendingAction = useUIStore((state) => state.cancelPendingAction);
 
-    // Sync videoUrl with project store
-    useEffect(() => {
-        setVideoUrl(project?.videoUrl || '');
-    }, [project?.videoUrl]);
 
-    const handleVideoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setVideoUrl(e.target.value);
-        if (videoUrlError) {
-            setVideoUrlError('');
-        }
-    };
-
-    const handleVideoUrlBlur = () => {
-        const validation = validateVideoUrl(videoUrl);
-        if (!validation.isValid) {
-            setVideoUrlError(validation.error || 'Invalid URL');
-        } else {
-            setVideoUrlError('');
-            if (project) {
-                updateProjectSettings({ videoUrl: videoUrl.trim() || undefined });
-            }
-        }
-    };
 
     /**
      * Handle New Project button click
@@ -197,40 +144,17 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                 <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Metadata
                 </h3>
-
-                {/* Title Input */}
-                <div className="mb-3">
-                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
-                        Animation Title
-                    </label>
-                    <Input
-                        type="text"
-                        value={project?.name || ''}
-                        onChange={(e) => updateProjectSettings({ name: e.target.value })}
-                        placeholder="Enter animation title"
-                        disabled={!project}
-                        className="w-full text-sm"
-                    />
-                </div>
-
-                {/* Video URL Input */}
-                <div>
-                    <label className="text-xs font-semibold text-[var(--color-text-primary)] block mb-1">
-                        Tutorial Video URL (YouTube)
-                    </label>
-                    <Input
-                        type="url"
-                        value={videoUrl}
-                        onChange={handleVideoUrlChange}
-                        onBlur={handleVideoUrlBlur}
-                        placeholder="https://youtube.com/watch?v=..."
-                        disabled={!project}
-                        className={`w-full text-sm ${videoUrlError ? 'border-red-500' : ''}`}
-                    />
-                    {videoUrlError && (
-                        <p className="text-xs text-red-600 mt-1">{videoUrlError}</p>
-                    )}
-                </div>
+                
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsMetadataSheetOpen(true)}
+                    disabled={!project}
+                    className="w-full"
+                >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit Metadata
+                </Button>
             </div>
 
             {/* Project Actions Section */}
@@ -313,131 +237,32 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                 <ShareButton />
             </div>
 
-            {/* Export Settings Section */}
-            <div>
-                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
-                    Export Settings
-                </h3>
+            {/* Hidden file input for opening projects */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileSelect}
+                className="hidden"
+                aria-label="Select project file to open"
+            />
 
-                {/* Resolution Selector */}
-                <div className="flex flex-col gap-1 mb-3">
-                    <label className="text-xs font-bold text-[var(--color-text-primary)]">
-                        Export Resolution
-                    </label>
-                    <div className="flex gap-2">
-                        <Button
-                            variant={project?.settings.exportResolution === '720p' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ exportResolution: '720p' })}
-                            disabled={!project}
-                            className={`flex-1 ${project?.settings.exportResolution === '720p' ? 'bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white' : ''}`}
-                        >
-                            {project?.settings.exportResolution === '720p' && '✓ '}720p
-                        </Button>
-                        <Button
-                            variant={project?.settings.exportResolution === '1080p' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => updateProjectSettings({ exportResolution: '1080p' })}
-                            disabled={!project}
-                            className={`flex-1 ${project?.settings.exportResolution === '1080p' ? 'bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white' : ''}`}
-                        >
-                            {project?.settings.exportResolution === '1080p' && '✓ '}1080p
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Format Selector */}
-                <div className="flex flex-col gap-1 mb-3">
-                    <label className="text-xs font-bold text-[var(--color-text-primary)]">
-                        Export Format
-                    </label>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => onExport?.('webm')}
-                            disabled={!canExport || exportStatus !== 'idle'}
-                            className={`flex-1 ${recommendedFormat === 'webm' ? 'ring-1 ring-[var(--color-accent-warm)]' : ''}`}
-                        >
-                            {recommendedFormat === 'webm' && '★ '}WebM
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => onExport?.('gif')}
-                            disabled={!canExport || exportStatus !== 'idle'}
-                            className={`flex-1 ${recommendedFormat === 'gif' ? 'ring-1 ring-[var(--color-accent-warm)]' : ''}`}
-                        >
-                            {recommendedFormat === 'gif' && '★ '}GIF
-                        </Button>
-                    </div>
-                    {formatReason && (
-                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                            {formatReason}
-                        </p>
-                    )}
-                </div>
-
-                {/* Export button (auto format) */}
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onExport?.('auto')}
-                    disabled={!canExport || exportStatus !== 'idle'}
-                    className="w-full"
-                >
-                    <Video className="w-4 h-4 mr-2" />
-                    Export ({recommendedFormat.toUpperCase()})
-                </Button>
-
-                {/* Export progress indicator */}
-                {exportStatus !== 'idle' && (
-                    <div className="mt-2 p-2 bg-[var(--color-surface-warm)] border border-[var(--color-accent-warm)]">
-                        <div className="text-xs font-mono text-[var(--color-text-primary)] mb-1">
-                            {exportStatus === 'preparing' && 'Preparing...'}
-                            {exportStatus === 'capturing' && 'Capturing frames...'}
-                            {exportStatus === 'encoding' && 'Encoding video...'}
-                            {exportStatus === 'complete' && '✓ Complete!'}
-                            {exportStatus === 'error' && '✗ Error'}
-                        </div>
-                        {exportStatus !== 'error' && (
-                            <div className="w-full h-2 bg-[var(--color-surface)]">
-                                <div
-                                    className="h-full bg-[var(--color-accent-warm)] transition-all duration-300"
-                                    style={{ width: `${exportProgress}%` }}
-                                />
-                            </div>
-                        )}
-                        {exportStatus === 'error' && exportError && (
-                            <div className="text-xs text-red-600 mt-1">
-                                {exportError}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Hidden file input for opening projects */}
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    aria-label="Select project file to open"
-                />
-
-                {/* Unsaved changes confirmation dialog */}
-                <ConfirmDialog
-                    open={unsavedChangesDialog.isOpen}
-                    onConfirm={handleConfirmUnsavedChanges}
-                    onCancel={cancelPendingAction}
-                    title="Unsaved Changes"
-                    description="You have unsaved changes. If you continue, you will lose your work. Are you sure?"
-                    confirmLabel="Discard Changes"
-                    cancelLabel="Keep Editing"
-                    variant="destructive"
-                />
-            </div>
+            {/* Unsaved changes confirmation dialog */}
+            <ConfirmDialog
+                open={unsavedChangesDialog.isOpen}
+                onConfirm={handleConfirmUnsavedChanges}
+                onCancel={cancelPendingAction}
+                title="Unsaved Changes"
+                description="You have unsaved changes. If you continue, you will lose your work. Are you sure?"
+                confirmLabel="Discard Changes"
+                cancelLabel="Keep Editing"
+                variant="destructive"
+            />
+            
+            <MetadataSheet 
+                open={isMetadataSheetOpen} 
+                onOpenChange={setIsMetadataSheetOpen} 
+            />
         </div>
     );
 };
