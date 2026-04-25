@@ -250,8 +250,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             {showLabel && (
                 <Text
                     text={entity.label}
-                    fontSize={14}
-                    fontStyle="bold"
+                    fontSize={11}
                     fontFamily={DESIGN_TOKENS.typography.fontBody}
                     fill={DESIGN_TOKENS.colours.textInverse}
                     align="center"
