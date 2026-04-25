@@ -47,6 +47,7 @@ import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
 import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
+import { EditorFloatingRemote } from '@/features/animation/components/Canvas/EditorFloatingRemote';
 
 import { Toaster } from 'sonner';
 
@@ -494,6 +495,8 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         cancelLabel="Continue Editing"
         variant="default"
       />
+
+      {project && <EditorFloatingRemote />}
     </div>
   );
 }
