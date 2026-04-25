@@ -169,9 +169,9 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **006-share-workflow** — Share Workflow (Phase 2c)
-- Plan: `specs/006-share-workflow/plan.md`
-- Spec: `specs/006-share-workflow/spec.md`
+- **007-playback-controls** — Playback Controls (Phase 2b)
+- Plan: `specs/007-playback-controls/plan.md`
+- Spec: `specs/007-playback-controls/spec.md`
 
 ## Recent Changes
 - 001-fix-share-scaling: Added TypeScript 5 · Node 22
