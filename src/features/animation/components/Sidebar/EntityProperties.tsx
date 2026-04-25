@@ -1,7 +1,6 @@
 import { Entity, Annotation } from '@/core/types';
 import { Input } from '@/shared/ui/input';
 import { ColorPicker } from '@/shared/ui/ColorPicker';
-import { Button } from '@/shared/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
@@ -156,40 +155,7 @@ export function EntityProperties({ entity, onUpdate }: EntityPropertiesProps) {
                 </div>
             )}
 
-            {/* Team (editable for players) */}
-            {isPlayer && (
-                <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-[var(--color-text-primary)]">
-                        Team
-                    </label>
-                    <div className="flex gap-2">
-                        <Button
-                            variant={entity.team === 'attack' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => onUpdate({ team: 'attack' })}
-                            className="flex-1"
-                        >
-                            Attack
-                        </Button>
-                        <Button
-                            variant={entity.team === 'defense' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => onUpdate({ team: 'defense' })}
-                            className="flex-1"
-                        >
-                            Defense
-                        </Button>
-                        <Button
-                            variant={entity.team === 'neutral' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => onUpdate({ team: 'neutral' })}
-                            className="flex-1"
-                        >
-                            Neutral
-                        </Button>
-                    </div>
-                </div>
-            )}
+
 
             {/* Possession (editable for ball) */}
             {isBall && (

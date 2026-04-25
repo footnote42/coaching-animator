@@ -7,6 +7,7 @@ import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
 import { EntityLayer } from '@/features/animation/components/Canvas/EntityLayer';
 import { AnnotationLayer } from '@/features/animation/components/Canvas/AnnotationLayer';
+import { PitchLegend } from '@/features/animation/components/Canvas/PitchLegend';
 import { FloatingRemote } from '@/features/animation/components/Canvas/FloatingRemote';
 import { useReplayAnimationLoop } from '@/core/hooks/useReplayAnimationLoop';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
@@ -188,6 +189,7 @@ function ShareCanvas({
           scaleX={entityScaleX}
           scaleY={entityScaleY}
         />
+        <PitchLegend height={canvasHeight} />
       </Stage>
     </div>
   );

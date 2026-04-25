@@ -7,6 +7,7 @@ import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
 import { EntityLayer } from '@/features/animation/components/Canvas/EntityLayer';
 import { AnnotationLayer } from '@/features/animation/components/Canvas/AnnotationLayer';
+import { PitchLegend } from '@/features/animation/components/Canvas/PitchLegend';
 import { useReplayAnimationLoop } from '@/core/hooks/useReplayAnimationLoop';
 import { useCanvasSize } from '@/core/hooks/useCanvasSize';
 import { hydrateSharePayload } from '@/core/utils/hydratePayload';
@@ -203,6 +204,7 @@ function ReplayCanvas({
               playbackPosition={playbackPosition}
               frames={frames}
             />
+            <PitchLegend height={canvasHeight} />
           </Stage>
         </div>
       </div>

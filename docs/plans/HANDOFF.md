@@ -4,6 +4,95 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-25 — Editor & Canvas Planning Complete (005-editor-canvas, Phase 2a) ✅
+
+**Full SpecKit planning workflow complete. Ready to implement.**
+
+**Branch**: `005-editor-canvas`  
+**Spec dir**: `specs/005-editor-canvas/`
+
+**What was delivered this session**:
+
+1. **`/speckit.specify`** — Created `spec.md` for Phase 2a (9 user stories, 12 FRs, 9 success criteria). Covers: PITCH-001/002, EDITOR-001–009. Constitutional compliance gate passed.
+2. **`/speckit.plan`** — Created `plan.md`, `research.md`, `quickstart.md`. Researched all 9 issues in codebase. Key findings: SVG has 5 distinct defects; canvas sizing is 2 hardcoded constants; PlayerToken label is already `''` by default (not "Attacker/Defender"); 12-colour palette needs reduction to 6.
+3. **`/speckit.tasks`** — Created `tasks.md` with 24 tasks (T001–T024) across 10 phases.
+4. **`/speckit-superb-review`** — Coverage review: 33 requirements extracted, all covered. 3 description amendments applied to T012 (JSON preservation), T007–T009 (dependency notes), T020 (edge case coverage).
+5. **Model delegation assessment** — 4 tasks require Sonnet; 17 tasks suitable for Haiku.
+
+**E2E baseline** (background run, exit 0): 37 passed, 12 skipped, 21 did not run.
+
+**Open issues**: None. All planning artifacts clean.
+
+---
+
+### Model Delegation — Quick Reference
+
+| Model | Tasks |
+|-------|-------|
+| **Sonnet** | T002 (SVG rewrite), T006 (PitchLegend), T014 (tackle-shield), T018 (MetadataSheet) |
+| **Haiku** | T001, T003–T005, T007–T013, T015–T017, T019, T023–T024 |
+| Human | T020–T022 (manual browser checks) |
+
+---
+
+### Next Session Prompt
+
+```
+Continue feature 005-editor-canvas on coaching-animator.
+
+Branch: 005-editor-canvas
+Task list: specs/005-editor-canvas/tasks.md
+Quickstart manual tests: specs/005-editor-canvas/quickstart.md
+
+All planning is complete. Begin implementation using the task list.
+
+## Task delegation (model efficiency)
+
+Use Sonnet for: T002, T006, T014, T018 (new components / SVG spatial reasoning)
+Use Haiku for: all other tasks (targeted deletions, property changes, 1-line wiring)
+
+## MVP scope first (P1 — T001–T009)
+
+T001: Run npm run lint && npx tsc --noEmit — verify clean baseline
+T002: Rewrite public/assets/fields/rugby-union.svg (see plan.md Phase 0 for exact x/y coordinates)
+T003: Create src/core/hooks/useEditorCanvasSize.ts (copy of useShareCanvasSize.ts; SSR fallback { width:800, height:600 })
+T004: Wire useEditorCanvasSize into src/features/animation/components/Editor.tsx (replace lines ~62-63 hardcoded constants; add containerRef)
+T005: Increase fontSize 11→14, add fontStyle="bold" on player label in src/features/animation/components/Canvas/PlayerToken.tsx (~line 238)
+T006: Create src/features/animation/components/Canvas/PitchLegend.tsx (Konva Layer, listening={false}, bottom-left 16px margins, EntityColors.getDefault colours)
+T007–T009: Add <PitchLegend> to Editor.tsx, ReplayViewer.tsx, ShareViewer.tsx Stage (each a 1-line JSX addition; verify position:fixed on ShareViewer unchanged)
+
+After MVP: T010–T019 (P2+P3 stories, all Haiku-suitable)
+
+## Pre-push gate
+
+npm run lint && npx tsc --noEmit   (must be zero errors)
+npm test -- --run                  (73/73 minimum)
+
+## Shared canvas rule
+
+Any change to Canvas/ components must be verified on ALL THREE routes:
+/app, /replay/[id], /share/[id]
+ShareViewer uses position:fixed inset:0 — do not alter that layout.
+
+## Key files
+
+public/assets/fields/rugby-union.svg
+src/core/hooks/useShareCanvasSize.ts        ← pattern to copy for useEditorCanvasSize
+src/features/animation/components/Editor.tsx (lines ~62-63: hardcoded canvas dims)
+src/features/animation/components/Canvas/PlayerToken.tsx
+src/features/animation/components/Canvas/Field.tsx (no change needed — SVG fix is asset-only)
+src/features/animation/components/Sidebar/ProjectActions.tsx
+src/features/animation/components/Sidebar/EntityProperties.tsx
+src/features/animation/components/Sidebar/EntityPalette.tsx
+src/core/constants/design-tokens.ts
+src/shared/ui/ColorPicker.tsx
+
+Spec: specs/005-editor-canvas/spec.md
+Plan: specs/005-editor-canvas/plan.md
+```
+
+---
+
 ## 2026-04-25 — Technical Debt Refactor Complete (004, Phase 3a) ✅
 
 **All 7 phases of `004-technical-debt-refactor` shipped. Branch merged to main.**

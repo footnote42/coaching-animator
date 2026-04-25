@@ -25,12 +25,14 @@ import { InlineEditor } from '@/features/animation/components/Canvas/InlineEdito
 import { GhostLayer } from '@/features/animation/components/Canvas/GhostLayer';
 import { AnnotationLayer } from '@/features/animation/components/Canvas/AnnotationLayer';
 import { AnnotationDrawingLayer } from '@/features/animation/components/Canvas/AnnotationDrawingLayer';
+import { PitchLegend } from '@/features/animation/components/Canvas/PitchLegend';
 import { EntityPalette } from '@/features/animation/components/Sidebar/EntityPalette';
 import { EntityProperties } from '@/features/animation/components/Sidebar/EntityProperties';
 import { ProjectActions } from '@/features/animation/components/Sidebar/ProjectActions';
 import { FrameStrip, PlaybackControls } from '@/features/animation/components/Timeline';
-import { useAnimationLoop, useKeyboardShortcuts, useExport } from '@/core/hooks';
+import { useAnimationLoop, useKeyboardShortcuts } from '@/core/hooks';
 import { useAutoSave } from '@/core/hooks/useAutoSave';
+import { useEditorCanvasSize } from '@/core/hooks/useEditorCanvasSize';
 
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
@@ -59,8 +61,8 @@ interface EditorProps {
 }
 
 export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null, stripColors }: EditorProps) {
-  const canvasWidth = 800;
-  const canvasHeight = 600;
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const { width: canvasWidth, height: canvasHeight } = useEditorCanvasSize(canvasContainerRef);
 
   const stageRef = useRef<Konva.Stage>(null);
   const project = useProjectStore(s => s.project);
@@ -89,7 +91,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const drawingMode = useUIStore(s => s.drawingMode);
   const setDrawingMode = useUIStore(s => s.setDrawingMode);
 
-  const { exportStatus, exportProgress, exportError, startExport, canExport, recommendedFormat, formatReason } = useExport(stageRef);
+
 
   const {
     inlineEditor,
@@ -263,15 +265,8 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         <ErrorBoundary fallbackTitle="Sidebar Error">
           <div className="bg-tactics-white flex-1 overflow-y-auto">
             <ProjectActions
-              onExport={startExport}
-              exportStatus={exportStatus}
-              exportProgress={exportProgress}
-              exportError={exportError}
-              canExport={canExport}
               isAuthenticated={isAuthenticated}
               onSaveToCloud={onSaveToCloud}
-              recommendedFormat={recommendedFormat}
-              formatReason={formatReason}
             />
             <EntityPalette
               onAddAttackPlayer={handleAddAttackPlayer}
@@ -324,6 +319,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           </div>
         )}
         <div
+          ref={canvasContainerRef}
           className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
           style={{
             backgroundImage: `repeating-linear-gradient(
@@ -384,6 +380,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                   width={canvasWidth}
                   height={canvasHeight}
                 />
+                <PitchLegend height={canvasHeight} />
               </Stage>
             </div>
           </ErrorBoundary>

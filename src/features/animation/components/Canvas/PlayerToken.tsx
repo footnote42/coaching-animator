@@ -196,25 +196,38 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     opacity={opacity}
                 />
             ) : entity.type === 'tackle-shield' ? (
-                /* Tackle Shield: Rounded rectangle with orientation */
-                <Rect
-                    width={32}
-                    height={16}
-                    offsetX={16}
-                    offsetY={8}
-                    cornerRadius={4}
-                    fill={color}
-                    stroke={DESIGN_TOKENS.colours.primary}
-                    strokeWidth={isSelected ? 2 : 1}
-                    rotation={getRotationAngle(entity.orientation)}
-                    shadowEnabled={false}
-                    opacity={opacity}
-                />
+                /* Tackle Shield: Body with a grip handle */
+                <Group rotation={getRotationAngle(entity.orientation)}>
+                    <Rect
+                        width={28}
+                        height={20}
+                        offsetX={14}
+                        offsetY={10}
+                        fill={color}
+                        stroke={DESIGN_TOKENS.colours.primary}
+                        strokeWidth={isSelected ? 2 : 1}
+                        shadowEnabled={false}
+                        opacity={opacity}
+                    />
+                    <Rect
+                        width={14}
+                        height={6}
+                        offsetX={7}
+                        offsetY={16}
+                        fill={color}
+                        stroke={DESIGN_TOKENS.colours.primary}
+                        strokeWidth={isSelected ? 2 : 1}
+                        shadowEnabled={false}
+                        opacity={opacity}
+                    />
+                </Group>
             ) : entity.type === 'tackle-bag' ? (
-                /* Tackle Bag: Vertical oval/cylinder shape */
-                <Ellipse
-                    radiusX={10}
-                    radiusY={20}
+                /* Tackle Bag: Vertical rectangle shape */
+                <Rect
+                    width={10}
+                    height={30}
+                    offsetX={5}
+                    offsetY={15}
                     fill={color}
                     stroke={DESIGN_TOKENS.colours.primary}
                     strokeWidth={isSelected ? 2 : 1}
@@ -237,7 +250,8 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
             {showLabel && (
                 <Text
                     text={entity.label}
-                    fontSize={11}
+                    fontSize={14}
+                    fontStyle="bold"
                     fontFamily={DESIGN_TOKENS.typography.fontBody}
                     fill={DESIGN_TOKENS.colours.textInverse}
                     align="center"

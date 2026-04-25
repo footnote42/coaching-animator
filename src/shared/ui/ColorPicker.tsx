@@ -1,4 +1,4 @@
-import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
+import { DESIGN_TOKENS, TACTICAL_PALETTE } from '@/core/constants/design-tokens';
 
 export interface ColorPickerProps {
     /** Currently selected color */
@@ -16,12 +16,7 @@ export interface ColorPickerProps {
  * Displays a grid of tactical color swatches from DESIGN_TOKENS.
  */
 export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
-    // Flatten all team colors into a single palette
-    const teamColors = [...DESIGN_TOKENS.colours.attack, ...DESIGN_TOKENS.colours.defense];
-    const colorPalette = [
-        ...teamColors,
-        ...DESIGN_TOKENS.colours.neutral,
-    ];
+    const colorPalette = TACTICAL_PALETTE;
 
     return (
         <div className="flex flex-col gap-2">
