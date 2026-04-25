@@ -320,7 +320,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         )}
         <div
           ref={canvasContainerRef}
-          className="flex-1 flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
+          className="flex-1 min-h-0 min-w-0 overflow-hidden flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
           style={{
             backgroundImage: `repeating-linear-gradient(
               45deg,
