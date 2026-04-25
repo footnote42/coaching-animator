@@ -287,10 +287,15 @@ This project follows a spec-driven development workflow with comprehensive docum
 - ✅ T004: Barrel exports for all modules
 - ✅ T005: Comprehensive README documentation (~9,700 lines)
 
-**Current Iteration**: 005-incremental-improvements
-- 14 identified issues (2 critical, 5 high, 5 medium, 2 low priority)
-- Pick-and-choose approach for incremental fixes
-- See `archive/specs/005-incremental-improvements/` for details
+**Next Iteration (Proposed)**: Choose one:
+1. **Contact Form (Phase 2.1)** — Email submissions via `/api/contact` (small effort, post-MVP feature)
+   - See: `specs/003-legal-compliance/tasks.md` T029–T036
+2. **Design System Fixes** — UI/UX audit follow-up: rounded corners, token colors, typography (medium effort, score 15→18+/20)
+   - See: `docs/issues/audit-2026-04-24-score-15-20.md` (P1–P3 issues ranked)
+3. **Incremental Improvements (005)** — Pick-and-choose approach (14 issues)
+   - See: `archive/specs/005-incremental-improvements/` for details
+
+**Latest Handoff**: See `docs/prompts/HANDOFF-2026-04-25.md` for detailed recommendations and context
 
 ### Documentation Quick Links
 
