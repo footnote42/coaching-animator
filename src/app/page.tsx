@@ -1,10 +1,12 @@
 
 export const dynamic = 'force-dynamic';
 
+import HeroBackground from './_components/HeroBackground';
+
 // ---------------------------------------------------------------------------
 // COPY VARIANTS — Hero Section (T028)
 //
-// Alt A — "The Grounded Coach" (ACTIVE — implemented below)
+// Alt A — "The Grounded Coach" (DEPRECATED)
 //   Headline:  "Stop explaining. Start showing."
 //   Sub:       "A simple tool for drawing rugby drills and plays. Move players
 //               around the pitch, build up the action frame by frame, then
@@ -19,10 +21,10 @@ export const dynamic = 'force-dynamic';
 //   CTA 1:     "Try it free — no account needed"
 //   CTA 2:     "Browse the playbook"
 //
-// Alt C — "Grassroots Movement"
+// Alt C — "Grassroots Movement" (ACTIVE — implemented below)
 //   Headline:  "Rugby tactics, drawn by coaches like you"
-//   Sub:       "A free tool for the rugby coaching community. Draw plays,
-//               share sessions, and learn from what others have built."
+//   Sub:       "A free tool for the grassroots coaching community. Draw plays,
+//               share sessions, and help every coach on your touchline get better."
 //   CTA 1:     "Start drawing free"
 //   CTA 2:     "Browse the community playbook"
 // ---------------------------------------------------------------------------
@@ -33,17 +35,10 @@ const FEATURES = [
     description: 'Place players on the pitch, add frames, and show how the play unfolds. Drag, move, repeat until it looks right.',
   },
   {
-    title: 'Rugby Union, League & Touch',
-    description: 'Pick your code and the right field appears — correct markings, correct dimensions. No setup required.',
-  },
-  {
     title: 'Share a link with your squad',
     description: 'Send a link your players can open on their phones. No app download, no account needed on their end.',
   },
-  {
-    title: 'Export as a GIF',
-    description: 'Download an animated GIF to drop in a WhatsApp group, a presentation, or wherever your team communicates.',
-  },
+
   {
     title: 'Nothing to install',
     description: 'It runs in your browser — no download, no app store. Open it on your phone, tablet, or laptop and start drawing.',
@@ -59,27 +54,28 @@ export default function HomePage() {
     <>
       <main>
       {/* Hero Section — Alt A: The Grounded Coach */}
-      <section className="bg-primary text-text-inverse">
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+      <section className="bg-primary text-text-inverse relative overflow-hidden">
+        <HeroBackground />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6">
-              Stop explaining. Start showing.
+              Rugby tactics, drawn by coaches like you
             </h1>
             <p className="text-lg md:text-xl text-text-inverse/80 mb-8 max-w-2xl">
-              A simple tool for drawing rugby drills and plays. Move players around the pitch, build up the action frame by frame, then share a link with your squad.
+              A free tool for the grassroots coaching community. Draw plays, share sessions, and help fellow coaches.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/app"
                 className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-text-primary font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors"
               >
-                Start drawing — no account needed
+                Start drawing free
               </a>
               <a
                 href="/gallery"
                 className="inline-flex items-center justify-center px-8 py-4 border-2 border-text-inverse/30 text-text-inverse font-semibold text-lg hover:bg-text-inverse/10 transition-colors"
               >
-                See what others have shared
+                Browse the community playbook
               </a>
             </div>
             <p className="mt-4 text-sm text-text-inverse/60">
@@ -101,7 +97,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {FEATURES.map((feature) => (
               <div
                 key={feature.title}
@@ -135,7 +131,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-heading font-semibold mb-2">Place your players</h3>
               <p className="text-sm text-text-primary/70">
-                Drag attack players, defenders, a ball, and cones onto the pitch where you want them.
+                Click to add players, a ball, and cones. Then drag them into position on the pitch.
               </p>
             </div>
             <div className="text-center">
@@ -153,7 +149,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-heading font-semibold mb-2">Send the link</h3>
               <p className="text-sm text-text-primary/70">
-                Share a link, export a GIF, or post to the gallery so other coaches can learn from it too.
+                Share a link your players can open on their phones, or post to the community gallery so other coaches can learn from it too.
               </p>
             </div>
           </div>

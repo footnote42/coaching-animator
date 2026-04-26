@@ -169,9 +169,9 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **007-playback-controls** — Playback Controls (Phase 2b)
-- Plan: `specs/007-playback-controls/plan.md`
-- Spec: `specs/007-playback-controls/spec.md`
+- **008-landing-refinements** — Landing Refinements (Phase 2e)
+- Plan: `specs/008-landing-refinements/plan.md`
+- Spec: `specs/008-landing-refinements/spec.md`
 
 ## Recent Changes
 - 001-fix-share-scaling: Added TypeScript 5 · Node 22
