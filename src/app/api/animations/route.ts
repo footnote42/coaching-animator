@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await supabase
       .from('saved_animations')
       .select(
-        'id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, remixed_from_id, remixed_from:remixed_from_id(title)',
+        'id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, preview_entities, remixed_from_id, remixed_from:remixed_from_id(title)',
         { count: 'exact' }
       )
       .eq('user_id', user.id)
@@ -130,6 +130,13 @@ export async function POST(request: NextRequest) {
     }
 
     const data = parsed.data;
+
+    // Extract preview entities from first frame (T007 — 009-gallery-playbook)
+    const firstFrame = data.payload.frames[0];
+    const previewEntities = Object.values(firstFrame?.entities ?? {})
+      .filter((e) => e.type === 'player')
+      .slice(0, 15)
+      .map((e) => ({ x: e.x / 8, y: e.y / 8, team: e.team }));
 
     // Check content moderation
     const moderation = await validateAnimationContent({
@@ -224,6 +231,8 @@ export async function POST(request: NextRequest) {
         parent_animation_id: data.parent_animation_id ?? null,
         is_progression: data.is_progression ?? false,
         progression_order: data.progression_order ?? 0,
+        // 009-gallery-playbook: mini-pitch preview data
+        preview_entities: previewEntities.length > 0 ? previewEntities : null,
       })
       .select('id, created_at, thumbnail_url')
       .single();

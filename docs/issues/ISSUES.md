@@ -144,6 +144,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### UX-012 — Thumbnail Design & Color Scheme
+- **Status**: `[ ]` Open
+- **Severity**: Low (visual polish)
+- **Observed**: Tactical thumbnails use muted/placeholder colors (amber/muted primary). Should closer match the actual pitch (grass green) and entity (red/blue teams, high-vis yellow cones) color scheme.
+- **Action**: Update `MiniPitchSVG` to use colors more representative of the actual editor experience.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
 ## Phase 3: Quality Safety Net
 
 ### FEAT-006 — Animation Layering Control
@@ -446,6 +455,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Severity**: Medium (usability at scale)
 - **Observed**: My Playbook has no search or filter capability; gallery has it. As coaches accumulate animations, discovery becomes difficult.
 - **Action**: Replicate gallery search and filter (by tag, title) in My Playbook view
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
+### MYPLAYBOOK-002 — Layout Parity with Public Gallery
+- **Status**: `[ ]` Open
+- **Severity**: Medium (UX consistency)
+- **Observed**: My Playbook cards lack the visual richness of Public Gallery cards (no tactical thumbnails, no progression strip).
+- **Action**: Update `AnimationCard.tsx` to include the tactical preview and progression strip, matching the feature set and design of `PublicAnimationCard.tsx`.
 - **Roadmap ref**: Phase 2f (Gallery & My Playbook)
 
 ---

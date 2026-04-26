@@ -50,6 +50,8 @@ export async function GET(request: NextRequest) {
       progression_count,
       remix_count,
       thumbnail_url,
+      endorsed_by,
+      preview_entities,
       remixed_from_id,
       remixed_from:remixed_from_id (
         id,
@@ -138,6 +140,8 @@ export async function GET(request: NextRequest) {
       remixed_from_id: string | null;
       remixed_from: { id: string; title: string } | { id: string; title: string }[] | null;
       user_profiles: { display_name: string | null } | null;
+      endorsed_by: string | null;
+      preview_entities: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
     }
 
     const animations = (data as unknown as AnimationRow[])?.map((animation) => {
@@ -166,6 +170,8 @@ export async function GET(request: NextRequest) {
         remix_count: animation.remix_count,
         remixed_from_id: animation.remixed_from_id,
         remixed_from_title: remixedFrom?.title ?? null,
+        endorsed_by: animation.endorsed_by,
+        preview_entities: animation.preview_entities,
         author: {
           display_name: authorName,
         },

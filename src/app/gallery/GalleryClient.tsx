@@ -34,6 +34,9 @@ interface PublicAnimation {
   remixed_from_id?: string | null;
   remixed_from_title?: string | null;
   remix_count?: number;
+  // 009-gallery-playbook: visual previews + endorsement (T017)
+  endorsed_by?: string | null;
+  preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
 }
 
 type SortField = 'created_at' | 'upvote_count';
@@ -82,7 +85,9 @@ function GalleryContent() {
   const [order, setOrder] = useState<SortOrder>(
     (searchParams.get('order') as SortOrder) || 'desc'
   );
-  const [templatesOnly, setTemplatesOnly] = useState(false); // V2.0: Templates filter
+  const [templatesOnly, setTemplatesOnly] = useState(
+    searchParams.get('templates') === 'true'
+  ); // US5: URL-driven (T029)
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
@@ -163,6 +168,10 @@ function GalleryContent() {
     setSort('created_at');
     setOrder('desc');
     setOffset(0);
+    // Clear templates param from URL (T029)
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('templates');
+    router.replace(`/gallery?${params.toString()}`);
   };
 
   const hasFilters = search || type || templatesOnly;
@@ -283,8 +292,17 @@ function GalleryContent() {
                 type="checkbox"
                 checked={templatesOnly}
                 onChange={(e) => {
-                  setTemplatesOnly(e.target.checked);
+                  const next = e.target.checked;
+                  setTemplatesOnly(next);
                   setOffset(0);
+                  // Sync to URL param (T029)
+                  const params = new URLSearchParams(searchParams.toString());
+                  if (next) {
+                    params.set('templates', 'true');
+                  } else {
+                    params.delete('templates');
+                  }
+                  router.replace(`/gallery?${params.toString()}`);
                 }}
                 className="w-4 h-4 text-primary border-border focus:ring-primary"
               />

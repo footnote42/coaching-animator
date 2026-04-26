@@ -106,9 +106,24 @@ export const GalleryQuerySchema = PaginationSchema.extend({
   order: z.enum(['asc', 'desc']).default('desc'),
 });
 
+export const PreviewEntitySchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  team: z.enum(['attack', 'defense', 'neutral']),
+});
+
+export const ProgressionPreviewSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  progression_order: z.number().int().min(1).max(5),
+  preview_entities: z.array(PreviewEntitySchema).max(15).nullable(),
+});
+
 export const MyAnimationsQuerySchema = PaginationSchema.extend({
   sort: z.enum(['title', 'created_at', 'duration_ms', 'animation_type']).default('created_at'),
   order: z.enum(['asc', 'desc']).default('desc'),
+  q: z.string().optional(),
+  type: AnimationTypeSchema.optional(),
 });
 
 export type AnimationType = z.infer<typeof AnimationTypeSchema>;
@@ -119,3 +134,5 @@ export type UpdateAnimationInput = z.infer<typeof UpdateAnimationSchema>;
 export type ReportInput = z.infer<typeof ReportSchema>;
 export type GalleryQuery = z.infer<typeof GalleryQuerySchema>;
 export type MyAnimationsQuery = z.infer<typeof MyAnimationsQuerySchema>;
+export type PreviewEntity = z.infer<typeof PreviewEntitySchema>;
+export type ProgressionPreview = z.infer<typeof ProgressionPreviewSchema>;

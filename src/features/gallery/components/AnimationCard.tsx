@@ -6,6 +6,8 @@ import NextLink from 'next/link';
 import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check, History } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
+import { MiniPitchSVG } from './MiniPitchSVG';
+import { ProgressionStrip } from './ProgressionStrip';
 
 export interface AnimationSummary {
   id: string;
@@ -29,6 +31,8 @@ export interface AnimationSummary {
   remixed_from_id?: string | null;
   remixed_from_title?: string | null; // joined at API layer
   remix_count?: number;
+  // 009-gallery-playbook: visual previews
+  preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
 }
 
 interface AnimationCardProps {
@@ -133,9 +137,12 @@ export function AnimationCard({
           />
         ) : null}
 
-        {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
-        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder text-text-primary/30 text-sm font-mono`}>
-          {animation.frame_count} frames
+        {/* MiniPitchSVG fallback (T018) — replaces {n} frames text */}
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder w-full h-full`}>
+          <MiniPitchSVG
+            entities={animation.preview_entities ?? null}
+            className="w-full h-full"
+          />
         </div>
 
         {/* Play overlay */}
@@ -256,6 +263,12 @@ export function AnimationCard({
           </div>
         </div>
       </div>
+
+      {/* Progression strip (T026) — always visible below card body when progressions exist */}
+      <ProgressionStrip
+        parentId={animation.id}
+        progressionCount={animation.progression_count ?? 0}
+      />
 
       {/* V2.0: Version History Modal */}
       {showVersionHistory && (

@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2, Share2, Check } from 'lucide-react';
 import { AnimationType } from '@/lib/schemas/animations';
 import { RemixButton } from '@/shared/ui/RemixButton';
+import { MiniPitchSVG } from './MiniPitchSVG';
+import { EndorsementBadge } from './EndorsementBadge';
+import { ProgressionStrip } from './ProgressionStrip';
 
 interface PublicAnimation {
   id: string;
@@ -31,6 +34,9 @@ interface PublicAnimation {
   remixed_from_id?: string | null;
   remixed_from_title?: string | null;
   remix_count?: number;
+  // 009-gallery-playbook: visual previews + endorsement
+  endorsed_by?: string | null;
+  preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
 }
 
 interface PublicAnimationCardProps {
@@ -130,7 +136,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onView(animation.id)}
     >
-      {/* Thumbnail with play overlay */}
+      {/* Thumbnail / MiniPitchSVG preview area */}
       <div className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center">
         {animation.thumbnail_url ? (
           <Image
@@ -140,7 +146,6 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
             className="object-cover"
             loading="lazy"
             onError={(e) => {
-              // Fallback to placeholder on image error
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
               target.parentElement?.querySelector('.fallback-placeholder')?.classList.remove('hidden');
@@ -148,10 +153,20 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           />
         ) : null}
 
-        {/* Fallback placeholder (shown when no thumbnail or image fails to load) */}
-        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder text-text-primary/30 text-sm font-mono`}>
-          {animation.frame_count} frames
+        {/* MiniPitchSVG fallback (T018) — replaces {n} frames text */}
+        <div className={`${animation.thumbnail_url ? 'hidden' : ''} fallback-placeholder w-full h-full`}>
+          <MiniPitchSVG
+            entities={animation.preview_entities ?? null}
+            className="w-full h-full"
+          />
         </div>
+
+        {/* Endorsement badge (T022) — solid stamp, top-right */}
+        {animation.endorsed_by && (
+          <div className="absolute top-1 right-1 z-10">
+            <EndorsementBadge endorsedBy={animation.endorsed_by} />
+          </div>
+        )}
 
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-primary/80 flex items-center justify-center transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
@@ -170,30 +185,12 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           </div>
         )}
 
-        {/* Phase 2: Progression set badge — links to progression set view */}
-        {(animation.progression_count ?? 0) > 0 && (
-          <Link
-            href={`/progression/${animation.id}`}
-            onClick={e => e.stopPropagation()}
-            className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary/80 text-text-inverse text-xs font-medium rounded-full hover:bg-primary/70 transition-colors"
-          >
-            +{animation.progression_count} progression{animation.progression_count !== 1 ? 's' : ''}
-          </Link>
-        )}
-
-        {/* Phase 2: Remix count badge */}
-        {(animation.remix_count ?? 0) > 0 && (
-          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-surface/80 text-text-primary/70 text-xs font-medium rounded-full">
-            {animation.remix_count} remix{animation.remix_count !== 1 ? 'es' : ''}
-          </div>
-        )}
-
         {/* Upvote button */}
         {!isOwner && (
           <button
             onClick={handleUpvoteClick}
             disabled={isUpvoting}
-            className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${hasUpvoted
+            className={`absolute top-2 ${animation.endorsed_by ? 'right-16' : 'right-2'} flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${hasUpvoted
               ? 'bg-primary text-text-inverse'
               : 'bg-surface/90 hover:bg-surface'
               }`}
@@ -204,7 +201,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           </button>
         )}
         {isOwner && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium">
+          <div className={`absolute top-2 ${animation.endorsed_by ? 'right-16' : 'right-2'} flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium`}>
             <ThumbsUp className="w-3.5 h-3.5" />
             <span>{upvoteCount}</span>
           </div>
@@ -313,6 +310,12 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           )}
         </button>
       </div>
+
+      {/* Progression strip (T026) — always visible below card body when progressions exist */}
+      <ProgressionStrip
+        parentId={animation.id}
+        progressionCount={animation.progression_count ?? 0}
+      />
     </div>
   );
 }

@@ -183,7 +183,8 @@
       "Bash(dos2unix /mnt/c/Users/kenho/Projects/coaching-animator/.specify/scripts/bash/setup-plan.sh)",
       "Bash(dos2unix /mnt/c/Users/kenho/Projects/coaching-animator/.specify/scripts/bash/update-agent-context.sh)",
       "Bash(echo \"TSC_EXIT:$?\")",
-      "Bash(echo \"LINT_EXIT:$?\")"
+      "Bash(echo \"LINT_EXIT:$?\")",
+      "Bash(.specify/scripts/bash/update-agent-context.sh --json --paths-only)"
     ]
   },
   "enableAllProjectMcpServers": true,

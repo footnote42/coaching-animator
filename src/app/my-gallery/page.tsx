@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowUpDown, Plus, Loader2, FolderOpen } from 'lucide-react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { ArrowUpDown, Plus, Loader2, FolderOpen, Search, Filter } from 'lucide-react';
 import { AnimationCard, AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { EditMetadataModal } from '@/shared/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog';
@@ -22,33 +22,66 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: 'animation_type', label: 'Type' },
 ];
 
-export default function MyGalleryPage() {
+const TYPE_OPTIONS = [
+  { value: '', label: 'All Types' },
+  { value: 'tactic', label: 'Tactics' },
+  { value: 'skill', label: 'Skills' },
+  { value: 'game', label: 'Games' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+function MyGalleryContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useUser();
+
   const [animations, setAnimations] = useState<AnimationSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [sort, setSort] = useState<SortField>('created_at');
-  const [order, setOrder] = useState<SortOrder>('desc');
   const [page, setPage] = useState(1);
+
+  // URL-driven state (T010)
+  const sort = (searchParams.get('sort') ?? 'created_at') as SortField;
+  const order = (searchParams.get('order') ?? 'desc') as SortOrder;
+  const q = searchParams.get('q') ?? '';
+  const type = searchParams.get('type') ?? '';
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Helper to update URL params (T011)
+  const updateURL = useCallback(
+    (updates: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
 
   const fetchAnimations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // Forward all four params to API (T010 / FR-003a)
       const params = new URLSearchParams({
         sort,
         order,
         limit: String(LIMIT),
         offset: String((page - 1) * LIMIT),
       });
+      if (q) params.set('q', q);
+      if (type) params.set('type', type);
 
       const { ok, data, status, error: apiError } = await getWithRetry<{ animations: AnimationSummary[]; total: number }>(
         `/api/animations?${params}`
@@ -71,7 +104,7 @@ export default function MyGalleryPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [sort, order, page, router]);
+  }, [sort, order, page, q, type, router]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -84,27 +117,29 @@ export default function MyGalleryPage() {
     fetchAnimations();
   }, [authLoading, user, fetchAnimations, router]);
 
+  // Client-side filtering (T012) — derives from loaded animations
+  const filteredAnimations = animations
+    .filter(
+      (a) =>
+        !q ||
+        a.title.toLowerCase().includes(q.toLowerCase()) ||
+        (a.description as string | undefined)?.toLowerCase().includes(q.toLowerCase())
+    )
+    .filter((a) => !type || a.animation_type === type);
+
   const handleSortChange = (newSort: SortField) => {
-    if (newSort === sort) {
-      setOrder(order === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSort(newSort);
-      setOrder('desc');
-    }
+    const newOrder = newSort === sort ? (order === 'asc' ? 'desc' : 'asc') : 'desc';
+    updateURL({ sort: newSort, order: newOrder });
   };
 
-  const handleEdit = (id: string) => {
-    setEditingId(id);
-  };
+  const handleEdit = (id: string) => setEditingId(id);
 
   const handleEditSave = async () => {
     setEditingId(null);
     await fetchAnimations();
   };
 
-  const handleDelete = (id: string) => {
-    setDeletingId(id);
-  };
+  const handleDelete = (id: string) => setDeletingId(id);
 
   const handleDeleteConfirm = async () => {
     if (!deletingId) return;
@@ -132,13 +167,10 @@ export default function MyGalleryPage() {
     router.push(`/app?load=${id}`);
   };
 
-  const editingAnimation = editingId
-    ? animations.find(a => a.id === editingId)
-    : null;
+  const editingAnimation = editingId ? animations.find((a) => a.id === editingId) : null;
+  const deletingAnimation = deletingId ? animations.find((a) => a.id === deletingId) : null;
 
-  const deletingAnimation = deletingId
-    ? animations.find(a => a.id === deletingId)
-    : null;
+  const hasSearchOrFilter = !!(q || type);
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,26 +196,62 @@ export default function MyGalleryPage() {
         </div>
       </header>
 
-      {/* Sorting controls */}
+      {/* Search + Filter + Sort controls (T011) */}
       <div className="max-w-7xl mx-auto px-4 py-4 border-b border-border bg-surface-warm">
-        <div className="flex items-center gap-2">
-          <ArrowUpDown className="w-4 h-4 text-text-primary/70" />
-          <span className="text-sm text-text-primary/70 mr-2">Sort by:</span>
-          {SORT_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => handleSortChange(option.value)}
-              className={`px-3 py-1.5 text-sm font-medium transition-colors ${sort === option.value
-                ? 'bg-primary text-text-inverse'
-                : 'bg-surface border border-border hover:border-primary'
-                }`}
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Search input */}
+          <div className="flex-1 min-w-[200px] max-w-md relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-primary/50" />
+            <input
+              id="my-gallery-search"
+              type="text"
+              value={q}
+              onChange={(e) => updateURL({ q: e.target.value })}
+              placeholder="Search your drills..."
+              aria-label="Search your animations"
+              className="w-full pl-10 pr-4 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
+            />
+          </div>
+
+          {/* Type filter */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-text-primary/70" />
+            <select
+              id="my-gallery-type-filter"
+              value={type}
+              onChange={(e) => updateURL({ type: e.target.value })}
+              className="px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
+              aria-label="Filter by animation type"
             >
-              {option.label}
-              {sort === option.value && (
-                <span className="ml-1">{order === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-          ))}
+              {TYPE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort controls */}
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-text-primary/70" />
+            <span className="text-sm text-text-primary/70 mr-2">Sort by:</span>
+            {SORT_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleSortChange(option.value)}
+                className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+                  sort === option.value
+                    ? 'bg-primary text-text-inverse'
+                    : 'bg-surface border border-border hover:border-primary'
+                }`}
+              >
+                {option.label}
+                {sort === option.value && (
+                  <span className="ml-1">{order === 'asc' ? '↑' : '↓'}</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -203,12 +271,26 @@ export default function MyGalleryPage() {
               Try Again
             </button>
           </div>
-        ) : animations.length === 0 ? (
+        ) : animations.length === 0 && !hasSearchOrFilter ? (
           <EmptyState />
+        ) : filteredAnimations.length === 0 ? (
+          // Search/filter empty state (T012)
+          <div className="text-center py-20">
+            <p className="text-text-primary/70 mb-4">
+              No drills matching{q ? ` "${q}"` : ''}
+              {type ? ` of type "${type}"` : ''} — try a different search.
+            </p>
+            <button
+              onClick={() => updateURL({ q: '', type: '' })}
+              className="px-4 py-2 border border-border hover:border-primary transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {animations.map((animation) => (
+              {filteredAnimations.map((animation) => (
                 <AnimationCard
                   key={animation.id}
                   animation={animation}
@@ -224,7 +306,7 @@ export default function MyGalleryPage() {
               <div className="flex items-center justify-center gap-4 mt-12 border-t border-border pt-6">
                 <button
                   onClick={() => {
-                    setPage(p => Math.max(1, p - 1));
+                    setPage((p) => Math.max(1, p - 1));
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   disabled={page === 1}
@@ -237,7 +319,7 @@ export default function MyGalleryPage() {
                 </div>
                 <button
                   onClick={() => {
-                    setPage(p => Math.min(Math.ceil(total / LIMIT), p + 1));
+                    setPage((p) => Math.min(Math.ceil(total / LIMIT), p + 1));
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   disabled={page === Math.ceil(total / LIMIT)}
@@ -273,6 +355,20 @@ export default function MyGalleryPage() {
   );
 }
 
+export default function MyGalleryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <MyGalleryContent />
+    </Suspense>
+  );
+}
+
 function EmptyState() {
   return (
     <div className="text-center py-20">
@@ -283,7 +379,7 @@ function EmptyState() {
         Your Playbook is Empty
       </h2>
       <p className="text-text-primary/70 mb-6 max-w-md mx-auto">
-        Start creating rugby animations and save them to the cloud to build your personal playbook.
+        Build your first drill in the editor and save it to build your personal playbook.
       </p>
       <a
         href="/app"
