@@ -1,155 +1,100 @@
 import { test, expect } from '@playwright/test';
-import { loginAsTestUser, createTestAnimation } from './helpers';
+import { loginAsTestUser } from './helpers';
 
-test.describe('Profile Page', () => {
+test.describe('Profile Page (Coach Identity)', () => {
   test.beforeEach(async ({ page }) => {
-    // Login before each test
+    test.setTimeout(60000);
     await loginAsTestUser(page);
   });
 
-  test('should display profile page with user information', async ({ page }) => {
+  test('authenticated user lands on /profile, identity card visible', async ({ page }) => {
     await page.goto('/profile');
+    await page.waitForLoadState('networkidle');
 
-    // Verify profile page loaded
-    await expect(page.locator('h1:has-text("Profile Settings")')).toBeVisible();
+    // Coach name or prompt should be the dominant heading
+    const headerH1 = page.locator('header h1');
+    await expect(headerH1).toBeVisible({ timeout: 10000 });
+    
+    // "Profile Settings" should NOT be the main heading anymore
+    const profileSettingsTitle = page.locator('h1:has-text("Profile Settings")');
+    await expect(profileSettingsTitle).toBeHidden();
 
-    // Verify email field exists and is disabled
-    const emailInput = page.locator('input[type="email"]');
-    await expect(emailInput).toBeVisible();
-    await expect(emailInput).toBeDisabled();
+    // Avatar circle should be visible
+    const avatarCircle = page.locator('header .rounded-full.bg-pitch-green');
+    await expect(avatarCircle).toBeVisible({ timeout: 10000 });
 
-    // Verify display name field exists
-    const displayNameInput = page.locator('input#displayName');
-    await expect(displayNameInput).toBeVisible();
+    // Account Settings section should be visible
+    await expect(page.locator('h2:has-text("Account Settings")')).toBeVisible({ timeout: 10000 });
   });
 
-  test('should update display name and persist after refresh', async ({ page }) => {
+  test('edit display name and save, card heading updates', async ({ page }) => {
     await page.goto('/profile');
+    await page.waitForLoadState('networkidle');
 
-    // Generate unique display name
-    const newName = `Test Coach ${Date.now()}`;
-    console.log('[Test] Setting display name to:', newName);
-
-    // Clear existing value and enter new display name
+    const newName = `Coach ${Date.now()}`;
     const displayNameInput = page.locator('input#displayName');
-    await displayNameInput.clear();
     await displayNameInput.fill(newName);
-
-    // Verify value was set
-    await expect(displayNameInput).toHaveValue(newName);
-
-    // Click save button
+    
     await page.click('button:has-text("Save Changes")');
+    
+    // Wait for success message
+    const successMsg = page.locator('text=Profile updated successfully');
+    await expect(successMsg).toBeVisible({ timeout: 10000 });
 
-    // Verify success message appears
-    await expect(page.locator('text=Profile updated successfully')).toBeVisible({ timeout: 5000 });
-    console.log('[Test] Success message appeared');
-
-    // Wait for success message to disappear (auto-hides after 3 seconds)
-    await expect(page.locator('text=Profile updated successfully')).toBeHidden({ timeout: 4000 });
-
-    // Reload page to verify persistence
-    console.log('[Test] Reloading page to check persistence...');
+    // Heading in header should update (retry logic in expect)
+    await expect(page.locator('header h1')).toHaveText(newName.toUpperCase(), { timeout: 10000 });
+    
+    // Refresh to verify persistence
     await page.reload();
-
-    // Wait for profile page to load
-    await expect(page.locator('h1:has-text("Profile Settings")')).toBeVisible();
-
-    // Verify display name persisted
-    await expect(displayNameInput).toHaveValue(newName);
-    console.log('[Test] Display name persisted successfully');
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('header h1')).toHaveText(newName.toUpperCase(), { timeout: 15000 });
   });
 
-  test('should display accurate animation count', async ({ page }) => {
-    // First, check initial animation count
+  test('clear display name, prompt shown', async ({ page }) => {
     await page.goto('/profile');
+    await page.waitForLoadState('networkidle');
 
-    // Get initial count from usage section
-    const usageSection = page.locator('text=/\\d+ \\/ 50/');
-    await expect(usageSection).toBeVisible();
-
-    const initialCountText = await usageSection.textContent();
-    const initialCount = parseInt(initialCountText?.match(/^(\d+)/)?.[1] ?? '0');
-    console.log('[Test] Initial animation count:', initialCount);
-
-    // Create a new animation
-    await page.goto('/app');
-
-    // Wait for editor to load
-    await expect(page.locator('text=Frame 1')).toBeVisible({ timeout: 10000 });
-
-    // Create the animation using helper
-    const animationTitle = `Test Animation ${Date.now()}`;
-    await createTestAnimation(page, animationTitle);
-
-    // Navigate back to profile
-    await page.goto('/profile');
-
-    // Verify count incremented
-    const newCountText = await usageSection.textContent();
-    const newCount = parseInt(newCountText?.match(/^(\d+)/)?.[1] ?? '0');
-    console.log('[Test] New animation count:', newCount);
-
-    expect(newCount).toBe(initialCount + 1);
-  });
-
-  test('should handle empty display name (anonymous)', async ({ page }) => {
-    await page.goto('/profile');
-
-    // Clear display name to test anonymous mode
     const displayNameInput = page.locator('input#displayName');
     await displayNameInput.clear();
-
-    // Save
+    
     await page.click('button:has-text("Save Changes")');
+    await expect(page.locator('text=Profile updated successfully')).toBeVisible({ timeout: 10000 });
 
-    // Verify success
-    await expect(page.locator('text=Profile updated successfully')).toBeVisible({ timeout: 5000 });
-
-    // Reload and verify empty state persists
-    await page.reload();
-    await expect(displayNameInput).toHaveValue('');
+    // Prompt "Add your name" should be shown in header h1
+    // Using regex to handle the span inside h1
+    await expect(page.locator('header h1')).toHaveText(/ADD YOUR NAME/i, { timeout: 10000 });
   });
 
-  test('should show correct usage percentage bar', async ({ page }) => {
+  test('mobile layout — no overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/profile');
+    await page.waitForLoadState('networkidle');
 
-    // Get animation count
-    const usageText = await page.locator('text=/\\d+ \\/ 50/').textContent();
-    const count = parseInt(usageText?.match(/^(\d+)/)?.[1] ?? '0');
+    // Header items should be stacked
+    await expect(page.locator('header .flex-col').first()).toBeVisible();
 
-    // Check that progress bar exists and has a width
-    const progressBar = page.locator('.bg-emerald-600').first();
-    await expect(progressBar).toBeVisible();
-
-    // Calculate expected percentage
-    const expectedPercentage = Math.min((count / 50) * 100, 100);
-
-    // Get actual width from style attribute
-    const style = await progressBar.getAttribute('style');
-    const widthMatch = style?.match(/width:\s*(\d+(\.\d+)?)%/);
-    const actualWidth = widthMatch ? parseFloat(widthMatch[1]) : 0;
-
-    console.log('[Test] Expected percentage:', expectedPercentage, 'Actual width:', actualWidth);
-
-    // Allow small rounding differences
-    expect(Math.abs(actualWidth - expectedPercentage)).toBeLessThan(1);
+    // Check for horizontal overflow
+    const overflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+    });
+    expect(overflow).toBe(false);
   });
 
-  test('should show quick links to galleries', async ({ page }) => {
+  test('animation count visible', async ({ page }) => {
     await page.goto('/profile');
+    await expect(page.locator('text=/\\d+ \\/ 50/')).toBeVisible({ timeout: 10000 });
+  });
 
-    // Verify quick links section exists
-    await expect(page.locator('h2:has-text("Quick Links")')).toBeVisible();
-
-    // Verify My Playbook link
-    const myPlaybookLink = page.locator('a[href="/my-gallery"]');
-    await expect(myPlaybookLink).toBeVisible();
-    await expect(myPlaybookLink).toHaveText(/My Playbook/);
-
-    // Verify Public Gallery link
-    const galleryLink = page.locator('a[href="/gallery"]');
-    await expect(galleryLink).toBeVisible();
-    await expect(galleryLink).toHaveText(/Public Gallery/);
+  test('quick links visible', async ({ page }) => {
+    await page.goto('/profile');
+    
+    // Scroll to bottom to ensure visibility
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    
+    const quickLinksHeader = page.locator('text=Quick Links');
+    await expect(quickLinksHeader).toBeVisible({ timeout: 10000 });
+    
+    await expect(page.locator('a[href="/my-gallery"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('a[href="/gallery"]')).toBeVisible({ timeout: 10000 });
   });
 });

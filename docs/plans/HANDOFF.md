@@ -4,6 +4,96 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-04-28 — Comprehensive Audit + Doc Reconciliation (ROADMAP v3.1, PRD §5.13)
+
+**Branch**: `010-auth-profile` (010 implementation complete; awaiting merge to main)
+**Role context**: Session run as Senior Technical PM / Frontend Architect audit — no feature code written.
+
+---
+
+### What was delivered this session
+
+#### Part 1 — Comprehensive audit (read-only, plan-mode)
+
+Ran three parallel Explore agents to audit:
+- **Governance docs** (`PRD-v2.0.md`, `ROADMAP.md` v3.0, `ISSUES.md`) — agent A
+- **Konva canvas architecture + editor layout** — agent B  
+- **Phase 2/3 implementation status + Animation→DB workflow** — agent C
+
+**Key findings** (full detail in `C:\Users\kenho\.claude\plans\role-senior-technical-melodic-lobster.md`):
+
+| Finding | Impact |
+|---------|--------|
+| ROADMAP v3.0 was ~40% stale — specs 006/007/008/009 all merged but ROADMAP still showed 2b/2c/2e/2f as "Open" | Doc drift eroding planning trust |
+| FEATURE-001 (endorsement system) shipped silently in 009-gallery-playbook with no "pulled forward" marking | Issue hygiene gap |
+| PRD never narrated the save→share→gallery flow; visibility values ('private'/'link_shared'/'public') undocumented in user-facing terms | Root cause of FLOW-001/002, UX-008 |
+| Editor sidebar is `w-64` fixed on every viewport; no collapse/zen/focus mode; mobile <768 only warns, doesn't adapt | Screen real estate debt |
+| Snap-to-grid is architecture-ready: pixel-absolute coords, ~3-line insertion at `PlayerToken.handleDragEnd` | Pull-forward justified |
+| Audit scored 15/20; P1 violations: 15+ `rounded-*` in editor surfaces, 8 `bg-white`, 5 auth pages missing `font-heading` | Audit debt, pre-launch fix |
+| SEC-001/002/003 (security hardening) unaddressed; PERF-001 (Lighthouse) unrun | Pre-beta blockers |
+
+**Locked decisions** (from user response):
+- Snap-to-grid → Phase 2j (after Workflow Clarity + Workspace Remodel)
+- Editor remodel → all: collapsible sidebar + Focus Mode + mobile drawer
+- Doc reconciliation → full restructure + PRD save/share rewrite
+- FEAT-011 (rugby ball spinner) → stays in Phase 4
+- FEATURE-001 → retro-fit hygiene note (done this session)
+
+---
+
+#### Part 2 — Doc reconciliation (implemented)
+
+| File | Change |
+|------|--------|
+| `docs/authority/ROADMAP.md` | Full rewrite → **v3.1**. Shipped-phase table replaces scattered "Completed Work" bullets. Phases 2b/2c/2e/2f marked ✅ with spec refs + dates. New phases 2h (Workflow Clarity), 2i (Workspace Remodel), 2j (Snap-to-Grid), 2l (Cosmetic Polish) inserted. Phase 3f (Audit Remediation) added. Hygiene Rules section added. Phase 4 struck through FEATURE-001 (delivered) and FEAT-010 (moved to 2j). |
+| `docs/archive/ROADMAP-2026-04-25.md` | v3.0 archived (copy of pre-rewrite file). |
+| `docs/issues/ISSUES.md` | FEATURE-001 closed with "shipped via 009-gallery-playbook, pulled forward from Phase 4" hygiene note. Phase 4 index entry struck through. |
+| `docs/authority/PRD-v2.0.md` | §5.13 *Save & Share Workflow (As Built)* inserted before §6 — 7 subsections covering mental model, endpoint table, visibility matrix, coach workflow narrative, title handling, gap cross-refs, §6.1 relationship. §6.1 clarified with v1→v2 cleanup note. Amendment A2.1-9 logged. |
+
+---
+
+### Open issues / outstanding questions
+
+#### Questions for next session (decide before specifying)
+
+1. **Sequence**: User leaning towards 2h → 2i → 2j. Confirm or redirect before starting `/speckit.specify`.
+
+2. **Phase 2h scope decision**: Workflow Clarity covers both (a) small UI fixes (gallery↔/share navigation, breadcrumb, animation name on /share/{id}) and (b) a PRD prose section. Are both in scope for one spec, or should the UI piece be 2h and the PRD section is already done (§5.13 written this session)?
+
+3. **Phase 2i sidebar design decision**:  
+   - Collapsed state: icon-only (tools visible, labels hidden) vs fully hidden with reveal toggle?
+   - Focus Mode: hide sidebar only, or also hide footer PlaybackControls?
+   - Mobile drawer trigger: hamburger button in canvas header, or FAB?
+
+4. **Phase 2j grid resolution**: ISSUES.md says "grid resolution relative to pitch markings." In practice this means the grid snaps to pitch zones (e.g. 5m, 10m, 22m intervals). Is that the intended unit, or is an arbitrary pixel grid (e.g. 10px) acceptable? This affects whether the grid overlay needs pitch coordinate awareness.
+
+5. **Phase 2h post-010**: Should Phase 2h begin on a new branch immediately after 010 is merged, or before?
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  010-auth-profile — implementation complete (13/13 tasks), NOT YET merged to main
+  main — last merged: d5c62c1 (009-gallery-playbook)
+
+Governance docs: reconciled 2026-04-28 (ROADMAP v3.1, PRD §5.13, ISSUES FEATURE-001 closed)
+
+Untracked artefacts at repo root:
+  nul       — 0-byte Windows artefact (> nul in bash). Safe to delete.
+  .agents/  — untracked directory (investigate before committing)
+  artifacts/ — untracked directory (investigate before committing)
+
+Pre-push gate (run before any new PR):
+  npm run lint && npx tsc --noEmit
+  npm test -- --run
+```
+
+See `docs/plans/prompts/2026-04-28-next-session.md` for the full next-session kickoff prompt.
+
+---
+
 ## 2026-04-25 — Editor & Canvas Planning Complete (005-editor-canvas, Phase 2a) ✅
 
 **Full SpecKit planning workflow complete. Ready to implement.**

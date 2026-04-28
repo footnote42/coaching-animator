@@ -814,15 +814,79 @@ export function useExport() {
 
 ---
 
+### 5.13 Save & Share Workflow (As Built)
+
+> Documents the actual save/persist/share mechanism as implemented in the codebase. Added 2026-04-28 to close the FLOW-001 / FLOW-002 / UX-008 documentation gap. Supersedes any conflicting prose in §6.1 and clarifies the visibility model referenced in §7.
+
+#### 5.13.1 Mental model
+
+- **For authenticated users (Tier 1+), Share IS the save event.** Clicking *Share* in the editor writes the animation to `saved_animations` and immediately makes it discoverable in `/my-gallery` and reachable at `/share/{id}`. There is no separate draft state.
+- **For guests (Tier 0)**, no cloud persistence occurs. Local 10-frame editing + JSON export remain the only off-device options.
+- This means **"save"** in the user-facing copy is a synonym for **"share"** today; there is no quiet save that is not also link-discoverable to the owner. Renames and visibility flips happen post-hoc from `/my-gallery`.
+
+#### 5.13.2 Endpoints
+
+| Method | Path | Auth | Purpose | Default visibility |
+|--------|------|------|---------|--------------------|
+| `POST` | `/api/share` | required | Primary editor save path. Insert new row in `saved_animations`, return `{ id }`. Editor routes user to `/share/{id}`. | `link_shared` |
+| `POST` | `/api/animations` | required | Explicit save / update from `/my-gallery` flows; supports caller-supplied `visibility`. | caller-supplied (defaults `private`) |
+| `GET` | `/api/animations` | required | Returns the user's own animations. Supports `q` and `type` filter params (server accepts; some filtering currently client-side). | — |
+| `GET` | `/api/gallery` | optional | Returns publicly visible animations only (`visibility = 'public'`). Does **not** include `link_shared` rows. | — |
+
+Source of truth: `src/app/api/share/route.ts`, `src/app/api/animations/route.ts`, `src/app/api/gallery/route.ts`.
+
+#### 5.13.3 Visibility values
+
+`saved_animations.visibility` accepts three values; each maps to a discoverability surface:
+
+| Value | Set by | Owner sees in /my-gallery | Public sees in /gallery | Reachable at /share/{id} (anyone with link) |
+|-------|--------|---------------------------|-------------------------|---------------------------------------------|
+| `private` | explicit user choice from `/my-gallery` edit | ✅ | ❌ | ❌ |
+| `link_shared` | server default for `POST /api/share` | ✅ | ❌ | ✅ |
+| `public` | explicit user choice from `/my-gallery` edit | ✅ | ✅ | ✅ |
+
+RLS policies enforce the surface mapping — see `supabase/migrations/20260131130000_online_platform.sql:271–277`.
+
+> **Note on §7 schema examples.** Several DDL snippets in §7 show `CHECK (visibility IN ('private', 'public'))`. The production schema also accepts `'link_shared'` — see `20260131130000_online_platform.sql:63` (TEXT, no CHECK constraint enforced; values constrained by application logic + RLS). The §7 examples should be read as templates for *new* tables, not the literal current `saved_animations` schema.
+
+#### 5.13.4 Coach workflow narrative
+
+1. Coach edits in `/app`. Frames live in client-side Zustand store; nothing is persisted yet.
+2. Coach clicks **Share**. `useShareAnimation` posts to `/api/share`. On 201, the animation lands in DB with `visibility='link_shared'`, owner = current user.
+3. Editor navigates to `/share/{id}` and renders `ShareViewer` (full-bleed, mobile-first). The coach copies the link and sends it via WhatsApp.
+4. Player opens link on phone, sees the replay. No login required.
+5. Coach later visits `/my-gallery`, sees the animation listed with mini-pitch preview. Coach can rename, delete, or change visibility to `public` (which surfaces it in `/gallery`).
+
+#### 5.13.5 Title handling
+
+- Title is taken from `body.name` in the share request.
+- If empty / whitespace-only, server applies fallback `'Untitled Animation'` (`src/app/api/share/route.ts:57–59`).
+- The share viewer should display the title to give the receiving player context. Tracked under FLOW-002.
+
+#### 5.13.6 Gaps tracked elsewhere
+
+- `FLOW-001` — gallery cards do not link to `/share/{id}`. Phase 2h.
+- `FLOW-002` — `/share/{id}` lacks animation name, progression nav, and back-to-site link. Phase 2h.
+- `UX-008` — coaches confused which route to send (/replay vs /share). Phase 2h.
+- `EDITOR-002` — share button intermittently non-functional in dev. Phase 2h.
+
+#### 5.13.7 Relationship to §6.1 (Legacy Anonymous Shares)
+
+The endpoint *path* `/api/share` was retained but the implementation was rebuilt. The v1 endpoint that wrote anonymous rows to a `shares` table is gone — the table was dropped per §6.1. The current endpoint at the same path is the authenticated save described above. Old share links from before the cutover are out of scope and return 404.
+
+---
+
 ## 6. Features to REMOVE in v2.0
 
 ### 6.1 Legacy Anonymous Shares Table (CLEAN BREAK)
 
 **Rationale:** Deprecated in favor of `saved_animations` with `link_shared` visibility. Users now authenticate to share.
 
-**Removal Plan:**
+> **Clarification (2026-04-28):** The v1 `shares` table and the v1 anonymous endpoint at `/api/share` were both removed as planned. The endpoint *path* `/api/share` was subsequently re-bound to the new authenticated save handler — see §5.13. Read the bullets below as the v1.x → v2.0 cleanup, not as a current-state instruction.
+
+**Removal Plan (v1.x → v2.0):**
 - ❌ **DELETE**: `shares` table and all data
-- ❌ **DELETE**: `POST /api/share` endpoint
+- ❌ **DELETE**: legacy anonymous `POST /api/share` handler *(path subsequently reused for authenticated save — see §5.13)*
 - ❌ **UPDATE**: Replay viewer fallback logic (remove `shares` table lookup)
 - ✅ **MIGRATION NOTICE**: Old share links show "This link has expired. Create a free account to share animations."
 
@@ -2484,5 +2548,16 @@ The 3rd 5-yard tick line from each try line (`x=446` from left, `x=1554` from ri
 `user_id` is included in the SELECT but is not rendered in the admin UI table. This is either dead weight in the response payload or unfinished intent (showing the author).
 
 **Required fix:** Either remove `user_id` from the SELECT, or surface it in the table as an "Author ID" column (or join to `user_profiles` for a display name).
+
+---
+
+## Amendment A2.1-9 — Doc: Save & Share Workflow Documented (§5.13)
+
+**Severity:** Doc-hygiene
+**Affected files:** `docs/authority/PRD-v2.0.md`
+
+The PRD specified individual save/persist/visibility *requirements* but never narrated the coach-facing save→share→gallery flow as prose. This made FLOW-001 / FLOW-002 / UX-008 recurring issues and left the visibility values (`private` | `link_shared` | `public`) undocumented in user-facing terms.
+
+**Resolution:** Added §5.13 *Save & Share Workflow (As Built)* with the mental model, endpoint table, visibility surface matrix, coach workflow narrative, and a cross-reference clarifying the relationship to §6.1.
 
 **Document End**

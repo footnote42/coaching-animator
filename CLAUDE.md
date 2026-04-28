@@ -169,11 +169,12 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **009-gallery-playbook** — Gallery & My Playbook (Phase 2f)
-- Plan: `specs/009-gallery-playbook/plan.md`
-- Spec: `specs/009-gallery-playbook/spec.md`
+- **010-auth-profile** — Auth & Profile (Phase 2g)
+- Plan: `specs/010-auth-profile/plan.md`
+- Spec: `specs/010-auth-profile/spec.md`
 
 ## Recent Changes
+- 010-auth-profile: Profile page visual redesign (coach identity card)
 - 001-fix-share-scaling: Added TypeScript 5 · Node 22
 
 ## Design Context

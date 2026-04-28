@@ -81,8 +81,8 @@ export function MiniPitchSVG({ entities, className }: MiniPitchSVGProps) {
       {dots.map((e, i) => {
         // Use vibrant team colors matching the editor palette
         const dotColor = e.team === 'attack' 
-          ? '#2563EB' // Vibrant Blue
-          : '#DC2626'; // Vibrant Red
+          ? 'var(--color-accent-warm)' 
+          : 'var(--color-text-primary)';
           
         return (
           <circle
@@ -93,6 +93,7 @@ export function MiniPitchSVG({ entities, className }: MiniPitchSVGProps) {
             fill={dotColor}
             stroke="white"
             strokeWidth="0.5"
+            opacity={e.team === 'defense' ? 0.4 : 1}
           />
         );
       })}

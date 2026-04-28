@@ -282,15 +282,16 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FEATURE-001 — Endorsed Animations (RFU Partnership)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed — **shipped via 009-gallery-playbook (2026-04-27), pulled forward from Phase 4**
 - **Severity**: Low (growth feature)
 - **Observed**: Need mechanism to highlight animations endorsed by Hampshire RFU
-- **Implementation**: 
-  - Add `endorsed_by` field to animation metadata (RFU org ID)
-  - Display small RFU rose icon in gallery card corner
-  - Requires admin moderation interface
-- **Roadmap ref**: Phase 4 (post-v1, requires partnership integration)
-- **Dependencies**: Admin panel for marking endorsed animations
+- **Implementation (delivered)**:
+  - `endorsed_by` column added — see migration `supabase/migrations/20260226000000_add_endorsed_by_and_preview_entities.sql`
+  - Endorsement badge rendered in gallery card via `MiniPitchSVG.tsx` when `endorsed_by` is set
+  - Admin moderation interface for setting endorsement: in admin animations table
+- **Hygiene note**: Originally scoped for Phase 4. Pulled forward into 009-gallery-playbook because the gallery playbook redesign needed the field anyway; shipping the full surface (column + badge + admin toggle) in one pass was cheaper than threading half of it. Logged here per the v3.1 ROADMAP "pulled-forward" rule.
+- **Residual work**: GALLERY-001 (obtain compressed RFU icon asset <50 KB) remains separate — the wiring is complete, the production icon image is not.
+- **Roadmap ref**: Was Phase 4 → delivered Phase 2f (009-gallery-playbook)
 
 ---
 
@@ -704,5 +705,5 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Phase 2** (Launch Credibility): UX-001, UX-002, UX-003, UX-004, **UX-005, UX-006, UX-007, UX-008, UX-009**
 - **Phase 3** (Quality Safety Net): **FEAT-006, FEAT-007, SEC-001, SEC-002, SEC-003**
 - **Phase 3–4** (Feature Decisions): **FEAT-008, FEAT-009**
-- **Phase 4+** (Growth): FEATURE-001, FEATURE-002, **FEATURE-010, DESIGN-001**
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, DESIGN-001**
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005
