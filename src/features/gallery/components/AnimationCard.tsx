@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check, History } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
 import { MiniPitchSVG } from './MiniPitchSVG';
@@ -101,12 +102,23 @@ export function AnimationCard({
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const url = `${window.location.origin}/share/${animation.id}`;
+
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ url, title: animation.title });
+        return;
+      } catch {
+        // AbortError or unsupported — fall through to clipboard
+      }
+    }
+
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+      toast.success('Link copied');
+    } catch {
+      console.error('Failed to copy link');
     }
   };
 

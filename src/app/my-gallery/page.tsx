@@ -164,7 +164,7 @@ function MyGalleryContent() {
   };
 
   const handlePlay = (id: string) => {
-    router.push(`/app?load=${id}`);
+    router.push(`/share/${id}`);
   };
 
   const editingAnimation = editingId ? animations.find((a) => a.id === editingId) : null;

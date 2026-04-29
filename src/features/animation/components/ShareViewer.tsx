@@ -343,15 +343,15 @@ export function ShareViewer({
 
       {/* Back-to-site link — bottom-left, away from remote's default bottom-right */}
       <a
-        href="/"
+        href="/gallery"
         className="absolute left-3 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
         style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}
       >
-        <BrandIcon 
-          variant="share-viewer" 
+        <BrandIcon
+          variant="share-viewer"
           className="brightness-0 invert opacity-60"
         />
-        <span className="hidden sm:inline">Coaching Animator</span>
+        <span className="hidden sm:inline">← Gallery</span>
       </a>
     </div>
   );

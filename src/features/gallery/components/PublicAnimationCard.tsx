@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, Layers, ThumbsUp, Play, User, Copy, Loader2, Share2, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimationType } from '@/lib/schemas/animations';
 import { RemixButton } from '@/shared/ui/RemixButton';
 import { MiniPitchSVG } from './MiniPitchSVG';
@@ -124,6 +125,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      toast.success('Link copied');
     } catch {
       // clipboard also failed — silent
     }
