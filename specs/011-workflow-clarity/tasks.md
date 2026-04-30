@@ -72,10 +72,10 @@ Manual:   specs/011-workflow-clarity/quickstart.md
 
 **Purpose**: Manual golden-path and regression checks, then pre-push gate.
 
-- [ ] T004 [P] Manual test — quickstart.md Test 1: open `/share/{id}` directly; verify "← Gallery" link visible at bottom-left; click → navigates to `/gallery`; resize to 320px → arrow icon still visible
-- [ ] T005 [P] Manual test — quickstart.md Test 2: sign in, `/my-gallery`, click thumbnail → `/share/{id}`; confirm Edit (Pencil) button still opens `/app?load={id}`
-- [ ] T006 [P] Manual regression — quickstart.md Test 3: `/gallery` card click → `/share/{id}` (must not have regressed)
-- [ ] T007 [P] Manual regression — quickstart.md Test 4: `/app` → save → Share button → modal/clipboard works; mobile → Web Share sheet opens
+- [X] T004 [P] Manual test — quickstart.md Test 1: open `/share/{id}` directly; verify "← Gallery" link visible at bottom-left; click → navigates to `/gallery`; resize to 320px → arrow icon still visible
+- [X] T005 [P] Manual test — quickstart.md Test 2: sign in, `/my-gallery`, click thumbnail → `/share/{id}`; confirm Edit (Pencil) button still opens `/app?load={id}`
+- [X] T006 [P] Manual regression — quickstart.md Test 3: `/gallery` card click → `/share/{id}` (must not have regressed)
+- [X] T007 [P] Manual regression — quickstart.md Test 4: `/app` → save → Share button → modal/clipboard works; mobile → Web Share sheet opens
 - [X] T008 Run `npm run lint && npx tsc --noEmit` — zero new errors
 - [X] T009 Run `npm test -- --run` — all unit tests pass
 
