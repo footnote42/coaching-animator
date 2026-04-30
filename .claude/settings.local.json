@@ -184,7 +184,10 @@
       "Bash(dos2unix /mnt/c/Users/kenho/Projects/coaching-animator/.specify/scripts/bash/update-agent-context.sh)",
       "Bash(echo \"TSC_EXIT:$?\")",
       "Bash(echo \"LINT_EXIT:$?\")",
-      "Bash(.specify/scripts/bash/update-agent-context.sh --json --paths-only)"
+      "Bash(.specify/scripts/bash/update-agent-context.sh --json --paths-only)",
+      "Bash(sed -n '283,300p' docs/issues/ISSUES.md)",
+      "Bash(sed -n '705,712p' docs/issues/ISSUES.md)",
+      "Bash(diffstat)"
     ]
   },
   "enableAllProjectMcpServers": true,
