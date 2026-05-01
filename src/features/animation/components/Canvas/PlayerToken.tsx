@@ -6,6 +6,7 @@ import { Entity, EntityOrientation } from '@/core/types';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 
 import { EntityColors } from '../../services/entityColors';
+import { snapPosition } from '../../services/snapGrid';
 
 /**
  * Props for the PlayerToken component
@@ -27,6 +28,12 @@ export interface PlayerTokenProps {
     onContextMenu: (event: { x: number; y: number }) => void;
     /** Opacity for fade-in/fade-out (0-1, default 1) */
     opacity?: number;
+    /** Whether snap-to-grid is enabled */
+    snapEnabled?: boolean;
+    /** Stage width for clamping/snapping */
+    stageWidth?: number;
+    /** Stage height for clamping/snapping */
+    stageHeight?: number;
 }
 
 /**
@@ -48,7 +55,10 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     onDragEnd,
     onDoubleClick,
     onContextMenu,
-    opacity = 1.0
+    opacity = 1.0,
+    snapEnabled = false,
+    stageWidth,
+    stageHeight
 }) => {
     const groupRef = useRef<Konva.Group>(null);
     const lastClickTimeRef = useRef<number>(0);
@@ -95,18 +105,27 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
         const x = node.x();
         const y = node.y();
 
-        // Clamp position to canvas bounds (0-2000 for both x and y)
-        // Note: The exact max bounds should come from FIELD_DIMENSIONS[sport]
-        // but for now we use a safe default of 2000x2000
-        const clampedX = Math.max(0, Math.min(x, 2000));
-        const clampedY = Math.max(0, Math.min(y, 2000));
+        // Clamp position to canvas bounds
+        const maxW = stageWidth || 2000;
+        const maxH = stageHeight || 2000;
+        const clampedX = Math.max(0, Math.min(x, maxW));
+        const clampedY = Math.max(0, Math.min(y, maxH));
 
-        // Reset position to clamped values
-        node.x(clampedX);
-        node.y(clampedY);
+        // Apply snap if enabled
+        const { x: finalX, y: finalY } = snapPosition(
+            clampedX,
+            clampedY,
+            maxW,
+            maxH,
+            snapEnabled
+        );
 
-        // Call the callback with clamped position
-        onDragEnd(clampedX, clampedY);
+        // Reset position to final values
+        node.x(finalX);
+        node.y(finalY);
+
+        // Call the callback with final position
+        onDragEnd(finalX, finalY);
     };
 
     // Handle click with custom double-click detection and drag threshold
