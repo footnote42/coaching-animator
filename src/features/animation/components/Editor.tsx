@@ -16,11 +16,12 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu, Grid } from 'lucide-react';
 import Konva from 'konva';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
 import { FieldLayoutOverlay } from '@/features/animation/components/Canvas/FieldLayoutOverlay';
+import { GridLayer } from '@/features/animation/components/Canvas/GridLayer';
 import { EntityLayer } from '@/features/animation/components/Canvas/EntityLayer';
 import { InlineEditor } from '@/features/animation/components/Canvas/InlineEditor';
 import { GhostLayer } from '@/features/animation/components/Canvas/GhostLayer';
@@ -94,7 +95,9 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const selectedAnnotationId = useUIStore(s => s.selectedAnnotationId);
   const selectAnnotation = useUIStore.getState().selectAnnotation;
   const drawingMode = useUIStore(s => s.drawingMode);
-  const setDrawingMode = useUIStore(s => s.setDrawingMode);
+  const setDrawingMode = useUIStore.getState().setDrawingMode;
+  const snapToGrid = useUIStore(s => s.snapToGrid);
+  const toggleSnapToGrid = useUIStore.getState().toggleSnapToGrid;
 
 
 
@@ -307,6 +310,22 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         {focusMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
       </button>
 
+      {/* Snap to Grid Toggle Button */}
+      {!focusMode && (
+        <button
+          onClick={toggleSnapToGrid}
+          className={`fixed top-4 right-16 z-50 p-2 rounded-none backdrop-blur-md border transition-all ${
+            snapToGrid 
+              ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]' 
+              : 'bg-black/80 text-white/70 border-white/10 hover:text-white'
+          }`}
+          aria-label={snapToGrid ? 'Disable snap to grid' : 'Enable snap to grid'}
+          aria-pressed={snapToGrid}
+        >
+          <Grid className="w-5 h-5" />
+        </button>
+      )}
+
       {!focusMode && !isMobile && (
         <aside className={`border-r border-[var(--color-border)] bg-pitch-green flex flex-col transition-[width] duration-200 ${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'}`}>
           <ErrorBoundary fallbackTitle="Sidebar Error">
@@ -417,6 +436,11 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                   width={canvasWidth}
                   height={canvasHeight}
                 />
+                <GridLayer
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  visible={snapToGrid}
+                />
                 <GhostLayer />
                 <EntityLayer
                   entities={entities}
@@ -425,9 +449,12 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                   onEntityMove={handleEntityMove}
                   onEntityDoubleClick={handleEntityDoubleClick}
                   onEntityContextMenu={handleEntityContextMenu}
-                  interactive={!isPlaying}
+                   interactive={!isPlaying}
                   playbackPosition={playbackPosition}
                   frames={project?.frames ?? []}
+                  snapToGrid={snapToGrid}
+                  stageWidth={canvasWidth}
+                  stageHeight={canvasHeight}
                 />
                 <AnnotationLayer
                   annotations={annotations}

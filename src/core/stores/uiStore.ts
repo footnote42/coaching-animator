@@ -13,6 +13,7 @@ export interface UIStoreState {
     selectedAnnotationId: string | null;
     drawingMode: DrawingMode;
     showGhosts: boolean;
+    snapToGrid: boolean;
     activeSidebarPanel: SidebarPanel;
     isLoading: {
         save: boolean;
@@ -32,6 +33,7 @@ export interface UIStoreState {
     selectEntity: (entityId: string | null) => void;
     deselectAll: () => void;
     toggleGhosts: () => void;
+    toggleSnapToGrid: () => void;
     setSidebarPanel: (panel: SidebarPanel) => void;
     setLoadingState: (operation: 'save' | 'load', loading: boolean) => void;
     startExport: () => void;
@@ -52,6 +54,7 @@ export const useUIStore = create<UIStoreState>()(
             selectedAnnotationId: null,
             drawingMode: 'none',
             showGhosts: false,
+            snapToGrid: false,
             activeSidebarPanel: 'entities',
             isLoading: {
                 save: false,
@@ -78,6 +81,10 @@ export const useUIStore = create<UIStoreState>()(
             toggleGhosts: () => set((state) => ({
                 ...state,
                 showGhosts: !state.showGhosts,
+            })),
+            toggleSnapToGrid: () => set((state) => ({
+                ...state,
+                snapToGrid: !state.snapToGrid,
             })),
             setSidebarPanel: (panel: SidebarPanel) => set((state) => ({
                 ...state,

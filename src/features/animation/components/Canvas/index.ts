@@ -20,3 +20,6 @@ export type { AnnotationLayerProps } from './AnnotationLayer';
 
 export { AnnotationDrawingLayer } from './AnnotationDrawingLayer';
 export type { AnnotationDrawingLayerProps } from './AnnotationDrawingLayer';
+
+export { GridLayer } from './GridLayer';
+export type { GridLayerProps } from './GridLayer';

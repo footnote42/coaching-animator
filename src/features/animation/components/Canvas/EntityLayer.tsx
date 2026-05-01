@@ -29,6 +29,12 @@ export interface EntityLayerProps {
     scaleX?: number;
     /** Scale factor mapping editor coordinate space to canvas dimensions (default 1) */
     scaleY?: number;
+    /** Whether snap-to-grid is enabled */
+    snapToGrid?: boolean;
+    /** Stage width for snapping */
+    stageWidth?: number;
+    /** Stage height for snapping */
+    stageHeight?: number;
 }
 
 /**
@@ -55,6 +61,9 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     frames,
     scaleX,
     scaleY,
+    snapToGrid = false,
+    stageWidth,
+    stageHeight,
 }) => {
     /**
      * Helper function to apply parent-relative positioning.
@@ -160,6 +169,9 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
                     onDoubleClick={() => onEntityDoubleClick(entity.id)}
                     onContextMenu={(event) => onEntityContextMenu(entity.id, event)}
                     opacity={entity.opacity ?? 1.0}
+                    snapEnabled={snapToGrid}
+                    stageWidth={stageWidth}
+                    stageHeight={stageHeight}
                 />
             ))}
         </Layer>
