@@ -25,7 +25,6 @@ export { SaveToCloudModal } from './components/SaveToCloudModal';
 export { Navigation } from './components/Navigation';
 export { ErrorBoundary } from './components/ErrorBoundary';
 export { OfflineIndicator } from './components/OfflineIndicator';
-export { OnboardingTutorial } from './components/OnboardingTutorial';
 
 // ============================================================================
 // UI Primitives

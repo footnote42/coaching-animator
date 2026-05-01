@@ -503,7 +503,7 @@ const resolvedColor = EntityColors.resolve(
 
 ### Domain Assumptions
 
-- **Ball is White** (`neutral[0]` = '#ffffff')
+- **Ball: White oval token** (`neutral[0]` = '#ffffff')
 - **Cones are High-Vis Yellow** (`neutral[2]` = '#fde047')
 - **Players use team colors** (attack: red gradient, defense: blue gradient)
 

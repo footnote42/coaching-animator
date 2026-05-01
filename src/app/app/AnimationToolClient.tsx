@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SaveToCloudModal } from '@/shared/components/SaveToCloudModal';
-import { OnboardingTutorial } from '@/shared/components/OnboardingTutorial';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { toast } from 'sonner';
 import { useUser } from '@/lib/contexts/UserContext';
@@ -138,22 +137,7 @@ function AnimationToolPageContent() {
 
   const payload = getPayload();
 
-  // Onboarding Tutorial Logic
-  const [showTutorial, setShowTutorial] = useState(false);
-
-  useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('has_seen_tutorial');
-    if (!hasSeenTutorial) {
-      // Delay slightly to let editor load
-      const timer = setTimeout(() => setShowTutorial(true), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleTutorialComplete = () => {
-    localStorage.setItem('has_seen_tutorial', 'true');
-    setShowTutorial(false);
-  };
+  // No local auth state management needed, handled by UserContext
 
   if (loading) {
     return (
@@ -195,11 +179,6 @@ function AnimationToolPageContent() {
           onSuccess={handleSaveSuccess}
         />
       )}
-      <OnboardingTutorial
-        isOpen={showTutorial}
-        onClose={handleTutorialComplete}
-        onComplete={handleTutorialComplete}
-      />
     </>
   );
 }

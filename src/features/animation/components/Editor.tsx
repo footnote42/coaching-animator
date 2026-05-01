@@ -16,7 +16,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu, Grid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu, Grid, HelpCircle } from 'lucide-react';
 import Konva from 'konva';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
@@ -53,6 +53,7 @@ import { EditorFloatingRemote } from '@/features/animation/components/Canvas/Edi
 
 import { Toaster } from 'sonner';
 import { MobileDrawer } from './MobileDrawer';
+import Link from 'next/link';
 
 interface EditorProps {
   isAuthenticated?: boolean;
@@ -180,6 +181,10 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   // Mobile editor state
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('firstRunSeen') !== '1';
+  });
   const isMobile = viewportWidth < 768;
 
   // Sidebar collapse state
@@ -299,7 +304,13 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
 
   return (
     <div className="flex h-screen bg-[var(--color-surface-warm)] relative">
-      <FirstRunModal />
+      <FirstRunModal 
+        open={showOnboarding} 
+        onDismiss={() => {
+          try { localStorage.setItem('firstRunSeen', '1'); } catch {}
+          setShowOnboarding(false);
+        }} 
+      />
       
       {/* Focus Mode Toggle Button */}
       <button
@@ -362,6 +373,15 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
                 }}
               />
             </div>
+            {!sidebarCollapsed && (
+              <div className="border-t border-border p-3 flex justify-between items-center bg-tactics-white">
+                <button onClick={() => setShowOnboarding(true)} className="flex items-center gap-1.5 text-xs text-text-inverse/70 hover:text-text-inverse transition-colors" aria-label="Show guide">
+                  <HelpCircle className="w-4 h-4" />
+                  <span>How it works</span>
+                </button>
+                <Link href="/help" className="text-xs text-text-inverse/50 hover:text-text-inverse/80 transition-colors">Help</Link>
+              </div>
+            )}
           </ErrorBoundary>
         </aside>
       )}

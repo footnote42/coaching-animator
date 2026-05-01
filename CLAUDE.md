@@ -169,12 +169,13 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **012-editor-workspace-remodel** — Editor Workspace Remodel (Phase 2i)
-- Plan: `specs/012-editor-workspace-remodel/plan.md`
-- Spec: `specs/012-editor-workspace-remodel/spec.md`
+- **013-snap-to-grid** — Snap-to-Grid (Phase 2j)
+- Plan: `specs/013-snap-to-grid/plan.md`
+- Spec: `specs/013-snap-to-grid/spec.md`
 
 ## Recent Changes
-- 011-workflow-clarity: Phase 2h spec + plan complete; 2 targeted changes (ShareViewer back link → /gallery, My-Gallery Play → /share/{id})
+- 012-editor-workspace-remodel: Phase 2i complete — collapsible sidebar, Focus Mode, Mobile Drawer
+- 011-workflow-clarity: Phase 2h complete — ShareViewer back link → /gallery, My-Gallery Play → /share/{id}
 - 010-auth-profile: Profile page visual redesign (coach identity card)
 
 ## Design Context

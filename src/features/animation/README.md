@@ -193,7 +193,7 @@ Centralized entity color resolution service (single source of truth for entity c
 **Dependency Rule**: `Entities → EntityColors → DESIGN_TOKENS` (never reverse)
 
 **Domain Assumptions**:
-- Ball is White (`neutral[0]`)
+- Ball: White oval token.
 - Cones are High-Vis Yellow (`neutral[2]`)
 - Players use team colors (red/blue gradients)
 

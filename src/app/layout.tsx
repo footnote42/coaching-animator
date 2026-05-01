@@ -48,6 +48,7 @@ export const viewport: Viewport = {
 
 import { OfflineIndicator } from '@/shared/components/OfflineIndicator';
 import { Toaster } from 'sonner';
+import { Footer } from '@/shared/components/Footer';
 
 export default function RootLayout({
   children,
@@ -65,6 +66,7 @@ export default function RootLayout({
         <UserProvider>
           <Navigation variant="full" />
           {children}
+          <Footer />
           <OfflineIndicator />
         </UserProvider>
         <Toaster position="bottom-left" />

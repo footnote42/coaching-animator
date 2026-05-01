@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { BrandIcon } from './BrandIcon';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, HelpCircle } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 
 interface NavigationProps {
@@ -96,6 +96,9 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             </Link>
           )}
 
+          <Link href="/help" className="hidden md:flex p-1.5 text-text-primary/70 hover:text-primary transition-colors" aria-label="Help"><HelpCircle className="w-4 h-4" /></Link>
+          <Link href="/help" className="md:hidden text-sm transition-colors text-text-primary hover:text-primary">Help</Link>
+
           <Link
             href="/app"
             className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -118,6 +121,9 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           >
             Sign In
           </Link>
+
+          <Link href="/help" className="hidden md:flex p-1.5 text-text-primary/70 hover:text-primary transition-colors" aria-label="Help"><HelpCircle className="w-4 h-4" /></Link>
+          <Link href="/help" className="md:hidden text-sm transition-colors text-text-primary hover:text-primary">Help</Link>
 
           <Link
             href="/app"
