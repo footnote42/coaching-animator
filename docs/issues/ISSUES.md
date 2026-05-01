@@ -96,18 +96,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-008 — Share Workflow Not Clear
-- **Status**: `[ ]` Open
-- **Severity**: High (breaks core loop)
-- **Observed**: Animation rendering is confusing. Hash is unique but rendering via "replay" (old, not optimized) vs "share" (optimized). Users don't know which to use or how to share from where.
-- **Problem**: 
-  - Where does user initiate share? (animation page? menu?)
-  - Which route do they use? (replay/ vs share/?)
-  - What does hash represent? (ID or checksum?)
-- **Action**: Document and clarify share workflow. Update UI to guide coaches step-by-step. Consider: "Share" button → generates link → explains what link does.
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility) — critical for onboarding
-- **Note**: May need inline help or wizard
-
 ---
 
 ### UX-009 — Gallery Carousel & Progression Pack Discovery
@@ -565,13 +553,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## New Features (from 2026-04-24 review)
 
-### FEAT-010 — Snap to Grid
-- **Status**: `[ ]` Open
-- **Severity**: Low (power user feature)
-- **Observed**: When building frames, coaches would benefit from snapping entity positions to a grid to maintain alignment across frames.
-- **Action**: Add optional snap-to-grid toggle; define grid resolution relative to pitch markings; snap on drag end
-- **Roadmap ref**: Phase 4 (post-launch, based on coach feedback)
-
 ---
 
 ### FEAT-012 — Mobile FrameStrip (swipe-accessible frame navigation on <768px)
@@ -754,10 +735,46 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
+---
+756: 
+757: ### UX-016 — User Onboarding & Help
+758: - **Status**: `[x]` Closed
+759: - **Completed**: 2026-05-01 (Phase 2k, 014-user-guide)
+760: - **Summary**: Implemented FirstRunModal onboarding, /help page, /help/coaching (APES), and integrated help navigation.
+761: 
+762: ---
+763: 
+764: ### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
 - **Status**: `[x]` Closed
 - **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
 - **Summary**: Implemented `useEditorCanvasSize` hook using ResizeObserver to ensure responsive canvas in the editor.
+
+---
+
+### UX-008 — Share Workflow Not Clear
+- **Status**: `[x]` Closed
+- **Severity**: High (breaks core loop)
+- **Observed**: Animation rendering is confusing. Hash is unique but rendering via "replay" (old, not optimized) vs "share" (optimized). Users don't know which to use or how to share from where.
+- **Action**: Document and clarify share workflow. Update UI to guide coaches step-by-step.
+- **Completed**: 2026-04-26 (Phase 2c, 006-share-workflow)
+- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
+
+---
+
+### FEAT-010 — Snap to Grid
+- **Status**: `[x]` Closed
+- **Severity**: Low (power user feature)
+- **Observed**: When building frames, coaches would benefit from snapping entity positions to a grid to maintain alignment across frames.
+- **Action**: Add optional snap-to-grid toggle; define grid resolution relative to pitch markings; snap on drag end
+- **Completed**: 2026-05-01 (Phase 2j, 013-snap-to-grid)
+- **Roadmap ref**: Phase 4 (pulled forward to Phase 2j)
+
+---
+
+### UX-016 — User Onboarding & Help
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-01 (Phase 2k, 014-user-guide)
+- **Summary**: Implemented FirstRunModal onboarding, /help page, /help/coaching (APES), and integrated help navigation.
 
 ---
 

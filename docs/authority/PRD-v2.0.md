@@ -46,6 +46,7 @@ Transform Coaching Animator from a personal animation tool into a **rugby coachi
 - ✅ **Club Personalization** - Badges, default strip colors, affiliation metadata
 - ✅ **YouTube Video Links** - Coaching notes with video tutorial links
 - ✅ **Mobile-First UX Architecture** - Bottom navigation, adaptive canvas, and touch-optimized controls
+- ✅ **User Guide & Help System** - Inline onboarding, centralized help center, and coaching framework documentation
 
 **Enhanced Features:**
 - ✅ **Mobile Replay Optimization** - Responsive canvas, touch-friendly controls (keep basic editing with warning)

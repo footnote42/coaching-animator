@@ -4,6 +4,53 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-01 — User Guide (Phase 2k) ✅
+
+**Branch**: `014-user-guide` (implementation complete, verified, and merged to main)
+
+---
+
+### What was delivered this session
+
+#### 1. User Onboarding
+- **First-Run Modal**: Implemented `FirstRunModal` in `Editor.tsx` using `localStorage` (`hasSeenOnboarding`) to guide new users.
+- **"How it works" Button**: Added a persistent help button in the editor sidebar to re-trigger the onboarding guide.
+
+#### 2. Help & Documentation
+- **Help Center**: Created `/help` page with "What's on the pitch" guide and common FAQs.
+- **APES Framework**: Created `/help/coaching` page documenting the APES (Active, Purposeful, Enjoyable, Safe) framework for grassroots coaching.
+- **Global Navigation**: Integrated Help links into the main header menu, footer, and mobile drawer.
+
+#### 3. Entity Documentation Refinement
+- **Visual Accuracy**: Updated all documentation (help page, README, patterns.md) to describe the rugby ball as a **"White oval token"** to match the actual canvas rendering.
+
+#### 4. UI/UX Polish
+- **Global Footer**: Added a site-wide `Footer` (hidden on editor/share routes) with navigation and branding.
+- **Mobile Drawer Integration**: Added Help links to the `MobileDrawer` for better discoverability on small screens.
+
+---
+
+### Issues Logged / Updated
+- **ROADMAP.md**: Updated to v3.2; Phase 2j and 2k marked complete. Launch Definition progress increased to 8/9.
+- **ISSUES.md**: Closed UX-008 (Share Workflow), FEAT-010 (Snap to Grid), and added/closed UX-016 (User Onboarding & Help).
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  main — all Phase 2k changes merged.
+
+Roadmap: Updated to v3.2.
+
+Next Priority: Phase 2l — Cosmetic Polish OR Phase 3b — Security Hardening.
+```
+
+See `docs/plans/prompts/2026-05-01-next-session-guide.md` for the full next-session kickoff prompt.
+
+---
+
 ## 2026-05-01 — Editor Workspace Remodel (Phase 2i) ✅
  
  **Branch**: `012-editor-workspace-remodel` (implementation complete, verified, and logged)
