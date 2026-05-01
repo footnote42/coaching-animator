@@ -188,7 +188,11 @@
       "Bash(sed -n '283,300p' docs/issues/ISSUES.md)",
       "Bash(sed -n '705,712p' docs/issues/ISSUES.md)",
       "Bash(diffstat)",
-      "Bash(.specify/scripts/bash/get-feature-paths.sh --json --paths-only)"
+      "Bash(.specify/scripts/bash/get-feature-paths.sh --json --paths-only)",
+      "Bash(.specify/scripts/bash/get-feature.sh *)",
+      "Bash(.specify/scripts/bash/setup-plan.sh *)",
+      "Bash(.specify/scripts/bash/update-agent-context.sh claude *)",
+      "Bash(xargs cat *)"
     ]
   },
   "enableAllProjectMcpServers": true,

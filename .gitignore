@@ -45,6 +45,8 @@ supabase/.temp/
 .windsurf/
 .cursor/
 .codex/
+artifacts/
+.agents/
 
 # Env backups
 .env.local.bak
