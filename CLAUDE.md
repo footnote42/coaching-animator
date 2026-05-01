@@ -169,9 +169,9 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **011-workflow-clarity** — Workflow Clarity (Phase 2h)
-- Plan: `specs/011-workflow-clarity/plan.md`
-- Spec: `specs/011-workflow-clarity/spec.md`
+- **012-editor-workspace-remodel** — Editor Workspace Remodel (Phase 2i)
+- Plan: `specs/012-editor-workspace-remodel/plan.md`
+- Spec: `specs/012-editor-workspace-remodel/spec.md`
 
 ## Recent Changes
 - 011-workflow-clarity: Phase 2h spec + plan complete; 2 targeted changes (ShareViewer back link → /gallery, My-Gallery Play → /share/{id})

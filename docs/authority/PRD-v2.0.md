@@ -2560,4 +2560,22 @@ The PRD specified individual save/persist/visibility *requirements* but never na
 
 **Resolution:** Added §5.13 *Save & Share Workflow (As Built)* with the mental model, endpoint table, visibility surface matrix, coach workflow narrative, and a cross-reference clarifying the relationship to §6.1.
 
+---
+
+## Amendment A2.1-10 — UX: Editor Workspace Remodel (Phase 2i)
+
+**Severity:** High (Usability & Productivity)
+**Affected files:** `src/features/animation/components/Editor.tsx`, `src/features/animation/components/Canvas/EditorFloatingRemote.tsx`, `src/features/animation/components/ProgressionPanel.tsx`, `src/features/animation/components/MobileDrawer.tsx`
+
+The editor UI had suboptimal real-estate usage on desktop (fixed-width sidebar) and was unusable on small viewports (<768px) due to a blocking `MobileWarning` banner. The workspace needed to adapt to different usage contexts (creation, presentation, and mobile review).
+
+**Required fix:** 
+1. **Collapsible Sidebar**: Sidebar should be collapsible to zero-width to reclaim canvas space. State must persist across sessions.
+2. **Focus Mode**: A "presentation-first" mode that hides all UI chrome (sidebar, footer, progression header) leaving only the canvas and essential floating controls.
+3. **Mobile Drawer**: Replace the mobile blocking banner with a functional bottom drawer that provides access to entity palettes and project actions on small viewports.
+4. **Enhanced Remote**: The floating playback remote should expand to provide frame-level controls (Add Frame, Pace, Loop, Ghosting) to avoid footer dependency.
+
+**Resolution:** Implemented via spec `012-editor-workspace-remodel`. Sidebar collapse, Focus Mode, and Mobile Drawer are now operational and verified.
+
 **Document End**
+

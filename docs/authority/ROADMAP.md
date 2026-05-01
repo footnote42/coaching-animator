@@ -1,7 +1,7 @@
 # Coaching Animator Roadmap
 
-**Version**: 3.1
-**Last Updated**: 2026-04-28
+**Version**: 3.2
+**Last Updated**: 2026-05-01
 **Status**: Active authority document
 **Previous roadmap**: `docs/archive/ROADMAP-2026-04-25.md` (v3.0)
 
@@ -48,7 +48,10 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 2c | Share workflow plumbing | ✅ | 006-share-workflow | 2026-04-26 | Share modal, `POST /api/share`, progression nav in share view |
 | 2b | Playback controls | ✅ | 007-playback-controls | 2026-04-26 | EditorFloatingRemote draggable pill |
 | 2e | Landing refinements | ✅ | 008-landing-refinements | 2026-04-26 | Looping SVG background |
-| 2f | Gallery playbook | ✅ | 009-gallery-playbook | 2026-04-27 | Mini-pitch previews, progression strip, **endorsement system [pulled forward from Phase 4 / FEATURE-001]**, My Playbook search/filter |
+| 2f | Gallery playbook | ✅ | 009-gallery-playbook | 2026-04-27 | Mini-pitch previews, progression strip, My Playbook search/filter |
+| 2g | Auth & Profile | ✅ | 010-auth-profile | 2026-04-28 | Coach identity card, profile redesign |
+| 2h | Workflow Clarity | ✅ | 011-workflow-clarity | 2026-04-30 | /share back-link, my-gallery play nav, PRD §5.13 |
+| 2i | Editor Workspace Remodel | ✅ | 012-editor-workspace-remodel | 2026-05-01 | Collapsible sidebar, Focus Mode, Mobile Drawer, expanded remote |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 
@@ -58,7 +61,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 
 | Phase | Title | Spec | Branch | Notes |
 |-------|-------|------|--------|-------|
-| 2g | Auth & Profile | 010-auth-profile | `010-auth-profile` | Coach identity card, profile redesign — implementation complete on branch, awaiting merge |
+| 2j | Snap-to-Grid | 013-snap-to-grid | `main` | Pulled forward from Phase 4 |
 
 ---
 
@@ -80,9 +83,10 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 3. ✅ **Editor & canvas credible** — pitch markings accurate, entity UX coherent (Phase 2a)
 4. ✅ **Share workflow plumbing** — share button works, `POST /api/share` writes `saved_animations` (Phase 2c shipped)
 5. ✅ **Legal compliant** — cookies assessed, ToS and Privacy Policy reviewed (Phase 2d shipped)
-6. ⏳ **Workflow clarity** *(new criterion)* — coach can complete edit → save → share → player view → return to gallery without external help (Phase 2h)
-7. ⏳ **Basic user guide** — coaches self-onboard in <5 minutes (Phase 2k)
-8. ⏳ **Security hardened** — rate limiting, injection prevention, auth tokens (Phase 3b)
+6. ✅ **Workflow clarity** — coach can complete edit → save → share → player view → return to gallery without external help (Phase 2h shipped 2026-04-30)
+7. ✅ **Editor workspace layout** — collapsible sidebar, Focus Mode, and mobile-first drawer (Phase 2i shipped 2026-05-01)
+8. ⏳ **Basic user guide** — coaches self-onboard in <5 minutes (Phase 2k)
+9. ⏳ **Security hardened** — rate limiting, injection prevention, auth tokens (Phase 3b)
 
 ---
 
@@ -96,12 +100,12 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 
 | Order | Sub-area | Status | Spec | Scope summary | Key issues |
 |-------|----------|--------|------|---------------|------------|
-| 1 | **2g — Auth & Profile** | In flight | 010-auth-profile | Coach identity card, profile redesign | UX-005, PROFILE-001 |
-| 2 | **2h — Workflow Clarity** *(new)* | Next | (TBA) | gallery↔/share/{id} navigation, breadcrumb, animation name on /share/{id}, save/publish/visibility model documented in PRD §5.13 | UX-008, FLOW-001, FLOW-002, EDITOR-002, GALLERY-002 |
-| 3 | **2i — Editor Workspace Remodel** *(new)* | Next | (TBA) | Collapsible left sidebar, Focus Mode (canvas full-bleed), capped progression panel max-height, mobile drawer at <768 (replaces MobileWarning) | EDITOR-013, PLAYBACK-001 |
-| 4 | **2j — Snap-to-Grid** *(new — pulled forward from Phase 4)* | Next | (TBA) | Toggle in editor toolbar (off by default), optional grid overlay, snap on drag-end inside `PlayerToken.handleDragEnd`. Replay & share unaffected. | FEAT-010 |
-| 5 | **2k — User Guide** *(was 2h)* | Next | (TBA) | Inline onboarding, help page, coaching pedagogy taster | (T7), T8 |
-| 6 | **2l — Cosmetic Polish** *(was scattered across 2e/2f)* | Next | (TBA) | RFU endorsement icon asset (<50 KB), landing copy fixes, MyPlaybook layout parity, profile personality | LANDING-001..004, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, PROFILE-001 |
+| 1 | **2g — Auth & Profile** | ✅ | 010-auth-profile | Coach identity card, profile redesign | UX-005, PROFILE-001 |
+| 2 | **2h — Workflow Clarity** | ✅ | 011-workflow-clarity | gallery↔/share/{id} navigation, breadcrumb, animation name on /share/{id} | UX-008, FLOW-001, FLOW-002, EDITOR-002, GALLERY-002 |
+| 3 | **2i — Editor Workspace Remodel** | ✅ | 012-editor-workspace-remodel | Collapsible sidebar, Focus Mode, Mobile Drawer, Expanded Remote | EDITOR-013, PLAYBACK-001 |
+| 4 | **2j — Snap-to-Grid** | Next | (TBA) | Toggle in editor toolbar (off by default), optional grid overlay, snap on drag-end | FEAT-010 |
+| 5 | **2k — User Guide** | Next | (TBA) | Inline onboarding, help page, coaching pedagogy taster | (T7), T8 |
+| 6 | **2l — Cosmetic Polish** | Next | (TBA) | RFU endorsement icon asset (<50 KB), landing copy fixes, MyPlaybook layout parity, profile personality | LANDING-001..004, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, PROFILE-001 |
 
 **Exit criteria**:
 - 2h: a coach can complete edit → save → share → player views → back to gallery without external help.

@@ -109,55 +109,60 @@ export function ProgressionPanel({
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-surface)] border-b border-[var(--color-border)] overflow-x-auto">
+    <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-surface)] border-b border-[var(--color-border)] max-h-16 overflow-hidden">
       <span className="text-xs text-text-primary/50 shrink-0">Progressions:</span>
 
-      {/* Base pill — fixed, not draggable */}
-      <button
-        onClick={() => onSelectRequest(-1)}
-        className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
-          activeIndex === -1
-            ? 'bg-primary text-text-inverse border-primary'
-            : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
-        }`}
-        title={baseTitle}
-      >
-        Base
-      </button>
+      <div className="flex-1 min-w-0 overflow-x-auto flex items-center gap-2">
+        {/* Base pill — fixed, not draggable */}
+        <button
+          onClick={() => onSelectRequest(-1)}
+          className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
+            activeIndex === -1
+              ? 'bg-primary text-text-inverse border-primary'
+              : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
+          }`}
+          title={baseTitle}
+        >
+          Base
+        </button>
 
-      {/* Sortable progression pills */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={progressions.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-          {progressions.map((prog, i) => (
-            <SortablePill
-              key={prog.id}
-              prog={prog}
-              index={i}
-              isActive={activeIndex === i}
-              onSelectRequest={onSelectRequest}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
+        {/* Sortable progression pills */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={progressions.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+            {progressions.map((prog, i) => (
+              <SortablePill
+                key={prog.id}
+                prog={prog}
+                index={i}
+                isActive={activeIndex === i}
+                onSelectRequest={onSelectRequest}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+      </div>
 
-      {/* Add progression button */}
-      <button
-        onClick={onAddProgression}
-        disabled={!canAdd || isAdding}
-        className={`shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border transition-colors ${
-          canAdd && !isAdding
-            ? 'border-dashed border-border text-text-primary/50 hover:border-primary hover:text-primary'
-            : 'border-dashed border-border/30 text-text-primary/20 cursor-not-allowed'
-        }`}
-        title={!canAdd ? 'Maximum 5 progressions reached' : 'Add progression'}
-      >
-        <Plus className="w-3 h-3" />
-        {isAdding ? 'Adding…' : 'Add'}
-      </button>
+      {/* Fixed action wrapper */}
+      <div className="flex-shrink-0 ml-2 flex items-center gap-2">
+        {/* Add progression button */}
+        <button
+          onClick={onAddProgression}
+          disabled={!canAdd || isAdding}
+          className={`shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border transition-colors ${
+            canAdd && !isAdding
+              ? 'border-dashed border-border text-text-primary/50 hover:border-primary hover:text-primary'
+              : 'border-dashed border-border/30 text-text-primary/20 cursor-not-allowed'
+          }`}
+          title={!canAdd ? 'Maximum 5 progressions reached' : 'Add progression'}
+        >
+          <Plus className="w-3 h-3" />
+          {isAdding ? 'Adding…' : 'Add'}
+        </button>
 
-      {!canAdd && (
-        <span className="text-xs text-text-primary/30 shrink-0">Max 5</span>
-      )}
+        {!canAdd && (
+          <span className="text-xs text-text-primary/30 shrink-0">Max 5</span>
+        )}
+      </div>
     </div>
   );
 }

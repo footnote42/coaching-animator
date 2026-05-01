@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef, useState, useCallback, useEffect } from 'react';
-import { GripVertical, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { GripVertical, ChevronLeft, ChevronRight, Play, Pause, ChevronDown, ChevronUp, Plus, RotateCcw, Ghost } from 'lucide-react';
 import { useProjectStore } from '@/core/stores/projectStore';
+import { useUIStore } from '@/core/stores/uiStore';
+import { PlaybackSpeed } from '@/core/types';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -11,6 +13,8 @@ import { useProjectStore } from '@/core/stores/projectStore';
 const PILL_WIDTH = 176;
 const PILL_HEIGHT = 44;
 const STORAGE_KEY = 'editor-remote-pos';
+const EXPANDED_KEY = 'editor-remote-expanded';
+
 
 // ---------------------------------------------------------------------------
 // Safe area helper (copied verbatim from FloatingRemote.tsx)
@@ -83,6 +87,27 @@ export function EditorFloatingRemote() {
   const play = useProjectStore.getState().play;
   const pause = useProjectStore.getState().pause;
   const setCurrentFrame = useProjectStore.getState().setCurrentFrame;
+  const addFrame = useProjectStore.getState().addFrame;
+  const setPlaybackSpeed = useProjectStore.getState().setPlaybackSpeed;
+  const toggleLoop = useProjectStore.getState().toggleLoop;
+  const playbackSpeed = useProjectStore(s => s.playbackSpeed);
+  const loopPlayback = useProjectStore(s => s.loopPlayback);
+
+  const showGhosts = useUIStore(s => s.showGhosts);
+  const toggleGhosts = useUIStore.getState().toggleGhosts;
+
+  const [expanded, setExpanded] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(EXPANDED_KEY) === 'true';
+  });
+
+  const toggleExpanded = useCallback(() => {
+    setExpanded(prev => {
+      const next = !prev;
+      localStorage.setItem(EXPANDED_KEY, String(next));
+      return next;
+    });
+  }, []);
 
   // Safe area ref (populated after mount)
   const safeAreaBottom = useRef(0);
@@ -120,13 +145,13 @@ export function EditorFloatingRemote() {
         x: Math.max(0, Math.min(prev.x, window.innerWidth - PILL_WIDTH)),
         y: Math.max(
           0,
-          Math.min(prev.y, window.innerHeight - PILL_HEIGHT - safeAreaBottom.current),
+          Math.min(prev.y, window.innerHeight - (PILL_HEIGHT * (expanded ? 2 : 1)) - safeAreaBottom.current),
         ),
       }));
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [expanded]);
 
   // ---------------------------------------------------------------------------
   // Drag state
@@ -154,12 +179,12 @@ export function EditorFloatingRemote() {
     const newX = dragStart.current.startX + dx;
     const newY = dragStart.current.startY + dy;
     const maxX = window.innerWidth - PILL_WIDTH;
-    const maxY = window.innerHeight - PILL_HEIGHT - safeAreaBottom.current;
+    const maxY = window.innerHeight - (PILL_HEIGHT * (expanded ? 2 : 1)) - safeAreaBottom.current;
     setPos({
       x: Math.max(0, Math.min(newX, maxX)),
       y: Math.max(0, Math.min(newY, maxY)),
     });
-  }, []);
+  }, [expanded]);
 
   const handlePointerUp = useCallback((currentPos: { x: number; y: number }) => {
     dragging.current = false;
@@ -172,64 +197,122 @@ export function EditorFloatingRemote() {
 
   return (
     <div
+      id="floating-remote"
       style={{
         position: 'fixed',
         left: pos.x,
         top: pos.y,
         width: PILL_WIDTH,
-        height: PILL_HEIGHT,
-        zIndex: 50,
+        height: PILL_HEIGHT * (expanded ? 2 : 1),
+        zIndex: 80,
         touchAction: 'none',
         userSelect: 'none',
         boxShadow: '2px 2px 0 rgba(0,0,0,0.5)',
+        transition: 'height 0.2s ease-out',
       }}
       onPointerMove={handlePointerMove}
       onPointerUp={() => handlePointerUp(pos)}
       onPointerCancel={() => { dragging.current = false; }}
-      className="flex items-center rounded-none bg-black/70 border border-white/10"
+      className="flex flex-col rounded-none bg-black/80 backdrop-blur-md border border-white/10 overflow-hidden"
     >
-      {/* DRAG HANDLE */}
-      <div
-        onPointerDown={handleDragStart}
-        className="px-2 py-3 text-white/40 flex-shrink-0 cursor-grab active:cursor-grabbing"
-        aria-label="Drag to reposition"
-      >
-        <GripVertical className="w-4 h-4" />
+      <div className="flex items-center w-full h-[44px] flex-shrink-0">
+        {/* DRAG HANDLE */}
+        <div
+          onPointerDown={handleDragStart}
+          className="px-2 py-3 text-white/40 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          aria-label="Drag to reposition"
+        >
+          <GripVertical className="w-4 h-4" />
+        </div>
+
+        {/* PREV FRAME */}
+        <button
+          onClick={() => setCurrentFrame(currentFrameIndex - 1)}
+          disabled={currentFrameIndex === 0}
+          className="w-9 h-11 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Previous frame"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        {/* PLAY / PAUSE */}
+        <button
+          onClick={isPlaying ? pause : play}
+          className="w-10 h-11 flex items-center justify-center text-white"
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+        </button>
+
+        {/* NEXT FRAME */}
+        <button
+          onClick={() => setCurrentFrame(currentFrameIndex + 1)}
+          disabled={currentFrameIndex >= totalFrames - 1}
+          className="w-9 h-11 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next frame"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
+        {/* FRAME COUNTER */}
+        <span className="text-[10px] text-white/70 font-mono tabular-nums px-1 min-w-[2.5rem] text-center">
+          {currentFrameIndex + 1}/{totalFrames}
+        </span>
+
+        {/* EXPAND TOGGLE */}
+        <button
+          onClick={toggleExpanded}
+          className="w-9 h-11 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+          aria-label={expanded ? 'Collapse remote' : 'Expand remote'}
+        >
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
       </div>
 
-      {/* PREV FRAME */}
-      <button
-        onClick={() => setCurrentFrame(currentFrameIndex - 1)}
-        disabled={currentFrameIndex === 0}
-        className="w-11 h-11 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed"
-        aria-label="Previous frame"
-      >
-        <ChevronLeft className="w-4 h-4" />
-      </button>
+      {/* SECOND ROW */}
+      <div className="flex items-center w-full h-[44px] border-t border-white/5 px-1 gap-1 flex-shrink-0">
+        <button
+          onClick={addFrame}
+          className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-sm transition-all"
+          aria-label="Add frame"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
 
-      {/* PLAY / PAUSE */}
-      <button
-        onClick={isPlaying ? pause : play}
-        className="w-11 h-11 flex items-center justify-center text-white"
-        aria-label={isPlaying ? 'Pause' : 'Play'}
-      >
-        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-      </button>
+        <div className="flex bg-white/5 rounded-sm p-0.5">
+          {[0.5, 1, 2].map(s => (
+            <button
+              key={s}
+              onClick={() => setPlaybackSpeed(s as PlaybackSpeed)}
+              className={`text-[9px] px-1.5 py-1 rounded-sm transition-all ${
+                playbackSpeed === s ? 'bg-white/20 text-white font-bold' : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              {s}x
+            </button>
+          ))}
+        </div>
 
-      {/* NEXT FRAME */}
-      <button
-        onClick={() => setCurrentFrame(currentFrameIndex + 1)}
-        disabled={currentFrameIndex >= totalFrames - 1}
-        className="w-11 h-11 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed"
-        aria-label="Next frame"
-      >
-        <ChevronRight className="w-4 h-4" />
-      </button>
+        <button
+          onClick={toggleLoop}
+          className={`w-8 h-8 flex items-center justify-center rounded-sm transition-all ${
+            loopPlayback ? 'text-primary' : 'text-white/40 hover:text-white/70 hover:bg-white/10'
+          }`}
+          aria-label={loopPlayback ? 'Disable loop' : 'Enable loop'}
+        >
+          <RotateCcw className={`w-4 h-4 ${loopPlayback ? 'animate-spin-slow' : ''}`} />
+        </button>
 
-      {/* FRAME COUNTER */}
-      <span className="text-xs text-white/70 font-mono tabular-nums px-2 min-w-[3.5rem] text-center">
-        {currentFrameIndex + 1} / {totalFrames}
-      </span>
+        <button
+          onClick={toggleGhosts}
+          className={`w-8 h-8 flex items-center justify-center rounded-sm transition-all ${
+            showGhosts ? 'text-primary' : 'text-white/40 hover:text-white/70 hover:bg-white/10'
+          }`}
+          aria-label={showGhosts ? 'Disable ghost mode' : 'Enable ghost mode'}
+        >
+          <Ghost className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

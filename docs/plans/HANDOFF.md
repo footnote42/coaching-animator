@@ -4,7 +4,52 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
-## 2026-04-28 — Comprehensive Audit + Doc Reconciliation (ROADMAP v3.1, PRD §5.13)
+## 2026-05-01 — Editor Workspace Remodel (Phase 2i) ✅
+ 
+ **Branch**: `012-editor-workspace-remodel` (implementation complete, verified, and logged)
+ 
+ ---
+ 
+ ### What was delivered this session
+ 
+ #### 1. Workspace Layout Refinement
+ - **Collapsible Sidebar**: Zero-width collapse with transition; state persists in `localStorage` (`sidebarCollapsed`).
+ - **Focus Mode**: Chrome-free canvas view (≥85% viewport); snapshot restores previous sidebar state on exit.
+ - **Mobile Drawer**: Replaced `MobileWarning` banner with a functional bottom drawer (`MobileDrawer.tsx`) for <768px viewports.
+ - **Progression Panel**: Capped height (`max-h-16`) with horizontal scroll for pills; "Add" button pinned to the right.
+ 
+ #### 2. Enhanced Remote Controls
+ - **Expanded Floating Remote**: Second row toggle (Chevron) adds Add Frame, Pace (0.5x/1x/2x), Loop, and Ghosting controls.
+ - **Draggable Persistence**: Remote position and expanded state persist in `localStorage`.
+ 
+ #### 3. Stability & Testing
+ - **E2E Stabilization**: Resolved race conditions with `localStorage` init scripts; added `data-testid` to mobile drawer for reliable targeting.
+ - **Build Quality**: `npm run lint` and `npx tsc --noEmit` pass with zero errors (addressed `DrawingMode` type mismatches).
+ - **Regression Check**: Verified `/share` and `/replay` routes remain stable and correctly scaled.
+ 
+ ---
+ 
+ ### Issues Logged / Updated
+ - **ISSUES.md**: Logged 6 new items (MYPLAYBOOK-003, FLOW-004, UX-013..015, NAV-001) from manual review.
+ - **Red/Blue Mismatch**: Captured the thumbnail color discrepancy (orange/green vs red/blue) in **UX-012**.
+ 
+ ---
+ 
+ ### State summary for next session
+ 
+ ```
+ Branch state:
+   012-editor-workspace-remodel — implementation complete (19/19 tasks), verified.
+ 
+ Roadmap: Updated to v3.2 (Phase 2i marked complete).
+ 
+ Next Priority: Phase 2j — Snap-to-Grid.
+ ```
+ 
+ See `docs/plans/prompts/2026-05-01-next-session.md` for the full next-session kickoff prompt.
+ 
+ ---
+ 
 
 **Branch**: `010-auth-profile` (010 implementation complete; awaiting merge to main)
 **Role context**: Session run as Senior Technical PM / Frontend Architect audit — no feature code written.

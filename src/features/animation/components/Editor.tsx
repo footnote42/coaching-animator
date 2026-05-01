@@ -15,7 +15,8 @@
  */
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu } from 'lucide-react';
 import Konva from 'konva';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
@@ -50,6 +51,7 @@ import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
 import { EditorFloatingRemote } from '@/features/animation/components/Canvas/EditorFloatingRemote';
 
 import { Toaster } from 'sonner';
+import { MobileDrawer } from './MobileDrawer';
 
 interface EditorProps {
   isAuthenticated?: boolean;
@@ -60,6 +62,8 @@ interface EditorProps {
   /** Club strip colors from user profile (overrides default player colors) */
   stripColors?: { attack: string; defense: string };
 }
+
+const SIDEBAR_STORAGE_KEY = 'coaching_animator_sidebar_collapsed';
 
 export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null, stripColors }: EditorProps) {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -170,9 +174,40 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     ? VALIDATION.PROJECT.MAX_FRAMES
     : VALIDATION.PROJECT.GUEST_MAX_FRAMES;
 
-  // Mobile editor warning state
-  const [mobileWarningDismissed, setMobileWarningDismissed] = useState(false);
+  // Mobile editor state
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const isMobile = viewportWidth < 768;
+
+  // Sidebar collapse state
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true';
+  });
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+      return next;
+    });
+  }, []);
+
+  // Focus Mode state
+  const [focusMode, setFocusMode] = useState(false);
+  const focusModeSnapshot = useRef<{ sidebarCollapsed: boolean }>({ sidebarCollapsed: false });
+
+  const enterFocusMode = useCallback(() => {
+    focusModeSnapshot.current = { sidebarCollapsed };
+    setSidebarCollapsed(true);
+    setFocusMode(true);
+  }, [sidebarCollapsed]);
+
+  const exitFocusMode = useCallback(() => {
+    setSidebarCollapsed(focusModeSnapshot.current.sidebarCollapsed);
+    setFocusMode(false);
+  }, []);
+
 
   useAnimationLoop();
   useKeyboardShortcuts();
@@ -260,40 +295,71 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const annotations = currentFrame ? currentFrame.annotations : [];
 
   return (
-    <div className="flex h-screen bg-[var(--color-surface-warm)]">
+    <div className="flex h-screen bg-[var(--color-surface-warm)] relative">
       <FirstRunModal />
-      <aside className="w-64 border-r border-[var(--color-border)] bg-pitch-green flex flex-col">
-        <ErrorBoundary fallbackTitle="Sidebar Error">
-          <div className="bg-tactics-white flex-1 overflow-y-auto">
-            <ProjectActions
-              isAuthenticated={isAuthenticated}
-              onSaveToCloud={onSaveToCloud}
-            />
-            <EntityPalette
-              onAddAttackPlayer={handleAddAttackPlayer}
-              onAddDefensePlayer={handleAddDefensePlayer}
-              onAddBall={handleAddBall}
-              onAddCone={handleAddCone}
-              onAddTackleShield={handleAddTackleShield}
-              onAddTackleBag={handleAddTackleBag}
-              drawingMode={drawingMode}
-              onDrawingModeChange={setDrawingMode}
-            />
-            <EntityProperties
-              entity={selectedEntityId ? entities.find((e) => e.id === selectedEntityId) || null : null}
-              onUpdate={(updates) => {
-                if (selectedEntityId) {
-                  updateEntity(selectedEntityId, updates);
-                }
-              }}
-            />
-          </div>
-        </ErrorBoundary>
-      </aside>
+      
+      {/* Focus Mode Toggle Button */}
+      <button
+        onClick={focusMode ? exitFocusMode : enterFocusMode}
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-white/90 backdrop-blur-sm border border-border shadow-lg text-text-primary/70 hover:text-text-primary hover:scale-110 transition-all"
+        aria-label={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+      >
+        {focusMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+      </button>
+
+      {!focusMode && !isMobile && (
+        <aside className={`border-r border-[var(--color-border)] bg-pitch-green flex flex-col transition-[width] duration-200 ${sidebarCollapsed ? 'w-0 overflow-hidden' : 'w-64'}`}>
+          <ErrorBoundary fallbackTitle="Sidebar Error">
+            <div className="bg-tactics-white flex-1 overflow-y-auto relative">
+              {!sidebarCollapsed && (
+                <button
+                  onClick={toggleSidebar}
+                  className="absolute top-4 right-2 z-10 p-1.5 rounded-md bg-white/80 backdrop-blur-sm border border-border shadow-sm text-text-primary/50 hover:text-text-primary transition-all hover:scale-105"
+                  aria-label="Collapse sidebar"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              )}
+              <ProjectActions
+                isAuthenticated={isAuthenticated}
+                onSaveToCloud={onSaveToCloud}
+              />
+              <EntityPalette
+                onAddAttackPlayer={handleAddAttackPlayer}
+                onAddDefensePlayer={handleAddDefensePlayer}
+                onAddBall={handleAddBall}
+                onAddCone={handleAddCone}
+                onAddTackleShield={handleAddTackleShield}
+                onAddTackleBag={handleAddTackleBag}
+                drawingMode={drawingMode}
+                onDrawingModeChange={setDrawingMode}
+              />
+              <EntityProperties
+                entity={selectedEntityId ? entities.find((e) => e.id === selectedEntityId) || null : null}
+                onUpdate={(updates) => {
+                  if (selectedEntityId) {
+                    updateEntity(selectedEntityId, updates);
+                  }
+                }}
+              />
+            </div>
+          </ErrorBoundary>
+        </aside>
+      )}
+
+      {sidebarCollapsed && !focusMode && !isMobile && (
+        <button
+          onClick={toggleSidebar}
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 bg-white border border-l-0 border-border p-1.5 rounded-r-lg shadow-lg text-text-primary/50 hover:text-text-primary transition-all hover:pl-3 group"
+          aria-label="Expand sidebar"
+        >
+          <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        </button>
+      )}
 
       <main className="flex-1 flex flex-col">
         {/* Phase 2: Progression panel — shown for base cloud animations */}
-        {showProgressionPanel && (
+        {showProgressionPanel && !focusMode && (
           <ProgressionPanel
             baseTitle={baseAnimationMeta!.title}
             progressions={progressions}
@@ -306,20 +372,19 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           />
         )}
 
-        {/* Mobile editor warning */}
-        {viewportWidth < 768 && !mobileWarningDismissed && (
-          <div className="px-4 py-2 bg-[var(--color-accent-warm)]/10 border-b border-[var(--color-accent-warm)] text-sm text-text-primary flex items-center justify-between gap-3">
-            <span>💻 Desktop recommended for editing. Mobile editing may be limited.</span>
-            <button
-              onClick={() => setMobileWarningDismissed(true)}
-              className="text-text-primary/70 hover:text-text-primary px-2 py-1"
-              aria-label="Dismiss warning"
-            >
-              ✕
-            </button>
-          </div>
+        {/* Mobile drawer handle */}
+        {isMobile && !focusMode && (
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-primary text-text-inverse px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 font-semibold hover:scale-105 active:scale-95 transition-all"
+            aria-label="Open mobile drawer"
+          >
+            <Menu className="w-5 h-5" />
+            <span>Tools & Actions</span>
+          </button>
         )}
         <div
+          id="canvas-container"
           ref={canvasContainerRef}
           className="flex-1 min-h-0 min-w-0 overflow-hidden flex items-center justify-center p-4 bg-[var(--color-surface-warm)]"
           style={{
@@ -387,38 +452,40 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           </ErrorBoundary>
         </div>
 
-        <ErrorBoundary fallbackTitle="Timeline Error">
-          <footer className="border-t border-[var(--color-accent-warm)]">
-            <PlaybackControls
-              isPlaying={isPlaying}
-              speed={playbackSpeed}
-              loopEnabled={loopPlayback}
-              currentFrame={currentFrameIndex}
-              totalFrames={project?.frames.length ?? 0}
-              onPlay={play}
-              onPause={pause}
-              onReset={reset}
-              onPreviousFrame={handlePreviousFrame}
-              onNextFrame={handleNextFrame}
-              onSpeedChange={setPlaybackSpeed}
-              onLoopToggle={toggleLoop}
-              ghostEnabled={showGhosts}
-              onGhostToggle={toggleGhosts}
-            />
-            <FrameStrip
-              frames={project?.frames ?? []}
-              currentFrameIndex={currentFrameIndex}
-              onFrameSelect={setCurrentFrame}
-              onAddFrame={handleAddFrame}
-              onRemoveFrame={removeFrame}
-              onDuplicateFrame={duplicateFrame}
-              onDurationChange={handleFrameDurationChange}
-              maxFrames={maxFrames}
-              isAuthenticated={isAuthenticated}
-              onShowGuestLimitModal={() => setShowGuestLimitModal(true)}
-            />
-          </footer>
-        </ErrorBoundary>
+        {!focusMode && !isMobile && (
+          <ErrorBoundary fallbackTitle="Timeline Error">
+            <footer className="border-t border-[var(--color-accent-warm)]">
+              <PlaybackControls
+                isPlaying={isPlaying}
+                speed={playbackSpeed}
+                loopEnabled={loopPlayback}
+                currentFrame={currentFrameIndex}
+                totalFrames={project?.frames.length ?? 0}
+                onPlay={play}
+                onPause={pause}
+                onReset={reset}
+                onPreviousFrame={handlePreviousFrame}
+                onNextFrame={handleNextFrame}
+                onSpeedChange={setPlaybackSpeed}
+                onLoopToggle={toggleLoop}
+                ghostEnabled={showGhosts}
+                onGhostToggle={toggleGhosts}
+              />
+              <FrameStrip
+                frames={project?.frames ?? []}
+                currentFrameIndex={currentFrameIndex}
+                onFrameSelect={setCurrentFrame}
+                onAddFrame={handleAddFrame}
+                onRemoveFrame={removeFrame}
+                onDuplicateFrame={duplicateFrame}
+                onDurationChange={handleFrameDurationChange}
+                maxFrames={maxFrames}
+                isAuthenticated={isAuthenticated}
+                onShowGuestLimitModal={() => setShowGuestLimitModal(true)}
+              />
+            </footer>
+          </ErrorBoundary>
+        )}
       </main>
 
       <ConfirmDialog
@@ -494,6 +561,21 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         confirmLabel="Create Free Account"
         cancelLabel="Continue Editing"
         variant="default"
+      />
+
+      <MobileDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        isAuthenticated={isAuthenticated}
+        onSaveToCloud={onSaveToCloud}
+        onAddAttackPlayer={handleAddAttackPlayer}
+        onAddDefensePlayer={handleAddDefensePlayer}
+        onAddBall={handleAddBall}
+        onAddCone={handleAddCone}
+        onAddTackleShield={handleAddTackleShield}
+        onAddTackleBag={handleAddTackleBag}
+        drawingMode={drawingMode}
+        onDrawingModeChange={setDrawingMode}
       />
 
       {project && <EditorFloatingRemote />}

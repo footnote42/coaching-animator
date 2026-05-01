@@ -150,6 +150,34 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Observed**: Tactical thumbnails use muted/placeholder colors (amber/muted primary). Should closer match the actual pitch (grass green) and entity (red/blue teams, high-vis yellow cones) color scheme.
 - **Action**: Update `MiniPitchSVG` to use colors more representative of the actual editor experience.
 - **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+- **Note**: User specifically reported orange/green entities in thumbnails vs red/blue in editor (2026-05-01).
+
+---
+
+### UX-013 — Inconsistent Hover Feedback (Gallery)
+- **Status**: `[ ]` Open
+- **Severity**: Low (UX consistency)
+- **Observed**: In Gallery, 'Remix' button changes colour on hover, but 'Share' does not.
+- **Action**: Standardize hover effects across all gallery card action buttons.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
+### UX-014 — Inconsistent Thumbnail Layout (Tags/Progressions)
+- **Status**: `[ ]` Open
+- **Severity**: Low (Visual polish)
+- **Observed**: Thumbnails in Gallery and My Playbook have inconsistent layouts depending on whether they have tags or progression indicators.
+- **Action**: Implement a stable, unified layout for card headers/footers that handles optional tags and progression counts without shifting elements.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
+### UX-015 — Gallery vs Playbook Visual Distinction
+- **Status**: `[ ]` Open
+- **Severity**: Low (UX clarity)
+- **Observed**: Gallery and Playbook are visually too similar to easily discern the difference.
+- **Action**: Introduce unique visual signifiers (e.g., header banners, background tints, or specific card styles) to make the pages recognizable as distinct areas.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
 
 ---
 
@@ -469,6 +497,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### MYPLAYBOOK-003 — Unclear Edit/Replay/Share Flow
+- **Status**: `[ ]` Open
+- **Severity**: High (UX clarity)
+- **Observed**: From 'My Playbook' it is unclear how to open the displayed animation in edit mode or playback/replay mode. There is no obvious Share or Remix option either.
+- **Action**: Add clear "Edit", "Replay", and "Share" actions to cards in My Playbook. Ensure they are primary actions.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
 ## Profile (new — 2026-04-24 review)
 
 ### PROFILE-001 — Profile Page Too Functional
@@ -515,6 +552,17 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+## Navigation & Global UI
+
+### NAV-001 — Selected Page Indicator (Tabs)
+- **Status**: `[ ]` Open
+- **Severity**: Low (visual polish)
+- **Observed**: Top menu emboldens selected page text — too subtle. Wants rounded "notebook tab" style with unique layered colors.
+- **Action**: Redesign navigation menu to use tab-like visual indicators for the active page, with distinct colors for different sections.
+- **Roadmap ref**: Phase 2e (Landing Refinements) / Global UI polish
+
+---
+
 ## New Features (from 2026-04-24 review)
 
 ### FEAT-010 — Snap to Grid
@@ -523,6 +571,19 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Observed**: When building frames, coaches would benefit from snapping entity positions to a grid to maintain alignment across frames.
 - **Action**: Add optional snap-to-grid toggle; define grid resolution relative to pitch markings; snap on drag end
 - **Roadmap ref**: Phase 4 (post-launch, based on coach feedback)
+
+---
+
+### FEAT-012 — Mobile FrameStrip (swipe-accessible frame navigation on <768px)
+- **Status**: `[ ]` Open
+- **Severity**: Medium (mobile usability)
+- **Observed**: On viewports <768px, the FrameStrip (frame thumbnail strip) is hidden as part
+  of the 2i mobile layout remodel. Coaches cannot visually navigate between frames on mobile
+  without using prev/next on the floating remote.
+- **Action**: Design and implement a swipe-accessible FrameStrip alternative for mobile —
+  e.g. a horizontally scrollable thumbnail row inside the mobile drawer, or a swipe gesture
+  on the canvas to advance frames.
+- **Roadmap ref**: Post-2i; candidate for Phase 3d or a dedicated sub-area
 
 ---
 
@@ -563,6 +624,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Proposal**: Lightweight player-facing welcome page — minimal, explains what they're seeing, optional CTA to explore gallery
 - **Action**: Design and implement /welcome route; add link from /share view footer; keep it non-intrusive
 - **Roadmap ref**: Phase 4 (post-launch, after core loop is solid)
+
+---
+
+### FLOW-004 — Share View Workflow for Logged-In Users
+- **Status**: `[ ]` Open
+- **Severity**: Medium (UX workflow)
+- **Observed**: From /share/ the return/back button (bottom left) returns users to the gallery only. Logged-in users should have a path back to their Playbook.
+- **Action**: Context-aware back button in Share view. If user is owner/logged-in, offer return to Playbook.
+- **Roadmap ref**: Phase 2c (Share Workflow)
 
 ---
 
