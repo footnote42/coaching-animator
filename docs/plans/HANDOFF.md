@@ -4,6 +4,94 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-02 — Retrospective Design (Audit, Align, Accelerate)
+
+**Branch**: `main`
+
+---
+
+### What was delivered this session
+
+Paused the build to design and plan a structured retrospective. The core question: is my current way of working something I designed, or something that accumulated?
+
+**Outputs committed (`d545fc4`):**
+- `docs/superpowers/specs/2026-05-02-solo-dev-retrospective-design.md` — approved design for a three-phase retrospective
+- `docs/superpowers/plans/2026-05-02-solo-dev-retrospective.md` — 11-task implementation plan across Phase A, B, and C
+- `docs/plans/prompts/2026-05-02-retrospective-execution.md` — next-session handoff prompt for subagent-driven execution
+
+**Three phases:**
+- **Phase A (tooling audit)** — rationalize MCPs, plugins, hooks, and the accumulated ~120-entry permissions list. Hard prerequisite before resuming the build.
+- **Phase B (decision archaeology)** — read HANDOFF diary and key specs; classify past decisions on Ownership×Understanding axes; extract AI dependency signatures and directing strengths; write `docs/review/ai-collaboration-protocol.md`.
+- **Phase C (scope review)** — assess Phase 3b-5+ phases with the question "does this exist because the product needs it, or because I planned it?"; add dispositions to ROADMAP.md.
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  main — retrospective plan committed, ready to execute.
+
+Next Priority: Phase A — Tooling Audit (before any build work).
+Execution method: Subagent-Driven via /superpowers:subagent-driven-development
+Plan: docs/superpowers/plans/2026-05-02-solo-dev-retrospective.md
+Prompt: docs/plans/prompts/2026-05-02-retrospective-execution.md
+```
+
+---
+
+## 2026-05-02 — Cosmetic Polish (Phase 2l) ✅
+
+**Branch**: `main` (finalized Phase 2l improvements merged)
+
+---
+
+### What was delivered this session
+
+#### 1. Gallery & My Playbook Parity
+- **Unified Card Layout**: Implemented stable layout slots in `AnimationCard.tsx` and `PublicAnimationCard.tsx`. Cards now have consistent footprints regardless of tag/progression presence (resolves UX-014).
+- **Tactical Thumbnails**: Updated `My Playbook` to include the tactical preview and progression strip, matching the visual richness of the public gallery (resolves MYPLAYBOOK-002).
+- **Search & Filter**: Added search and filtering (by tag/title) to `My Playbook` (resolves MYPLAYBOOK-001).
+- **Clear Actions**: Added explicit "Edit", "Replay", and "Share" buttons to all cards, standardizing hover effects and labels (resolves UX-013, MYPLAYBOOK-003, FLOW-001).
+
+#### 2. Branding & Compliance
+- **RFU Endorsement**: Added `hampshire-rfu-badge.webp` (<50KB) and wired up badge overlays for endorsed animations.
+- **Mandatory Disclaimers**: Implemented constitution-mandated (V.2.4) endorsement disclaimers as tooltips on badge icons.
+- **Design Token Compliance**: Refactored `MiniPitchSVG` to use `EntityColors` service, ensuring all tactical thumbnails match the editor's red/blue/yellow scheme (resolves UX-012).
+- **Impeccable Audit**: Standardized `rounded-none` across all new UI surfaces and removed "amber proliferation" from non-CTA elements.
+
+#### 3. Share View Optimization
+- **Context-Aware Navigation**: Implemented a "Gallery" or "My Playbook" back-link depending on user ownership and login state (resolves FLOW-004).
+- **Metadata Visibility**: Added animation titles and progression navigation to the `ShareViewer` overlay (resolves FLOW-002).
+- **Clipboard Integration**: Enhanced the editor "Share" button to copy the optimized `/share/{id}` link to clipboard with visual confirmation.
+
+#### 4. Stability & Quality
+- **Test Integrity**: Verified all 106 unit and E2E tests pass (`npm run e2e`, `npm test`).
+- **Build Checks**: Confirmed zero linting or TypeScript errors across the codebase.
+- **Private Access Fix**: Resolved logic gaps preventing owners from opening their private animations from the playbook (resolves MYPLAYBOOK-004).
+
+---
+
+### Issues Logged / Updated
+- **ROADMAP.md**: Updated to v3.3; Phase 2l marked complete.
+- **ISSUES.md**: Closed 18 issues including UX-012, UX-013, UX-014, UX-015, UX-017, MYPLAYBOOK-001..004, LANDING-002..004, GALLERY-001..002, FLOW-001, FLOW-002, FLOW-004.
+- **hybrid_execution_plan.md**: Synchronized status; Phase 3 (Security) identified as current focus.
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  main — all Phase 2l improvements merged and verified.
+
+Roadmap: Updated to v3.3.
+
+Next Priority: Phase 3b — Security Hardening (Rate limiting, SQLi protection).
+```
+
+---
+
 ## 2026-05-01 — User Guide (Phase 2k) ✅
 
 **Branch**: `014-user-guide` (implementation complete, verified, and merged to main)
