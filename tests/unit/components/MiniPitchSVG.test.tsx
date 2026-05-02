@@ -19,7 +19,7 @@ describe('MiniPitchSVG', () => {
     );
     const circles = container.querySelectorAll('circle');
     expect(circles.length).toBe(1);
-    expect(circles[0].getAttribute('fill')).toBe('var(--color-accent-warm)');
+    expect(circles[0].getAttribute('fill')).toBe('#2563EB');
   });
 
   it('renders a defender dot for entity with team: defense', () => {
@@ -28,8 +28,8 @@ describe('MiniPitchSVG', () => {
     );
     const circles = container.querySelectorAll('circle');
     expect(circles.length).toBe(1);
-    expect(circles[0].getAttribute('fill')).toBe('var(--color-text-primary)');
-    expect(circles[0].getAttribute('opacity')).toBe('0.4');
+    expect(circles[0].getAttribute('fill')).toBe('#DC2626');
+    expect(circles[0].getAttribute('opacity')).toBe('1');
   });
 
   it('omits neutral entities', () => {
@@ -44,7 +44,7 @@ describe('MiniPitchSVG', () => {
     const circles = container.querySelectorAll('circle');
     // Only the attacker should be rendered
     expect(circles.length).toBe(1);
-    expect(circles[0].getAttribute('fill')).toBe('var(--color-accent-warm)');
+    expect(circles[0].getAttribute('fill')).toBe('#2563EB');
   });
 
   it('caps at 15 dots even when 25 entities provided', () => {

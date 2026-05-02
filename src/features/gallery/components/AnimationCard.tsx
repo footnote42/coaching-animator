@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, Copy, Check, History } from 'lucide-react';
-import { toast } from 'sonner';
+import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, History, Share2 } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
 import { MiniPitchSVG } from './MiniPitchSVG';
 import { ProgressionStrip } from './ProgressionStrip';
+import { ShareSheet } from '@/features/animation/components/ShareSheet';
+import { cardActionHover } from '@/shared/ui/card-action-hover';
 
 export interface AnimationSummary {
   id: string;
@@ -23,6 +24,7 @@ export interface AnimationSummary {
   updated_at: string;
   thumbnail_url?: string | null;
   current_version?: string; // V2.0: Current version number
+  endorsed_by?: string | null;
   // Phase 2: Progressions
   parent_animation_id?: string | null;
   progression_order?: number;       // 0 = base, 1-5 = progression
@@ -34,6 +36,8 @@ export interface AnimationSummary {
   remix_count?: number;
   // 009-gallery-playbook: visual previews
   preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
+  // Endorsement
+  is_rfu_endorsed?: boolean;
 }
 
 interface AnimationCardProps {
@@ -94,33 +98,11 @@ export function AnimationCard({
   onRefresh,
 }: AnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false); // V2.0: Version history modal
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const canCopyLink = animation.visibility !== 'private';
-
-  const handleCopyLink = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const url = `${window.location.origin}/share/${animation.id}`;
-
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ url, title: animation.title });
-        return;
-      } catch {
-        // AbortError or unsupported — fall through to clipboard
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast.success('Link copied');
-    } catch {
-      console.error('Failed to copy link');
-    }
-  };
+  const isRfuEndorsed = animation.is_rfu_endorsed || animation.endorsed_by === 'RFU';
 
   return (
     <div
@@ -130,7 +112,7 @@ export function AnimationCard({
     >
       {/* Thumbnail with play overlay */}
       <div
-        className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center cursor-pointer group"
+        className="relative aspect-[4/3] bg-surface-warm flex items-center justify-center cursor-pointer group overflow-hidden"
         onClick={() => onPlay?.(animation.id)}
       >
         {animation.thumbnail_url ? (
@@ -162,11 +144,35 @@ export function AnimationCard({
           <Play className="w-12 h-12 text-text-inverse fill-current" />
         </div>
 
+        {/* Endorsement Badge (Top Right) */}
+        {isRfuEndorsed && (
+          <div
+            className="absolute top-2 right-2 w-10 h-10 shadow-sm bg-surface rounded-full overflow-hidden flex items-center justify-center z-10"
+            title={`Endorsed by ${animation.endorsed_by || 'RFU'}. Endorsement does not guarantee accuracy, safety, or suitability for all coaching contexts. Coaches are responsible for adapting drills to their players' skill levels.`}
+          >
+            <Image
+              src="/assets/rfu-badge.svg"
+              alt="RFU Endorsed"
+              width={40}
+              height={40}
+              unoptimized
+            />
+          </div>
+        )}
+
         {/* Visibility badge */}
-        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium">
-          {VISIBILITY_ICONS[animation.visibility]}
-          <span>{VISIBILITY_LABELS[animation.visibility]}</span>
-        </div>
+        {!isRfuEndorsed && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium z-10">
+            {VISIBILITY_ICONS[animation.visibility]}
+            <span>{VISIBILITY_LABELS[animation.visibility]}</span>
+          </div>
+        )}
+        {isRfuEndorsed && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-surface/90 text-xs font-medium z-10">
+            {VISIBILITY_ICONS[animation.visibility]}
+            <span>{VISIBILITY_LABELS[animation.visibility]}</span>
+          </div>
+        )}
 
         {/* Phase 2: Progression set badge — links to progression set view */}
         {(animation.progression_count ?? 0) > 0 && (
@@ -199,7 +205,7 @@ export function AnimationCard({
             Remixed from{' '}
             {animation.remixed_from_id ? (
               <NextLink
-                href={`/replay/${animation.remixed_from_id}`}
+                href={`/share/${animation.remixed_from_id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="text-text-primary/70 hover:text-primary hover:underline"
               >
@@ -231,11 +237,14 @@ export function AnimationCard({
           <div className="flex items-center gap-1">
             {showCopyLink && canCopyLink && (
               <button
-                onClick={handleCopyLink}
-                className={`p-2.5 transition-colors ${copied ? 'text-green-600' : 'hover:bg-surface-warm'}`}
-                aria-label={copied ? 'Copied!' : 'Copy Link'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsShareOpen(true);
+                }}
+                className={`p-2.5 ${cardActionHover}`}
+                aria-label="Share"
               >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                <Share2 className="w-4 h-4" />
               </button>
             )}
             {showActions && (
@@ -245,7 +254,7 @@ export function AnimationCard({
                     e.stopPropagation();
                     setShowVersionHistory(true);
                   }}
-                  className="p-2.5 hover:bg-surface-warm transition-colors"
+                  className={`p-2.5 ${cardActionHover}`}
                   aria-label="Version History"
                 >
                   <History className="w-4 h-4" />
@@ -255,7 +264,7 @@ export function AnimationCard({
                     e.stopPropagation();
                     onEdit?.(animation.id);
                   }}
-                  className="p-2.5 hover:bg-surface-warm transition-colors"
+                  className={`p-2.5 ${cardActionHover}`}
                   aria-label="Edit"
                 >
                   <Pencil className="w-4 h-4" />
@@ -265,7 +274,7 @@ export function AnimationCard({
                     e.stopPropagation();
                     onDelete?.(animation.id);
                   }}
-                  className="p-2.5 hover:bg-red-50 text-red-600 transition-colors"
+                  className={`p-2.5 text-red-600 ${cardActionHover}`}
                   aria-label="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -295,6 +304,14 @@ export function AnimationCard({
           }}
         />
       )}
+
+      {/* Share Sheet */}
+      <ShareSheet
+        animationId={animation.id}
+        animationTitle={animation.title}
+        open={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+      />
     </div>
   );
 }

@@ -37,6 +37,7 @@ interface PublicAnimation {
   remix_count?: number;
   // 009-gallery-playbook: visual previews + endorsement
   endorsed_by?: string | null;
+  is_rfu_endorsed?: boolean;
   preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
 }
 
@@ -85,6 +86,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
 
   const isOwner = currentUserId && animation.user_id === currentUserId;
   const isTemplate = animation.tags.includes('template'); // V2.0: Check if template
+  const isRfuEndorsed = animation.is_rfu_endorsed || animation.endorsed_by === 'RFU';
 
   const handleUpvoteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -163,12 +165,28 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           />
         </div>
 
-        {/* Endorsement badge (T022) — solid stamp, top-right */}
-        {animation.endorsed_by && (
-          <div className="absolute top-1 right-1 z-10">
+        {/* Endorsement badge / RFU Badge (Top Right) */}
+        {isRfuEndorsed ? (
+          <div
+            className="absolute top-2 right-2 w-10 h-10 shadow-sm bg-surface rounded-full overflow-hidden flex items-center justify-center z-10"
+            title={`Endorsed by ${animation.endorsed_by || 'RFU'}. Endorsement does not guarantee accuracy, safety, or suitability for all coaching contexts. Coaches are responsible for adapting drills to their players' skill levels.`}
+          >
+            <Image
+              src="/assets/rfu-badge.svg"
+              alt="RFU Endorsed"
+              width={40}
+              height={40}
+              unoptimized
+            />
+          </div>
+        ) : animation.endorsed_by ? (
+          <div
+            className="absolute top-1 right-1 z-10"
+            title={`Endorsed by ${animation.endorsed_by}. Endorsement does not guarantee accuracy, safety, or suitability for all coaching contexts. Coaches are responsible for adapting drills to their players' skill levels.`}
+          >
             <EndorsementBadge endorsedBy={animation.endorsed_by} />
           </div>
-        )}
+        ) : null}
 
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-primary/80 flex items-center justify-center transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
@@ -222,7 +240,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
             Remixed from{' '}
             {animation.remixed_from_id ? (
               <Link
-                href={`/replay/${animation.remixed_from_id}`}
+                href={`/share/${animation.remixed_from_id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="text-text-primary/70 hover:text-primary hover:underline"
               >

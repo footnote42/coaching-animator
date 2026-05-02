@@ -232,7 +232,7 @@ export default function ProfilePage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-surface-warm flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-none"></div>
       </div>
     );
   }
@@ -250,7 +250,7 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar Circle */}
-            <div className="w-24 h-24 rounded-full bg-pitch-green flex items-center justify-center overflow-hidden border-2 border-border flex-shrink-0">
+            <div className="w-24 h-24 rounded-none bg-pitch-green flex items-center justify-center overflow-hidden border-2 border-border flex-shrink-0">
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
@@ -284,13 +284,13 @@ export default function ProfilePage() {
         <div className="bg-surface border border-border p-6">
           <form onSubmit={handleSave} className="space-y-6">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-none">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-none">
                 <p className="text-sm text-green-600">{success}</p>
               </div>
             )}
@@ -306,7 +306,7 @@ export default function ProfilePage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 maxLength={50}
                 placeholder="Enter your name"
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <p className="mt-1 text-xs text-text-primary/60">
                 Shown on public animations.
@@ -324,7 +324,7 @@ export default function ProfilePage() {
                 onChange={(e) => setClubName(e.target.value)}
                 maxLength={100}
                 placeholder="e.g. Hampshire RFC"
-                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 border border-border rounded-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <p className="mt-1 text-xs text-text-primary/60">
                 Your primary club or team.
@@ -370,7 +370,7 @@ export default function ProfilePage() {
                       />
                       <label
                         htmlFor="clubBadge"
-                        className={`px-3 py-1.5 text-sm border border-border rounded-lg cursor-pointer hover:bg-surface-warm ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`px-3 py-1.5 text-sm border border-border rounded-none cursor-pointer hover:bg-surface-warm ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         {badgeUploading ? 'Uploading...' : clubBadgeUrl ? 'Change Badge' : 'Upload Badge'}
                       </label>
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                           type="button"
                           onClick={handleBadgeRemove}
                           disabled={badgeUploading}
-                          className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                          className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-none hover:bg-red-50 disabled:opacity-50"
                         >
                           Remove
                         </button>
@@ -404,7 +404,7 @@ export default function ProfilePage() {
                         id="primaryColor"
                         value={primaryColor || '#3b82f6'}
                         onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-border cursor-pointer"
+                        className="w-10 h-10 rounded-none border border-border cursor-pointer"
                       />
                       <span className="text-sm text-text-primary/60">{primaryColor || 'Not set'}</span>
                       {primaryColor && (
@@ -424,7 +424,7 @@ export default function ProfilePage() {
                         id="secondaryColor"
                         value={secondaryColor || '#ef4444'}
                         onChange={(e) => setSecondaryColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-border cursor-pointer"
+                        className="w-10 h-10 rounded-none border border-border cursor-pointer"
                       />
                       <span className="text-sm text-text-primary/60">{secondaryColor || 'Not set'}</span>
                       {secondaryColor && (
@@ -443,9 +443,9 @@ export default function ProfilePage() {
                 <span className="text-text-primary/70">Saved Animations</span>
                 <span className="font-medium">{animationCount} / {maxAnimations}</span>
               </div>
-              <div className="mt-2 w-full bg-surface-warm rounded-full h-2">
+              <div className="mt-2 w-full bg-surface-warm rounded-none h-2">
                 <div
-                  className="bg-primary h-2 rounded-full transition-all"
+                  className="bg-primary h-2 rounded-none transition-all"
                   style={{ width: `${Math.min((animationCount / maxAnimations) * 100, 100)}%` }}
                 />
               </div>
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                 type="email"
                 value={user.email || ''}
                 disabled
-                className="w-full px-3 py-2 border border-border rounded-lg bg-surface-warm text-text-primary/60 cursor-not-allowed"
+                className="w-full px-3 py-2 border border-border rounded-none bg-surface-warm text-text-primary/60 cursor-not-allowed"
               />
               <p className="mt-1 text-xs text-text-primary/40 italic">Email cannot be changed</p>
             </div>
@@ -487,7 +487,7 @@ export default function ProfilePage() {
               <h3 className="text-base font-medium text-text-primary mb-4">Login Methods</h3>
               <div className="space-y-4">
                 {/* Google Account */}
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div className="flex items-center justify-between p-4 border border-border rounded-none">
                   <div className="flex items-center gap-3">
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -505,7 +505,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => handleUnlink(googleIdentity.identity_id)}
                       disabled={!canUnlink || saving}
-                      className="px-3 py-1 text-sm border border-border rounded text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 text-sm border border-border rounded-none text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       title={!canUnlink ? "Cannot unlink the only login method" : ""}
                     >
                       Unlink
@@ -514,7 +514,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleLinkGoogle}
                       disabled={isLinking}
-                      className="px-3 py-1 text-sm border border-border rounded text-text-primary hover:bg-surface-warm"
+                      className="px-3 py-1 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm"
                     >
                       Connect
                     </button>
@@ -541,7 +541,7 @@ export default function ProfilePage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg"
+                    className="w-full px-3 py-2 border border-border rounded-none"
                     minLength={8}
                     required
                   />
@@ -552,7 +552,7 @@ export default function ProfilePage() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg"
+                    className="w-full px-3 py-2 border border-border rounded-none"
                     required
                   />
                 </div>

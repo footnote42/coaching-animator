@@ -169,6 +169,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### UX-017 — Home Page Footer Duplication
+- **Status**: `[ ]` Open
+- **Severity**: Low (Visual polish)
+- **Observed**: Home page footer appears below a bottom section which repeats several of the same links. It's duplication and not a good look.
+- **Action**: Redesign the landing page footer/bottom section to remove duplication and create a "slicker" transition.
+- **Roadmap ref**: Phase 2e (Landing Refinements)
+
+---
+
 ## Phase 3: Quality Safety Net
 
 ### FEAT-006 — Animation Layering Control
@@ -494,13 +503,24 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### MYPLAYBOOK-004 — Private Animations Cannot Be Opened
+- **Status**: `[ ]` Open
+- **Severity**: High (UX friction)
+- **Observed**: Animations in My Playbook marked as private don't open when clicked on. Likely related to sharing protocols/auth checks on the viewer routes.
+- **Action**: Fix access logic for private animations when accessed by the owner.
+- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
+
+---
+
 ## Profile (new — 2026-04-24 review)
 
 ### PROFILE-001 — Profile Page Too Functional
 - **Status**: `[ ]` Open
 - **Severity**: Low (UX polish)
-- **Observed**: Profile page feels like a raw settings form rather than a coach's profile. Lacks personality and context.
-- **Action**: UX review; consider merging with account settings; add coaching context (club, region); make it feel like a coach's card not a form
+- **Observed**: Profile page feels like a raw settings form rather than a coach's profile. Lacks personality and context. The default green circle icon is "dull".
+- **Action**: 
+  - UX review; add coaching context (club, region).
+  - Implement a selection of avatars: stylized images of stereotypical rugby player/coach tropes with a hint of fun.
 - **Roadmap ref**: Phase 2g (Auth & Profile)
 
 ---
@@ -614,6 +634,15 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Observed**: From /share/ the return/back button (bottom left) returns users to the gallery only. Logged-in users should have a path back to their Playbook.
 - **Action**: Context-aware back button in Share view. If user is owner/logged-in, offer return to Playbook.
 - **Roadmap ref**: Phase 2c (Share Workflow)
+
+---
+
+### ADMIN-001 — Admin Bulk Deletion
+- **Status**: `[ ]` Open
+- **Severity**: Medium (Admin efficiency)
+- **Observed**: Admin Dashboard lacks multi-select for deleting animations in bulk.
+- **Action**: Implement multi-select checkboxes and a "Delete Selected" action in the admin dashboard.
+- **Roadmap ref**: Phase 3 (Stability & Pre-Launch Hardening)
 
 ---
 
@@ -789,8 +818,8 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Quick Reference by Roadmap Phase
 
-- **Phase 2** (Launch Credibility): UX-001, UX-002, UX-003, UX-004, **UX-005, UX-006, UX-007, UX-008, UX-009**
-- **Phase 3** (Quality Safety Net): **FEAT-006, FEAT-007, SEC-001, SEC-002, SEC-003**
+- **Phase 2** (Launch Credibility): UX-001, UX-002, UX-003, UX-004, **UX-005, UX-006, UX-007, UX-008, UX-009, UX-017**
+- **Phase 3** (Quality Safety Net): **FEAT-006, FEAT-007, SEC-001, SEC-002, SEC-003, ADMIN-001**
 - **Phase 3–4** (Feature Decisions): **FEAT-008, FEAT-009**
-- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, DESIGN-001**
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, DESIGN-001, MYPLAYBOOK-004**
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005

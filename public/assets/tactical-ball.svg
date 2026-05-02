@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Hand-drawn marker stroke, pitch-green outline, amber tactical markings, zero rounded corners -->
+  <path d="M 100 20 C 160 50 180 100 150 160 C 120 180 60 180 30 150 C 10 100 40 40 100 20 Z" stroke="#15803d" stroke-width="6" stroke-linejoin="miter" stroke-linecap="butt" />
+  
+  <!-- Amber tactical markings -->
+  <path d="M 60 60 L 140 140 M 140 60 L 60 140" stroke="#d97706" stroke-width="4" stroke-linecap="butt" />
+  <path d="M 100 20 L 100 180" stroke="#d97706" stroke-width="4" stroke-dasharray="8 8" stroke-linecap="butt" />
+  <path d="M 20 100 L 180 100" stroke="#d97706" stroke-width="4" stroke-dasharray="8 8" stroke-linecap="butt" />
+</svg>

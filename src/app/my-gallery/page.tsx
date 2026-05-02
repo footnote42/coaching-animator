@@ -175,20 +175,31 @@ function MyGalleryContent() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <header className="border-b border-border bg-surface">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-border bg-[var(--color-surface-warm)] relative overflow-hidden">
+        {/* Tactical Motif Background */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="tactical-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
+                <circle cx="40" cy="40" r="2" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#tactical-grid)" />
+          </svg>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8 relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-heading font-bold text-text-primary">
+            <h1 className="text-3xl font-heading font-bold text-text-primary mb-2">
               My Playbook
             </h1>
-            <p className="text-sm text-text-primary/70">
+            <p className="text-text-primary/70">
               {total} animation{total !== 1 ? 's' : ''} saved
             </p>
           </div>
-
           <a
             href="/app"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors rounded-none"
           >
             <Plus className="w-4 h-4" />
             New Animation

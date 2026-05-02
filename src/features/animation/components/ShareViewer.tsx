@@ -14,6 +14,7 @@ import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { hydrateSharePayload } from '@/core/utils/hydratePayload';
 import type { SharePayloadV1 } from '@/core/types/share';
 import { EDITOR_CANVAS_WIDTH, EDITOR_CANVAS_HEIGHT } from '@/lib/canvasConstants';
+import { useUser } from '@/lib/contexts/UserContext';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,8 +40,9 @@ interface ShareViewerProps {
   animationTitle?: string;
   /** Full ordered nav set including base + progressions */
   fullNavigationSet?: NavigationItem[];
-  /** ID of the currently-displayed animation within fullNavigationSet */
   currentAnimationId?: string;
+  /** The user ID of the animation owner */
+  animationUserId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -171,7 +173,7 @@ function ShareCanvas({
   return (
     <div
       style={{ width: canvasWidth, height: canvasHeight }}
-      className="bg-white overflow-hidden"
+      className="bg-surface overflow-hidden"
       data-testid="share-canvas"
       data-entity-scale-x={entityScaleX}
       data-entity-scale-y={entityScaleY}
@@ -216,7 +218,10 @@ export function ShareViewer({
   animationTitle,
   fullNavigationSet,
   currentAnimationId,
+  animationUserId,
 }: ShareViewerProps) {
+  const { user } = useUser();
+  const isOwner = Boolean(user?.id && animationUserId && user.id === animationUserId);
   const payload = useMemo(() => normalizeReplayPayload(rawPayload), [rawPayload]);
   const frames = payload.frames;
 
@@ -272,7 +277,7 @@ export function ShareViewer({
           className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"
           style={{ zIndex: 10 }}
         >
-          <h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-center">
+          <h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-left">
             {animationTitle ?? payload.name}
           </h1>
         </div>
@@ -343,15 +348,24 @@ export function ShareViewer({
 
       {/* Back-to-site link — bottom-left, away from remote's default bottom-right */}
       <a
-        href="/gallery"
+        href={isOwner ? '/my-gallery' : '/gallery'}
         className="absolute left-3 flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
-        style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))' }}
+        style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))', zIndex: 10 }}
       >
         <BrandIcon
           variant="share-viewer"
           className="brightness-0 invert opacity-60"
         />
-        <span className="hidden sm:inline">← Gallery</span>
+        <span className="hidden sm:inline">← {isOwner ? 'My Playbook' : 'Gallery'}</span>
+      </a>
+
+      {/* Powered by link — bottom-right */}
+      <a
+        href="/"
+        className="absolute right-3 text-[10px] text-white/30 hover:text-white/60 transition-colors"
+        style={{ bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))', zIndex: 10 }}
+      >
+        powered by Coaching Animator
       </a>
     </div>
   );

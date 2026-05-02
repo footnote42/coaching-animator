@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { GripVertical, ChevronLeft, ChevronRight, Play, Pause, ChevronDown, ChevronUp, Plus, RotateCcw, Ghost } from 'lucide-react';
+import { GripVertical, ChevronLeft, ChevronRight, Play, Pause, ChevronDown, ChevronUp, Plus, RotateCcw, Ghost, Share2 } from 'lucide-react';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { PlaybackSpeed } from '@/core/types';
+import { ShareSheet } from '@/features/animation/components/ShareSheet';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -95,6 +96,8 @@ export function EditorFloatingRemote() {
 
   const showGhosts = useUIStore(s => s.showGhosts);
   const toggleGhosts = useUIStore.getState().toggleGhosts;
+
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
   const [expanded, setExpanded] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -312,7 +315,26 @@ export function EditorFloatingRemote() {
         >
           <Ghost className="w-4 h-4" />
         </button>
+
+        {project?.id && (
+          <button
+            onClick={() => setShareSheetOpen(true)}
+            className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-sm transition-all ml-auto"
+            aria-label="Share animation"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
+
+      {project?.id && (
+        <ShareSheet
+          animationId={project.id}
+          animationTitle={project.name}
+          open={shareSheetOpen}
+          onClose={() => setShareSheetOpen(false)}
+        />
+      )}
     </div>
   );
 }

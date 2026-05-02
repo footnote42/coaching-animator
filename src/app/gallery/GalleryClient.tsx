@@ -239,12 +239,24 @@ function GalleryContent() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <header className="border-b border-border bg-primary text-text-inverse">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-heading font-bold mb-2">
-            The Playbook
+      <header className="border-b border-border bg-[var(--color-background)] relative overflow-hidden">
+        {/* Rugby Lines Motif Background */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="rugby-lines" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 50 100" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="10 10" />
+                <path d="M 0 50 L 100 50" fill="none" stroke="currentColor" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#rugby-lines)" />
+          </svg>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
+          <h1 className="text-3xl font-heading font-bold text-text-primary mb-2">
+            Community Playbook
           </h1>
-          <p className="text-text-inverse/80">
+          <p className="text-text-primary/80">
             Drills and plays shared by coaches. Open one to watch it on the pitch.
           </p>
         </div>

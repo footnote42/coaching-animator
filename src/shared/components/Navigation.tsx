@@ -48,6 +48,10 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
     );
   }
 
+  const initials = profile?.display_name
+    ? profile.display_name.substring(0, 2).toUpperCase()
+    : user?.email?.substring(0, 2).toUpperCase() || 'U';
+
   const navLinks = (
     <>
       <Link
@@ -74,16 +78,6 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             My Playbook
           </Link>
 
-          <Link
-            href="/profile"
-            className={`text-sm transition-colors ${isActive('/profile')
-              ? 'text-primary font-medium'
-              : 'text-text-primary hover:text-primary'
-              }`}
-          >
-            Profile
-          </Link>
-
           {userRole === 'admin' && (
             <Link
               href="/admin"
@@ -101,33 +95,26 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
           <Link
             href="/app"
-            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors"
+            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors md:inline-flex md:items-center md:justify-center text-center"
           >
             Create
           </Link>
 
           <button
             onClick={handleSignOut}
-            className="text-sm text-text-primary/70 hover:text-text-primary transition-colors"
+            className="text-sm text-text-primary/70 hover:text-text-primary transition-colors text-left"
           >
             Sign Out
           </button>
         </>
       ) : (
         <>
-          <Link
-            href="/login"
-            className="text-sm text-text-primary hover:text-primary transition-colors"
-          >
-            Sign In
-          </Link>
-
           <Link href="/help" className="hidden md:flex p-1.5 text-text-primary/70 hover:text-primary transition-colors" aria-label="Help"><HelpCircle className="w-4 h-4" /></Link>
           <Link href="/help" className="md:hidden text-sm transition-colors text-text-primary hover:text-primary">Help</Link>
 
           <Link
             href="/app"
-            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm md:inline-flex md:items-center md:justify-center text-center"
           >
             Get Started
           </Link>
@@ -145,19 +132,41 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           <span className="font-heading font-bold text-lg text-primary">Coaching Animator</span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-4">
-          {navLinks}
-        </div>
+        <div className="flex items-center gap-4">
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-4">
+            {navLinks}
+          </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 text-text-primary hover:text-primary transition-colors"
-          onClick={() => setMenuOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+          {/* Persistent Auth / Profile */}
+          {!loading && (
+            user ? (
+              <Link
+                href="/profile"
+                className="flex items-center justify-center w-8 h-8 bg-primary text-text-inverse font-heading font-bold text-sm shrink-0"
+                aria-label="Profile"
+              >
+                {initials}
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm font-medium text-text-primary hover:text-primary transition-colors shrink-0"
+              >
+                Sign In
+              </Link>
+            )
+          )}
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 text-text-primary hover:text-primary transition-colors shrink-0"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile dropdown */}

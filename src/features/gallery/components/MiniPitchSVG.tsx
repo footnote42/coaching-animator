@@ -1,4 +1,5 @@
 import React from 'react';
+import { EntityColors } from '@/features/animation/services/entityColors';
 
 interface PreviewEntity {
   x: number;
@@ -16,14 +17,6 @@ interface MiniPitchSVGProps {
  *
  * Renders a simplified tactical pitch outline (100×75 viewBox) with coloured
  * dots for attackers and defenders derived from first-frame entity data.
- *
- * Uses CSS custom properties for colours — NOT EntityColors or hardcoded hex values.
- * This is an intentional documented exception per research.md Decision 6.
- *
- * - Attacker dots: var(--color-accent-warm)  (amber)
- * - Defender dots: var(--color-text-primary) at 40% opacity (muted)
- * - Neutral entities are omitted
- * - Maximum 15 dots rendered
  */
 export function MiniPitchSVG({ entities, className }: MiniPitchSVGProps) {
   // Filter to max 15, exclude neutral
@@ -79,10 +72,7 @@ export function MiniPitchSVG({ entities, className }: MiniPitchSVGProps) {
 
       {/* Entity dots */}
       {dots.map((e, i) => {
-        // Use vibrant team colors matching the editor palette
-        const dotColor = e.team === 'attack' 
-          ? 'var(--color-accent-warm)' 
-          : 'var(--color-text-primary)';
+        const dotColor = EntityColors.getDefault('player', e.team);
           
         return (
           <circle
@@ -93,7 +83,7 @@ export function MiniPitchSVG({ entities, className }: MiniPitchSVGProps) {
             fill={dotColor}
             stroke="white"
             strokeWidth="0.5"
-            opacity={e.team === 'defense' ? 0.4 : 1}
+            opacity={1}
           />
         );
       })}

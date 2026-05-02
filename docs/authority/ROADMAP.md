@@ -107,7 +107,7 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | 3 | **2i — Editor Workspace Remodel** | ✅ | 012-editor-workspace-remodel | Collapsible sidebar, Focus Mode, Mobile Drawer, Expanded Remote | EDITOR-013, PLAYBACK-001 |
 | 4 | **2j — Snap-to-Grid** | ✅ | 013-snap-to-grid | Toggle in editor toolbar, grid intersection markers, snap on drag-end | FEAT-010 |
 | 5 | **2k — User Guide** | ✅ | 014-user-guide | Inline onboarding, help page, coaching pedagogy (APES) | UX-016 |
-| 6 | **2l — Cosmetic Polish** | Next | (TBA) | RFU endorsement icon asset (<50 KB), landing copy fixes, MyPlaybook layout parity, profile personality | LANDING-001..004, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, PROFILE-001 |
+| 6 | **2l — Cosmetic Polish** | Next | (TBA) | RFU endorsement icon, landing footer cleanup, MyPlaybook parity, private access fix, avatars | LANDING-001..004, UX-017, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, MYPLAYBOOK-004, PROFILE-001 |
 
 **Exit criteria**:
 - 2h: a coach can complete edit → save → share → player views → back to gallery without external help.
@@ -126,7 +126,7 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | Sub-area | Status | Scope | Key issues |
 |----------|--------|-------|------------|
 | **3a — Technical Debt** | ✅ | Editor.tsx 852→504 LOC; 4 hooks; 25 store selectors. Shipped 2026-04-25. | — |
-| **3b — Security Hardening** | Open | Rate limiting, SQL injection, XSS, CSRF, auth tokens, env audit | SEC-001, SEC-002, SEC-003 |
+| **3b — Security Hardening** | Open | Rate limiting, SQL injection, XSS, CSRF, auth tokens, admin bulk delete | SEC-001, SEC-002, SEC-003, ADMIN-001 |
 | **3c — E2E Core Loop** | Open | Editor save → POST /api/share → /my-gallery card visible → /share/{id} loads → mobile replay. CI gate. | — |
 | **3d — Search & Layering** | Open | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
 | **3e — Performance Baseline** | Open | Lighthouse audit across all routes; pre-beta targets | PERF-001 |

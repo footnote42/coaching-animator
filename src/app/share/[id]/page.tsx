@@ -68,10 +68,9 @@ export default async function SharePage({ params }: PageProps) {
   // T006a — fetch animation with progression fields
   const { data: animation } = await supabase
     .from('saved_animations')
-    .select('id, title, payload, view_count, parent_animation_id, is_progression, progression_order')
+    .select('id, title, payload, view_count, parent_animation_id, is_progression, progression_order, user_id')
     .eq('id', id)
     .is('hidden_at', null)
-    .in('visibility', ['public', 'link_shared'])
     .single();
 
   // T006a — null guard: render 404 page (SC-005, FR-010)
@@ -97,7 +96,6 @@ export default async function SharePage({ params }: PageProps) {
         .select('id, title')
         .eq('id', animation.parent_animation_id)
         .is('hidden_at', null)
-        .in('visibility', ['public', 'link_shared'])
         .single(),
       supabase
         .from('saved_animations')
@@ -105,7 +103,6 @@ export default async function SharePage({ params }: PageProps) {
         .eq('parent_animation_id', animation.parent_animation_id)
         .eq('is_progression', true)
         .is('hidden_at', null)
-        .in('visibility', ['public', 'link_shared'])
         .order('progression_order', { ascending: true }),
     ]);
 
@@ -126,7 +123,6 @@ export default async function SharePage({ params }: PageProps) {
       .eq('parent_animation_id', id)
       .eq('is_progression', true)
       .is('hidden_at', null)
-      .in('visibility', ['public', 'link_shared'])
       .order('progression_order', { ascending: true });
 
     if (progressions && progressions.length > 0) {
@@ -144,6 +140,7 @@ export default async function SharePage({ params }: PageProps) {
       autoPlay={true}
       fullNavigationSet={fullNavigationSet.length > 1 ? fullNavigationSet : undefined}
       currentAnimationId={id}
+      animationUserId={animation.user_id}
     />
   );
 }

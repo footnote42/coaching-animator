@@ -169,14 +169,14 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **013-snap-to-grid** — Snap-to-Grid (Phase 2j)
-- Plan: `specs/013-snap-to-grid/plan.md`
-- Spec: `specs/013-snap-to-grid/spec.md`
+- **015-cosmetic-polish** — Cosmetic Polish (Phase 2l)
+- Plan: `specs/015-cosmetic-polish/plan.md`
+- Spec: `specs/015-cosmetic-polish/spec.md`
 
 ## Recent Changes
+- 014-user-guide: Phase 2k complete — User Guide and help documentation
+- 013-snap-to-grid: Phase 2j complete — Snap-to-Grid
 - 012-editor-workspace-remodel: Phase 2i complete — collapsible sidebar, Focus Mode, Mobile Drawer
-- 011-workflow-clarity: Phase 2h complete — ShareViewer back link → /gallery, My-Gallery Play → /share/{id}
-- 010-auth-profile: Profile page visual redesign (coach identity card)
 
 ## Design Context
 

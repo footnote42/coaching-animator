@@ -452,11 +452,24 @@ export default function HeroBackground() {
 
   return (
     <>
+      {/* Mobile Fallback: Tactical Ball SVG */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-20 md:hidden overflow-hidden pointer-events-none" aria-hidden="true">
+        {/* We use standard img to avoid Next.js Image optimization overhead for a simple SVG */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/tactical-ball.svg"
+          alt="Tactical Rugby Ball"
+          width="250"
+          height="250"
+          className="object-contain motion-safe:animate-pulse"
+        />
+      </div>
+
       {/* Render all variants but transition their opacity for a smooth crossfade */}
       {variants.map((Variant, i) => (
         <div 
           key={i} 
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${
             active === i ? 'opacity-100' : 'opacity-0'
           }`}
         >
