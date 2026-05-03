@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth, isAuthError, requireNotBanned } from '@/lib/server/auth';
 import { checkQuota } from '@/lib/quota';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,6 +21,16 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     // Check if user is banned
     const banCheck = await requireNotBanned(user.id);
     if (banCheck) return banCheck;
+
+    // Hourly rate limit: prevent remix spam
+    const rateLimitResult = await checkRateLimit(user.id, 'remix');
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+      );
+    }
+
     const supabase = await createSupabaseServerClient();
 
     // Fetch the original animation (must be public)

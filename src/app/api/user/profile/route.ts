@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth, isAuthError } from '@/lib/server/auth';
 import { UpdateProfileSchema } from '@/lib/schemas/users';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -50,6 +51,15 @@ export async function PUT(request: NextRequest) {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
     const user = authResult;
+
+    // Rate limit: prevent profile update spam
+    const rateLimitResult = await checkRateLimit(user.id, 'profile_update');
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+      );
+    }
 
     let body;
     try {

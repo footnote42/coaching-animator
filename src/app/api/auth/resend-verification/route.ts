@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -18,6 +19,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: { code: 'VALIDATION_ERROR', message: 'Invalid email address' } },
         { status: 400 }
+      );
+    }
+
+    // IP-based rate limit: prevent email bombing
+    const ip =
+      request.headers.get('x-forwarded-for') ??
+      request.headers.get('x-real-ip') ??
+      'unknown';
+    const rateLimitResult = await checkRateLimit(ip, 'resend_verification');
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
       );
     }
 

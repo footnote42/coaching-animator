@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/server/auth';
 import { GalleryQuerySchema } from '@/lib/schemas/animations';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -9,6 +10,19 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   console.log('[Gallery API] GET request received');
   try {
+    // IP-based rate limit for public gallery endpoint
+    const ip =
+      request.headers.get('x-forwarded-for') ??
+      request.headers.get('x-real-ip') ??
+      'unknown';
+    const rateLimitResult = await checkRateLimit(ip, 'gallery');
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+      );
+    }
+
     const searchParams = Object.fromEntries(request.nextUrl.searchParams);
     const query = GalleryQuerySchema.safeParse(searchParams);
 

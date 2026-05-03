@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth, isAuthError } from '@/lib/server/auth';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,6 +21,15 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
     const user = authResult;
+
+    // Hourly rate limit: prevent bulk upvote abuse
+    const rateLimitResult = await checkRateLimit(user.id, 'upvote');
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+      );
+    }
 
     // Rate limit: prevent rapid toggle spam
     const rateLimitKey = `${user.id}:${id}`;

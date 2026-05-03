@@ -12,7 +12,6 @@ export async function GET() {
                 hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
                 hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
                 nodeEnv: process.env.NODE_ENV,
-                urlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.substring(0, 15) : 'missing'
             }
         };
         return NextResponse.json(result);

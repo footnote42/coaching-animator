@@ -58,6 +58,13 @@ const DEFAULT_CONFIGS: Record<string, RateLimitConfig> = {
   'share': { maxRequests: 10, windowMs: 60 * 60 * 1000 },
   'gallery': { maxRequests: 100, windowMs: 60 * 60 * 1000 },
   'contact': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
+  'upvote': { maxRequests: 30, windowMs: 60 * 60 * 1000 },
+  'remix': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
+  'profile_update': { maxRequests: 10, windowMs: 60 * 60 * 1000 },
+  'account_delete': { maxRequests: 3, windowMs: 24 * 60 * 60 * 1000 },
+  'resend_verification': { maxRequests: 3, windowMs: 60 * 60 * 1000 },
+  'progression_create': { maxRequests: 20, windowMs: 60 * 60 * 1000 },
+  'progression_reorder': { maxRequests: 20, windowMs: 60 * 60 * 1000 },
 };
 
 export async function checkRateLimit(
