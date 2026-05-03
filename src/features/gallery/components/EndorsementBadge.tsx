@@ -28,3 +28,4 @@ export function EndorsementBadge({ endorsedBy }: EndorsementBadgeProps) {
     </span>
   );
 }
+

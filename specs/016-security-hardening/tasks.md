@@ -82,9 +82,9 @@
 
 ### Verification for User Story 3
 
-- [ ] T014 [US3] Manual probe: `curl -X DELETE http://localhost:3000/api/user/account` (no auth) — verify 401 returned (not 500 or 200)
-- [ ] T015 [US3] Manual probe: `curl http://localhost:3000/api/admin/reports` with a non-admin session cookie — verify 403 returned
-- [ ] T016 [US3] Manual probe: `curl http://localhost:3000/api/diag` in production preview — verify no secrets in response
+- [x] T014 [US3] Manual probe: `curl -X DELETE http://localhost:3000/api/user/account` (no auth) — verify 401 returned (not 500 or 200)
+- [x] T015 [US3] Manual probe: `curl http://localhost:3000/api/admin/reports` with a non-admin session cookie — verify 403 returned
+- [x] T016 [US3] Manual probe: `curl http://localhost:3000/api/diag` in production preview — verify no secrets in response
 
 **Checkpoint**: All three probes confirm expected error codes.
 
@@ -92,11 +92,11 @@
 
 ## Phase 6: Polish & Final Checks
 
-- [ ] T017 [P] Run `npm test -- --run` — all unit tests pass including new rate-limit assertions
-- [ ] T018 [P] Run `npm run lint && npx tsc --noEmit` — zero new errors across the full codebase
-- [ ] T019 Manual probe: POST to `/api/auth/resend-verification` 4 times — confirm 4th returns 429
-- [ ] T021 [P] Manual probe: POST an oversized payload (>1 MB body) to `/api/animations` — confirm 413 response before any DB write (verifies SC-002 / FR-005)
-- [ ] T022 [P] Manual probe: `GET /api/gallery?q=%27%3B+DROP+TABLE+animations%3B+--` — confirm 200 with normal results and no error (verifies SC-003 / FR-004)
+- [x] T017 [P] Run `npm test -- --run` — all unit tests pass including new rate-limit assertions
+- [x] T018 [P] Run `npm run lint && npx tsc --noEmit` — zero new errors across the full codebase
+- [x] T019 Manual probe: POST to `/api/auth/resend-verification` 4 times — confirm 4th returns 429
+- [x] T021 [P] Manual probe: POST an oversized payload (>1 MB body) to `/api/animations` — confirm 413 response before any DB write (verifies SC-002 / FR-005)
+- [x] T022 [P] Manual probe: `GET /api/gallery?q=%27%3B+DROP+TABLE+animations%3B+--` — confirm 200 with normal results and no error (verifies SC-003 / FR-004)
 
 
 ---

@@ -30,7 +30,7 @@ export function SportSelector({ currentSport, onSportChange }: SportSelectorProp
                 id="sport-selector"
                 value={currentSport}
                 onChange={(e) => onSportChange(e.target.value as SportType)}
-                className="w-full px-3 py-2 bg-white border border-pitch-green font-mono text-sm text-pitch-green focus:outline-none focus:ring-1 focus:ring-pitch-green"
+                className="w-full px-3 py-2 bg-surface border border-pitch-green font-mono text-sm text-pitch-green focus:outline-none focus:ring-1 focus:ring-pitch-green"
                 style={{ borderRadius: 0 }} // Sharp corners (Constitution compliance)
             >
                 {sportOptions.map((sport) => (

@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
   if (hasToken === false) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-text-primary mb-2">Reset Link Required</h2>
+        <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Link Required</h2>
         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-700 text-sm">
           <p className="font-medium mb-2">📧 Password reset link required</p>
           <p>This page requires a password reset link from your email.</p>
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-text-primary mb-2">Set New Password</h2>
+      <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">Set New Password</h2>
       <p className="text-sm text-text-primary/70 mb-6">
         Enter your new password below.
       </p>

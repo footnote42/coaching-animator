@@ -88,7 +88,7 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 6. ✅ **Workflow clarity** — coach can complete edit → save → share → player view → return to gallery without external help (Phase 2h shipped 2026-04-30)
 7. ✅ **Editor workspace layout** — collapsible sidebar, Focus Mode, and mobile-first drawer (Phase 2i shipped 2026-05-01)
 8. ✅ **Basic user guide** — coaches self-onboard in <5 minutes (Phase 2k shipped 2026-05-01)
-9. ⏳ **Security hardened** — rate limiting, injection prevention, auth tokens (Phase 3b)
+9. ✅ **Security hardened** — rate limiting, injection prevention, auth tokens (Phase 3b)
 
 ---
 
@@ -126,7 +126,7 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | Sub-area | Status | Scope | Key issues |
 |----------|--------|-------|------------|
 | **3a — Technical Debt** | ✅ | Editor.tsx 852→504 LOC; 4 hooks; 25 store selectors. Shipped 2026-04-25. | — |
-| **3b — Security Hardening** | Open | Rate limiting, SQL injection, XSS, CSRF, auth tokens, admin bulk delete | SEC-001, SEC-002, SEC-003, ADMIN-001 |
+| **3b — Security Hardening** | ✅ | Rate limiting, SQL injection, XSS, CSRF, auth tokens, admin bulk delete | SEC-001, SEC-002, SEC-003, ADMIN-001 |
 | **3c — E2E Core Loop** | Open | Editor save → POST /api/share → /my-gallery card visible → /share/{id} loads → mobile replay. CI gate. | — |
 | **3d — Search & Layering** | Open | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
 | **3e — Performance Baseline** | Open | Lighthouse audit across all routes; pre-beta targets | PERF-001 |

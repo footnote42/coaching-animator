@@ -159,6 +159,7 @@ export function FloatingRemote({
       onPointerCancel={handlePointerUp}
       className="flex items-center rounded-full bg-black/80 border border-white/10"
     >
+      {/* intentional: share-view playback pill — rounded-full is the brand shape for mobile replay */}
       {/* DRAG HANDLE — only this element triggers drag */}
       <div
         onPointerDown={handleDragStart}
@@ -185,3 +186,4 @@ export function FloatingRemote({
     </div>
   );
 }
+

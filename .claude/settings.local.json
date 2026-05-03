@@ -76,7 +76,11 @@
       "mcp__claude_ai_Vercel__get_deployment",
       "mcp__plugin_supabase_supabase__execute_sql",
       "mcp__plugin_supabase_supabase__apply_migration",
-      "mcp__plugin_supabase_supabase__get_logs"
+      "mcp__plugin_supabase_supabase__get_logs",
+      "Bash(awk '{print $6, $7, $8, $9}')",
+      "Bash(sort -k3)",
+      "Bash(awk '{print $9, \"\\(\", $5, \"\\)\", \"Modified:\", $6, $7, $8}')",
+      "Bash(echo \"exit: $?\")"
     ]
   },
   "enableAllProjectMcpServers": true,

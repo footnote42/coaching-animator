@@ -40,7 +40,7 @@ export function MobileDrawer({
       {/* Backdrop */}
       <div
         id="drawer-backdrop"
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-200 ${
+        className={`fixed inset-0 bg-primary/50 backdrop-blur-sm z-[60] transition-opacity duration-200 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -51,7 +51,7 @@ export function MobileDrawer({
         role="dialog"
         aria-modal="true"
         data-testid="mobile-drawer-content"
-        className={`fixed bottom-0 left-0 right-0 z-[70] bg-tactics-white rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out max-h-[85vh] flex flex-col ${
+                className={`fixed bottom-0 left-0 right-0 z-[70] bg-tactics-white rounded-none shadow-2xl transition-transform duration-300 ease-out max-h-[85vh] flex flex-col ${
           isOpen ? 'translate-y-0' : 'translate-y-full invisible pointer-events-none'
         }`}
       >
@@ -60,14 +60,14 @@ export function MobileDrawer({
           className="flex flex-col items-center py-2 cursor-pointer touch-none"
           onClick={onClose}
         >
-          <div className="w-12 h-1.5 bg-border/40 rounded-full mb-1" />
+          <div className="w-12 h-0.5 bg-border/40 mb-1" />
           <GripHorizontal className="w-4 h-4 text-text-primary/20" />
         </div>
 
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 text-text-primary/40 hover:text-text-primary transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-none hover:bg-black/5 text-text-primary/40 hover:text-text-primary transition-colors"
           aria-label="Close drawer"
         >
           <X className="w-5 h-5" />
@@ -97,3 +97,4 @@ export function MobileDrawer({
     </>
   );
 }
+

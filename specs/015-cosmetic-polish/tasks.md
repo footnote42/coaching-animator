@@ -20,7 +20,7 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 **Purpose**: Baseline verified — branch is clean and CI gates are passing before any changes
 
-- [ ] T001 Verify `npm run lint && npx tsc --noEmit` passes on current branch before any changes
+- [x] T001 Verify `npm run lint && npx tsc --noEmit` passes on current branch before any changes
 
 ---
 
@@ -30,8 +30,8 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 **⚠️ CRITICAL**: Gallery story tasks (US2, US5) depend on T002. Card hover tasks (US2, US5) depend on T003.
 
-- [ ] T002 [P] Add `endorsed_by: string | null` field to `AnimationSummary` interface in `src/features/gallery/components/AnimationCard.tsx` (line ~13) and ensure the API response in `src/app/api/gallery/route.ts` selects this column
-- [ ] T003 [P] Create shared hover utility `src/shared/ui/card-action-hover.ts` exporting a single Tailwind class string (e.g. `hover:bg-surface-warm`) to enforce consistent card-button hover feedback across gallery and Playbook (UI-005)
+- [x] T002 [P] Add `endorsed_by: string | null` field to `AnimationSummary` interface in `src/features/gallery/components/AnimationCard.tsx` (line ~13) and ensure the API response in `src/app/api/gallery/route.ts` selects this column
+- [x] T003 [P] Create shared hover utility `src/shared/ui/card-action-hover.ts` exporting a single Tailwind class string (e.g. `hover:bg-surface-warm`) to enforce consistent card-button hover feedback across gallery and Playbook (UI-005)
 
 **Checkpoint**: Type and utility additions in place — gallery story work can now begin
 
@@ -45,11 +45,11 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 ### Implementation for User Story 1
 
-- [ ] T004 [P] [US1] Create `src/features/animation/components/ShareSheet.tsx`: modal/sheet component with `ShareSheetProps` interface (`animationId`, `animationTitle`, `open`, `onClose`); constructs `/share/{animationId}` URL; invokes `navigator.share` (Web Share API) on mobile; falls back to `navigator.clipboard.writeText` on desktop / unsupported browsers; displays the URL and a copy button with visible confirmation state
-- [ ] T005 [P] [US1] Update `src/app/share/[id]/page.tsx`: add `user_id` to the Supabase `select` query (around line 69–76) and pass it as `animationUserId` prop to `ShareViewer`
-- [ ] T006 [US1] Update `src/features/animation/components/ShareViewer.tsx`: (a) change title alignment from `text-center` to `text-left` (line ~275); (b) add `animationUserId` prop; derive `isOwner` using `useUser()` from UserContext; update back-button `href` to `/my-gallery` when owner, `/gallery` otherwise (lines ~344–355); (c) add "powered by Coaching Animator" `<a href="/">` link as `absolute bottom-2 right-2` in the chrome layer outside the canvas div; (d) fix `bg-white` → `bg-surface` on the ShareCanvas div (line ~177) — depends on T005
-- [ ] T007 [US1] Add Share button to `src/features/animation/components/EditorFloatingRemote.tsx` using `ShareSheet` from T004: button visible only when animation has a saved `id` (not a new unsaved animation); opens ShareSheet with `animationId` and `animationTitle` — depends on T004
-- [ ] T008 [US1] Verify `src/app/gallery/GalleryClient.tsx`: confirm `handleView` routes to `/share/${id}` not `/replay/${id}`; scan all public card surfaces in `GalleryClient.tsx`, `PublicAnimationCard.tsx`, `AnimationCard.tsx` for any remaining `/replay/` links and update to `/share/`
+- [x] T004 [P] [US1] Create `src/features/animation/components/ShareSheet.tsx`: modal/sheet component with `ShareSheetProps` interface (`animationId`, `animationTitle`, `open`, `onClose`); constructs `/share/{animationId}` URL; invokes `navigator.share` (Web Share API) on mobile; falls back to `navigator.clipboard.writeText` on desktop / unsupported browsers; displays the URL and a copy button with visible confirmation state
+- [x] T005 [P] [US1] Update `src/app/share/[id]/page.tsx`: add `user_id` to the Supabase `select` query (around line 69–76) and pass it as `animationUserId` prop to `ShareViewer`
+- [x] T006 [US1] Update `src/features/animation/components/ShareViewer.tsx`: (a) change title alignment from `text-center` to `text-left` (line ~275); (b) add `animationUserId` prop; derive `isOwner` using `useUser()` from UserContext; update back-button `href` to `/my-gallery` when owner, `/gallery` otherwise (lines ~344–355); (c) add "powered by Coaching Animator" `<a href="/">` link as `absolute bottom-2 right-2` in the chrome layer outside the canvas div; (d) fix `bg-white` → `bg-surface` on the ShareCanvas div (line ~177) — depends on T005
+- [x] T007 [US1] Add Share button to `src/features/animation/components/EditorFloatingRemote.tsx` using `ShareSheet` from T004: button visible only when animation has a saved `id` (not a new unsaved animation); opens ShareSheet with `animationId` and `animationTitle` — depends on T004
+- [x] T008 [US1] Verify `src/app/gallery/GalleryClient.tsx`: confirm `handleView` routes to `/share/${id}` not `/replay/${id}`; scan all public card surfaces in `GalleryClient.tsx`, `PublicAnimationCard.tsx`, `AnimationCard.tsx` for any remaining `/replay/` links and update to `/share/`
 
 **Checkpoint**: Full share workflow functional — share from editor, title on share view, context-aware back button
 
@@ -63,11 +63,11 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 ### Implementation for User Story 2
 
-- [ ] T009 [P] [US2] Add styled page banner to `src/app/my-gallery/page.tsx` above the card grid: `font-heading` title "My Playbook", tactical motif (SVG or CSS), `bg-[var(--color-surface-warm)]` (#EDE6D0 — deeper cream per design system); zero radius; amber not used; replaces the generic `text-2xl font-heading` heading at lines ~178–197
-- [ ] T010 [P] [US2] Add styled page banner to `src/app/gallery/GalleryClient.tsx` (public Gallery): `font-heading` title "Community Playbook", rugby-lines motif, `bg-[var(--color-background)]` (#F2ECD8 — warm cream per design system); paired with T009 to make each page visually distinct at a glance
-- [ ] T011 [P] [US2] Update `src/features/gallery/components/AnimationCard.tsx`: (a) add text labels to Edit (line ~253), Replay (click overlay), and Share (line ~232) actions (icon+label or text buttons per FR-009); (b) fix `rounded-full` → `rounded-none` on lines 177 and 184; (c) apply shared hover utility from T003 to action buttons; (d) update any `/replay/` links to `/share/` — depends on T002, T003
-- [ ] T012 [US2] Fix private animation open bug: investigate `src/app/share/[id]/page.tsx` RLS/auth handling for private animations owned by the signed-in user; ensure the server component passes auth context correctly so the owner can view their own private animation without a 403/404
-- [ ] T013 [US2] Verify My Playbook search/filter end-to-end in `src/app/my-gallery/page.tsx`: title filter narrows results; tag filter works; sort controls work; empty-state does not crash; search input remains visible when list is empty
+- [x] T009 [P] [US2] Add styled page banner to `src/app/my-gallery/page.tsx` above the card grid: `font-heading` title "My Playbook", tactical motif (SVG or CSS), `bg-[var(--color-surface-warm)]` (#EDE6D0 — deeper cream per design system); zero radius; amber not used; replaces the generic `text-2xl font-heading` heading at lines ~178–197
+- [x] T010 [P] [US2] Add styled page banner to `src/app/gallery/GalleryClient.tsx` (public Gallery): `font-heading` title "Community Playbook", rugby-lines motif, `bg-[var(--color-background)]` (#F2ECD8 — warm cream per design system); paired with T009 to make each page visually distinct at a glance
+- [x] T011 [P] [US2] Update `src/features/gallery/components/AnimationCard.tsx`: (a) add text labels to Edit (line ~253), Replay (click overlay), and Share (line ~232) actions (icon+label or text buttons per FR-009); (b) fix `rounded-full` → `rounded-none` on lines 177 and 184; (c) apply shared hover utility from T003 to action buttons; (d) update any `/replay/` links to `/share/` — depends on T002, T003
+- [x] T012 [US2] Fix private animation open bug: investigate `src/app/share/[id]/page.tsx` RLS/auth handling for private animations owned by the signed-in user; ensure the server component passes auth context correctly so the owner can view their own private animation without a 403/404
+- [x] T013 [US2] Verify My Playbook search/filter end-to-end in `src/app/my-gallery/page.tsx`: title filter narrows results; tag filter works; sort controls work; empty-state does not crash; search input remains visible when list is empty
 
 **Checkpoint**: My Playbook fully functional with parity to public gallery
 
@@ -81,8 +81,8 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 ### Implementation for User Story 3
 
-- [ ] T014 [P] [US3] Audit `src/app/_components/HeroBackground.tsx` against LANDING-002 (FR-017): if a rugby-ball *shape* is absent (current diagrams are tactical lines/arrows, not a ball outline), add `public/assets/tactical-ball.svg` (hand-drawn marker stroke, pitch-green outline, amber tactical markings, zero rounded corners) and reference it in HeroBackground; also verify reduced-motion and mobile viewport (< 480 px) handling
-- [ ] T015 [P] [US3] Audit `src/app/page.tsx`: verify Section 2 card 2 (no "code" / developer language), Section 2 card 4 (no export/GIF/WebM, preserves 4-card grid), Section 3 card 1 (click-to-place then drag description), Section 3 card 3 (no GIF export claim), footer (no duplicated CTA links); update only where stale copy is found
+- [x] T014 [P] [US3] Audit `src/app/_components/HeroBackground.tsx` against LANDING-002 (FR-017): if a rugby-ball *shape* is absent (current diagrams are tactical lines/arrows, not a ball outline), add `public/assets/tactical-ball.svg` (hand-drawn marker stroke, pitch-green outline, amber tactical markings, zero rounded corners) and reference it in HeroBackground; also verify reduced-motion and mobile viewport (< 480 px) handling
+- [x] T015 [P] [US3] Audit `src/app/page.tsx`: verify Section 2 card 2 (no "code" / developer language), Section 2 card 4 (no export/GIF/WebM, preserves 4-card grid), Section 3 card 1 (click-to-place then drag description), Section 3 card 3 (no GIF export claim), footer (no duplicated CTA links); update only where stale copy is found
 
 **Checkpoint**: Landing page credibility confirmed — no developer jargon, no dead feature references
 
@@ -96,8 +96,8 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 ### Implementation for User Story 4
 
-- [ ] T016 [P] [US4] Update `src/shared/components/Navigation.tsx`: add guest `<LoginButton>` control and authenticated `<ProfileChip>` (initial/avatar chip derived from UserContext) that are persistently visible without opening a menu; replace or augment the plain "Profile" text link when authenticated (FR-023)
-- [ ] T017 [P] [US4] Fix `src/app/profile/page.tsx`: change `rounded-full` → `rounded-none` on avatar circle (line ~253) and loading spinner (line ~235); verify the identity card composition (heading hierarchy, sectioned layout) already reads well — no layout overhaul needed per research finding (FR-024)
+- [x] T016 [P] [US4] Update `src/shared/components/Navigation.tsx`: add guest `<LoginButton>` control and authenticated `<ProfileChip>` (initial/avatar chip derived from UserContext) that are persistently visible without opening a menu; replace or augment the plain "Profile" text link when authenticated (FR-023)
+- [x] T017 [P] [US4] Fix `src/app/profile/page.tsx`: change `rounded-full` → `rounded-none` on avatar circle (line ~253) and loading spinner (line ~235); verify the identity card composition (heading hierarchy, sectioned layout) already reads well — no layout overhaul needed per research finding (FR-024)
 
 **Checkpoint**: Authentication state visible on all pages; profile page composition confirmed
 
@@ -111,12 +111,12 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 ### Implementation for User Story 5
 
-- [ ] T018 [P] [US5] Fix colour tokens in `src/features/gallery/components/MiniPitchSVG.tsx`: import `EntityColors` from `@/features/animation`; replace attack player fill with `EntityColors.getDefault('player', 'attack')` (resolves to blue `#2563EB` per `DESIGN_TOKENS.colours.attack[0]`); replace defence player fill with `EntityColors.getDefault('player', 'defense')` (resolves to red `#DC2626` per `DESIGN_TOKENS.colours.defense[0]`); add cone rendering using `EntityColors.getDefault('cone')` (resolves to hi-vis yellow `#E6EA0C` per `neutral[2]`); remove the "intentional documented exception" note at line ~25 (overridden by FR-014). Spec prose says "red attack / blue defence" — this is a labelling convention; the token-resolved values are authoritative (attack=blue, defence=red).
-- [ ] T019 [P] [US5] Add `public/assets/hampshire-rfu-badge.webp` (compressed < 50 KB); update `src/features/gallery/components/AnimationCard.tsx` to render the badge image when `animation.endorsed_by` is set — depends on T002
-- [ ] T019b [US5] Add constitution-mandated endorsement disclaimer (V.2.4) to endorsed cards in `src/features/gallery/components/AnimationCard.tsx` and `src/features/gallery/components/PublicAnimationCard.tsx`: when `animation.endorsed_by` is set, render the required text — *"Endorsed by [endorsed_by]. Endorsement does not guarantee accuracy, safety, or suitability for all coaching contexts. Coaches are responsible for adapting drills to their players' skill levels."* — as a `title` attribute on the badge image (minimum) or as a visible small-print line below the badge (preferred); no new hardcoded colours; zero radius on any wrapper — depends on T019
-- [ ] T020 [P] [US5] Fix `src/features/gallery/components/PublicAnimationCard.tsx`: change `rounded-full` → `rounded-none` on lines 177 and 184; apply shared hover utility from T003 to all card action buttons; update Remix attribution link from `/replay/` to `/share/` (line ~225)
-- [ ] T021 [US5] Add stable card layout slots to `src/features/gallery/components/AnimationCard.tsx` and `src/features/gallery/components/PublicAnimationCard.tsx`: tag row and progression strip use reserved slots with `min-h-[N]` outer container and `h-0` collapse when empty so card footprint is consistent across cards with/without these badges (FR-013, UI-006) — depends on T019, T020
-- [ ] T022 [US5] Verify templates filter end-to-end: create an animation tagged as a template → confirm it appears under templates filter in `/gallery` → remix it → confirm no regression from the architecture refactor (FR-016 / GALLERY-003)
+- [x] T018 [P] [US5] Fix colour tokens in `src/features/gallery/components/MiniPitchSVG.tsx`: import `EntityColors` from `@/features/animation`; replace attack player fill with `EntityColors.getDefault('player', 'attack')` (resolves to blue `#2563EB` per `DESIGN_TOKENS.colours.attack[0]`); replace defence player fill with `EntityColors.getDefault('player', 'defense')` (resolves to red `#DC2626` per `DESIGN_TOKENS.colours.defense[0]`); add cone rendering using `EntityColors.getDefault('cone')` (resolves to hi-vis yellow `#E6EA0C` per `neutral[2]`); remove the "intentional documented exception" note at line ~25 (overridden by FR-014). Spec prose says "red attack / blue defence" — this is a labelling convention; the token-resolved values are authoritative (attack=blue, defence=red).
+- [x] T019 [P] [US5] Add `public/assets/hampshire-rfu-badge.webp` (compressed < 50 KB); update `src/features/gallery/components/AnimationCard.tsx` to render the badge image when `animation.endorsed_by` is set — depends on T002
+- [x] T019b [US5] Add constitution-mandated endorsement disclaimer (V.2.4) to endorsed cards in `src/features/gallery/components/AnimationCard.tsx` and `src/features/gallery/components/PublicAnimationCard.tsx`: when `animation.endorsed_by` is set, render the required text — *"Endorsed by [endorsed_by]. Endorsement does not guarantee accuracy, safety, or suitability for all coaching contexts. Coaches are responsible for adapting drills to their players' skill levels."* — as a `title` attribute on the badge image (minimum) or as a visible small-print line below the badge (preferred); no new hardcoded colours; zero radius on any wrapper — depends on T019
+- [x] T020 [P] [US5] Fix `src/features/gallery/components/PublicAnimationCard.tsx`: change `rounded-full` → `rounded-none` on lines 177 and 184; apply shared hover utility from T003 to all card action buttons; update Remix attribution link from `/replay/` to `/share/` (line ~225)
+- [x] T021 [US5] Add stable card layout slots to `src/features/gallery/components/AnimationCard.tsx` and `src/features/gallery/components/PublicAnimationCard.tsx`: tag row and progression strip use reserved slots with `min-h-[N]` outer container and `h-0` collapse when empty so card footprint is consistent across cards with/without these badges (FR-013, UI-006) — depends on T019, T020
+- [x] T022 [US5] Verify templates filter end-to-end: create an animation tagged as a template → confirm it appears under templates filter in `/gallery` → remix it → confirm no regression from the architecture refactor (FR-016 / GALLERY-003)
 
 **Checkpoint**: Card consistency and branding confirmed on both gallery surfaces
 
@@ -126,13 +126,13 @@ description: "Task list for Phase 2l — Cosmetic Polish"
 
 **Purpose**: Verify design quality, run all CI gates, confirm SC-010 (≥18/20 audit score)
 
-- [ ] T023 [P] Run impeccable audit on all touched surfaces: check for `rounded-*` on new buttons/badges/banners, `bg-white` on editor or share surfaces, `font-heading` missing on new/rewritten headings (share-view title, page banners, profile heading), amber proliferation beyond singular CTAs
-- [ ] T024 Fix any impeccable audit violations found during T023 across touched files
-- [ ] T025 [P] Verify RFU badge asset size gate: `ls -la public/assets/hampshire-rfu-badge.*` must be < 51200 bytes
-- [ ] T026 Run `npm run lint && npx tsc --noEmit` — no new errors permitted
-- [ ] T027 Audit SC-011 acceptance scenario coverage: grep `tests/e2e/` and `tests/unit/` for coverage of: (a) share-flow context-aware back button (owner vs guest), (b) AnimationCard labelled Edit/Replay/Share actions, (c) ProfileChip guest vs auth render state; if any scenario has no test, add a targeted test in the appropriate spec file before marking T027 done
-- [ ] T028 Run `npm test -- --run` — all unit tests pass (including any added by T027)
-- [ ] T029 Run `npm run e2e` — all E2E tests pass (dev server running: `npm run dev`)
+- [x] T023 [P] Run impeccable audit on all touched surfaces: check for `rounded-*` on new buttons/badges/banners, `bg-white` on editor or share surfaces, `font-heading` missing on new/rewritten headings (share-view title, page banners, profile heading), amber proliferation beyond singular CTAs
+- [x] T024 Fix any impeccable audit violations found during T023 across touched files
+- [x] T025 [P] Verify RFU badge asset size gate: `ls -la public/assets/hampshire-rfu-badge.*` must be < 51200 bytes
+- [x] T026 Run `npm run lint && npx tsc --noEmit` — no new errors permitted
+- [x] T027 Audit SC-011 acceptance scenario coverage: grep `tests/e2e/` and `tests/unit/` for coverage of: (a) share-flow context-aware back button (owner vs guest), (b) AnimationCard labelled Edit/Replay/Share actions, (c) ProfileChip guest vs auth render state; if any scenario has no test, add a targeted test in the appropriate spec file before marking T027 done
+- [x] T028 Run `npm test -- --run` — all unit tests pass (including any added by T027)
+- [x] T029 Run `npm run e2e` — all E2E tests pass (dev server running: `npm run dev`)
 
 ---
 

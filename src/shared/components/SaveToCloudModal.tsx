@@ -160,7 +160,7 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-primary/60"
         onClick={onClose}
       />
 

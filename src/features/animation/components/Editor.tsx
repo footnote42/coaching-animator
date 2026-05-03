@@ -315,7 +315,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       {/* Focus Mode Toggle Button */}
       <button
         onClick={focusMode ? exitFocusMode : enterFocusMode}
-        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-white/90 backdrop-blur-sm border border-border shadow-lg text-text-primary/70 hover:text-text-primary hover:scale-110 transition-all"
+        className="fixed top-4 right-4 z-50 p-2 rounded-none bg-surface border border-border shadow-lg text-text-primary/70 hover:text-text-primary hover:scale-110 transition-all"
         aria-label={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
       >
         {focusMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
@@ -325,9 +325,9 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       {!focusMode && (
         <button
           onClick={toggleSnapToGrid}
-          className={`fixed top-4 right-16 z-50 p-2 rounded-none backdrop-blur-md border transition-all ${
+                    className={`fixed top-4 right-16 z-50 p-2 rounded-none border transition-all ${
             snapToGrid 
-              ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]' 
+              ? 'bg-tactics-white text-primary border-primary shadow-none' 
               : 'bg-black/80 text-white/70 border-white/10 hover:text-white'
           }`}
           aria-label={snapToGrid ? 'Disable snap to grid' : 'Enable snap to grid'}
@@ -344,7 +344,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
               {!sidebarCollapsed && (
                 <button
                   onClick={toggleSidebar}
-                  className="absolute top-4 right-2 z-10 p-1.5 rounded-md bg-white/80 backdrop-blur-sm border border-border shadow-sm text-text-primary/50 hover:text-text-primary transition-all hover:scale-105"
+                  className="absolute top-4 right-2 z-10 p-1.5 rounded-none bg-surface border border-border shadow-sm text-text-primary/50 hover:text-text-primary transition-all hover:scale-105"
                   aria-label="Collapse sidebar"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -389,7 +389,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       {sidebarCollapsed && !focusMode && !isMobile && (
         <button
           onClick={toggleSidebar}
-          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 bg-white border border-l-0 border-border p-1.5 rounded-r-lg shadow-lg text-text-primary/50 hover:text-text-primary transition-all hover:pl-3 group"
+          className="fixed left-0 top-1/2 -translate-y-1/2 z-40 bg-surface border border-l-0 border-border p-1.5 rounded-none shadow-lg text-text-primary/50 hover:text-text-primary transition-all hover:pl-3 group"
           aria-label="Expand sidebar"
         >
           <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -415,7 +415,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         {isMobile && !focusMode && (
           <button
             onClick={() => setDrawerOpen(true)}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-primary text-text-inverse px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 font-semibold hover:scale-105 active:scale-95 transition-all"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-primary text-text-inverse px-6 py-3 rounded-none shadow-2xl flex items-center gap-2 font-semibold hover:scale-105 active:scale-95 transition-all"
             aria-label="Open mobile drawer"
           >
             <Menu className="w-5 h-5" />
@@ -437,7 +437,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           }}
         >
           <ErrorBoundary fallbackTitle="Canvas Error">
-            <div className="border border-[var(--color-accent-warm)] bg-white shadow-lg">
+            <div className="border border-[var(--color-accent-warm)] bg-surface shadow-lg">
               <Stage
                 ref={stageRef}
                 width={canvasWidth}
@@ -565,7 +565,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
 
       {annotationContextMenu && (
         <div
-          className="absolute z-50 border border-[var(--color-border)] bg-white shadow-lg"
+          className="absolute z-50 border border-[var(--color-border)] bg-surface shadow-lg"
           style={{
             left: annotationContextMenu.position.x,
             top: annotationContextMenu.position.y,

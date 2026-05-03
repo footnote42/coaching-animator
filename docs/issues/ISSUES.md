@@ -9,7 +9,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Phase 2: Launch Credibility
 
 ### 🔴 UX-001 — Welcome Popup Button Contrast
-- **Status**: `[x]` Closed
+- **Status**: `[ ]` Open
 - **Severity**: High (accessibility)
 - **Observed**: Dark text on dark green background in welcome popup button — difficult to read
 - **Location**: Welcome popup ("Share a replay link with your squad" button)
@@ -20,7 +20,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-010 — Progression Buttons Missing for New Animations
-- **Status**: `[x]` Closed
+- **Status**: `[ ]` Open
 - **Severity**: Medium (usability)
 - **Observed**: The progression buttons at the top of the animation page are not always present, especially noticeable when creating a new animation. They only appear once the animation is saved and has progressions.
 - **Action**: Refactor the progression panel logic to allow local unsaved progressions, or show an empty state to add the first progression.
@@ -54,6 +54,55 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
+
+### EDITOR-016 — Metadata and Save-to-Cloud Must Be Unified
+- **Status**: `[ ]` Open
+- **Severity**: High (UX coherence)
+- **Observed**: There are two separate surfaces for animation information: the 'Metadata' button in the left-hand menu and the info card shown when saving to the cloud. These create a fragmented and confusing experience. The same fields must be accessible and consistent across both save and edit flows.
+- **Action**: 
+  - Remove the standalone 'Metadata' button from the editor left-hand menu.
+  - Design a single Save/Metadata process that captures all animation information (title, description, coaching points, tags, progression links) during the save-to-cloud flow and on subsequent edits.
+  - The edit/info card accessed from My Playbook must show the same fields and all existing stored values in full.
+- **See also**: EDITOR-018 (description not populated in edit), FEAT-013 (Coaching Points field)
+- **Roadmap ref**: Phase 2 (Editor & Canvas)
+
+---
+
+### EDITOR-017 — Save Local / Save to Cloud Button Layout Inconsistency
+- **Status**: `[ ]` Open
+- **Severity**: Low (visual polish)
+- **Observed**: In the Project Information pane (left side of the editor), the 'Save Local' and 'Save to Cloud' buttons have inconsistent layout and spacing. Different button colours are acceptable but the structural layout must match.
+- **Action**: Standardise button container layout, padding, and spacing for both save buttons. Use the same layout component/style regardless of colour differentiation.
+- **Roadmap ref**: Phase 2l (Cosmetic Polish)
+
+---
+
+### EDITOR-018 — Description Field Not Populated When Editing from My Playbook
+- **Status**: `[ ]` Open
+- **Severity**: High (data integrity / UX)
+- **Observed**: A description was added via the 'Save to Cloud' popup, but when the animation was opened in edit mode from My Playbook the description field was empty. The stored description is either not being persisted correctly or not being loaded into the edit form.
+- **Action**: 
+  1. Verify the description is written to and read from the correct database column.
+  2. Confirm the edit/info card pre-populates all existing field values when opened.
+  3. Check for mismatch between the save payload and the fetch query (field name aliasing or missing select).
+- **See also**: EDITOR-016 (save/metadata unification)
+- **Roadmap ref**: Phase 2 (Editor & Canvas / My Playbook)
+
+---
+
+### WORKFLOW-001 — No Clear Route to Create Progressions
+- **Status**: `[ ]` Open
+- **Severity**: High (core workflow gap)
+- **Observed**: Once an animation has been created and saved, there is no discoverable path to add a progression to it. The user cannot determine how progressions are created from the current UI.
+- **Action**: 
+  - Define and document the intended progression creation workflow (e.g. "Save As Progression" from an open animation, or an "Add Progression" action on a My Playbook card).
+  - Implement the UI entry point for this workflow.
+  - Consider whether a brainstorm/workflow design session is needed before implementation.
+- **Note**: User 2026-05-02 — "Do I need to brainstorm the workflow around how I think progressions should work?" — the workflow needs to be designed before implementation.
+- **See also**: UX-010 (progression workflow & gallery integration), EDITOR-016 (save/metadata unification)
+- **Roadmap ref**: Phase 2 (core workflow)
+
+---
 ## Phase 2–3: Gallery UX
 
 ### UX-004 — Gallery Cards Lack Visual Preview
@@ -69,16 +118,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-005 — Authentication State Not Visible
-- **Status**: `[ ]` Open
-- **Severity**: High (usability blocker)
-- **Observed**: No way to see if you're logged in without opening menu. Confusing for new users. Need either logged-in icon, login button, or guest indicator in header.
-- **Location**: Navigation header
-- **Action**: Add persistent auth state indicator (profile icon for logged-in, login button for guest)
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
-
 ---
-
 
 ---
 
@@ -113,12 +153,14 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ### UX-010 — Progression Workflow & Gallery Integration
 - **Status**: `[ ]` Open
 - **Severity**: High (core workflow)
-- **Observed**: Progression workflow is not intuitive. Progressions currently sit as standalone animations in the gallery, cluttering the view.
+- **Observed**: Progression workflow is not intuitive. Progressions currently sit as standalone animations in the gallery, cluttering the view. Progression animations in a collection must be navigable from all galleries, from the animation editor, and from all playback/share screens.
 - **Action**: 
   - Update save feature to allow saving directly to a "parent" animation.
   - Remove standalone progression animations from the main gallery; they should only be accessible via the parent.
   - Inherit parent metadata and descriptors automatically.
   - Auto-generate title as `{Parent Title} {part n}`.
+  - Expose prev/next progression navigation in the editor, share view, and replay view.
+- **See also**: WORKFLOW-001 (no clear creation path for progressions), FLOW-002 (share view missing progression navigation)
 - **Roadmap ref**: Phase 2c (Share Workflow)
 
 ---
@@ -160,24 +202,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-015 — Gallery vs Playbook Visual Distinction
-- **Status**: `[ ]` Open
-- **Severity**: Low (UX clarity)
-- **Observed**: Gallery and Playbook are visually too similar to easily discern the difference.
-- **Action**: Introduce unique visual signifiers (e.g., header banners, background tints, or specific card styles) to make the pages recognizable as distinct areas.
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-### UX-017 — Home Page Footer Duplication
-- **Status**: `[ ]` Open
-- **Severity**: Low (Visual polish)
-- **Observed**: Home page footer appears below a bottom section which repeats several of the same links. It's duplication and not a good look.
-- **Action**: Redesign the landing page footer/bottom section to remove duplication and create a "slicker" transition.
-- **Roadmap ref**: Phase 2e (Landing Refinements)
-
----
-
 ## Phase 3: Quality Safety Net
 
 ### FEAT-006 — Animation Layering Control
@@ -190,18 +214,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
   - Persist z-order in animation JSON
 - **Files**: `src/features/animation/components/Canvas/EntityLayer.tsx` (likely)
 - **Roadmap ref**: Phase 3 (quality improvement)
-
----
-
-### FEAT-007 — Search & Keyword Discoverability
-- **Status**: `[ ]` Open
-- **Severity**: Low (discoverability)
-- **Observed**: Gallery needs search. Should support filtering by keywords (tags/labels on animations).
-- **Implementation**: 
-  - Add keyword/tag field to animation metadata
-  - Build search index on client (or use full-text search on Supabase)
-  - Add search input to gallery page
-- **Roadmap ref**: Phase 3 (gallery enhancement)
 
 ---
 
@@ -293,6 +305,19 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### DESIGN-002 — Notebook Page Aesthetic & Graph Paper Differentiator
+- **Status**: `[ ]` Open
+- **Severity**: Low (design identity / delight)
+- **Observed**: The graph paper background effect with different grid sizes successfully differentiates Gallery from Playbook — this is confirmed as a strong design direction. Additionally, the physical notebook tab aesthetic (pages appearing to sit inside a coach's notebook) has been identified as a desired visual motif.
+- **Design direction**: 
+  - Preserve and refine the graph paper grid differentiation between Gallery (one grid size) and My Playbook (different grid size).
+  - Add a physical notebook tab effect at the top of relevant pages — styled as if each page is a tabbed section of a coach's notebook (paper texture, visible tab labels, layered depth).
+  - Coordinate with NAV-001 (navigation tab redesign) to ensure consistency.
+- **Note**: User confirmed 2026-05-02 that the graph paper effect is liked and wants it retained; notebook tab concept is a new desired direction.
+- **Roadmap ref**: Phase 4 (design polish) — can be introduced incrementally; graph paper must not be regressed
+
+---
+
 ### DESIGN-001 — Progression Pack Terminology & UX
 - **Status**: `[ ]` Open
 - **Severity**: Low (design clarity)
@@ -303,20 +328,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
   - Design carousel/grouping UX in gallery
 - **Roadmap ref**: Phase 4+ (part of coaching education platform vision)
 - **Note**: Ties to FEATURE-003 (progression links metadata)
-
----
-
-### FEATURE-001 — Endorsed Animations (RFU Partnership)
-- **Status**: `[x]` Closed — **shipped via 009-gallery-playbook (2026-04-27), pulled forward from Phase 4**
-- **Severity**: Low (growth feature)
-- **Observed**: Need mechanism to highlight animations endorsed by Hampshire RFU
-- **Implementation (delivered)**:
-  - `endorsed_by` column added — see migration `supabase/migrations/20260226000000_add_endorsed_by_and_preview_entities.sql`
-  - Endorsement badge rendered in gallery card via `MiniPitchSVG.tsx` when `endorsed_by` is set
-  - Admin moderation interface for setting endorsement: in admin animations table
-- **Hygiene note**: Originally scoped for Phase 4. Pulled forward into 009-gallery-playbook because the gallery playbook redesign needed the field anyway; shipping the full surface (column + badge + admin toggle) in one pass was cheaper than threading half of it. Logged here per the v3.1 ROADMAP "pulled-forward" rule.
-- **Residual work**: GALLERY-001 (obtain compressed RFU icon asset <50 KB) remains separate — the wiring is complete, the production icon image is not.
-- **Roadmap ref**: Was Phase 4 → delivered Phase 2f (009-gallery-playbook)
 
 ---
 
@@ -465,66 +476,6 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### GALLERY-003 — Templates Filter Untested
-- **Status**: `[ ]` Open
-- **Severity**: Medium (regression risk)
-- **Observed**: Template gallery filter exists but has not been tested post-architecture refactor
-- **Action**: Test template creation, template tagging, template filter in gallery, and template remix flow end-to-end
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-## My Playbook (new — 2026-04-24 review)
-
-### MYPLAYBOOK-001 — No Search or Filter
-- **Status**: `[ ]` Open
-- **Severity**: Medium (usability at scale)
-- **Observed**: My Playbook has no search or filter capability; gallery has it. As coaches accumulate animations, discovery becomes difficult.
-- **Action**: Replicate gallery search and filter (by tag, title) in My Playbook view
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-### MYPLAYBOOK-002 — Layout Parity with Public Gallery
-- **Status**: `[ ]` Open
-- **Severity**: Medium (UX consistency)
-- **Observed**: My Playbook cards lack the visual richness of Public Gallery cards (no tactical thumbnails, no progression strip).
-- **Action**: Update `AnimationCard.tsx` to include the tactical preview and progression strip, matching the feature set and design of `PublicAnimationCard.tsx`.
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-### MYPLAYBOOK-003 — Unclear Edit/Replay/Share Flow
-- **Status**: `[ ]` Open
-- **Severity**: High (UX clarity)
-- **Observed**: From 'My Playbook' it is unclear how to open the displayed animation in edit mode or playback/replay mode. There is no obvious Share or Remix option either.
-- **Action**: Add clear "Edit", "Replay", and "Share" actions to cards in My Playbook. Ensure they are primary actions.
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-### MYPLAYBOOK-004 — Private Animations Cannot Be Opened
-- **Status**: `[ ]` Open
-- **Severity**: High (UX friction)
-- **Observed**: Animations in My Playbook marked as private don't open when clicked on. Likely related to sharing protocols/auth checks on the viewer routes.
-- **Action**: Fix access logic for private animations when accessed by the owner.
-- **Roadmap ref**: Phase 2f (Gallery & My Playbook)
-
----
-
-## Profile (new — 2026-04-24 review)
-
-### PROFILE-001 — Profile Page Too Functional
-- **Status**: `[ ]` Open
-- **Severity**: Low (UX polish)
-- **Observed**: Profile page feels like a raw settings form rather than a coach's profile. Lacks personality and context. The default green circle icon is "dull".
-- **Action**: 
-  - UX review; add coaching context (club, region).
-  - Implement a selection of avatars: stylized images of stereotypical rugby player/coach tropes with a hint of fun.
-- **Roadmap ref**: Phase 2g (Auth & Profile)
-
----
-
 
 ---
 
@@ -541,6 +492,16 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Playback Controls (new — 2026-04-24 review)
 
+### PLAYBACK-002 — Coaching Notes Reveal in Playback Screens
+- **Status**: `[ ]` Open
+- **Severity**: Medium (coaching utility)
+- **Observed**: Playback screens (/share and /replay) have no way to surface the animation's coaching notes or instructions. Coaches sharing a drill need players or other coaches to be able to view these notes without leaving the playback screen.
+- **Action**: Add a pop-up/overlay triggered by a button (e.g. "Notes" or info icon) in the playback UI that reveals the animation's coaching notes/description. Should not obstruct the animation but must be accessible without navigating away.
+- **See also**: FEAT-013 (Coaching Points field), FLOW-002 (share view missing context)
+- **Roadmap ref**: Phase 2c (Share Workflow) / Phase 2b (Playback & Controls)
+
+---
+
 ### PLAYBACK-001 — Playback Remote Should Float and Persist
 - **Status**: `[ ]` Open
 - **Severity**: Medium (usability at pitch)
@@ -554,19 +515,30 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ### EDITOR-013 — Unified Floating Editor Controls
 - **Status**: `[ ]` Open
 - **Severity**: High (mobile usability)
-- **Observed**: Users still have to scroll to see the bottom edge of the pitch or the timeline controls (add frame, pace, loop, etc.). These should be part of the persistent viewport overlay.
-- **Action**: Expand the floating playback remote (from 007) to include all core frame controls: add frame, change pace, toggle loop, and ghosting. This eliminates the need for the fixed footer on smaller viewports.
+- **Observed**: Users still have to scroll to see the bottom edge of the pitch or the timeline controls (add frame, pace, loop, etc.). The current floating remote was intended to solve this but is not effective enough in practice.
+- **Action**: The add-frame controls and timeline controls must be accessible without scrolling. Options: (a) extend a slide-up/down panel on the right side (mirroring the left-hand menu pattern), or (b) embed all frame controls in an improved floating remote. The existing floating remote in its current form should be deprecated — do not iterate on it; replace it.
+- **Note**: User confirmed 2026-05-02 that floating controls do not adequately solve the scroll friction and want them deprecated.
 - **Roadmap ref**: Phase 2b (Playback & Controls)
 
 ---
 
 ## Navigation & Global UI
 
+### UX-018 — Recover Autosave Popup Fades Into Darkened Background
+- **Status**: `[ ]` Open
+- **Severity**: Medium (usability / first impression)
+- **Observed**: When creating a new animation, the 'Recover Auto-saved Project' modal is rendered with the rest of the page dimmed — but the popup itself also appears dulled and nearly blends into the background. Only the Start Fresh and Recover buttons are visually distinct.
+- **Action**: Ensure the modal card has a solid, high-contrast background (e.g. white or near-white) with a clear drop shadow or border so it lifts visually above the overlay. The modal surface should be clearly separated from the backdrop, not merged with it.
+- **Roadmap ref**: Phase 2l (Cosmetic Polish)
+
+---
+
 ### NAV-001 — Selected Page Indicator (Tabs)
 - **Status**: `[ ]` Open
 - **Severity**: Low (visual polish)
 - **Observed**: Top menu emboldens selected page text — too subtle. Wants rounded "notebook tab" style with unique layered colors.
 - **Action**: Redesign navigation menu to use tab-like visual indicators for the active page, with distinct colors for different sections.
+- **See also**: DESIGN-002 (physical notebook tab aesthetic)
 - **Roadmap ref**: Phase 2e (Landing Refinements) / Global UI polish
 
 ---
@@ -585,6 +557,16 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
   e.g. a horizontally scrollable thumbnail row inside the mobile drawer, or a swipe gesture
   on the canvas to advance frames.
 - **Roadmap ref**: Post-2i; candidate for Phase 3d or a dedicated sub-area
+
+---
+
+### FEAT-013 — Coaching Points Field in Animation Metadata
+- **Status**: `[ ]` Open
+- **Severity**: Medium (coaching utility)
+- **Observed**: Animation save/edit forms currently support a title and description but no dedicated field for coaching delivery guidance. Coaches need a 'Coaching Points' free-text field to record what to watch for during a session and tips for delivery — separate from the drill description.
+- **Action**: Add a 'Coaching Points' free text field to the animation metadata schema (below Description). Display in the save/edit form, store in the database, and surface it in the playback coaching notes reveal (PLAYBACK-002).
+- **See also**: EDITOR-016 (save/metadata unification), PLAYBACK-002, FEAT-003 (full pedagogical schema — Phase 5+)
+- **Roadmap ref**: Phase 2 (pulled forward from FEAT-003 as a standalone, immediate need)
 
 ---
 
@@ -764,16 +746,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
----
-756: 
-757: ### UX-016 — User Onboarding & Help
-758: - **Status**: `[x]` Closed
-759: - **Completed**: 2026-05-01 (Phase 2k, 014-user-guide)
-760: - **Summary**: Implemented FirstRunModal onboarding, /help page, /help/coaching (APES), and integrated help navigation.
-761: 
-762: ---
-763: 
-764: ### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
+### UX-016 — User Onboarding & Help
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-01 (Phase 2k, 014-user-guide)
+- **Summary**: Implemented FirstRunModal onboarding, /help page, /help/coaching (APES), and integrated help navigation.
+### PITCH-002 — Pitch Does Not Scale to Screen Size in Editor
 - **Status**: `[x]` Closed
 - **Completed**: 2026-04-25 (Phase 2a, 005-editor-canvas)
 - **Summary**: Implemented `useEditorCanvasSize` hook using ResizeObserver to ensure responsive canvas in the editor.
@@ -800,10 +777,80 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### UX-016 — User Onboarding & Help
+### FEATURE-001 — Endorsed Animations (RFU Partnership)
 - **Status**: `[x]` Closed
-- **Completed**: 2026-05-01 (Phase 2k, 014-user-guide)
-- **Summary**: Implemented FirstRunModal onboarding, /help page, /help/coaching (APES), and integrated help navigation.
+- **Completed**: 2026-04-27 (Phase 2f, 009-gallery-playbook)
+- **Summary**: Implemented `endorsed_by` column and Hampshire RFU badge in gallery cards.
+
+---
+
+### FEAT-007 — Search & Keyword Discoverability
+- **Status**: `[x]` Closed
+- **Completed**: 2026-04-27 (Phase 2f, 009-gallery-playbook)
+- **Summary**: Added keyword search and tag filtering to the gallery.
+
+---
+
+### UX-017 — Home Page Footer Duplication
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Removed duplicate CTA links from the landing page footer.
+
+---
+
+### MYPLAYBOOK-001 — No Search or Filter
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Added search and type filtering to the My Playbook page.
+
+---
+
+### MYPLAYBOOK-002 — Layout Parity with Public Gallery
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Aligned My Playbook card styles with the public gallery.
+
+---
+
+### MYPLAYBOOK-003 — Unclear Edit/Replay/Share Flow
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Added explicit "Edit", "Play", and "Delete" actions to My Playbook cards.
+
+---
+
+### MYPLAYBOOK-004 — Private Animations Cannot Be Opened
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Fixed auth checks to allow owners to view their private animations on the share route.
+
+---
+
+### PROFILE-001 — Profile Page Too Functional
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Redesigned profile page with identity card layout and improved visuals.
+
+---
+
+### GALLERY-003 — Templates Only Filter
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Added a filter for template animations in the community gallery.
+
+---
+
+### UX-005 — Authentication State Not Visible
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Implemented `ProfileChip` and `LoginButton` in `Navigation.tsx` to show persistent auth state.
+
+---
+
+### UX-015 — Gallery vs Playbook Visual Distinction
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Added unique tactical background motifs and distinct header styling to differentiate Gallery from My Playbook.
 
 ---
 
@@ -818,8 +865,12 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Quick Reference by Roadmap Phase
 
-- **Phase 2** (Launch Credibility): UX-001, UX-002, UX-003, UX-004, **UX-005, UX-006, UX-007, UX-008, UX-009, UX-017**
-- **Phase 3** (Quality Safety Net): **FEAT-006, FEAT-007, SEC-001, SEC-002, SEC-003, ADMIN-001**
+- **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, **UX-010, UX-011, UX-012, UX-013, UX-014, UX-018**
+- **Phase 2 — Editor/Workflow**: EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-016, EDITOR-017, EDITOR-018, WORKFLOW-001, FEAT-013
+- **Phase 2 — Playback/Share**: PLAYBACK-001, PLAYBACK-002, FLOW-001, FLOW-002, FLOW-003, FLOW-004, EDITOR-002
+- **Phase 2 — Landing/Nav**: LANDING-001, LANDING-002, LANDING-003, LANDING-004, NAV-001, CONTACT-001
+- **Phase 2 — Gallery/Playbook**: GALLERY-001, GALLERY-002
+- **Phase 3** (Quality Safety Net): **FEAT-006, SEC-001, SEC-002, SEC-003, ADMIN-001, PERF-001**
 - **Phase 3–4** (Feature Decisions): **FEAT-008, FEAT-009**
-- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, DESIGN-001, MYPLAYBOOK-004**
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, FEAT-011, FEAT-012, DESIGN-001, DESIGN-002**
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005

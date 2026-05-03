@@ -54,7 +54,7 @@ function SortablePill({ prog, index, isActive, onSelectRequest }: SortablePillPr
     >
       <button
         onClick={() => onSelectRequest(index)}
-        className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border transition-colors ${
+                className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-none border transition-colors ${
           isActive
             ? 'bg-primary text-text-inverse border-primary'
             : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
@@ -116,7 +116,7 @@ export function ProgressionPanel({
         {/* Base pill — fixed, not draggable */}
         <button
           onClick={() => onSelectRequest(-1)}
-          className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full border transition-colors ${
+                    className={`shrink-0 px-3 py-1 text-xs font-medium rounded-none border transition-colors ${
             activeIndex === -1
               ? 'bg-primary text-text-inverse border-primary'
               : 'bg-transparent text-text-primary/70 border-border hover:border-primary hover:text-text-primary'
@@ -148,7 +148,7 @@ export function ProgressionPanel({
         <button
           onClick={onAddProgression}
           disabled={!canAdd || isAdding}
-          className={`shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border transition-colors ${
+                    className={`shrink-0 flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-none border transition-colors ${
             canAdd && !isAdding
               ? 'border-dashed border-border text-text-primary/50 hover:border-primary hover:text-primary'
               : 'border-dashed border-border/30 text-text-primary/20 cursor-not-allowed'

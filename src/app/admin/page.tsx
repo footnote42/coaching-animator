@@ -246,7 +246,7 @@ function AnimationsTab() {
 
       {/* Confirm delete dialog */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-primary/60 flex items-center justify-center z-50">
           <div className="bg-surface border border-border shadow-xl max-w-sm w-full mx-4 p-6">
             <h3 className="text-lg font-semibold text-text-primary mb-2">Delete Animation</h3>
             <p className="text-sm text-text-primary/70 mb-4">
@@ -569,7 +569,7 @@ export default function AdminPage() {
 
       {/* Reason Modal */}
       {showReasonModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-primary/60 flex items-center justify-center z-50">
           <div className="bg-surface border border-border shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold text-text-primary mb-4">
               {showReasonModal.action === 'hide' && 'Hide Animation'}

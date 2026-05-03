@@ -11,12 +11,13 @@ Based on the ROADMAP.md, ISSUES.md, and SpecKit framework, the project has been 
 | **Sprint 3** | **Debt, Security & Grid** | | | | |
 | 3.1 | Refactor `Editor.tsx` (Phase 3a) | Claude Code | ✅ | 9 | **Completed**: LOC reduced 852 → 504. |
 | 3.2 | `projectStore.ts` Optimization | Claude / Gemini | ✅ | 8 | **Completed**: 25 granular selectors. |
-| 3.3 | Snap-to-Grid (Phase 2j) | Claude / Gemini | **Next** | 6 | **Ready**: Pulled forward. |
+| 3.3 | Snap-to-Grid (Phase 2j) | Claude / Gemini | ✅ | 6 | **Completed**: Pulled forward. |
 | 3.4 | Security Hardening (Phase 3b) | Claude / Gemini | Open | 9 | **Critical**: API protection & SQLi checks. |
 | **Sprint 4** | **Launch Finalization** | | | | |
 | 4.1 | E2E Core Loop Tests (Phase 3c) | Mid-Range | **In Flight** | 5 | **Active**: Stabilizing editor.spec.ts. |
-| 4.2 | User Guide & Onboarding (Phase 2k) | Local LLM | Open | 2 | **Ready**: Inline help & pedagogy. |
+| 4.2 | User Guide & Onboarding (Phase 2k) | Local LLM | ✅ | 2 | **Completed**: Inline help & pedagogy. |
 | 4.3 | Performance & Audit (Phase 3e/3f) | Local LLM | Open | 3 | **Ready**: Lighthouse & audit remediation. |
+| 4.4 | Cosmetic Polish (Phase 2l) | Local LLM | ✅ | 2 | **Completed**: RFU branding & design tokens. |
 
 ---
 

@@ -4,6 +4,60 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-03 — Security Hardening MVP Complete (Phase 3b) ✅
+
+**Branch**: `main` (merged from `016-security-hardening`)
+
+---
+
+### What was delivered this session
+
+#### 1. API Rate Limiting (US1)
+- **Centralized Config**: Added 7 new endpoint configurations to `DEFAULT_CONFIGS` in `rate-limit.ts`.
+- **Hardened Routes**: Applied `checkRateLimit` middleware to 8 sensitive routes:
+    - `POST /api/animations/[id]/upvote` (Hourly 30-req limit + existing 1s cooldown)
+    - `POST /api/animations/[id]/remix` (5/hr)
+    - `PUT /api/user/profile` (10/hr)
+    - `DELETE /api/user/account` (3/24hr)
+    - `POST /api/auth/resend-verification` (3/hr, IP-keyed)
+    - `POST /api/animations/[id]/progressions` (20/hr, added missing POST handler)
+    - `PATCH /api/animations/[id]/progressions/reorder` (20/hr)
+    - `GET /api/gallery` (100/hr, IP-keyed)
+- **Headers**: All rate-limited responses now correctly return `X-RateLimit-Remaining` and `X-RateLimit-Reset`.
+
+#### 2. Diagnostic Info-Leak Prevention (US2)
+- **Diag Cleanup**: Removed `urlPrefix` from `GET /api/diag` response to prevent leaking partial Supabase project identifiers.
+
+#### 3. Quality & Verification
+- **Test Suite**: Extended `src/lib/server/__tests__/rate-limit.test.ts` with 7 new config assertions and behavioral tests (allows-3-blocks-4th).
+- **Integrity**: Verified `npm run lint`, `npx tsc --noEmit`, and `npm test` (113/113) all pass green.
+- **Deployment**: Merged feature branch to `main` and pushed to origin.
+
+---
+
+### Issues Logged / Updated
+- **ROADMAP.md**: Phase 3b marked complete. Launch Definition progress: 9/9 met.
+- **tasks.md**: All 016 implementation and verification tasks marked complete.
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  main — security hardening (016) merged and verified.
+
+Roadmap: Phase 3b ✅. Launch Definition 9/9 complete.
+
+Next Priority: Phase 3f — Audit Remediation (Cosmetic P1 closures).
+  Scope: Remove rounded-* and bg-white from editor surfaces; fix auth page headings.
+  Trigger: Roadmap "Proceed" disposition for 3f.
+
+Execution method: Speckit (/speckit.specify "Phase 3f — Audit Remediation")
+```
+
+---
+
 ## 2026-05-03 — Retrospective Execution Complete (Phases A, B, C)
 
 **Branch**: `main`

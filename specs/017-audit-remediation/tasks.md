@@ -12,10 +12,10 @@
 
 **Purpose**: Confirm a clean starting state before any changes.
 
-- [ ] T001 Run `npm run lint && npx tsc --noEmit` — verify zero errors on `017-audit-remediation` branch before touching any files
-- [ ] T002 Run `npm test -- --run` — verify all tests pass (note count for comparison at end)
+- [x] T001 Run `npm run lint && npx tsc --noEmit` — verify zero errors on `017-audit-remediation` branch before touching any files
+- [x] T002 Run `npm test -- --run` — verify all tests pass (note count for comparison at end)
 
-**Checkpoint**: Both commands pass. Record test count. Implementation may begin.
+**Checkpoint**: Both commands pass. Record test count: 113. Implementation may begin.
 
 ---
 
@@ -27,23 +27,23 @@
 
 ### Implementation for User Story 1
 
-- [ ] T003 [P] [US1] `src/features/animation/components/ProgressionPanel.tsx`:
+- [x] T003 [P] [US1] `src/features/animation/components/ProgressionPanel.tsx`:
   - Line 57: `rounded-full` on draggable pill button → `rounded-none`
   - Line 119: `rounded-full` on base "Base" pill button → `rounded-none`
   - Line 151: `rounded-full` on "Add" button → `rounded-none`
 
-- [ ] T004 [P] [US1] `src/features/animation/components/Editor.tsx`:
+- [x] T004 [P] [US1] `src/features/animation/components/Editor.tsx`:
   - Line 318: `rounded-full` on Focus Mode toggle button → `rounded-none`
   - Line 347: `rounded-md` on in-sidebar collapse button → `rounded-none`
   - Line 392: `rounded-r-lg` on sidebar expand handle tab → `rounded-none`
   - Line 418: `rounded-full` on mobile drawer trigger "Tools & Actions" FAB → `rounded-none`
 
-- [ ] T005 [P] [US1] `src/features/animation/components/MobileDrawer.tsx`:
+- [x] T005 [P] [US1] `src/features/animation/components/MobileDrawer.tsx`:
   - Line 54: `rounded-t-2xl` on drawer container → `rounded-none`
   - Line 63: Replace `<div className="w-12 h-1.5 bg-border/40 rounded-full mb-1" />` with `<div className="w-12 h-0.5 bg-border/40 mb-1" />` (flat rectangular indicator)
   - Line 70: `rounded-full` on close `X` button → `rounded-none`
 
-- [ ] T006 [P] [US1] `src/features/animation/components/Canvas/EditorFloatingRemote.tsx`:
+- [x] T006 [P] [US1] `src/features/animation/components/Canvas/EditorFloatingRemote.tsx`:
   - Line 279: `rounded-sm` on action button → `rounded-none`
   - Line 285: `rounded-sm` on speed mode toggle group container → `rounded-none`
   - Line 290: `rounded-sm` on individual speed option buttons (0.5×, 1×, 2×) → `rounded-none`
@@ -51,7 +51,7 @@
   - Line 311: `rounded-sm` on ghost toggle → `rounded-none`
   - Line 322: `rounded-sm` on expand/collapse chevron button → `rounded-none`
 
-- [ ] T007 [US1] Run `npm run lint && npx tsc --noEmit` — must pass after T003–T006
+- [x] T007 [US1] Run `npm run lint && npx tsc --noEmit` — must pass after T003–T006
 
 **Checkpoint**: US1 complete. Grep for `rounded-[^n]` in the four modified files returns only the intentional exceptions (FloatingRemote pill, EndorsementBadge).
 
@@ -65,7 +65,7 @@
 
 ### Implementation for User Story 2
 
-- [ ] T008 [P] [US2] `src/features/animation/components/Editor.tsx` (white surface fixes):
+- [x] T008 [P] [US2] `src/features/animation/components/Editor.tsx` (white surface fixes):
   - Line 318: `bg-white/90 backdrop-blur-sm` → `bg-surface` (drop blur — glassmorphism banned)
   - Line 330: `bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]` (snap-to-grid active) → `bg-tactics-white text-primary border-primary shadow-none`
   - Line 347: `bg-white/80 backdrop-blur-sm` → `bg-surface` (drop blur)
@@ -73,16 +73,16 @@
   - Line 440: `bg-white` (canvas wrapper div) → `bg-surface`
   - Line 568: `bg-white` (annotation context menu) → `bg-surface`
 
-- [ ] T009 [P] [US2] `src/features/animation/components/Canvas/InlineEditor.tsx`:
+- [x] T009 [P] [US2] `src/features/animation/components/Canvas/InlineEditor.tsx`:
   - Line 73: `bg-white` on the text input → `bg-surface`
 
-- [ ] T010 [P] [US2] `src/features/animation/components/ReplayViewer.tsx`:
+- [x] T010 [P] [US2] `src/features/animation/components/ReplayViewer.tsx`:
   - Line 179: `bg-white` on canvas wrapper div → `bg-surface`
 
-- [ ] T011 [P] [US2] `src/features/animation/components/Sidebar/SportSelector.tsx`:
+- [x] T011 [P] [US2] `src/features/animation/components/Sidebar/SportSelector.tsx`:
   - Line 33: `bg-white` on the `<select>` element → `bg-surface`
 
-- [ ] T012 [US2] Run `npm run lint && npx tsc --noEmit` — must pass after T008–T011
+- [x] T012 [US2] Run `npm run lint && npx tsc --noEmit` — must pass after T008–T011
 
 **Checkpoint**: US2 complete. Grep for `bg-white` in the four modified files returns zero results (excluding `text-white`, `hover:bg-white/10`, etc. — those are intentional tints).
 
@@ -96,19 +96,19 @@
 
 ### Implementation for User Story 3
 
-- [ ] T013 [P] [US3] `src/app/(auth)/login/page.tsx`:
+- [x] T013 [P] [US3] `src/app/(auth)/login/page.tsx`:
   - Line 68: Add `font-heading` to the `<h2>` className (alongside existing `text-xl font-semibold text-text-primary mb-6`)
 
-- [ ] T014 [P] [US3] `src/app/(auth)/register/page.tsx`:
+- [x] T014 [P] [US3] `src/app/(auth)/register/page.tsx`:
   - Find the primary `<h2>` heading element, add `font-heading` to its className
 
-- [ ] T015 [P] [US3] `src/app/(auth)/forgot-password/page.tsx`:
+- [x] T015 [P] [US3] `src/app/(auth)/forgot-password/page.tsx`:
   - Find the primary `<h2>` heading element, add `font-heading` to its className
 
-- [ ] T016 [P] [US3] `src/app/(auth)/reset-password/page.tsx`:
+- [x] T016 [P] [US3] `src/app/(auth)/reset-password/page.tsx`:
   - Find the primary `<h2>` heading element, add `font-heading` to its className
 
-- [ ] T017 [US3] Run `npm run lint && npx tsc --noEmit` — must pass after T013–T016
+- [x] T017 [US3] Run `npm run lint && npx tsc --noEmit` — must pass after T013–T016
 
 **Checkpoint**: US3 complete. All four auth pages show Oswald headings.
 
@@ -122,32 +122,32 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [P] [US4] `src/shared/components/SaveToCloudModal.tsx`:
+- [x] T018 [P] [US4] `src/shared/components/SaveToCloudModal.tsx`:
   - Line 163: `bg-black/50` → `bg-primary/60`
 
-- [ ] T019 [P] [US4] `src/shared/components/ReportModal.tsx`:
+- [x] T019 [P] [US4] `src/shared/components/ReportModal.tsx`:
   - Line 67: `bg-black/50` → `bg-primary/60`
 
-- [ ] T020 [P] [US4] `src/shared/components/EditMetadataModal.tsx`:
+- [x] T020 [P] [US4] `src/shared/components/EditMetadataModal.tsx`:
   - Line 75: `bg-black/50` → `bg-primary/60`
 
-- [ ] T021 [P] [US4] `src/shared/components/DeleteConfirmDialog.tsx`:
+- [x] T021 [P] [US4] `src/shared/components/DeleteConfirmDialog.tsx`:
   - Line 22: `bg-black/50` → `bg-primary/60`
 
-- [ ] T022 [P] [US4] `src/features/gallery/components/VersionHistoryModal.tsx`:
+- [x] T022 [P] [US4] `src/features/gallery/components/VersionHistoryModal.tsx`:
   - Line 105: `bg-black/50` → `bg-primary/60`
 
-- [ ] T023 [P] [US4] `src/app/collections/[id]/page.tsx`:
+- [x] T023 [P] [US4] `src/app/collections/[id]/page.tsx`:
   - Line 471: `bg-black/50` → `bg-primary/60`
 
-- [ ] T024 [P] [US4] `src/app/admin/page.tsx`:
+- [x] T024 [P] [US4] `src/app/admin/page.tsx`:
   - Line 249: `bg-black/50` → `bg-primary/60`
   - Line 572: `bg-black/50` → `bg-primary/60`
 
-- [ ] T025 [P] [US4] `src/features/animation/components/MobileDrawer.tsx`:
+- [x] T025 [P] [US4] `src/features/animation/components/MobileDrawer.tsx`:
   - Line 43: `bg-black/40` → `bg-primary/50` (drawer backdrop — slightly lighter than modal scrim)
 
-- [ ] T026 [US4] Run `npm run lint && npx tsc --noEmit` — must pass after T018–T025
+- [x] T026 [US4] Run `npm run lint && npx tsc --noEmit` — must pass after T018–T025
 
 **Checkpoint**: US4 complete. Grep for `bg-black/50` returns zero results site-wide.
 
@@ -157,11 +157,11 @@
 
 **Purpose**: Mark the two intentional `rounded-full` exceptions with inline comments so future audit passes do not re-flag them.
 
-- [ ] T027 [P] `src/features/animation/components/Canvas/FloatingRemote.tsx`:
+- [x] T027 [P] `src/features/animation/components/Canvas/FloatingRemote.tsx`:
   - Find the `rounded-full` pill container class
   - Add JSX comment above: `{/* intentional: share-view playback pill — rounded-full is the brand shape for mobile replay */}`
 
-- [ ] T028 [P] `src/features/gallery/components/EndorsementBadge.tsx`:
+- [x] T028 [P] `src/features/gallery/components/EndorsementBadge.tsx`:
   - Find the `rounded-full` class on the badge element
   - Add JSX comment above: `{/* intentional: circular endorsement badge icon — functional shape */}`
 
@@ -171,13 +171,13 @@
 
 **Purpose**: Full quality gate + manual smoke tests per quickstart.md.
 
-- [ ] T029 Run `npm test -- --run` — all tests pass (count should match baseline from T002)
-- [ ] T030 Run `npm run lint && npx tsc --noEmit` — zero new errors
-- [ ] T031 [P] Manual: open `/app` and verify all Category A + B items per quickstart.md (A1–A8, B1–B6)
-- [ ] T032 [P] Manual: open `/login`, `/register`, `/forgot-password`, `/reset-password` and verify Oswald headings (quickstart.md C1–C4)
-- [ ] T033 [P] Manual: open Save/Report/Delete modals and verify dark-green scrim (quickstart.md D1–D6)
-- [ ] T034 [P] Manual: open `/share/[id]` and verify `FloatingRemote` pill RETAINS `rounded-full` (quickstart.md R1)
-- [ ] T035 [P] Manual: verify `/replay/[id]` loads correctly, no layout regressions (quickstart.md R3)
+- [x] T029 Run `npm test -- --run` — all tests pass (count should match baseline from T002)
+- [x] T030 Run `npm run lint && npx tsc --noEmit` — zero new errors
+- [x] T031 [P] Manual: open `/app` and verify all Category A + B items per quickstart.md (A1–A8, B1–B6)
+- [x] T032 [P] Manual: open `/login`, `/register`, `/forgot-password`, `/reset-password` and verify Oswald headings (quickstart.md C1–C4)
+- [x] T033 [P] Manual: open Save/Report/Delete modals and verify dark-green scrim (quickstart.md D1–D6)
+- [x] T034 [P] Manual: open `/share/[id]` and verify `FloatingRemote` pill RETAINS `rounded-full` (quickstart.md R1)
+- [x] T035 [P] Manual: verify `/replay/[id]` loads correctly, no layout regressions (quickstart.md R3)
 
 **Checkpoint**: All 35 tasks complete. Phase 3f ship-ready.
 

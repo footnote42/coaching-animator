@@ -276,18 +276,18 @@ export function EditorFloatingRemote() {
       <div className="flex items-center w-full h-[44px] border-t border-white/5 px-1 gap-1 flex-shrink-0">
         <button
           onClick={addFrame}
-          className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-sm transition-all"
+                    className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-none transition-all"
           aria-label="Add frame"
         >
           <Plus className="w-4 h-4" />
         </button>
 
-        <div className="flex bg-white/5 rounded-sm p-0.5">
+        <div className="flex bg-white/5 rounded-none p-0.5">
           {[0.5, 1, 2].map(s => (
             <button
               key={s}
               onClick={() => setPlaybackSpeed(s as PlaybackSpeed)}
-              className={`text-[9px] px-1.5 py-1 rounded-sm transition-all ${
+                            className={`text-[9px] px-1.5 py-1 rounded-none transition-all ${
                 playbackSpeed === s ? 'bg-white/20 text-white font-bold' : 'text-white/40 hover:text-white/70'
               }`}
             >
@@ -298,7 +298,7 @@ export function EditorFloatingRemote() {
 
         <button
           onClick={toggleLoop}
-          className={`w-8 h-8 flex items-center justify-center rounded-sm transition-all ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-none transition-all ${
             loopPlayback ? 'text-primary' : 'text-white/40 hover:text-white/70 hover:bg-white/10'
           }`}
           aria-label={loopPlayback ? 'Disable loop' : 'Enable loop'}
@@ -308,7 +308,7 @@ export function EditorFloatingRemote() {
 
         <button
           onClick={toggleGhosts}
-          className={`w-8 h-8 flex items-center justify-center rounded-sm transition-all ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-none transition-all ${
             showGhosts ? 'text-primary' : 'text-white/40 hover:text-white/70 hover:bg-white/10'
           }`}
           aria-label={showGhosts ? 'Disable ghost mode' : 'Enable ghost mode'}
@@ -319,7 +319,7 @@ export function EditorFloatingRemote() {
         {project?.id && (
           <button
             onClick={() => setShareSheetOpen(true)}
-            className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-sm transition-all ml-auto"
+            className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-none transition-all ml-auto"
             aria-label="Share animation"
           >
             <Share2 className="w-4 h-4" />

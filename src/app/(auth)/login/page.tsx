@@ -65,7 +65,7 @@ function LoginForm() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-text-primary mb-6">Sign In</h2>
+      <h2 className="text-xl font-heading font-semibold text-text-primary mb-6">Sign In</h2>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">

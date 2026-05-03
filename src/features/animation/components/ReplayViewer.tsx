@@ -176,7 +176,7 @@ function ReplayCanvas({
         </div>
       )}
       <div className="max-w-[800px] mx-auto">
-        <div className="border border-border bg-white overflow-hidden">
+        <div className="border border-border bg-surface overflow-hidden">
           <Stage width={canvasWidth} height={canvasHeight}>
             <Field
               sport={sport}

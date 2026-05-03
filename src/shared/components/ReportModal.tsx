@@ -64,7 +64,7 @@ export function ReportModal({ animationId, isOpen, onClose }: ReportModalProps) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/60">
       <div className="bg-surface border border-border w-full max-w-md mx-4 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">

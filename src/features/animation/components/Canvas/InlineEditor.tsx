@@ -70,7 +70,7 @@ export function InlineEditor({
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
                 maxLength={maxLength}
-                className="w-20 px-2 py-1 text-sm text-center font-mono border-2 border-pitch-green bg-white focus:outline-none focus:ring-2 focus:ring-pitch-green"
+                className="w-20 px-2 py-1 text-sm text-center font-mono border-2 border-pitch-green bg-surface focus:outline-none focus:ring-2 focus:ring-pitch-green"
             />
         </div>
     );

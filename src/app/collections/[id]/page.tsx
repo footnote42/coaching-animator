@@ -468,7 +468,7 @@ export default function CollectionDetailPage() {
 
       {/* Add Animations Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/60">
           <div className="bg-surface border border-border w-full max-w-2xl max-h-[80vh] flex flex-col">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
