@@ -1,7 +1,7 @@
 # Coaching Animator Roadmap
 
-**Version**: 3.2
-**Last Updated**: 2026-05-01
+**Version**: 3.3
+**Last Updated**: 2026-05-02
 **Status**: Active authority document
 **Previous roadmap**: `docs/archive/ROADMAP-2026-04-25.md` (v3.0)
 
@@ -107,7 +107,7 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | 3 | **2i — Editor Workspace Remodel** | ✅ | 012-editor-workspace-remodel | Collapsible sidebar, Focus Mode, Mobile Drawer, Expanded Remote | EDITOR-013, PLAYBACK-001 |
 | 4 | **2j — Snap-to-Grid** | ✅ | 013-snap-to-grid | Toggle in editor toolbar, grid intersection markers, snap on drag-end | FEAT-010 |
 | 5 | **2k — User Guide** | ✅ | 014-user-guide | Inline onboarding, help page, coaching pedagogy (APES) | UX-016 |
-| 6 | **2l — Cosmetic Polish** | Next | (TBA) | RFU endorsement icon, landing footer cleanup, MyPlaybook parity, private access fix, avatars | LANDING-001..004, UX-017, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, MYPLAYBOOK-004, PROFILE-001 |
+| 6 | **2l — Cosmetic Polish** | ✅ | 015-cosmetic-polish | RFU endorsement icon, landing footer cleanup, MyPlaybook parity, private access fix, avatars | LANDING-001..004, UX-017, GALLERY-001, GALLERY-003, MYPLAYBOOK-001/002, MYPLAYBOOK-004, PROFILE-001 |
 
 **Exit criteria**:
 - 2h: a coach can complete edit → save → share → player views → back to gallery without external help.
@@ -132,11 +132,23 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | **3e — Performance Baseline** | Open | Lighthouse audit across all routes; pre-beta targets | PERF-001 |
 | **3f — Audit Remediation** *(new)* | Open | Close audit P1: zero `rounded-*` in editor surfaces, zero `bg-white` in editor surfaces, `font-heading` on auth pages, modal scrim & focus rings. Re-score target 18+/20. | (audit-2026-04-24) |
 
+> **Disposition — 3b Security Hardening (2026-05-03):** Proceed (descoped) — MVP security pass only: rate limiting + injection hardening. Full RLS audit deferred until first 10 external users are onboarded.
+
+> **Disposition — 3c E2E Core Loop (2026-05-03):** Defer — manual verification is sufficient pre-launch. Add to CI after first 10 external users validate the product direction.
+
+> **Disposition — 3d Search & Layering (2026-05-03):** Defer to Phase 4 — search is a growth feature, not a launch requirement. Trigger: when any user has >20 animations saved.
+
+> **Disposition — 3e Performance Baseline (2026-05-03):** Defer — no known performance baseline or complaint. Trigger: Lighthouse score below 70 on mobile, or user-reported load complaint. Run Lighthouse baseline before shelving.
+
+> **Disposition — 3f Audit Remediation (2026-05-03):** Proceed — cosmetic P1 closures are low-cost and directly support launch credibility. Scope is already tightly bounded (zero `rounded-*`/`bg-white` in editor, `font-heading` on auth pages, modal focus rings). No analytics or user tracking involved; safe under constitution s.V.4.1.
+
 **Sequence**: 3a (debt) → 3b (security) → 3c (e2e) → 3f (audit polish) → 3e (perf baseline). 3d can run in parallel.
 
 ---
 
 ### Phase 4 — Growth (post-v1 launch)
+
+> **Disposition (2026-05-03):** Trigger-gated — start Phase 4 when: (1) 10 external users active, AND (2) at least one user has returned to the app on 3 separate days. Without both signals, growth features are speculative.
 
 **Goal**: Expand capabilities based on real coach usage and feedback. Do not build Phase 4 features before v1 launch.
 
@@ -157,6 +169,8 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 ---
 
 ### Phase 5+ — Coaching Education Platform (Aspiration)
+
+> **Disposition (2026-05-03):** Parked — assess as potential pivot, not extension. Before any Phase 5 work: write a one-paragraph user story describing a coach using both the animator AND the education content in the same session. If you can't write it, the features aren't coherently connected.
 
 **Goal**: Transform from animation tool to integrated coaching education system. Embed pedagogical frameworks to elevate coaches' practice.
 
