@@ -4,13 +4,33 @@
 
 ---
 
+## Ownership Tally
+
+| Ownership Type | Count | % |
+|----------------|-------|---|
+| AI-originated, accepted | 9 | 24% |
+| AI-originated, shaped | 5 | 14% |
+| Human-directed, AI-executed | 20 | 54% |
+| Collaborative | 3 | 8% |
+| **Total** | **37** | **100%** |
+
+**Signal**: The headline ratio (54% human-directed) overstates directing strength — the 24% accepted and 14% shaped categories cluster around the architectural and implementation-detail decisions that carry the most structural consequence.
+
+---
+
 ## My AI Dependency Signatures
 
 *(Contexts where I consistently defer to AI instead of directing)*
 
-1. [TBD — fill in after archaeology]
-2. [TBD]
-3. [TBD]
+1. **Technical decomposition without pre-drawn boundaries.** When asked to decompose a monolith or split a component, I let AI scan the codebase and name the boundaries (hook names, groupings, scope of each unit) before I have articulated the boundaries myself. The four-way Editor.tsx hook split, the `useEffect` retention decision, and the state-ownership routing across hooks were all AI-resolved without a recorded developer view.
+
+2. **Implementation-detail disambiguation accepted silently.** When AI research docs resolve a contested implementation detail mid-research — coordinate system model, persistence asymmetry between sidebar and Focus Mode, canvas measurement basis — I accept the resolution without recording whether I agreed with the reasoning or simply didn't notice the decision was being made.
+
+3. **Menu-of-choices selection in place of originating a constraint.** For several UI structure decisions (collapsible sidebar mode, Focus Mode scope, mobile drawer content), I selected from an AI-generated option list rather than arriving with a constraint of my own. The selection is real but the origination was not mine.
+
+4. **Scope expansion driven by AI proposal rather than stated user need.** The v1 scope grew from 7 Phase 2 tasks to 12+ specs across ROADMAP versions, with Phase 4 features pulled forward, without a developer-authored cost/benefit note. Additions were reactive to what AI surfaced in clarification sessions rather than traceable to a named user behaviour.
+
+5. **Methodology adoption without independent validation.** When AI proposed the PM/Architect framing for the 2026-04-28 ROADMAP audit, I approved the process and accepted the conclusions without a recorded independent check on whether the audit's framing of scope drift was accurate.
 
 ---
 
@@ -18,9 +38,15 @@
 
 *(Patterns where I set direction well and AI executed)*
 
-1. [TBD — fill in after archaeology]
-2. [TBD]
-3. [TBD]
+1. **Product strategy and access model.** The cloud-first pivot, tiered access model (Guest/Auth/Org), primary usage pattern (desktop edit / WhatsApp share to players), and mobile editor deferral were all articulated with explicit rationale before AI touched the spec. These are the most consequential decisions in the project and they are fully human-originated.
+
+2. **Domain knowledge in rugby.** Pitch marking defect diagnosis (H-posts, 5m markers, phantom lines, dashed 22m, grey try lines) was precise and technical. The 6-colour palette was justified by kit reality worldwide. Grid resolution was tied to real pitch zones (5m/10m/22m). APES framework content was named by the developer. AI could not have originated any of these without being handed the constraint.
+
+3. **Brand and aesthetic identity.** The Oswald + cream palette brief, the "coaching whiteboard tradition, anti-SaaS" positioning, the amber CTA rule, and the `border-radius: 0` commitment were authored in `.impeccable.md` before any implementation. When enforcement drifted (amber proliferation, radius inconsistencies), the developer caught and corrected it.
+
+4. **Constitutional constraints and governance corrections.** The OAuth provider correction (identifying and fixing the prior prohibition on Google/Apple/GitHub) and the no-telemetry/no-advertising constraints reflect authorship, not selection. The developer identified an error in a prior ruling and personally corrected the authoritative documents.
+
+5. **Scope discipline through explicit deferral.** Auth state indicator parked with a named reason. Mobile editor deferred to v2 with an explicit rationale. Snap-to-grid defaulted OFF with a stated "power user opt-in" principle. These are cases where AI offered and the developer actively declined or constrained, which is a different and stronger pattern than selection from a menu.
 
 ---
 
@@ -29,19 +55,25 @@
 *(Rules in "Before asking AI to [X], I will first [Y]" format)*
 
 Before asking AI to propose an architecture or design, I will first:
-→ [TBD]
+→ Sketch the key boundaries myself — even informally — and write down what the design MUST NOT do. If I can't name one thing the design must not do, I'm not ready to commission it.
 
 Before asking AI to generate a spec or plan, I will first:
-→ [TBD]
+→ Write one paragraph in my own words describing the problem and the constraint that makes it non-trivial. If I can't write that paragraph, I'm not ready to generate the spec.
 
 Before accepting AI's proposed implementation approach, I will first:
-→ [TBD]
+→ Ask myself: "Can I explain this approach to a coaching colleague in plain language?" If no, ask AI to explain the trade-offs before accepting.
 
 Before asking AI to refactor or restructure code, I will first:
-→ [TBD]
+→ State the specific reason the current structure is wrong — the symptom, not just "it feels messy". AI can't make good refactoring decisions without that constraint.
+
+Before adding a new phase or feature to the roadmap, I will first:
+→ Name the specific user behaviour or pain point that makes this necessary. If I can only describe it as "would be nice" or "AI suggested it", park it.
 
 Before moving on from a completed phase, I will first:
-→ [TBD]
+→ Write one sentence naming the most important thing I learned from this phase that I didn't know before. If I can't name it, I moved too fast.
+
+Before accepting an AI research document's conclusion on an implementation detail, I will first:
+→ Read the section where the decision is made and ask: "Did I author this constraint, or did AI resolve it for me?" If the latter, record a brief note on whether I agree with the reasoning or am accepting it on trust.
 
 ---
 
