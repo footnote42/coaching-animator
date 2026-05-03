@@ -166,17 +166,16 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - `src/features/gallery/README.md` (~1,100 lines)
 
 ## Active Technologies
-- TypeScript 5 · Node 22 (001-fix-share-scaling)
+- TypeScript 5 · Node 22
 
 ## Current Feature
-- **015-cosmetic-polish** — Cosmetic Polish (Phase 2l)
-- Plan: `specs/015-cosmetic-polish/plan.md`
-- Spec: `specs/015-cosmetic-polish/spec.md`
+- **016-security-hardening** — Phase 3b MVP Security Pass (rate limiting + injection hardening)
+- Plan: `specs/016-security-hardening/plan.md` *(spec not yet created)*
 
 ## Recent Changes
+- 015-cosmetic-polish: Phase 2l complete — Cosmetic Polish and Branding
 - 014-user-guide: Phase 2k complete — User Guide and help documentation
 - 013-snap-to-grid: Phase 2j complete — Snap-to-Grid
-- 012-editor-workspace-remodel: Phase 2i complete — collapsible sidebar, Focus Mode, Mobile Drawer
 
 ## Design Context
 
