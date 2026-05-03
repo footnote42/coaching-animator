@@ -4,6 +4,55 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-03 — Retrospective Execution Complete (Phases A, B, C)
+
+**Branch**: `main`
+
+---
+
+### What was delivered this session
+
+Executed the full three-phase retrospective designed last session. Core question answered: the current way of working is a mix of deliberate choices and accumulated defaults — now documented and trimmed.
+
+#### Phase A — Tooling Audit (`71737aa`)
+- Created `docs/review/tooling-decision.md` — full audit of MCPs, plugins, hooks, and settings permissions
+- Cleaned `.claude/settings.local.json` from ~190 to 76 curated permission entries
+- Identified Audible, Microsoft Learn, Spotify for removal via claude.ai web UI
+- Flagged cleo, several claude.ai MCPs, code-simplifier, hookify, feature-dev, serena, claude-md-management, and the CLEO subagent architecture for 2-week review
+
+#### Phase B — Decision Archaeology (`32e981d`, `85b0f48`, `7468c2a`)
+- Created `docs/review/ai-collaboration-protocol.md` — 37-decision log with ownership tally and protocol rules
+- Ownership tally: 54% Human-directed, but AI-originated clusters on structurally consequential decisions
+- Identified 5 AI dependency signatures: technical decomposition without pre-drawn boundaries; menu-of-choices selection; scope expansion from AI proposals; plus 2 others
+- Distilled 5 directing strengths and 7 protocol rules to carry forward
+
+#### Phase C — Scope Review (`4c6000a`)
+- Added dispositions to all Phase 3+ phases in ROADMAP.md
+- **Phase 3b (Security)**: Proceed descoped — MVP security pass only
+- **Phase 3c (E2E CI Gate)**: Defer until first 10 external users
+- **Phase 3d (Search)**: Defer to Phase 4 (trigger: user has >20 animations)
+- **Phase 3e (Performance)**: Defer — Lighthouse trigger
+- **Phase 3f (Audit Remediation)**: Proceed — low-cost cosmetic closures
+- **Phase 4+**: Trigger-gated on 10 active users returning 3+ days
+
+---
+
+### State summary for next session
+
+```
+Branch state:
+  main — retrospective complete, ROADMAP dispositions committed.
+
+Next Priority: Phase 3b — MVP Security Pass (unblocks launch).
+  Descoped: rate limiting, basic SQLi/XSS protection, auth hardening.
+  Companion: Phase 3f — Audit Remediation (low-cost cosmetic P1 closures).
+
+Execution method: Speckit (/speckit.implement or /speckit.specify)
+Spec: specs/ (Phase 3b spec to be written or found)
+```
+
+---
+
 ## 2026-05-02 — Retrospective Design (Audit, Align, Accelerate)
 
 **Branch**: `main`
