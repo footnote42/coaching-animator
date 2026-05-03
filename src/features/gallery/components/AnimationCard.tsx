@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { Clock, Layers, EyeOff, Link, Globe, Pencil, Trash2, Play, History, Share2 } from 'lucide-react';
+import { Clock, Layers, EyeOff, Link as LinkIcon, Globe, Pencil, Trash2, Play, History, Share2, FilePlus, Unlink } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
 import { MiniPitchSVG } from './MiniPitchSVG';
@@ -15,6 +15,7 @@ export interface AnimationSummary {
   id: string;
   title: string;
   description?: string | null;
+  coaching_notes?: string | null;
   animation_type: AnimationType;
   duration_ms: number;
   frame_count: number;
@@ -48,6 +49,8 @@ interface AnimationCardProps {
   showActions?: boolean;
   showCopyLink?: boolean;
   onRefresh?: () => void; // V2.0: Callback after version restore
+  onUnlinkProgression?: (id: string) => void;
+  onLinkToFoundation?: (id: string) => void;
 }
 
 const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
@@ -59,7 +62,7 @@ const ANIMATION_TYPE_LABELS: Record<AnimationType, string> = {
 
 const VISIBILITY_ICONS: Record<Visibility, React.ReactNode> = {
   private: <EyeOff className="w-3.5 h-3.5" />,
-  link_shared: <Link className="w-3.5 h-3.5" />,
+  link_shared: <LinkIcon className="w-3.5 h-3.5" />,
   public: <Globe className="w-3.5 h-3.5" />,
 };
 
@@ -96,6 +99,8 @@ export function AnimationCard({
   showActions = true,
   showCopyLink = true,
   onRefresh,
+  onUnlinkProgression,
+  onLinkToFoundation,
 }: AnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false); // V2.0: Version history modal
@@ -174,17 +179,6 @@ export function AnimationCard({
           </div>
         )}
 
-        {/* Phase 2: Progression set badge — links to progression set view */}
-        {(animation.progression_count ?? 0) > 0 && (
-          <NextLink
-            href={`/progression/${animation.id}`}
-            onClick={e => e.stopPropagation()}
-            className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary/80 text-text-inverse text-xs font-medium rounded-full hover:bg-primary/70 transition-colors"
-          >
-            +{animation.progression_count} progression{animation.progression_count !== 1 ? 's' : ''}
-          </NextLink>
-        )}
-
         {/* Phase 2: Remix count badge */}
         {(animation.remix_count ?? 0) > 0 && (
           <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-surface/80 text-text-primary/70 text-xs font-medium rounded-full">
@@ -229,6 +223,11 @@ export function AnimationCard({
           <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[10px] font-medium uppercase">
             {ANIMATION_TYPE_LABELS[animation.animation_type]}
           </span>
+          {(animation.progression_count ?? 0) > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 bg-surface-warm border border-border text-[10px] font-medium text-primary ml-auto uppercase">
+              {animation.progression_count} Progression{(animation.progression_count ?? 0) !== 1 ? 's' : ''}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center justify-between text-xs text-text-primary/50">
@@ -249,6 +248,47 @@ export function AnimationCard({
             )}
             {showActions && (
               <>
+                {animation.is_progression ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUnlinkProgression?.(animation.id);
+                    }}
+                    className={`p-2.5 ${cardActionHover}`}
+                    title="Make base animation (Unlink)"
+                    aria-label="Unlink"
+                  >
+                    <Unlink className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if ((animation.progression_count ?? 0) < 5) {
+                          window.location.href = `/app?parentId=${animation.id}`;
+                        }
+                      }}
+                      disabled={(animation.progression_count ?? 0) >= 5}
+                      className={`p-2.5 ${cardActionHover} ${(animation.progression_count ?? 0) >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      title={(animation.progression_count ?? 0) >= 5 ? 'Maximum 5 progressions reached' : 'Add progression'}
+                      aria-label="Add Progression"
+                    >
+                      <FilePlus className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onLinkToFoundation?.(animation.id);
+                      }}
+                      className={`p-2.5 ${cardActionHover}`}
+                      title="Link to Foundation"
+                      aria-label="Link to Foundation"
+                    >
+                      <LinkIcon className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

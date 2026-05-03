@@ -470,13 +470,15 @@ export default function ProfilePage() {
           <div className="space-y-8">
             {/* Read-only Email */}
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-1">
+              <label htmlFor="emailAddress" className="block text-sm font-medium text-text-primary mb-1">
                 Email Address
               </label>
               <input
+                id="emailAddress"
                 type="email"
                 value={user.email || ''}
                 disabled
+                placeholder="Email address"
                 className="w-full px-3 py-2 border border-border rounded-none bg-surface-warm text-text-primary/60 cursor-not-allowed"
               />
               <p className="mt-1 text-xs text-text-primary/40 italic">Email cannot be changed</p>
@@ -536,8 +538,9 @@ export default function ProfilePage() {
 
               <form onSubmit={handleSetPassword} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1">New Password</label>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-text-primary mb-1">New Password</label>
                   <input
+                    id="newPassword"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -547,8 +550,9 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1">Confirm Password</label>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary mb-1">Confirm Password</label>
                   <input
+                    id="confirmPassword"
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}

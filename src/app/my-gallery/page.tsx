@@ -6,6 +6,7 @@ import { ArrowUpDown, Plus, Loader2, FolderOpen, Search, Filter } from 'lucide-r
 import { AnimationCard, AnimationSummary } from '@/features/gallery/components/AnimationCard';
 import { EditMetadataModal } from '@/shared/components/EditMetadataModal';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog';
+import { LinkToFoundationModal } from '@/shared/components/LinkToFoundationModal';
 import { MyAnimationsQuery } from '@/lib/schemas/animations';
 import { getWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { useUser } from '@/lib/contexts/UserContext';
@@ -50,6 +51,7 @@ function MyGalleryContent() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [linkingId, setLinkingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Helper to update URL params (T011)
@@ -167,8 +169,16 @@ function MyGalleryContent() {
     router.push(`/share/${id}`);
   };
 
+  const handleLinkToFoundation = (id: string) => setLinkingId(id);
+
+  const handleLinkSuccess = async () => {
+    setLinkingId(null);
+    await fetchAnimations();
+  };
+
   const editingAnimation = editingId ? animations.find((a) => a.id === editingId) : null;
   const deletingAnimation = deletingId ? animations.find((a) => a.id === deletingId) : null;
+  const linkingAnimation = linkingId ? animations.find((a) => a.id === linkingId) : null;
 
   const hasSearchOrFilter = !!(q || type);
 
@@ -308,6 +318,7 @@ function MyGalleryContent() {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onPlay={handlePlay}
+                  onLinkToFoundation={handleLinkToFoundation}
                 />
               ))}
             </div>
@@ -360,6 +371,15 @@ function MyGalleryContent() {
           isDeleting={isDeleting}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setDeletingId(null)}
+        />
+      )}
+
+      {/* Link To Foundation Modal */}
+      {linkingAnimation && (
+        <LinkToFoundationModal
+          animation={linkingAnimation}
+          onClose={() => setLinkingId(null)}
+          onSuccess={handleLinkSuccess}
         />
       )}
     </div>

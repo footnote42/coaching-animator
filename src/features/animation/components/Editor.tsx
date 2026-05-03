@@ -16,7 +16,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu, Grid, HelpCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2, Menu, Grid, HelpCircle, Share2 } from 'lucide-react';
 import Konva from 'konva';
 import { Stage } from '@/features/animation/components/Canvas/Stage';
 import { Field } from '@/features/animation/components/Canvas/Field';
@@ -50,6 +50,7 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
 import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
 import { EditorFloatingRemote } from '@/features/animation/components/Canvas/EditorFloatingRemote';
+import { ShareSheet } from '@/features/animation/components/ShareSheet';
 
 import { Toaster } from 'sonner';
 import { MobileDrawer } from './MobileDrawer';
@@ -216,6 +217,25 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     setFocusMode(false);
   }, []);
 
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [pendingShareAfterSave, setPendingShareAfterSave] = useState(false);
+
+  const handleShareClick = useCallback(() => {
+    if (isDirty) {
+      setPendingShareAfterSave(true);
+      onSaveToCloud?.();
+    } else {
+      setIsShareOpen(true);
+    }
+  }, [isDirty, onSaveToCloud]);
+
+  useEffect(() => {
+    if (pendingShareAfterSave && !isDirty && cloudAnimationId) {
+      setIsShareOpen(true);
+      setPendingShareAfterSave(false);
+    }
+  }, [isDirty, cloudAnimationId, pendingShareAfterSave]);
+
 
   useAnimationLoop();
   useKeyboardShortcuts();
@@ -334,6 +354,19 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
           aria-pressed={snapToGrid}
         >
           <Grid className="w-5 h-5" />
+        </button>
+      )}
+
+      {/* Share Button */}
+      {!focusMode && (
+        <button
+          onClick={handleShareClick}
+          disabled={!cloudAnimationId}
+          className={`fixed top-4 right-28 z-50 p-2 rounded-none border transition-all bg-black/80 text-white/70 border-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+          aria-label="Share Animation"
+          title={!cloudAnimationId ? "Save animation to cloud first to share" : "Share Animation"}
+        >
+          <Share2 className="w-5 h-5" />
         </button>
       )}
 
@@ -591,6 +624,13 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         confirmLabel="Discard & Switch"
         cancelLabel="Cancel"
         variant="destructive"
+      />
+
+      <ShareSheet
+        animationId={cloudAnimationId || ''}
+        animationTitle={baseAnimationMeta?.title || project?.name || 'Animation'}
+        open={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
       />
 
       <Toaster position="bottom-right" />

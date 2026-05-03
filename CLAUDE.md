@@ -169,13 +169,13 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22
 
 ## Current Feature
-- **016-security-hardening** — Phase 3b MVP Security Pass (rate limiting + injection hardening)
-- Plan: `specs/016-security-hardening/plan.md` *(spec not yet created)*
+- **018-share-playback-workflow** — Phase 2c: Share & Playback Workflow
+- Plan: `specs/018-share-playback-workflow/plan.md`
 
 ## Recent Changes
+- 017-audit-remediation: Phase 3f complete — Audit Remediation (cosmetic fixes, re-score 18+/20)
+- 016-security-hardening: Phase 3b complete — MVP Security Pass (rate limiting + injection hardening)
 - 015-cosmetic-polish: Phase 2l complete — Cosmetic Polish and Branding
-- 014-user-guide: Phase 2k complete — User Guide and help documentation
-- 013-snap-to-grid: Phase 2j complete — Snap-to-Grid
 
 ## Design Context
 

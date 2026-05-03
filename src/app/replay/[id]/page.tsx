@@ -153,9 +153,8 @@ export default async function ReplayPage({ params }: PageProps) {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <ReplayViewer payload={animation.payload} />
 
-        {/* Coaching Notes */}
         {animation.coaching_notes && (
-          <div className="mt-8 p-4 bg-surface border border-border rounded">
+          <div className="mt-8 p-4 bg-surface-warm border border-border rounded-none">
             <h2 className="text-lg font-heading font-bold text-text-primary mb-3">
               Coaching Notes
             </h2>

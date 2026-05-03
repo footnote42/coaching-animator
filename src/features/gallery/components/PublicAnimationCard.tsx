@@ -267,6 +267,11 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
             <Layers className="w-3.5 h-3.5" />
             {animation.frame_count}
           </span>
+          {(animation.progression_count ?? 0) > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 bg-surface-warm border border-border text-[10px] font-medium text-primary ml-auto uppercase">
+              {animation.progression_count} Progression{(animation.progression_count ?? 0) !== 1 ? 's' : ''}
+            </span>
+          )}
         </div>
 
         {/* Tags */}

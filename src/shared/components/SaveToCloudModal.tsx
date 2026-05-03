@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Loader2, Cloud, AlertCircle } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
-import { postWithRetry } from '@/lib/api-client';
+import { postWithRetry, getWithRetry } from '@/lib/api-client';
 import { offlineQueue } from '@/lib/offline-queue';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
@@ -13,6 +13,8 @@ interface SaveToCloudModalProps {
   videoUrl?: string;
   onClose: () => void;
   onSuccess: (id: string) => void;
+  initialCoachingNotes?: string;
+  initialParentId?: string | null;
 }
 
 const ANIMATION_TYPES: { value: AnimationType; label: string; description: string }[] = [
@@ -28,9 +30,10 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; description: strin
   { value: 'public', label: 'Public', description: 'Visible in the public gallery' },
 ];
 
-export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSuccess }: SaveToCloudModalProps) {
+export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSuccess, initialCoachingNotes, initialParentId }: SaveToCloudModalProps) {
   const [title, setTitle] = useState(projectName || 'Untitled Animation');
   const [description, setDescription] = useState('');
+  const [coachingNotes, setCoachingNotes] = useState(initialCoachingNotes || '');
   const [animationType, setAnimationType] = useState<AnimationType>('tactic');
   const [visibility, setVisibility] = useState<Visibility>('private');
   const [tags, setTags] = useState('');
@@ -38,6 +41,39 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
   const [error, setError] = useState<string | null>(null);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const isMountedRef = useRef(true);
+
+  // Phase 2: Progressions
+  const [isProgression, setIsProgression] = useState(!!initialParentId);
+  const [selectedFoundationId, setSelectedFoundationId] = useState<string>(initialParentId || '');
+  const [foundations, setFoundations] = useState<{ id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[]>([]);
+  const [progressionOrder, setProgressionOrder] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isProgression && foundations.length === 0) {
+      getWithRetry<{ animations: { id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[] }>('/api/animations?is_progression=false&limit=100').then((res) => {
+        if (res.ok && res.data) {
+          setFoundations(res.data.animations);
+        }
+      });
+    }
+  }, [isProgression, foundations.length]);
+
+  useEffect(() => {
+    if (isProgression && selectedFoundationId && foundations.length > 0) {
+      getWithRetry<{ id: string }[]>(`/api/animations/${selectedFoundationId}/progressions`).then((res) => {
+        if (res.ok && res.data) {
+          const nextSlot = res.data.length + 1;
+          setProgressionOrder(nextSlot);
+          const foundation = foundations.find(f => f.id === selectedFoundationId);
+          if (foundation) {
+             setTitle(`${foundation.title} — Progression ${nextSlot}`);
+             if (foundation.tags?.length && !tags) setTags(foundation.tags.join(', '));
+             if (foundation.animation_type) setAnimationType(foundation.animation_type);
+          }
+        }
+      });
+    }
+  }, [isProgression, selectedFoundationId, foundations, tags]);
 
   // Cleanup to prevent state updates after unmount
   useEffect(() => {
@@ -67,11 +103,21 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
       const requestBody = {
         title: title.trim(),
         description: description.trim() || undefined,
+        coaching_notes: coachingNotes.trim() || null,
         animation_type: animationType,
         visibility,
         tags: tagArray.length > 0 ? tagArray : undefined,
         video_url: videoUrl || undefined,
         payload,
+        ...(isProgression && selectedFoundationId ? {
+          parent_animation_id: selectedFoundationId,
+          is_progression: true,
+          progression_order: progressionOrder || 1,
+        } : {
+          is_progression: false,
+          parent_animation_id: null,
+          progression_order: 0,
+        })
       };
 
       // Quick synchronous check - if offline, queue immediately
@@ -136,6 +182,7 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
           payload: {
             title: title.trim(),
             description: description.trim() || undefined,
+            coaching_notes: coachingNotes.trim() || null,
             animation_type: animationType,
             visibility,
             tags: tagArray.length > 0 ? tagArray : undefined,
@@ -227,6 +274,23 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
             <p className="text-xs text-text-primary/50 mt-1">{description.length}/2000 characters</p>
           </div>
 
+          {/* Coaching Notes */}
+          <div className="mb-4">
+            <label htmlFor="save-coaching-notes" className="block text-sm font-medium text-text-primary mb-1">
+              Coaching Notes
+            </label>
+            <textarea
+              id="save-coaching-notes"
+              value={coachingNotes}
+              onChange={(e) => setCoachingNotes(e.target.value)}
+              className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none resize-none"
+              rows={3}
+              maxLength={5000}
+              placeholder="Add delivery notes for coaches (optional)"
+            />
+            <p className="text-xs text-text-primary/50 mt-1">{coachingNotes.length}/5000 characters</p>
+          </div>
+
           {/* Animation Type */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-text-primary mb-2">
@@ -295,6 +359,40 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
                 </label>
               ))}
             </div>
+          </div>
+
+          {/* Save As Progression Toggle */}
+          <div className="mb-6">
+            <label className="flex items-center gap-2 cursor-pointer mb-2">
+              <input
+                type="checkbox"
+                checked={isProgression}
+                onChange={(e) => setIsProgression(e.target.checked)}
+                className="w-4 h-4 rounded-none border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm font-medium text-text-primary">Save as Progression</span>
+            </label>
+            
+            {isProgression && (
+              <div className="mt-3 p-4 bg-surface-warm border border-border">
+                <label className="block text-sm font-medium text-text-primary mb-1">
+                  Foundation Animation
+                </label>
+                <select
+                  value={selectedFoundationId}
+                  onChange={(e) => setSelectedFoundationId(e.target.value)}
+                  className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
+                  required={isProgression}
+                >
+                  <option value="" disabled>Select a foundation...</option>
+                  {foundations.map(f => (
+                    <option key={f.id} value={f.id} disabled={(f.progression_count || 0) >= 5}>
+                      {f.title} {(f.progression_count || 0) >= 5 ? '(full)' : `(${f.progression_count || 0}/5)`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Actions */}

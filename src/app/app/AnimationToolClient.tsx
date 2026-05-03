@@ -44,6 +44,7 @@ function AnimationToolPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadId = searchParams.get('load');
+  const parentId = searchParams.get('parentId');
   const { user, profile, loading } = useUser();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastLoadedId, setLastLoadedId] = useState<string | null>(null);
@@ -71,19 +72,20 @@ function AnimationToolPageContent() {
 
   // Load animation from cloud if URL parameter is present or changed
   useEffect(() => {
-    // Only load if we have a loadId and it's different from last loaded
-    if (loadId && loadId !== lastLoadedId) {
-      setLastLoadedId(loadId);
-      getWithRetry<{ id: string; payload: unknown; created_at: string; updated_at: string }>(`/api/animations/${loadId}`)
+    // Only load if we have a loadId or parentId and it's different from last loaded
+    const idToLoad = loadId || parentId;
+    if (idToLoad && idToLoad !== lastLoadedId) {
+      setLastLoadedId(idToLoad);
+      getWithRetry<{ id: string; payload: unknown; created_at: string; updated_at: string }>(`/api/animations/${idToLoad}`)
         .then(({ ok, data, status, error: apiError }) => {
           if (!ok) throw new Error(apiError || `Failed to load animation (${status})`);
           if (data && data.payload) {
             // Add required project fields that aren't stored in payload
             const projectData = {
               ...data.payload,
-              id: data.id || crypto.randomUUID(),
-              createdAt: data.created_at || new Date().toISOString(),
-              updatedAt: data.updated_at || new Date().toISOString(),
+              id: loadId ? data.id : crypto.randomUUID(), // New ID if it's a progression
+              createdAt: loadId ? data.created_at : new Date().toISOString(),
+              updatedAt: loadId ? data.updated_at : new Date().toISOString(),
             };
             const result = loadProject(projectData);
             if (!result.success) {
@@ -101,7 +103,7 @@ function AnimationToolPageContent() {
           toast.error(err instanceof Error ? err.message : 'Failed to load animation');
         });
     }
-  }, [loadId, lastLoadedId, loadProject]);
+  }, [loadId, lastLoadedId, loadProject, parentId]);
 
   const handleSaveToCloud = useCallback(() => {
     if (!user) {
@@ -169,12 +171,13 @@ function AnimationToolPageContent() {
         </div>
       )}
 
-      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId} cloudAnimationId={loadId} stripColors={profile?.primary_strip_color && profile?.secondary_strip_color ? { attack: profile.primary_strip_color, defense: profile.secondary_strip_color } : undefined} />
+      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId || !!parentId} cloudAnimationId={loadId} stripColors={profile?.primary_strip_color && profile?.secondary_strip_color ? { attack: profile.primary_strip_color, defense: profile.secondary_strip_color } : undefined} />
       {showSaveModal && payload && (
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}
           payload={payload}
           videoUrl={project?.videoUrl}
+          initialParentId={parentId}
           onClose={() => setShowSaveModal(false)}
           onSuccess={handleSaveSuccess}
         />

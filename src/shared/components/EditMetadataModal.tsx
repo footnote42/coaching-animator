@@ -27,6 +27,7 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; description: strin
 export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataModalProps) {
   const [title, setTitle] = useState(animation.title);
   const [description, setDescription] = useState(animation.description || '');
+  const [coachingNotes, setCoachingNotes] = useState(animation.coaching_notes || '');
   const [animationType, setAnimationType] = useState<AnimationType>(animation.animation_type);
   const [visibility, setVisibility] = useState<Visibility>(animation.visibility);
   const [isSaving, setIsSaving] = useState(false);
@@ -50,6 +51,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim() || undefined,
+          coaching_notes: coachingNotes.trim() || null,
           animation_type: animationType,
           visibility,
         }),
@@ -132,6 +134,23 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
               placeholder="Optional description for your animation"
             />
             <p className="mt-1 text-xs text-text-primary/60">{description.length}/500 characters</p>
+          </div>
+
+          {/* Coaching Notes */}
+          <div className="mb-4">
+            <label htmlFor="animation-coaching-notes" className="block text-sm font-medium text-text-primary mb-1">
+              Coaching Notes
+            </label>
+            <textarea
+              id="animation-coaching-notes"
+              value={coachingNotes}
+              onChange={(e) => setCoachingNotes(e.target.value)}
+              className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none resize-none"
+              maxLength={5000}
+              rows={3}
+              placeholder="Add delivery notes for coaches (optional)"
+            />
+            <p className="mt-1 text-xs text-text-primary/60">{coachingNotes.length}/5000 characters</p>
           </div>
 
           {/* Animation Type */}

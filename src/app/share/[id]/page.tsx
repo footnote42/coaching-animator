@@ -68,7 +68,7 @@ export default async function SharePage({ params }: PageProps) {
   // T006a — fetch animation with progression fields
   const { data: animation } = await supabase
     .from('saved_animations')
-    .select('id, title, payload, view_count, parent_animation_id, is_progression, progression_order, user_id')
+    .select('id, title, payload, view_count, parent_animation_id, is_progression, progression_order, user_id, coaching_notes')
     .eq('id', id)
     .is('hidden_at', null)
     .single();
@@ -141,6 +141,7 @@ export default async function SharePage({ params }: PageProps) {
       fullNavigationSet={fullNavigationSet.length > 1 ? fullNavigationSet : undefined}
       currentAnimationId={id}
       animationUserId={animation.user_id}
+      coachingNotes={animation.coaching_notes}
     />
   );
 }

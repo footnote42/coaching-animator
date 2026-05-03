@@ -12,6 +12,8 @@ import { FloatingRemote } from '@/features/animation/components/Canvas/FloatingR
 import { useReplayAnimationLoop } from '@/core/hooks/useReplayAnimationLoop';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { hydrateSharePayload } from '@/core/utils/hydratePayload';
+import { CoachingNotesOverlay } from '@/shared/components/CoachingNotesOverlay';
+import { FileText } from 'lucide-react';
 import type { SharePayloadV1 } from '@/core/types/share';
 import { EDITOR_CANVAS_WIDTH, EDITOR_CANVAS_HEIGHT } from '@/lib/canvasConstants';
 import { useUser } from '@/lib/contexts/UserContext';
@@ -43,6 +45,8 @@ interface ShareViewerProps {
   currentAnimationId?: string;
   /** The user ID of the animation owner */
   animationUserId?: string;
+  /** Optional coaching notes */
+  coachingNotes?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -219,6 +223,7 @@ export function ShareViewer({
   fullNavigationSet,
   currentAnimationId,
   animationUserId,
+  coachingNotes,
 }: ShareViewerProps) {
   const { user } = useUser();
   const isOwner = Boolean(user?.id && animationUserId && user.id === animationUserId);
@@ -232,6 +237,7 @@ export function ShareViewer({
 
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   useEffect(() => {
     if (autoPlay && frames.length > 0) {
@@ -274,12 +280,22 @@ export function ShareViewer({
       <div style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}>
         {/* Animation title — top-center gradient overlay (T005) */}
         <div
-          className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"
+          className="absolute top-0 left-0 right-0 px-4 py-2 bg-gradient-to-b from-black/60 to-transparent pointer-events-none flex justify-between items-start gap-2"
           style={{ zIndex: 10 }}
         >
-          <h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-left">
+          <h1 className="text-white font-heading font-bold text-sm sm:text-base truncate text-left mt-1 pointer-events-auto">
             {animationTitle ?? payload.name}
           </h1>
+          {coachingNotes && (
+            <button
+              onClick={() => setIsNotesOpen(true)}
+              className="pointer-events-auto shrink-0 flex items-center gap-1.5 px-2 py-1 bg-black/60 hover:bg-black/80 rounded-none text-white/90 text-xs font-medium transition-colors border border-white/10"
+              aria-label="View Coaching Notes"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Notes</span>
+            </button>
+          )}
         </div>
 
         <ShareCanvas
@@ -304,6 +320,12 @@ export function ShareViewer({
           onReset={reset}
           containerWidth={canvasWidth}
           containerHeight={canvasHeight}
+        />
+
+        <CoachingNotesOverlay
+          coachingNotes={coachingNotes || null}
+          isOpen={isNotesOpen}
+          onClose={() => setIsNotesOpen(false)}
         />
 
         {/* Progression navigation bar — bottom-center (T007) */}
