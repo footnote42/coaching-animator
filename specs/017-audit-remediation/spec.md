@@ -109,7 +109,7 @@ Multiple modals and dialogs use `bg-black/50` as the backdrop overlay. The desig
 ### Edge Cases
 
 - `rounded-full` on the FloatingRemote pill container (`FloatingRemote.tsx`) is **intentional** — it is the share-viewer playback pill. Do NOT change it.
-- `rounded-t-2xl` on `MobileDrawer.tsx` (the drawer that slides up from the bottom) is an **intentional UX affordance** — the rounded top corners signal "this slides up from below." This should be evaluated: if it conflicts with the zero-radius principle, replace with `rounded-none`; if the functional affordance is genuinely lost, document the exception.
+- `rounded-t-2xl` on `MobileDrawer.tsx` (the drawer that slides up from the bottom): **Resolved — remove it** (`rounded-none`). The `translateY` slide animation already signals the bottom-of-screen origin; the rounded corners are redundant with the zero-radius principle.
 - `rounded-full` on the MobileDrawer drag handle dot is decorative — replace with a rectangular indicator (`w-12 h-1 bg-border/40` without `rounded-full`) or remove.
 - `rounded-sm` inside the EditorFloatingRemote for mode selectors — replace with `rounded-none` (the floating remote already documents `rounded-none` as its principle in the file's JSDoc).
 - Gallery card `rounded-*` items: `EndorsementBadge.tsx` uses `rounded-full` for the badge shape — this is **intentional** (circular badge). Do NOT change it. Same for `PublicAnimationCard` tag pills if those use `rounded-full`.
@@ -148,7 +148,8 @@ Multiple modals and dialogs use `bg-black/50` as the backdrop overlay. The desig
 **Category B — White Surfaces:**
 - `src/features/animation/components/Editor.tsx` — `bg-white/90` Focus Mode toggle → `bg-surface`, `bg-white` sidebar expand handle → `bg-surface`
 - `src/features/animation/components/Canvas/InlineEditor.tsx` — `bg-white` → `bg-surface`
-- `src/features/animation/components/ReplayViewer.tsx` — audit for any `bg-white` in layout shell
+- `src/features/animation/components/ReplayViewer.tsx` — `bg-white` on canvas wrapper → `bg-surface`
+- `src/features/animation/components/Sidebar/SportSelector.tsx` — `bg-white` on `<select>` → `bg-surface`
 
 **Category C — Auth Headings:**
 - `src/app/(auth)/login/page.tsx` — add `font-heading` to `<h2>`
@@ -164,6 +165,7 @@ Multiple modals and dialogs use `bg-black/50` as the backdrop overlay. The desig
 - `src/features/gallery/components/VersionHistoryModal.tsx` — `bg-black/50` → `bg-primary/60`
 - `src/app/collections/[id]/page.tsx` — `bg-black/50` → `bg-primary/60`
 - `src/app/admin/page.tsx` — 2× `bg-black/50` → `bg-primary/60`
+- `src/features/animation/components/MobileDrawer.tsx` — `bg-black/40` backdrop → `bg-primary/50`
 
 ---
 
