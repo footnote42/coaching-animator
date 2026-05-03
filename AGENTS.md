@@ -169,12 +169,12 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22 (001-fix-share-scaling)
 
 ## Current Feature
-- **008-landing-refinements** — Landing Refinements (Phase 2e)
-- Plan: `specs/008-landing-refinements/plan.md`
-- Spec: `specs/008-landing-refinements/spec.md`
+- **017-audit-remediation** — Audit Remediation (Phase 3f)
+- Plan: `specs/017-audit-remediation/plan.md`
+- Spec: `specs/017-audit-remediation/spec.md`
 
 ## Recent Changes
-- 001-fix-share-scaling: Added TypeScript 5 · Node 22
+- 016-security-hardening: Rate limiting on 8 routes + diag info-leak fix
 
 ## Design Context
 
