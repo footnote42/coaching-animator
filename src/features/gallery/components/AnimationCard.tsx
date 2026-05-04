@@ -39,6 +39,8 @@ export interface AnimationSummary {
   preview_entities?: Array<{ x: number; y: number; team: 'attack' | 'defense' | 'neutral' }> | null;
   // Endorsement
   is_rfu_endorsed?: boolean;
+  tags?: string[] | null;
+  video_url?: string | null;
 }
 
 interface AnimationCardProps {

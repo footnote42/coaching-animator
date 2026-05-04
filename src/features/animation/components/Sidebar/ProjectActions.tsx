@@ -1,12 +1,11 @@
-import { Save, FolderOpen, FilePlus, Loader2, Cloud, Settings } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Save, FolderOpen, FilePlus, Loader2, Cloud } from 'lucide-react';
+import { useRef } from 'react';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { downloadJson, readJsonFile, generateProjectFilename } from '@/core/utils/fileIO';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { ShareButton } from './ShareButton';
-import { MetadataSheet } from './MetadataSheet';
 
 import { toast } from 'sonner';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
@@ -29,7 +28,6 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
     onSaveToCloud,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false);
 
     const project = useProjectStore((state) => state.project);
     const isDirty = useProjectStore((state) => state.isDirty);
@@ -139,23 +137,6 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
 
     return (
         <div className="flex flex-col gap-4 p-4 border-b border-[var(--color-border)]">
-            {/* Metadata Section */}
-            <div>
-                <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
-                    Metadata
-                </h3>
-                
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsMetadataSheetOpen(true)}
-                    disabled={!project}
-                    className="w-full"
-                >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Edit Metadata
-                </Button>
-            </div>
 
             {/* Project Actions Section */}
             <div>
@@ -257,11 +238,6 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                 confirmLabel="Discard Changes"
                 cancelLabel="Keep Editing"
                 variant="destructive"
-            />
-            
-            <MetadataSheet 
-                open={isMetadataSheetOpen} 
-                onOpenChange={setIsMetadataSheetOpen} 
             />
         </div>
     );

@@ -1,7 +1,7 @@
 # Coaching Animator Roadmap
 
-**Version**: 3.3
-**Last Updated**: 2026-05-02
+**Version**: 3.4
+**Last Updated**: 2026-05-04
 **Status**: Active authority document
 **Previous roadmap**: `docs/archive/ROADMAP-2026-04-25.md` (v3.0)
 
@@ -54,6 +54,10 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 2i | Editor Workspace Remodel | ✅ | 012-editor-workspace-remodel | 2026-05-01 | Collapsible sidebar, Focus Mode, Mobile Drawer, expanded remote |
 | 2j | Snap-to-Grid | ✅ | 013-snap-to-grid | 2026-05-01 | Toggle, intersection markers, snap on drag-end |
 | 2k | User Guide | ✅ | 014-user-guide | 2026-05-01 | Onboarding, help pages, APES framework |
+| 2l | Cosmetic Polish | ✅ | 015-cosmetic-polish | 2026-05-02 | RFU badge, landing copy, MyPlaybook parity, profile redesign, share back-link |
+| 3b | Security Hardening (MVP) | ✅ | 016-security-hardening | 2026-05-03 | Rate limiting on 8 endpoints, diag info-leak prevention; 113/113 tests |
+| 3f | Audit Remediation | ✅ | 017-audit-remediation | 2026-05-03 | Zero `rounded-*` in editor surfaces, `font-heading` on auth pages, modal scrim; re-score 18+/20 |
+| 2c+ | Share & Playback Workflow (ext.) | ✅ | 018-share-playback-workflow | 2026-05-04 | Inline progression badges, coaching notes overlay, 8 Phase 2 issue closures |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 
@@ -61,9 +65,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 
 ## In Flight
 
-| Phase | Title | Spec | Branch | Notes |
-|-------|-------|------|--------|-------|
-| 2l | Cosmetic Polish | TBA | `main` | RFU icon, landing copy, MyPlaybook layout |
+Nothing in flight. All Phase 2 and Phase 3 launch-required work is complete.
 
 ---
 
@@ -78,7 +80,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 
 ## v1 Launch Definition
 
-A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04-28.**
+A successful v1 launch requires all of the following. **9/9 met as of 2026-05-04.**
 
 1. ✅ **Core loop working** — desktop edit, save, share link, mobile replay renders correctly
 2. ✅ **Landing page credible** — tactical rebrand shipped 2026-04-20
@@ -126,11 +128,11 @@ A successful v1 launch requires all of the following. **5 of 7 met as of 2026-04
 | Sub-area | Status | Scope | Key issues |
 |----------|--------|-------|------------|
 | **3a — Technical Debt** | ✅ | Editor.tsx 852→504 LOC; 4 hooks; 25 store selectors. Shipped 2026-04-25. | — |
-| **3b — Security Hardening** | ✅ | Rate limiting, SQL injection, XSS, CSRF, auth tokens, admin bulk delete | SEC-001, SEC-002, SEC-003, ADMIN-001 |
+| **3b — Security Hardening** | ✅ Shipped 2026-05-03 | Rate limiting on 8 endpoints, diag info-leak prevention. Full RLS audit deferred until 10 external users. | SEC-001, SEC-002, SEC-003 |
 | **3c — E2E Core Loop** | Open | Editor save → POST /api/share → /my-gallery card visible → /share/{id} loads → mobile replay. CI gate. | — |
 | **3d — Search & Layering** | Open | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
 | **3e — Performance Baseline** | Open | Lighthouse audit across all routes; pre-beta targets | PERF-001 |
-| **3f — Audit Remediation** *(new)* | Open | Close audit P1: zero `rounded-*` in editor surfaces, zero `bg-white` in editor surfaces, `font-heading` on auth pages, modal scrim & focus rings. Re-score target 18+/20. | (audit-2026-04-24) |
+| **3f — Audit Remediation** | ✅ Shipped 2026-05-03 | Closed all P1 violations; re-score 18+/20 achieved. | (audit-2026-04-24) |
 
 > **Disposition — 3b Security Hardening (2026-05-03):** Proceed (descoped) — MVP security pass only: rate limiting + injection hardening. Full RLS audit deferred until first 10 external users are onboarded.
 

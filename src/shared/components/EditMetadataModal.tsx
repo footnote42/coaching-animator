@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { AnimationSummary } from '@/features/gallery/components/AnimationCard';
 
 interface EditMetadataModalProps {
   animation: AnimationSummary;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (updated: Partial<AnimationSummary>) => void;
 }
+
+const YOUTUBE_URL_REGEX = /^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/;
 
 const ANIMATION_TYPES: { value: AnimationType; label: string }[] = [
   { value: 'tactic', label: 'Tactic' },
@@ -28,21 +31,41 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
   const [title, setTitle] = useState(animation.title);
   const [description, setDescription] = useState(animation.description || '');
   const [coachingNotes, setCoachingNotes] = useState(animation.coaching_notes || '');
+  const [tagsInput, setTagsInput] = useState((animation.tags ?? []).join(', '));
+  const [tagsError, setTagsError] = useState<string | null>(null);
+  const [youtubeUrl, setYoutubeUrl] = useState(animation.video_url || '');
+  const [youtubeError, setYoutubeError] = useState<string | null>(null);
   const [animationType, setAnimationType] = useState<AnimationType>(animation.animation_type);
   const [visibility, setVisibility] = useState<Visibility>(animation.visibility);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    setTagsError(null);
+    setYoutubeError(null);
+
     if (!title.trim()) {
-      setError('Title is required');
+      toast.error('Title is required');
+      return;
+    }
+
+    const parsedTags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
+    if (parsedTags.length > 10) {
+      setTagsError('Maximum 10 tags allowed');
+      return;
+    }
+    if (parsedTags.some(t => t.length > 30)) {
+      setTagsError('Tags cannot exceed 30 characters each');
+      return;
+    }
+
+    if (youtubeUrl.trim() && !YOUTUBE_URL_REGEX.test(youtubeUrl.trim())) {
+      setYoutubeError('Please enter a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)');
       return;
     }
 
     setIsSaving(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/animations/${animation.id}`, {
@@ -54,6 +77,8 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
           coaching_notes: coachingNotes.trim() || null,
           animation_type: animationType,
           visibility,
+          tags: parsedTags.length > 0 ? parsedTags : undefined,
+          video_url: youtubeUrl.trim() || undefined,
         }),
       });
 
@@ -62,9 +87,17 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
         throw new Error(data.error?.message || 'Failed to update');
       }
 
-      onSave();
+      onSave({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        coaching_notes: coachingNotes.trim() || null,
+        animation_type: animationType,
+        visibility,
+        tags: parsedTags.length > 0 ? parsedTags : null,
+        video_url: youtubeUrl.trim() || null,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsSaving(false);
     }
@@ -96,11 +129,6 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
-              {error}
-            </div>
-          )}
 
           {/* Title */}
           <div className="mb-4">
@@ -129,11 +157,11 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none resize-none"
-              maxLength={500}
+              maxLength={2000}
               rows={3}
               placeholder="Optional description for your animation"
             />
-            <p className="mt-1 text-xs text-text-primary/60">{description.length}/500 characters</p>
+            <p className="mt-1 text-xs text-text-primary/60">{description.length}/2000 characters</p>
           </div>
 
           {/* Coaching Notes */}
@@ -151,6 +179,39 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
               placeholder="Add delivery notes for coaches (optional)"
             />
             <p className="mt-1 text-xs text-text-primary/60">{coachingNotes.length}/5000 characters</p>
+          </div>
+
+          {/* Tags */}
+          <div className="mb-4">
+            <label htmlFor="animation-tags" className="block text-sm font-medium text-text-primary mb-1">
+              Tags
+            </label>
+            <input
+              type="text"
+              id="animation-tags"
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
+              className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
+              placeholder="Up to 10 tags, comma-separated"
+            />
+            {tagsError && <p className="mt-1 text-sm text-red-600">{tagsError}</p>}
+            <p className="mt-1 text-xs text-text-primary/60">{tagsInput.split(',').filter(t => t.trim()).length}/10 tags</p>
+          </div>
+
+          {/* YouTube URL */}
+          <div className="mb-4">
+            <label htmlFor="animation-youtube" className="block text-sm font-medium text-text-primary mb-1">
+              YouTube URL
+            </label>
+            <input
+              type="text"
+              id="animation-youtube"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              className="w-full px-3 py-2 border border-border bg-surface focus:border-primary focus:outline-none"
+              placeholder="Optional YouTube link for this drill"
+            />
+            {youtubeError && <p className="mt-1 text-sm text-red-600">{youtubeError}</p>}
           </div>
 
           {/* Animation Type */}

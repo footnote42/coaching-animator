@@ -91,7 +91,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### WORKFLOW-001 — No Clear Route to Create Progressions
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
+- **Summary**: "Save as Progression" and "Link to Foundation" UI flows implemented in editor. Progression creation path is now discoverable.
 - **Severity**: High (core workflow gap)
 - **Observed**: Once an animation has been created and saved, there is no discoverable path to add a progression to it. The user cannot determine how progressions are created from the current UI.
 - **Action**: 
@@ -151,7 +153,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-010 — Progression Workflow & Gallery Integration
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
+- **Summary**: Inline progression badges, Save-as-Progression and Link-to-Foundation flows, progression navigation in editor/share/replay. Parent/child structure enforced.
 - **Severity**: High (core workflow)
 - **Observed**: Progression workflow is not intuitive. Progressions currently sit as standalone animations in the gallery, cluttering the view. Progression animations in a collection must be navigable from all galleries, from the animation editor, and from all playback/share screens.
 - **Action**: 
@@ -175,7 +179,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-012 — Thumbnail Design & Color Scheme
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Refactored MiniPitchSVG to use EntityColors service; thumbnails now match editor red/blue/yellow scheme.
 - **Severity**: Low (visual polish)
 - **Observed**: Tactical thumbnails use muted/placeholder colors (amber/muted primary). Should closer match the actual pitch (grass green) and entity (red/blue teams, high-vis yellow cones) color scheme.
 - **Action**: Update `MiniPitchSVG` to use colors more representative of the actual editor experience.
@@ -185,7 +191,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-013 — Inconsistent Hover Feedback (Gallery)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Standardized hover effects across all gallery card action buttons.
 - **Severity**: Low (UX consistency)
 - **Observed**: In Gallery, 'Remix' button changes colour on hover, but 'Share' does not.
 - **Action**: Standardize hover effects across all gallery card action buttons.
@@ -194,7 +202,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-014 — Inconsistent Thumbnail Layout (Tags/Progressions)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Implemented stable unified layout slots in AnimationCard and PublicAnimationCard; cards no longer shift with optional tags/progressions.
 - **Severity**: Low (Visual polish)
 - **Observed**: Thumbnails in Gallery and My Playbook have inconsistent layouts depending on whether they have tags or progression indicators.
 - **Action**: Implement a stable, unified layout for card headers/footers that handles optional tags and progression counts without shifting elements.
@@ -421,7 +431,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### LANDING-002 — Landing Background: Coaching Diagram Aesthetic
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Looping SVG tactical background implemented on landing hero (Phase 2e); 2l extended design polish.
 - **Severity**: Medium (brand credibility)
 - **Observed**: Landing background should use subtle coaching diagrams in the style of the brand icon. Design spec from review:
   > "The Tactical Ball" (The Marker Silhouette): A single, centered, utilitarian SVG-style icon of a rugby ball (prolate spheroid). Thick, hand-drawn whiteboard marker aesthetic. Ball outline: Pitch Green (#1A3D1A). Inside: Amber (#D97706) tactical markings — heavy hand-drawn X in centre, dotted line with arrowhead sweeping across indicating play direction. All lines imperfect and heavy-stroked. Zero rounded corners. Off-white textured background referencing 1980s rugby programme.
@@ -431,7 +443,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### LANDING-003 — Section 2 Card Copy Errors
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Rewrote card 2 copy for rugby coaches; removed deprecated export format card.
 - **Severity**: Medium (credibility)
 - **Observed**: Card review from 2026-04-24:
   - Card 1: Okay
@@ -446,7 +460,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### LANDING-004 — Section 3 Copy Ambiguities
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Rewrote section 3 card 1 to describe click/drag correctly; removed GIF export mention.
 - **Severity**: Medium (UX clarity)
 - **Observed**: Section 3 card review:
   - Card 1: "Drag?" — unclear; actual interaction is click-to-place then drag; rewrite
@@ -459,7 +475,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Gallery (new — 2026-04-24 review)
 
 ### GALLERY-001 — Hampshire RFU Endorsement Icon
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: hampshire-rfu-badge.webp (<50KB) added; badge overlay wired to endorsed_by field with constitution-mandated disclaimers.
 - **Severity**: Medium (partnership credibility)
 - **Observed**: Gallery needs a Hampshire RFU endorsement icon/badge on endorsed cards. Image must be compressed to <50KB for web use.
 - **Action**: Obtain RFU image; compress to <50KB; wire up to `endorsed_by` field (see FEATURE-001 for full endorsement system); for now, display badge if field set
@@ -468,7 +486,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### GALLERY-002 — Share from Gallery (Copy Link + WhatsApp)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Share button copies /share/{id} to clipboard; Web Share API triggers on mobile (targets WhatsApp naturally).
 - **Severity**: High (core workflow)
 - **Observed**: Share button on gallery card needs to: (a) produce a /share/{id} link for copy-paste, (b) offer WhatsApp share on mobile
 - **Action**: Implement share sheet: copy-to-clipboard for desktop; Web Share API for mobile (targets WhatsApp naturally); generate /share/{id} not /replay/{id}
@@ -480,7 +500,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-002 — Share Button Non-Functional in Dev
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
+- **Summary**: Editor share button now copies /share/{id} link to clipboard with visual confirmation.
 - **Severity**: High (core loop)
 - **Observed**: Share button in the editor is currently non-functional (marked "not available in development"). Should at minimum copy the /share/{id} link to clipboard or display it for manual copy.
 - **Action**: Implement clipboard copy fallback; display link in a modal; hook up to Web Share API for mobile
@@ -493,7 +515,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Playback Controls (new — 2026-04-24 review)
 
 ### PLAYBACK-002 — Coaching Notes Reveal in Playback Screens
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
+- **Summary**: Coaching notes overlay implemented in ReplayViewer and ShareViewer; toggled via info icon, does not obstruct animation.
 - **Severity**: Medium (coaching utility)
 - **Observed**: Playback screens (/share and /replay) have no way to surface the animation's coaching notes or instructions. Coaches sharing a drill need players or other coaches to be able to view these notes without leaving the playback screen.
 - **Action**: Add a pop-up/overlay triggered by a button (e.g. "Notes" or info icon) in the playback UI that reveals the animation's coaching notes/description. Should not obstruct the animation but must be accessible without navigating away.
@@ -561,7 +585,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FEAT-013 — Coaching Points Field in Animation Metadata
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
+- **Summary**: Coaching Points field added to animation metadata schema, save/edit forms, and surfaced in playback coaching notes overlay.
 - **Severity**: Medium (coaching utility)
 - **Observed**: Animation save/edit forms currently support a title and description but no dedicated field for coaching delivery guidance. Coaches need a 'Coaching Points' free-text field to record what to watch for during a session and tips for delivery — separate from the drill description.
 - **Action**: Add a 'Coaching Points' free text field to the animation metadata schema (below Description). Display in the save/edit form, store in the database, and surface it in the playback coaching notes reveal (PLAYBACK-002).
@@ -582,7 +608,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Share Flow & Navigation (new — 2026-04-24 review)
 
 ### FLOW-001 — No Share Flow from Gallery to /share/{id}
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Gallery Play/Share buttons updated to use /share/{id}; Edit/Replay/Share standardized across all cards.
 - **Severity**: High (core loop)
 - **Observed**: Gallery "Play" button goes to /replay/{id} (unoptimised, old route). No UI path exists from gallery to the optimised /share/{id} route. These routes have meaningfully different UX (share is mobile-optimised, full-screen).
 - **Action**: Update gallery Play/Share buttons to use /share/{id}; clarify /replay vs /share distinction in code comments; consider deprecating /replay for public use
@@ -591,7 +619,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FLOW-002 — Share Replay Missing Context and Navigation
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Animation title and progression prev/next navigation added to ShareViewer overlay; coaching notes reveal added in 018.
 - **Severity**: High (player experience)
 - **Observed**: /share/{id} shows the animation but has: no animation name, no progression navigation (next/prev for multi-drill sets), no clear link back to the site.
 - **Target UX**: Coaches check the link works → back to editor. Players see the replay → can navigate progressions → optionally visit the site (welcome page or landing).
@@ -611,7 +641,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FLOW-004 — Share View Workflow for Logged-In Users
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-02 (Phase 2l, 015-cosmetic-polish)
+- **Summary**: Context-aware back button in ShareViewer: shows "My Playbook" for animation owner, "Gallery" otherwise.
 - **Severity**: Medium (UX workflow)
 - **Observed**: From /share/ the return/back button (bottom left) returns users to the gallery only. Logged-in users should have a path back to their Playbook.
 - **Action**: Context-aware back button in Share view. If user is owner/logged-in, offer return to Playbook.
@@ -865,12 +897,12 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Quick Reference by Roadmap Phase
 
-- **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, **UX-010, UX-011, UX-012, UX-013, UX-014, UX-018**
-- **Phase 2 — Editor/Workflow**: EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-016, EDITOR-017, EDITOR-018, WORKFLOW-001, FEAT-013
-- **Phase 2 — Playback/Share**: PLAYBACK-001, PLAYBACK-002, FLOW-001, FLOW-002, FLOW-003, FLOW-004, EDITOR-002
-- **Phase 2 — Landing/Nav**: LANDING-001, LANDING-002, LANDING-003, LANDING-004, NAV-001, CONTACT-001
-- **Phase 2 — Gallery/Playbook**: GALLERY-001, GALLERY-002
-- **Phase 3** (Quality Safety Net): **FEAT-006, SEC-001, SEC-002, SEC-003, ADMIN-001, PERF-001**
-- **Phase 3–4** (Feature Decisions): **FEAT-008, FEAT-009**
-- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, **FEATURE-010, FEAT-011, FEAT-012, DESIGN-001, DESIGN-002**
+- **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, UX-011, UX-018 *(~~UX-010~~, ~~UX-012~~, ~~UX-013~~, ~~UX-014~~ closed)*
+- **Phase 2 — Editor/Workflow**: EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-016, EDITOR-017, EDITOR-018 *(~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
+- **Phase 2 — Playback/Share**: PLAYBACK-001, FLOW-003 *(~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
+- **Phase 2 — Landing/Nav**: LANDING-001, NAV-001, CONTACT-001 *(~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
+- **Phase 2 — Gallery/Playbook**: *(~~GALLERY-001~~, ~~GALLERY-002~~ closed)*
+- **Phase 3** (Quality Safety Net): FEAT-006, ADMIN-001, PERF-001 *(~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed via 3b; ~~3f audit~~ closed)*
+- **Phase 3–4** (Feature Decisions): FEAT-008, FEAT-009
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, FEAT-011, FEAT-012, DESIGN-001, DESIGN-002
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005

@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await supabase
       .from('saved_animations')
       .select(
-        'id, title, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, preview_entities, remixed_from_id, remixed_from:remixed_from_id(title)',
+        'id, title, description, coaching_notes, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, preview_entities, tags, video_url, remixed_from_id, remixed_from:remixed_from_id(title)',
         { count: 'exact' }
       )
       .eq('user_id', user.id)

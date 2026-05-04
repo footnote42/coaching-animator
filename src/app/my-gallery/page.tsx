@@ -136,9 +136,9 @@ function MyGalleryContent() {
 
   const handleEdit = (id: string) => setEditingId(id);
 
-  const handleEditSave = async () => {
+  const handleEditSave = async (updated: Partial<AnimationSummary>) => {
+    setAnimations((prev) => prev.map((a) => (a.id === editingId ? { ...a, ...updated } : a)));
     setEditingId(null);
-    await fetchAnimations();
   };
 
   const handleDelete = (id: string) => setDeletingId(id);
