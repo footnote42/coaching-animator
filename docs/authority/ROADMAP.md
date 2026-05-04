@@ -58,6 +58,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 3b | Security Hardening (MVP) | ✅ | 016-security-hardening | 2026-05-03 | Rate limiting on 8 endpoints, diag info-leak prevention; 113/113 tests |
 | 3f | Audit Remediation | ✅ | 017-audit-remediation | 2026-05-03 | Zero `rounded-*` in editor surfaces, `font-heading` on auth pages, modal scrim; re-score 18+/20 |
 | 2c+ | Share & Playback Workflow (ext.) | ✅ | 018-share-playback-workflow | 2026-05-04 | Inline progression badges, coaching notes overlay, 8 Phase 2 issue closures |
+| 2m | Save & Metadata Unification | ✅ | 019-save-metadata-unification | 2026-05-04 | Tags, YouTube URL, unified edit modal, sidebar cleanup |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 
@@ -167,6 +168,8 @@ A successful v1 launch requires all of the following. **9/9 met as of 2026-05-04
 9. **Welcome page for players** — lightweight landing after share link (FLOW-003)
 10. **Spinning ball save indicator** — brand delight (FEAT-011)
 11. **Club accounts / team management** — Tier 4 from constitution; post-user-base (Constitution §V.4)
+
+---
 
 ---
 

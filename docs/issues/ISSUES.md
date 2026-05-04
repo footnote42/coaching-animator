@@ -56,7 +56,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-016 — Metadata and Save-to-Cloud Must Be Unified
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2m, 019-save-metadata-unification)
+- **Summary**: Unified all metadata fields (Tags, YouTube URL, Description, etc.) into the EditMetadataModal; removed legacy MetadataSheet and sidebar buttons.
 - **Severity**: High (UX coherence)
 - **Observed**: There are two separate surfaces for animation information: the 'Metadata' button in the left-hand menu and the info card shown when saving to the cloud. These create a fragmented and confusing experience. The same fields must be accessible and consistent across both save and edit flows.
 - **Action**: 
@@ -78,7 +80,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-018 — Description Field Not Populated When Editing from My Playbook
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 2m, 019-save-metadata-unification)
+- **Summary**: Verified description persistence and fixed pre-population in EditMetadataModal; updated API select and optimistic update logic.
 - **Severity**: High (data integrity / UX)
 - **Observed**: A description was added via the 'Save to Cloud' popup, but when the animation was opened in edit mode from My Playbook the description field was empty. The stored description is either not being persisted correctly or not being loaded into the edit form.
 - **Action**: 

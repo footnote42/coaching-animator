@@ -17,7 +17,7 @@
 
 **Purpose**: Confirm clean baseline before any changes
 
-- [ ] T001 Verify `npm run lint && npx tsc --noEmit` passes with zero errors on current branch
+- [x] T001 Verify `npm run lint && npx tsc --noEmit` passes with zero errors on current branch
 
 ---
 
@@ -27,8 +27,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Extend `AnimationSummary` interface in `src/features/gallery/components/AnimationCard.tsx` — add `tags?: string[] | null` and `video_url?: string | null` after the existing optional fields (FR-002)
-- [ ] T003 [P] Extend Supabase SELECT string in `src/app/api/animations/route.ts` (line ~47) — replace current select with `'id, title, description, coaching_notes, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, preview_entities, tags, video_url, remixed_from_id, remixed_from:remixed_from_id(title)'` (FR-001, API-001)
+- [x] T002 [P] Extend `AnimationSummary` interface in `src/features/gallery/components/AnimationCard.tsx` — add `tags?: string[] | null` and `video_url?: string | null` after the existing optional fields (FR-002)
+- [x] T003 [P] Extend Supabase SELECT string in `src/app/api/animations/route.ts` (line ~47) — replace current select with `'id, title, description, coaching_notes, animation_type, duration_ms, frame_count, visibility, upvote_count, created_at, updated_at, progression_count, remix_count, thumbnail_url, preview_entities, tags, video_url, remixed_from_id, remixed_from:remixed_from_id(title)'` (FR-001, API-001)
 
 **Checkpoint**: Interface extended, API returns all four metadata fields — user story implementation can now begin.
 
@@ -42,8 +42,8 @@
 
 ### Implementation for User Story 1
 
-- [ ] T004 [US1] Add Tags input to `src/shared/components/EditMetadataModal.tsx` — comma-separated `<input>`, initialized as `(animation.tags ?? []).join(', ')`, helper text "Up to 10 tags, comma-separated", `N/10 tags` counter below input; position below Coaching Notes and above Visibility to match `SaveToCloudModal` field order (FR-003, FR-004, UI-002, UI-004, UI-005)
-- [ ] T005 [US1] Add YouTube URL input to `src/shared/components/EditMetadataModal.tsx` — `<input>`, initialized as `animation.video_url ?? ''`, helper text "Optional YouTube link for this drill", add `youtubeUrl`/`youtubeError` state variables and the error display element below the input; inline `YOUTUBE_URL_REGEX` constant copied from `MetadataSheet.tsx` (`/^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/`); position below Tags and above Visibility; follow existing form styling `border border-border bg-surface focus:border-primary focus:outline-none` (do NOT wire submit-time validation here — T008 owns that) (FR-003, FR-005, UI-003, UI-004, UI-005)
+- [x] T004 [US1] Add Tags input to `src/shared/components/EditMetadataModal.tsx` — comma-separated `<input>`, initialized as `(animation.tags ?? []).join(', ')`, helper text "Up to 10 tags, comma-separated", `N/10 tags` counter below input; position below Coaching Notes and above Visibility to match `SaveToCloudModal` field order (FR-003, FR-004, UI-002, UI-004, UI-005)
+- [x] T005 [US1] Add YouTube URL input to `src/shared/components/EditMetadataModal.tsx` — `<input>`, initialized as `animation.video_url ?? ''`, helper text "Optional YouTube link for this drill", add `youtubeUrl`/`youtubeError` state variables and the error display element below the input; inline `YOUTUBE_URL_REGEX` constant copied from `MetadataSheet.tsx` (`/^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}$/`); position below Tags and above Visibility; follow existing form styling `border border-border bg-surface focus:border-primary focus:outline-none` (do NOT wire submit-time validation here — T008 owns that) (FR-003, FR-005, UI-003, UI-004, UI-005)
 
 **Checkpoint**: Open Edit modal on a saved animation — all seven fields present and pre-populated. Tags field shows comma-joined stored tags; YouTube URL field shows stored URL or is empty. No "null" or "undefined" visible.
 
@@ -57,13 +57,13 @@
 
 ### Implementation for User Story 2
 
-- [ ] T006 [US2] Fix description `maxLength` from 500 to 2000 in `src/shared/components/EditMetadataModal.tsx` (UI-001)
-- [ ] T007 [US2] Add client-side tags validation in `src/shared/components/EditMetadataModal.tsx` — on submit, parse `tagsInput.split(',').map(t => t.trim()).filter(Boolean)`; block submit with inline error if result has > 10 entries or any entry exceeds 30 chars (FR-004)
-- [ ] T008 [US2] Add YouTube URL validation on submit in `src/shared/components/EditMetadataModal.tsx` — if field is non-empty, test against `YOUTUBE_URL_REGEX`; block submit with inline error "Please enter a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)" if invalid (FR-005)
-- [ ] T009 [US2] Include `tags` and `video_url` in PUT request body in `src/shared/components/EditMetadataModal.tsx` — `tags`: parsed array or `undefined` if input is empty; `video_url`: trimmed string or `undefined` if input is empty (FR-006)
-- [ ] T010 [US2] Change `onSave` prop type from `() => void` to `(updated: Partial<AnimationSummary>) => void` in `src/shared/components/EditMetadataModal.tsx`; on successful PUT call `onSave({ title, description, coaching_notes, animation_type, visibility, tags, video_url })` with the confirmed form values (FR-008)
-- [ ] T011 [US2] Add `import { toast } from 'sonner'` to `src/shared/components/EditMetadataModal.tsx`; in the PUT failure handler replace the existing `setError` inline error display with `toast.error(errorMessage)` — remove the visible inline error element and the `setError` call; modal naturally stays open because no success branch is taken (FR-009)
-- [ ] T012 [US2] Update `handleEditSave` in `src/app/my-gallery/page.tsx` (line ~139) — change signature from `async () => void` to `(updated: Partial<AnimationSummary>) => void`; replace `setEditingId(null); await fetchAnimations()` with `setAnimations((prev) => prev.map((a) => (a.id === editingId ? { ...a, ...updated } : a))); setEditingId(null)` (FR-008)
+- [x] T006 [US2] Fix description `maxLength` from 500 to 2000 in `src/shared/components/EditMetadataModal.tsx` (UI-001)
+- [x] T007 [US2] Add client-side tags validation in `src/shared/components/EditMetadataModal.tsx` — on submit, parse `tagsInput.split(',').map(t => t.trim()).filter(Boolean)`; block submit with inline error if result has > 10 entries or any entry exceeds 30 chars (FR-004)
+- [x] T008 [US2] Add YouTube URL validation on submit in `src/shared/components/EditMetadataModal.tsx` — if field is non-empty, test against `YOUTUBE_URL_REGEX`; block submit with inline error "Please enter a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)" if invalid (FR-005)
+- [x] T009 [US2] Include `tags` and `video_url` in PUT request body in `src/shared/components/EditMetadataModal.tsx` — `tags`: parsed array or `undefined` if input is empty; `video_url`: trimmed string or `undefined` if input is empty (FR-006)
+- [x] T010 [US2] Change `onSave` prop type from `() => void` to `(updated: Partial<AnimationSummary>) => void` in `src/shared/components/EditMetadataModal.tsx`; on successful PUT call `onSave({ title, description, coaching_notes, animation_type, visibility, tags, video_url })` with the confirmed form values (FR-008)
+- [x] T011 [US2] Add `import { toast } from 'sonner'` to `src/shared/components/EditMetadataModal.tsx`; in the PUT failure handler replace the existing `setError` inline error display with `toast.error(errorMessage)` — remove the visible inline error element and the `setError` call; modal naturally stays open because no success branch is taken (FR-009)
+- [x] T012 [US2] Update `handleEditSave` in `src/app/my-gallery/page.tsx` (line ~139) — change signature from `async () => void` to `(updated: Partial<AnimationSummary>) => void`; replace `setEditingId(null); await fetchAnimations()` with `setAnimations((prev) => prev.map((a) => (a.id === editingId ? { ...a, ...updated } : a))); setEditingId(null)` (FR-008)
 
 **Checkpoint**: Edit Tags + YouTube URL → save → card updates immediately without page reload. Re-open modal → values match what was saved. PUT failure (DevTools offline) → toast appears, modal stays open with data intact (quickstart Flows 2–4 and Flow 7).
 
@@ -77,8 +77,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Remove four references to `MetadataSheet` from `src/features/animation/components/Sidebar/ProjectActions.tsx`: (1) `import MetadataSheet` line 9, (2) `const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)` line 32, (3) the entire "Metadata Section" div containing the "Edit Metadata" button (~lines 142–158), (4) `<MetadataSheet open={isMetadataSheetOpen} onOpenChange={setIsMetadataSheetOpen} />` (~lines 262–265); also remove `Settings` import from lucide-react if it becomes unused (FR-007)
-- [ ] T014 [US3] Delete `src/features/animation/components/Sidebar/MetadataSheet.tsx` — safe to delete after T013 removes the only import (FR-007)
+- [x] T013 [US3] Remove four references to `MetadataSheet` from `src/features/animation/components/Sidebar/ProjectActions.tsx`: (1) `import MetadataSheet` line 9, (2) `const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)` line 32, (3) the entire "Metadata Section" div containing the "Edit Metadata" button (~lines 142–158), (4) `<MetadataSheet open={isMetadataSheetOpen} onOpenChange={setIsMetadataSheetOpen} />` (~lines 262–265); also remove `Settings` import from lucide-react if it becomes unused (FR-007)
+- [x] T014 [US3] Delete `src/features/animation/components/Sidebar/MetadataSheet.tsx` — safe to delete after T013 removes the only import (FR-007)
 
 **Checkpoint**: Sidebar has no metadata button. `grep -r "MetadataSheet"` returns zero results. Lint and TypeScript pass.
 
@@ -86,9 +86,9 @@
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T015 [P] Run `npm run lint && npx tsc --noEmit` — confirm zero new errors (SC-004)
-- [ ] T016 [P] Run `npm test -- --run` — confirm all existing tests still pass (SC-005)
-- [ ] T017 Manual smoke test: run quickstart Flows 1–7 against `localhost:3000` (dev server running)
+- [x] T015 [P] Run `npm run lint && npx tsc --noEmit` — confirm zero new errors (SC-004)
+- [x] T016 [P] Run `npm test -- --run` — confirm all existing tests still pass (SC-005)
+- [x] T017 Manual smoke test: run quickstart Flows 1–7 against `localhost:3000` (dev server running)
 
 ---
 
