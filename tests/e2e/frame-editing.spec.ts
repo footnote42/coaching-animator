@@ -10,6 +10,7 @@ test.describe('Direct Frame Editing', () => {
   });
 
   test('User can open own animation for editing from My Playbook', async ({ page }) => {
+    test.info().annotations.push({ type: 'workflow', description: 'WF1:step6' });
     const title = `E2E Edit Test ${Date.now()}`;
     await createTestAnimation(page, title);
     await page.waitForTimeout(2000);

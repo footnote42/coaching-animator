@@ -158,6 +158,7 @@ test.describe('Share route — FloatingRemote (T055)', () => {
   test.use({ viewport: { width: 375, height: 667 } })
 
   test('FloatingRemote pill is visible after load', async ({ page }) => {
+    test.info().annotations.push({ type: 'workflow', description: 'WF2:step7' });
     test.skip(!testAnimationId, 'No test animation available')
 
     await page.goto(`/share/${testAnimationId}`)
