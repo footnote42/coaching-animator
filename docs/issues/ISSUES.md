@@ -94,6 +94,21 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+### EDITOR-019 — Frame Editing of Own Saved Animations
+- **Status**: `[ ]` Open
+- **Severity**: High (core workflow gap — Phase 2 blocker)
+- **Observed**: Users cannot re-open an animation they own in the editor to modify its frames and overwrite the original. The Edit button in My Playbook opens a metadata-only modal (title, tags, coaching notes). The only path to frame editing is Remix, which creates a new animation rather than amending the original.
+- **Impact**: Breaks Workflow 1 Step 5 (Core Coaching Loop) — a coach cannot iterate on a saved drill without creating unrelated copies. Phase 2 cannot fully close until this is resolved.
+- **Action**:
+  - Add "Open in Editor" action to My Playbook animation cards (alongside Edit/Share)
+  - Load the animation frames into the editor at `/app?edit={id}`
+  - On save: overwrite the original record (not a new animation — no quota increment)
+  - Handle shared/public animations: decide whether editing invalidates or updates the share link
+- **See also**: WORKFLOW-001 (progression creation path — closed), USER-WORKFLOWS.md Workflow 1 Step 5
+- **Roadmap ref**: Phase 2 remainder — spec 020
+
+---
+
 ### WORKFLOW-001 — No Clear Route to Create Progressions
 - **Status**: `[x]` Closed
 - **Completed**: 2026-05-04 (Phase 2c+, 018-share-playback-workflow)
@@ -890,6 +905,32 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
+## Phase 2 Triage Assessment (2026-05-04)
+
+Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue prevent a user completing the Core Coaching Loop (create → save → edit frames → share → replay)?"
+
+**Result**: EDITOR-019 is the only true Phase 2 blocker. All other open Phase 2 issues are non-blockers against Workflow 1 and roll to Phase 3.
+
+| Issue | Workflow 1 Blocker? | Roll-to |
+|---|---|---|
+| EDITOR-019 (frame editing) | **YES** | Phase 2 remainder — spec 020 |
+| UX-001 (welcome popup contrast) | No — accessibility, not workflow | Phase 3 |
+| EDITOR-010 (progression buttons) | No — friction, not block | Phase 3 |
+| EDITOR-011 (team colour selection) | No — polish | Phase 3 |
+| EDITOR-012 (entity spawning logic) | No — friction, not block | Phase 3 |
+| EDITOR-014 (spawn offsetting) | No — polish | Phase 3 |
+| EDITOR-017 (save button layout) | No — visual | Phase 3 |
+| UX-004 (gallery visual preview) | No — engagement | Phase 3 |
+| UX-007 (design direction research) | No — landing | Phase 4 |
+| UX-009 (gallery carousel) | No — discoverability | Phase 3 |
+| UX-011 (entity depth) | No — visual | Phase 3 |
+| UX-018 (autosave popup) | No — cosmetic | Phase 3 |
+| NAV-001 (nav tab indicator) | No — visual | Phase 3 |
+| CONTACT-001 (contact form) | No — compliance | Phase 3 |
+| LANDING-001 (app name) | No — brand | Phase 4 |
+
+---
+
 ## How to Use This Tracker
 
 1. **Add**: Copy a template, assign ID (UX-### for UI/UX, FEATURE-### for features), fill details
@@ -902,7 +943,7 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Quick Reference by Roadmap Phase
 
 - **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, UX-011, UX-018 *(~~UX-010~~, ~~UX-012~~, ~~UX-013~~, ~~UX-014~~ closed)*
-- **Phase 2 — Editor/Workflow**: EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-016, EDITOR-017, EDITOR-018 *(~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
+- **Phase 2 — Editor/Workflow**: **EDITOR-019** (blocker — spec 020), EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-017 *(~~EDITOR-016~~, ~~EDITOR-018~~, ~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
 - **Phase 2 — Playback/Share**: PLAYBACK-001, FLOW-003 *(~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
 - **Phase 2 — Landing/Nav**: LANDING-001, NAV-001, CONTACT-001 *(~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
 - **Phase 2 — Gallery/Playbook**: *(~~GALLERY-001~~, ~~GALLERY-002~~ closed)*
