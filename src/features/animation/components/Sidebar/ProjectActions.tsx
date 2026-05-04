@@ -193,6 +193,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                         onClick={onSaveToCloud}
                         disabled={!project}
                         className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-white mt-2"
+                        data-testid="save-to-cloud-button"
                     >
                         <Cloud className="w-4 h-4 mr-2" />
                         Save to Cloud

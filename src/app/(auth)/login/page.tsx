@@ -86,6 +86,7 @@ function LoginForm() {
             required
             className="w-full px-3 py-2 border border-border bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="coach@example.com"
+            data-testid="login-email"
           />
         </div>
 
@@ -101,6 +102,7 @@ function LoginForm() {
             required
             className="w-full px-3 py-2 border border-border bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="••••••••"
+            data-testid="login-password"
           />
         </div>
 
@@ -108,6 +110,7 @@ function LoginForm() {
           type="submit"
           disabled={loading}
           className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          data-testid="login-submit"
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
