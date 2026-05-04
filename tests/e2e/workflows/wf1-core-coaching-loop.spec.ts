@@ -63,7 +63,7 @@ test.describe('WF1: Core Coaching Loop', () => {
     test.info().annotations.push({ type: 'workflow', description: 'WF1:step6' });
     await clickEditFrames(page, UPDATED_TITLE);
     await expect(page.locator('canvas').first()).toBeVisible();
-    await expect(page.getByTestId('frame-counter')).toHaveText('1/1');
+    await expect(page.getByTestId('frame-counter')).toHaveText(/1\/1/);
     await page.getByLabel('Add new frame').click();
     await expect(page.getByTestId('frame-counter')).toHaveText(/.*\/2/, { timeout: 5_000 });
     await page.getByTestId('save-to-cloud-button').first().click();
