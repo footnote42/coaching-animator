@@ -104,6 +104,14 @@ function AnimationToolPageContent() {
         });
     }
   }, [loadId, lastLoadedId, loadProject, parentId]);
+ 
+  // Ensure a project exists if we're not loading from cloud
+  const newProject = useProjectStore((state) => state.newProject);
+  useEffect(() => {
+    if (!project && !loadId && !parentId && !loading) {
+      newProject();
+    }
+  }, [project, loadId, parentId, loading, newProject]);
 
   const handleSaveToCloud = useCallback(() => {
     if (!user) {
@@ -122,7 +130,6 @@ function AnimationToolPageContent() {
 
   const handleSaveSuccess = useCallback((id: string) => {
     setShowSaveModal(false);
-    toast.success('Animation saved to cloud!');
     console.log('Saved animation ID:', id);
   }, []);
 
@@ -152,6 +159,9 @@ function AnimationToolPageContent() {
     );
   }
 
+  const mode = searchParams.get('mode');
+  const isEditMode = mode === 'edit';
+
   return (
     <>
       {/* Guest Mode Banner */}
@@ -171,13 +181,22 @@ function AnimationToolPageContent() {
         </div>
       )}
 
-      <Editor isAuthenticated={!!user} onSaveToCloud={handleSaveToCloud} loadingFromCloud={!!loadId || !!parentId} cloudAnimationId={loadId} stripColors={profile?.primary_strip_color && profile?.secondary_strip_color ? { attack: profile.primary_strip_color, defense: profile.secondary_strip_color } : undefined} />
+      <Editor 
+        isAuthenticated={!!user} 
+        onSaveToCloud={handleSaveToCloud} 
+        loadingFromCloud={!!loadId || !!parentId} 
+        cloudAnimationId={loadId} 
+        isEditMode={isEditMode}
+        stripColors={profile?.primary_strip_color && profile?.secondary_strip_color ? { attack: profile.primary_strip_color, defense: profile.secondary_strip_color } : undefined} 
+      />
       {showSaveModal && payload && (
         <SaveToCloudModal
           projectName={project?.name || 'Untitled Animation'}
           payload={payload}
           videoUrl={project?.videoUrl}
           initialParentId={parentId}
+          isEditMode={isEditMode}
+          animationId={loadId}
           onClose={() => setShowSaveModal(false)}
           onSuccess={handleSaveSuccess}
         />

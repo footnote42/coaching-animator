@@ -70,7 +70,10 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="font-mono text-sm px-2 text-[var(--color-text-primary)]">
+        <span 
+          className="font-mono text-sm px-2 text-[var(--color-text-primary)]"
+          data-testid="frame-counter"
+        >
           {currentFrame + 1}/{totalFrames}
         </span>
         <button

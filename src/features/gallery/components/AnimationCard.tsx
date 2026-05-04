@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { Clock, Layers, EyeOff, Link as LinkIcon, Globe, Pencil, Trash2, Play, History, Share2, FilePlus, Unlink } from 'lucide-react';
+import { Clock, Layers, EyeOff, Link as LinkIcon, Globe, Pencil, Trash2, Play, History, Share2, FilePlus, Unlink, Settings } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
 import { MiniPitchSVG } from './MiniPitchSVG';
@@ -114,6 +114,7 @@ export function AnimationCard({
   return (
     <div
       className="border border-border bg-surface hover:border-primary transition-colors"
+      data-testid="animation-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -304,12 +305,24 @@ export function AnimationCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    window.location.href = `/app?load=${animation.id}&mode=edit`;
+                  }}
+                  className={`p-2.5 ${cardActionHover}`}
+                  aria-label="Edit Frames"
+                  title="Edit Frames"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onEdit?.(animation.id);
                   }}
                   className={`p-2.5 ${cardActionHover}`}
-                  aria-label="Edit"
+                  aria-label="Edit Info"
+                  title="Edit Info"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <Settings className="w-4 h-4" />
                 </button>
                 <button
                   onClick={(e) => {

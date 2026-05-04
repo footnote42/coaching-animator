@@ -14,11 +14,13 @@ type ProgressionItem = Pick<AnimationSummary, 'id' | 'title' | 'progression_orde
 interface UseEditorProgressionHandlersParams {
   cloudAnimationId: string | null;
   isAuthenticated: boolean;
+  isEditMode?: boolean;
 }
 
 export function useEditorProgressionHandlers({
   cloudAnimationId,
   isAuthenticated,
+  isEditMode = false,
 }: UseEditorProgressionHandlersParams) {
   const loadProject = useProjectStore(s => s.loadProject);
   const isDirty = useProjectStore(s => s.isDirty);
@@ -30,7 +32,7 @@ export function useEditorProgressionHandlers({
   const [pendingProgressionIndex, setPendingProgressionIndex] = useState<number | null>(null);
   const [isAddingProgression, setIsAddingProgression] = useState(false);
 
-  const showProgressionPanel = isAuthenticated && cloudAnimationId && baseAnimationMeta && !baseAnimationMeta.is_progression;
+  const showProgressionPanel = isAuthenticated && cloudAnimationId && baseAnimationMeta && !baseAnimationMeta.is_progression && !isEditMode;
 
   const switchToProgression = async (index: number) => {
     setActiveProgressionIndex(index);

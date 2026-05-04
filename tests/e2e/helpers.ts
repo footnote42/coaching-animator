@@ -66,21 +66,28 @@ export async function registerUser(page: Page, user: TestUser): Promise<void> {
 /**
  * Login with existing user credentials
  */
-export async function loginUser(page: Page, user: TestUser): Promise<void> {
+export async function loginUser(page: Page, user: TestUser, redirect?: string): Promise<void> {
   const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
-  await page.goto(`${baseUrl}/login`)
+  const loginUrl = redirect ? `${baseUrl}/login?redirect=${encodeURIComponent(redirect)}` : `${baseUrl}/login`
+  await page.goto(loginUrl)
 
-  const emailInput = page.locator('input[type="email"]')
-  const passwordInput = page.locator('input[type="password"]')
-  // Use exact match on form submit button to avoid matching OAuth buttons
-  const submitButton = page.locator('button[type="submit"]:has-text("Sign In")')
+  const emailInput = page.getByTestId('login-email')
+  const passwordInput = page.getByTestId('login-password')
+  const submitButton = page.getByTestId('login-submit')
 
+  await emailInput.click()
   await emailInput.fill(user.email)
+  
+  await passwordInput.click()
   await passwordInput.fill(user.password)
+  
   await submitButton.click()
 
   // Wait for navigation (may go to /app or auth confirmation)
-  await page.waitForNavigation({ timeout: 10000 })
+  await page.waitForURL(/\/(app|my-gallery|profile)/, { timeout: 60000, waitUntil: 'networkidle' })
+  
+  // Wait for the navigation bar to show the user's initials/profile to ensure UserContext is ready
+  await expect(page.locator('a[href="/profile"]')).toBeVisible({ timeout: 15000 })
 }
 
 /**
@@ -432,15 +439,14 @@ export async function takeScreenshot(page: Page, filename: string): Promise<void
 /**
  * Login as the default test user (for local and production)
  */
-export async function loginAsTestUser(page: Page): Promise<void> {
+export async function loginAsTestUser(page: Page, redirect?: string): Promise<void> {
   const testUser = {
     email: 'user@test.com',
     password: 'Password1!'
   }
-  await loginUser(page, testUser)
+  await loginUser(page, testUser, redirect)
 
   // Wait for navigation to complete
-  await page.waitForURL(/\/(app|my-gallery|profile)/, { timeout: 10000 })
 }
 
 /**
@@ -449,11 +455,11 @@ export async function loginAsTestUser(page: Page): Promise<void> {
 export async function createTestAnimation(page: Page, title: string): Promise<void> {
   // Ensure we're on the editor page
   if (!page.url().includes('/app')) {
-    await page.goto('http://localhost:3002/app')
+    await page.goto('/app')
   }
 
   // Wait for editor to load
-  await expect(page.locator('canvas')).toBeVisible({ timeout: 10000 })
+  await expect(page.locator('canvas').first()).toBeVisible({ timeout: 10000 })
 
   // Add a frame if needed (editor might already have Frame 1)
   const addFrameBtn = page.locator('button:has-text("Add Frame")')
@@ -463,21 +469,22 @@ export async function createTestAnimation(page: Page, title: string): Promise<vo
   }
 
   // Open save modal
-  const saveBtn = page.locator('button:has-text("Save to Cloud")')
+  const saveBtn = page.getByTestId('save-to-cloud-button').first()
   await expect(saveBtn).toBeVisible()
+  await expect(saveBtn).toBeEnabled({ timeout: 10000 })
   await saveBtn.click()
 
-  // Wait for modal
-  await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 })
+  const modal = page.getByTestId('save-to-cloud-modal')
+  await expect(modal).toBeVisible({ timeout: 5000 })
 
   // Fill title
-  const titleInput = page.locator('input[placeholder*="title" i]').first()
+  const titleInput = modal.locator('input[placeholder*="title" i]').first()
   await titleInput.fill(title)
 
   // Submit
-  const submitBtn = page.locator('[role="dialog"] button:has-text("Save")')
+  const submitBtn = modal.locator('button[type="submit"]')
   await submitBtn.click()
 
   // Wait for success (modal should close)
-  await expect(page.locator('[role="dialog"]')).toBeHidden({ timeout: 5000 })
+  await expect(modal).toBeHidden({ timeout: 10000 })
 }

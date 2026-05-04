@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Loader2, Cloud, AlertCircle } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
-import { postWithRetry, getWithRetry } from '@/lib/api-client';
+import { postWithRetry, putWithRetry, getWithRetry } from '@/lib/api-client';
+import { toast } from 'sonner';
 import { offlineQueue } from '@/lib/offline-queue';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
@@ -15,6 +16,8 @@ interface SaveToCloudModalProps {
   onSuccess: (id: string) => void;
   initialCoachingNotes?: string;
   initialParentId?: string | null;
+  isEditMode?: boolean;
+  animationId?: string | null;
 }
 
 const ANIMATION_TYPES: { value: AnimationType; label: string; description: string }[] = [
@@ -30,7 +33,17 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string; description: strin
   { value: 'public', label: 'Public', description: 'Visible in the public gallery' },
 ];
 
-export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSuccess, initialCoachingNotes, initialParentId }: SaveToCloudModalProps) {
+export function SaveToCloudModal({ 
+  projectName, 
+  payload, 
+  videoUrl, 
+  onClose, 
+  onSuccess, 
+  initialCoachingNotes, 
+  initialParentId,
+  isEditMode = false,
+  animationId = null
+}: SaveToCloudModalProps) {
   const [title, setTitle] = useState(projectName || 'Untitled Animation');
   const [description, setDescription] = useState('');
   const [coachingNotes, setCoachingNotes] = useState(initialCoachingNotes || '');
@@ -40,6 +53,8 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryAttempt, setRetryAttempt] = useState(0);
+  const [saveMode, setSaveMode] = useState<'new' | 'overwrite'>(isEditMode ? 'overwrite' : 'new');
+  const [isMajorVersion, setIsMajorVersion] = useState(false);
   const isMountedRef = useRef(true);
 
   // Phase 2: Progressions
@@ -103,7 +118,7 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
       const requestBody = {
         title: title.trim(),
         description: description.trim() || undefined,
-        coaching_notes: coachingNotes.trim() || null,
+        coaching_notes: coachingNotes.trim() || undefined,
         animation_type: animationType,
         visibility,
         tags: tagArray.length > 0 ? tagArray : undefined,
@@ -115,7 +130,7 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
           progression_order: progressionOrder || 1,
         } : {
           is_progression: false,
-          parent_animation_id: null,
+          parent_animation_id: undefined,
           progression_order: 0,
         })
       };
@@ -123,54 +138,59 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
       // Quick synchronous check - if offline, queue immediately
       if (!navigator.onLine) {
         const offlineId = offlineQueue.addItem({
-          type: 'create',
-          endpoint: '/api/animations',
-          method: 'POST',
-          payload: requestBody
+          type: saveMode === 'overwrite' ? 'update' : 'create',
+          endpoint: saveMode === 'overwrite' ? `/api/animations/${animationId}` : '/api/animations',
+          method: saveMode === 'overwrite' ? 'PUT' : 'POST',
+          payload: saveMode === 'overwrite' ? { ...requestBody, is_major_version: isMajorVersion } : requestBody
         });
 
-        onSuccess(offlineId);
+        onSuccess(saveMode === 'overwrite' ? (animationId || 'pending') : offlineId);
         return;
       }
 
-      // Let postWithRetry handle the request with retries
-      // (removed async health check to allow retries to work)
-      const result = await postWithRetry<{ id: string }>(
-        '/api/animations',
-        requestBody,
-        {
-          onRetry: (attempt, _max) => {
-            // Only update state if component is still mounted
-            if (isMountedRef.current) {
-              setRetryAttempt(attempt);
+      // Let postWithRetry/putWithRetry handle the request with retries
+      if (saveMode === 'overwrite' && animationId) {
+        const result = await putWithRetry<{ id: string }>(
+          `/api/animations/${animationId}`,
+          { ...requestBody, is_major_version: isMajorVersion },
+          {
+            onRetry: (attempt) => {
+              if (isMountedRef.current) setRetryAttempt(attempt);
             }
           }
+        );
+ 
+        if (!result.ok) {
+          if (result.status >= 400 && result.status < 500) {
+            setError(result.error || 'Failed to update animation');
+            return;
+          }
+          throw new Error(result.error || 'Failed to update animation');
         }
-      );
-
-      if (!result.ok || !result.data) {
-        // Client errors (400-499): Show error in modal, DO NOT queue offline
-        if (result.status >= 400 && result.status < 500) {
-          setError(result.error || 'Invalid animation data. Please try again or contact support.');
-          return;
+        toast.success('Animation updated successfully');
+        onSuccess(animationId);
+      } else {
+        // Create new animation (POST)
+        const result = await postWithRetry<{ id: string }>(
+          '/api/animations',
+          requestBody,
+          {
+            onRetry: (attempt) => {
+              if (isMountedRef.current) setRetryAttempt(attempt);
+            }
+          }
+        );
+ 
+        if (!result.ok || !result.data) {
+          if (result.status >= 400 && result.status < 500) {
+            setError(result.error || 'Failed to save animation');
+            return;
+          }
+          throw new Error(result.error || 'Failed to save animation');
         }
-
-        // Network/Server errors (0, 500-599): Queue offline
-        if (result.status === 0 || result.status >= 500) {
-          const offlineId = offlineQueue.addItem({
-            type: 'create',
-            endpoint: '/api/animations',
-            method: 'POST',
-            payload: requestBody
-          });
-          onSuccess(offlineId);
-          return;
-        }
-
-        throw new Error(result.error || 'Failed to save animation');
+        toast.success('Animation saved to cloud');
+        onSuccess(result.data.id);
       }
-
-      onSuccess(result.data.id);
     } catch (err) {
       if (err instanceof Error && (err.message.includes('Network') || err.message.includes('fetch'))) {
         // Catch-all for network errors thrown by fetchWithRetry if we didn't catch them above
@@ -212,7 +232,12 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-surface border border-border mx-4 max-h-[90vh] overflow-y-auto">
+      <div 
+        role="dialog"
+        aria-modal="true"
+        data-testid="save-to-cloud-modal"
+        className="relative w-full max-w-lg bg-surface border border-border mx-4 max-h-[90vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-surface">
           <div className="flex items-center gap-2">
@@ -236,6 +261,64 @@ export function SaveToCloudModal({ projectName, payload, videoUrl, onClose, onSu
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
               <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {isEditMode && (
+            <div className="mb-6 p-4 bg-primary/5 border border-primary/20">
+              <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Save Options</h3>
+              <div className="space-y-3">
+                <label htmlFor="save-mode-overwrite" className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    id="save-mode-overwrite"
+                    name="saveMode"
+                    value="overwrite"
+                    checked={saveMode === 'overwrite'}
+                    onChange={() => setSaveMode('overwrite')}
+                    className="mt-1"
+                  />
+                  <div>
+                    <span className="block text-sm font-medium text-text-primary">Overwrite Original</span>
+                    <span className="block text-xs text-text-primary/60">This will update the existing animation and create a new version record.</span>
+                  </div>
+                </label>
+
+                {saveMode === 'overwrite' && (
+                  <label className="flex items-center gap-2 ml-7 mt-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isMajorVersion}
+                      onChange={(e) => setIsMajorVersion(e.target.checked)}
+                      className="w-4 h-4 rounded-none border-border text-primary focus:ring-primary"
+                    />
+                    <span className="text-xs font-medium text-text-primary">Mark as Major Version (e.g. 1.0 → 2.0)</span>
+                  </label>
+                )}
+
+                <label htmlFor="save-mode-new" className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    id="save-mode-new"
+                    name="saveMode"
+                    value="new"
+                    checked={saveMode === 'new'}
+                    onChange={() => setSaveMode('new')}
+                    className="mt-1"
+                  />
+                  <div>
+                    <span className="block text-sm font-medium text-text-primary">Save as New Copy</span>
+                    <span className="block text-xs text-text-primary/60">Creates a completely separate animation record in your playbook.</span>
+                  </div>
+                </label>
+              </div>
+
+              {saveMode === 'overwrite' && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs flex gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>Warning: Overwriting will update all existing share links to show these new frames.</span>
+                </div>
+              )}
             </div>
           )}
 

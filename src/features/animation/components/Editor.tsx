@@ -64,11 +64,12 @@ interface EditorProps {
   cloudAnimationId?: string | null;
   /** Club strip colors from user profile (overrides default player colors) */
   stripColors?: { attack: string; defense: string };
+  isEditMode?: boolean;
 }
 
 const SIDEBAR_STORAGE_KEY = 'coaching_animator_sidebar_collapsed';
 
-export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null, stripColors }: EditorProps) {
+export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromCloud = false, cloudAnimationId = null, stripColors, isEditMode = false }: EditorProps) {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { width: canvasWidth, height: canvasHeight } = useEditorCanvasSize(canvasContainerRef);
 
@@ -139,7 +140,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     handleProgressionReorder,
     handleProgressionDiscardAndSwitch,
     handleAddProgression,
-  } = useEditorProgressionHandlers({ cloudAnimationId, isAuthenticated });
+  } = useEditorProgressionHandlers({ cloudAnimationId, isAuthenticated, isEditMode });
 
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveredProject, setRecoveredProject] = useState<unknown>(null);

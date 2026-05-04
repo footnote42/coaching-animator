@@ -1,9 +1,9 @@
 # Coaching Animator Roadmap
 
-**Version**: 3.5
+**Version**: 3.6
 **Last Updated**: 2026-05-04
 **Status**: Active authority document
-**Previous roadmap**: `docs/archive/ROADMAP-2026-05-04.md` (v3.4)
+**Previous roadmap**: `docs/archive/ROADMAP-2026-05-04-v3.5.md` (v3.5)
 
 ---
 
@@ -60,6 +60,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 3f | Audit Remediation | ✅ | 017-audit-remediation | 2026-05-03 | Zero `rounded-*` in editor surfaces, `font-heading` on auth pages, modal scrim; re-score 18+/20 |
 | 2c+ | Share & Playback Workflow (ext.) | ✅ | 018-share-playback-workflow | 2026-05-04 | Inline progression badges, coaching notes overlay, 8 Phase 2 issue closures |
 | 2m | Save & Metadata Unification | ✅ | 019-save-metadata-unification | 2026-05-04 | Tags, YouTube URL, unified edit modal, sidebar cleanup |
+| 2 remainder | Frame editing of own saved animations | ✅ | 020-frame-edit-own-animations | 2026-05-04 | EDITOR-019. Final Phase 2 closure blocker. |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 
@@ -69,7 +70,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 
 | Phase | Title | Status | Spec | Notes |
 |-------|-------|--------|------|-------|
-| 2 remainder | Frame editing of own saved animations | Specifying | 020 (pending) | EDITOR-019. Required for Phase 2 formal closure. |
+| 3c | E2E Core Loop Stability | In Progress | — | Hardening Playwright suite for CI readiness. |
 
 ---
 
@@ -79,13 +80,13 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 - **User base**: Pre-launch — no external users yet.
 - **Primary usage pattern**: Desktop edit / mobile view. Coaches build sessions at a desk; players receive a share link on their phone at the pitch.
 - **Doc/code parity**: Restored 2026-04-28 (this version). v3.0 had 4 stale "open" sub-areas already shipped under specs 006/007/008/009.
-- **Phase 2 status**: Conditionally closed — workflow-first audit (2026-05-04) confirmed 9/9 launch criteria met and all open Phase 2 issues are non-blockers except EDITOR-019 (frame editing of own animations). Phase 2 formally closes when spec 020 ships.
+- **Phase 2 status**: ✅ **Closed 2026-05-04**. Workflow-first audit confirmed all launch criteria met; spec 020 (EDITOR-019) verified and delivered. Phase 2 formal closure achieved. Phase 3 (Stability) is now the primary priority.
 
 ---
 
 ## v1 Launch Definition
 
-A successful v1 launch requires all of the following. **9/9 met as of 2026-05-04. Phase 2 conditionally closed pending spec 020 (EDITOR-019).**
+A successful v1 launch requires all of the following. **9/9 met as of 2026-05-04. Phase 2 formally closed.**
 
 1. ✅ **Core loop working** — desktop edit, save, share link, mobile replay renders correctly
 2. ✅ **Landing page credible** — tactical rebrand shipped 2026-04-20
