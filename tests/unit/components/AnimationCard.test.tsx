@@ -23,7 +23,10 @@ vi.mock('lucide-react', () => ({
 
 // Mock Next.js components
 vi.mock('next/image', () => ({
-  default: (props: any) => <img {...props} />,
+  default: ({ src, alt, ...props }: { src: string; alt: string; [key: string]: unknown }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt ?? ''} {...props} />
+  ),
 }));
 
 vi.mock('next/link', () => ({
