@@ -1,0 +1,39 @@
+{
+  "WF1": {
+    "name": "Core Coaching Loop",
+    "steps": {
+      "WF1:step1": "Sign in — authenticated session established",
+      "WF1:step2": "Create — canvas and toolbar accessible, entities addable",
+      "WF1:step3": "Animate — second frame added via frame strip",
+      "WF1:step4": "Save — Save to Cloud triggers metadata modal, animation persisted",
+      "WF1:step5": "Edit metadata — settings icon opens pre-populated modal, changes save",
+      "WF1:step6": "Edit frames — pencil icon opens /app?load={id}&mode=edit with existing frames",
+      "WF1:step7": "Share — visibility choices available, share URL generated",
+      "WF1:step8": "Replay — share URL accessible unauthenticated, playback controls visible"
+    }
+  },
+  "WF2": {
+    "name": "Share & Replay",
+    "steps": {
+      "WF2:step1": "My Playbook loaded with saved animations",
+      "WF2:step2": "Share button opens visibility modal",
+      "WF2:step3": "Link-only visibility selectable",
+      "WF2:step4": "Share URL generated and copyable",
+      "WF2:step5": "Share link accessible without account",
+      "WF2:step6": "Full-screen view with floating remote control",
+      "WF2:step7": "Frames advance on play",
+      "WF2:step8": "No editor controls visible to unauthenticated viewer"
+    }
+  },
+  "WF3": {
+    "name": "Remix & Personalise",
+    "steps": {
+      "WF3:step1": "Public gallery browsable without account",
+      "WF3:step2": "Remix button visible on public animation cards",
+      "WF3:step3": "Remix redirects unauthenticated user to sign-in",
+      "WF3:step4": "Editor opens with original animation frames pre-loaded",
+      "WF3:step5": "Save after remix creates a new animation in My Playbook",
+      "WF3:step6": "Original animation unchanged in public gallery after remix"
+    }
+  }
+}
