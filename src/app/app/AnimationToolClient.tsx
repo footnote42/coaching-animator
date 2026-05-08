@@ -76,7 +76,7 @@ function AnimationToolPageContent() {
     const idToLoad = loadId || parentId;
     if (idToLoad && idToLoad !== lastLoadedId) {
       setLastLoadedId(idToLoad);
-      getWithRetry<{ id: string; payload: unknown; created_at: string; updated_at: string }>(`/api/animations/${idToLoad}`)
+      getWithRetry<{ id: string; title?: string; payload: unknown; created_at: string; updated_at: string }>(`/api/animations/${idToLoad}`)
         .then(({ ok, data, status, error: apiError }) => {
           if (!ok) throw new Error(apiError || `Failed to load animation (${status})`);
           if (data && data.payload) {
@@ -86,6 +86,8 @@ function AnimationToolPageContent() {
               id: loadId ? data.id : crypto.randomUUID(), // New ID if it's a progression
               createdAt: loadId ? data.created_at : new Date().toISOString(),
               updatedAt: loadId ? data.updated_at : new Date().toISOString(),
+              // Sync local project name with cloud title when editing (not for progressions)
+              ...(loadId && data.title ? { name: data.title } : {}),
             };
             const result = loadProject(projectData);
             if (!result.success) {

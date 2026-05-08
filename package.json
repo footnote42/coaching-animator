@@ -18,6 +18,7 @@
     "e2e:debug": "playwright test --debug --headed",
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report",
+    "audit:workflows": "playwright test tests/e2e/workflows/ --project=chromium --retries=0",
     "prepare": "husky"
   },
   "dependencies": {

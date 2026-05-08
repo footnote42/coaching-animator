@@ -84,7 +84,8 @@ export async function loginUser(page: Page, user: TestUser, redirect?: string): 
   await submitButton.click()
 
   // Wait for navigation (may go to /app or auth confirmation)
-  await page.waitForURL(/\/(app|my-gallery|profile)/, { timeout: 60000, waitUntil: 'networkidle' })
+  // Use 'load' instead of 'networkidle' — realtime connections keep the page from reaching networkidle
+  await page.waitForURL(/\/(app|my-gallery|profile)/, { timeout: 60000, waitUntil: 'load' })
   
   // Wait for the navigation bar to show the user's initials/profile to ensure UserContext is ready
   await expect(page.locator('a[href="/profile"]')).toBeVisible({ timeout: 15000 })
@@ -452,7 +453,11 @@ export async function loginAsTestUser(page: Page, redirect?: string): Promise<vo
 /**
  * Create a test animation with minimal setup
  */
-export async function createTestAnimation(page: Page, title: string): Promise<void> {
+export async function createTestAnimation(
+  page: Page,
+  title: string,
+  options?: { visibility?: 'private' | 'link_shared' | 'public' }
+): Promise<void> {
   // Ensure we're on the editor page
   if (!page.url().includes('/app')) {
     await page.goto('/app')
@@ -480,6 +485,11 @@ export async function createTestAnimation(page: Page, title: string): Promise<vo
   // Fill title
   const titleInput = modal.locator('input[placeholder*="title" i]').first()
   await titleInput.fill(title)
+
+  // Set visibility if specified
+  if (options?.visibility) {
+    await modal.locator(`input[type="radio"][name="visibility"][value="${options.visibility}"]`).check()
+  }
 
   // Submit
   const submitBtn = modal.locator('button[type="submit"]')

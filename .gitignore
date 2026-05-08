@@ -39,6 +39,9 @@ tsconfig.tsbuildinfo
 # Supabase local state
 supabase/.temp/
 
+# Firecrawl cache
+.firecrawl/
+
 # IDE/AI assistant artifacts
 .cleo/
 .gemini/
@@ -51,3 +54,7 @@ artifacts/
 
 # Env backups
 .env.local.bak
+.aider*
+
+# Workflow audit per-run logs (GAPS.md is committed; AUDIT-*.md files are not)
+docs/audit/AUDIT-*.md

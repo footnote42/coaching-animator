@@ -930,6 +930,26 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 
 ---
 
+## [BUG] WF1-S5: Edit metadata updates card title
+**Detected**: 2026-05-08 audit run
+**Workflow**: WF1 Core Coaching Loop, Step 5
+**Symptom**: Edit Info button clicked successfully but `[role="dialog"]` did not appear within 5s — edit metadata dialog fails to open from My Playbook
+**Classification**: UI regression
+**Suggested investigation**: `EditMetadataModal` render trigger in `AnimationCard`; confirm dialog has `role="dialog"` attribute; check for silent JS errors on button click
+**Status**: Open
+
+---
+
+## [BUG] WF2-S1+S2: My Playbook shows animations and Share opens modal
+**Detected**: 2026-05-08 audit run
+**Workflow**: WF2 Share & Replay, Steps 1–2
+**Symptom**: Animation card found and visible, but `button[aria-label="Share"]` never became clickable after hover — 120s timeout
+**Classification**: UI regression
+**Suggested investigation**: `AnimationCard` hover state and share button; check if `aria-label` was renamed during 019/020 metadata unification; confirm hover-to-reveal CSS is active
+**Status**: Open
+
+---
+
 ## How to Use This Tracker
 
 1. **Add**: Copy a template, assign ID (UX-### for UI/UX, FEATURE-### for features), fill details
