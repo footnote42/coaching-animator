@@ -1,21 +1,40 @@
 import { test, expect } from '@playwright/test';
-import { loginAsTestUser } from '../helpers';
+import { loginAsTestUser, createTestAnimation } from '../helpers';
 
 test.describe('WF3: Remix & Personalise', () => {
   test.describe.configure({ mode: 'serial' });
   test.setTimeout(120_000);
 
-  let publicAnimationId: string | null = null;
-  let originalTitle: string | null = null;
+  const SOURCE_TITLE = `WF3 Source ${Date.now()}`;
   const REMIX_TITLE = `WF3 Remix ${Date.now()}`;
+  let publicAnimationId: string | null = null;
+  const originalTitle = SOURCE_TITLE;
 
-  test.beforeAll(async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/api/gallery?limit=1&visibility=public`);
-    if (response.ok()) {
-      const data = await response.json();
-      publicAnimationId = data.animations?.[0]?.id ?? null;
-      originalTitle = data.animations?.[0]?.title ?? null;
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(120_000);
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await loginAsTestUser(page);
+    await page.waitForTimeout(1_500);
+    await createTestAnimation(page, SOURCE_TITLE, { visibility: 'public' });
+    const resp = await page.request.get('/api/animations?limit=20&sort=created_at&order=desc');
+    if (resp.ok()) {
+      const data = await resp.json();
+      const anim = data.animations?.find((a: { title: string }) => a.title === SOURCE_TITLE);
+      publicAnimationId = anim?.id ?? null;
     }
+    await ctx.close();
+  });
+
+  test.afterAll(async ({ browser }) => {
+    test.setTimeout(120_000);
+    if (!publicAnimationId) return;
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await loginAsTestUser(page);
+    await page.waitForTimeout(1_000);
+    await page.request.delete(`/api/animations/${publicAnimationId}`);
+    await ctx.close();
   });
 
   test('WF3-S1: public gallery browsable without account', async ({ page }) => {
@@ -56,7 +75,7 @@ test.describe('WF3: Remix & Personalise', () => {
     await page.waitForTimeout(1_500);
     await page.goto('/gallery');
     await page.waitForLoadState('networkidle');
-    const card = page.getByTestId('animation-card').filter({ hasText: originalTitle ?? '' }).first();
+    const card = page.getByTestId('animation-card').filter({ hasText: originalTitle }).first();
     await expect(card).toBeVisible({ timeout: 15_000 });
     await card.hover();
     await card.locator('button[aria-label="Remix"], button:has-text("Remix")').click();
@@ -94,7 +113,7 @@ test.describe('WF3: Remix & Personalise', () => {
     await page.goto('/gallery');
     await page.waitForLoadState('networkidle');
     await expect(
-      page.getByTestId('animation-card').filter({ hasText: originalTitle ?? '' }).first()
+      page.getByTestId('animation-card').filter({ hasText: originalTitle }).first()
     ).toBeVisible({ timeout: 15_000 });
   });
 });

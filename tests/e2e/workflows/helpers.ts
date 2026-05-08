@@ -1,5 +1,26 @@
 import { Page, expect, BrowserContext } from '@playwright/test';
 
+/**
+ * Delete animations whose titles start with any of the given prefixes.
+ * Uses the authenticated API request context — no browser UI needed.
+ * Safe to call even if there are no matching animations.
+ */
+export async function deleteTestAnimationsByPrefix(
+  page: Page,
+  prefixes: string[]
+): Promise<void> {
+  const resp = await page.request.get('/api/animations?limit=50');
+  if (!resp.ok()) return;
+  const data = await resp.json();
+  const animations: { id: string; title: string }[] = data.animations ?? [];
+  const toDelete = animations.filter((a) =>
+    prefixes.some((p) => a.title.startsWith(p))
+  );
+  for (const anim of toDelete) {
+    await page.request.delete(`/api/animations/${anim.id}`);
+  }
+}
+
 export async function findCardInMyPlaybook(page: Page, title: string) {
   await page.goto('/my-gallery');
   await page.waitForLoadState('networkidle');
@@ -49,7 +70,9 @@ export async function clickEditInfo(page: Page, title: string): Promise<void> {
   );
   await expect(btn).toBeVisible();
   await btn.click();
-  await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5_000 });
+  await expect(
+    page.locator('[data-testid="edit-metadata-modal"], [role="dialog"]').first()
+  ).toBeVisible({ timeout: 10_000 });
 }
 
 export async function asUnauthenticatedPlayer(

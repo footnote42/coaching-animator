@@ -74,7 +74,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim() || undefined,
-          coaching_notes: coachingNotes.trim() || null,
+          coaching_notes: coachingNotes.trim() || undefined,
           animation_type: animationType,
           visibility,
           tags: parsedTags.length > 0 ? parsedTags : undefined,
@@ -90,7 +90,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
       onSave({
         title: title.trim(),
         description: description.trim() || undefined,
-        coaching_notes: coachingNotes.trim() || null,
+        coaching_notes: coachingNotes.trim() || undefined,
         animation_type: animationType,
         visibility,
         tags: parsedTags.length > 0 ? parsedTags : null,
@@ -112,7 +112,7 @@ export function EditMetadataModal({ animation, onClose, onSave }: EditMetadataMo
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-md bg-surface border border-border mx-4">
+      <div role="dialog" aria-modal="true" aria-label="Edit Animation" data-testid="edit-metadata-modal" className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-surface border border-border mx-4">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-heading font-semibold text-text-primary">

@@ -8,13 +8,32 @@ test.describe('WF2: Share & Replay', () => {
 
   const TITLE = `WF2 Audit ${Date.now()}`;
   let shareUrl = '';
+  let createdAnimationId: string | null = null;
 
   test.beforeAll(async ({ browser }) => {
+    test.setTimeout(120_000);
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
     await loginAsTestUser(page);
     await page.waitForTimeout(1_500);
-    await createTestAnimation(page, TITLE);
+    await createTestAnimation(page, TITLE, { visibility: 'link_shared' });
+    const resp = await page.request.get('/api/animations?limit=5&sort=created_at&order=desc');
+    if (resp.ok()) {
+      const data = await resp.json();
+      const anim = data.animations?.find((a: { title: string }) => a.title === TITLE);
+      createdAnimationId = anim?.id ?? null;
+    }
+    await ctx.close();
+  });
+
+  test.afterAll(async ({ browser }) => {
+    test.setTimeout(120_000);
+    if (!createdAnimationId) return;
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await loginAsTestUser(page);
+    await page.waitForTimeout(1_000);
+    await page.request.delete(`/api/animations/${createdAnimationId}`);
     await ctx.close();
   });
 
@@ -56,9 +75,15 @@ test.describe('WF2: Share & Replay', () => {
     test.info().annotations.push({ type: 'workflow', description: 'WF2:step7' });
     expect(shareUrl).toBeTruthy();
     await asUnauthenticatedPlayer(page, shareUrl, async (playerPage) => {
-      const playBtn = playerPage.locator('button[aria-label="Play"], [aria-label="Play animation"]').first();
-      await expect(playBtn).toBeVisible({ timeout: 10_000 });
-      await playBtn.click();
+      // autoPlay may fire within 100ms, so accept either Play or Pause as proof the remote is present
+      const toggleBtn = playerPage.locator('button[aria-label="Play"], button[aria-label="Pause"]').first();
+      await expect(toggleBtn).toBeVisible({ timeout: 10_000 });
+      // Normalise to paused state so we can test the play interaction
+      if (await playerPage.locator('button[aria-label="Pause"]').isVisible()) {
+        await playerPage.locator('button[aria-label="Pause"]').click();
+        await expect(playerPage.locator('button[aria-label="Play"]')).toBeVisible({ timeout: 3_000 });
+      }
+      await playerPage.locator('button[aria-label="Play"]').click();
       await expect(playerPage.locator('button[aria-label="Pause"]')).toBeVisible({ timeout: 5_000 });
     });
   });

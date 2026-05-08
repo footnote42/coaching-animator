@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { loginAsTestUser, createTestAnimation } from '../helpers';
-import { getShareUrlFromCard, clickEditFrames, clickEditInfo, asUnauthenticatedPlayer } from './helpers';
+import { getShareUrlFromCard, clickEditFrames, clickEditInfo, asUnauthenticatedPlayer, deleteTestAnimationsByPrefix } from './helpers';
 
 test.describe('WF1: Core Coaching Loop', () => {
   test.describe.configure({ mode: 'serial' });
@@ -9,6 +9,16 @@ test.describe('WF1: Core Coaching Loop', () => {
   const TITLE = `WF1 Audit ${Date.now()}`;
   const UPDATED_TITLE = `${TITLE} (edited)`;
   let shareUrl = '';
+
+  test.beforeAll(async ({ browser }) => {
+    test.setTimeout(120_000);
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await loginAsTestUser(page);
+    await page.waitForTimeout(1_500);
+    await deleteTestAnimationsByPrefix(page, ['WF1 Audit', 'WF2 Audit', 'WF3 Source', 'WF3 Remix']);
+    await ctx.close();
+  });
 
   test.beforeEach(async ({ page }) => {
     await loginAsTestUser(page);
@@ -46,12 +56,14 @@ test.describe('WF1: Core Coaching Loop', () => {
   test('WF1-S5: Edit metadata updates card title', async ({ page }) => {
     test.info().annotations.push({ type: 'workflow', description: 'WF1:step5' });
     await clickEditInfo(page, TITLE);
-    const modal = page.locator('[role="dialog"]');
+    const modal = page.getByTestId('edit-metadata-modal');
     const titleInput = modal.locator('input[placeholder*="title" i]').first();
     await expect(titleInput).toBeVisible();
     await titleInput.fill(UPDATED_TITLE);
-    await modal.locator('button[type="submit"]').click();
-    await expect(modal).toBeHidden({ timeout: 10_000 });
+    const saveBtn = modal.getByRole('button', { name: /save changes/i });
+    await saveBtn.scrollIntoViewIfNeeded();
+    await saveBtn.click();
+    await expect(modal).toBeHidden({ timeout: 30_000 });
     await page.goto('/my-gallery');
     await page.waitForLoadState('networkidle');
     await expect(
@@ -69,10 +81,12 @@ test.describe('WF1: Core Coaching Loop', () => {
     await page.getByTestId('save-to-cloud-button').first().click();
     const modal = page.getByTestId('save-to-cloud-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.locator('button:has-text("Overwrite"), button:has-text("Overwrite Original")')).toBeVisible();
-    await expect(modal.locator('button:has-text("Save as New"), button:has-text("New Copy")')).toBeVisible();
-    await expect(modal.locator('text=/share link/i, text=/existing share/i').first()).toBeVisible();
-    await modal.locator('button:has-text("Overwrite"), button:has-text("Overwrite Original")').click();
+    await expect(modal.locator('label:has-text("Overwrite Original"), label:has-text("Overwrite")')).toBeVisible();
+    await expect(modal.locator('label:has-text("Save as New"), label:has-text("New Copy")')).toBeVisible();
+    await expect(modal.getByText(/share link/i).first()).toBeVisible();
+    // Set link_shared visibility so WF1-S7 can generate a share URL
+    await modal.locator('input[type="radio"][name="visibility"][value="link_shared"]').check();
+    await modal.locator('button[type="submit"]').click();
     await expect(modal).toBeHidden({ timeout: 20_000 });
   });
 

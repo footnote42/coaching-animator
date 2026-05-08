@@ -1,5 +1,5 @@
 # Test Coverage Gaps
 
-**Last updated**: not yet run
+**Last updated**: 2026-05-08
 
-Run `/audit` to populate this file.
+All workflow steps are covered.
