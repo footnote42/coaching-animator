@@ -1,9 +1,9 @@
 # Coaching Animator Roadmap
 
-**Version**: 3.6
-**Last Updated**: 2026-05-04
+**Version**: 3.7
+**Last Updated**: 2026-05-15
 **Status**: Active authority document
-**Previous roadmap**: `docs/archive/ROADMAP-2026-05-04-v3.5.md` (v3.5)
+**Previous roadmap**: `docs/archive/ROADMAP-2026-05-15-v3.6.md` (v3.6)
 
 ---
 
@@ -61,6 +61,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 2c+ | Share & Playback Workflow (ext.) | ✅ | 018-share-playback-workflow | 2026-05-04 | Inline progression badges, coaching notes overlay, 8 Phase 2 issue closures |
 | 2m | Save & Metadata Unification | ✅ | 019-save-metadata-unification | 2026-05-04 | Tags, YouTube URL, unified edit modal, sidebar cleanup |
 | 2 remainder | Frame editing of own saved animations | ✅ | 020-frame-edit-own-animations | 2026-05-04 | EDITOR-019. Final Phase 2 closure blocker. |
+| 2b+ | Unified Editor Controls | ✅ | 021-unified-editor-controls | 2026-05-15 | Replaced floating remote with TimelinePanel. |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 

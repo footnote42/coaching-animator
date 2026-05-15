@@ -31,7 +31,6 @@ import { PitchLegend } from '@/features/animation/components/Canvas/PitchLegend'
 import { EntityPalette } from '@/features/animation/components/Sidebar/EntityPalette';
 import { EntityProperties } from '@/features/animation/components/Sidebar/EntityProperties';
 import { ProjectActions } from '@/features/animation/components/Sidebar/ProjectActions';
-import { FrameStrip, PlaybackControls } from '@/features/animation/components/Timeline';
 import { useAnimationLoop, useKeyboardShortcuts } from '@/core/hooks';
 import { useAutoSave } from '@/core/hooks/useAutoSave';
 import { useEditorCanvasSize } from '@/core/hooks/useEditorCanvasSize';
@@ -49,7 +48,7 @@ import { EntityContextMenu } from '@/shared/ui/EntityContextMenu';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { ProgressionPanel } from '@/features/animation/components/ProgressionPanel';
 import { FirstRunModal } from '@/features/animation/components/FirstRunModal';
-import { EditorFloatingRemote } from '@/features/animation/components/Canvas/EditorFloatingRemote';
+import { TimelinePanel } from '@/features/animation/components/TimelinePanel';
 import { ShareSheet } from '@/features/animation/components/ShareSheet';
 
 import { Toaster } from 'sonner';
@@ -77,24 +76,12 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const project = useProjectStore(s => s.project);
   const currentFrameIndex = useProjectStore(s => s.currentFrameIndex);
   const isPlaying = useProjectStore(s => s.isPlaying);
-  const playbackSpeed = useProjectStore(s => s.playbackSpeed);
-  const loopPlayback = useProjectStore(s => s.loopPlayback);
   const playbackPosition = useProjectStore(s => s.playbackPosition);
   const isDirty = useProjectStore(s => s.isDirty);
   const newProject = useProjectStore(s => s.newProject);
-  const removeFrame = useProjectStore.getState().removeFrame;
-  const duplicateFrame = useProjectStore.getState().duplicateFrame;
   const updateEntity = useProjectStore(s => s.updateEntity);
-  const play = useProjectStore.getState().play;
-  const pause = useProjectStore.getState().pause;
-  const reset = useProjectStore.getState().reset;
-  const setPlaybackSpeed = useProjectStore.getState().setPlaybackSpeed;
-  const toggleLoop = useProjectStore.getState().toggleLoop;
-  const setCurrentFrame = useProjectStore.getState().setCurrentFrame;
 
   const selectedEntityId = useUIStore(s => s.selectedEntityId);
-  const showGhosts = useUIStore(s => s.showGhosts);
-  const toggleGhosts = useUIStore.getState().toggleGhosts;
   const selectedAnnotationId = useUIStore(s => s.selectedAnnotationId);
   const selectAnnotation = useUIStore.getState().selectAnnotation;
   const drawingMode = useUIStore(s => s.drawingMode);
@@ -166,19 +153,11 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   });
 
   const {
-    handleAddFrame,
-    handlePreviousFrame,
-    handleNextFrame,
-    handleFrameDurationChange,
     handleDrawingComplete,
   } = useEditorPlaybackHandlers({
     isAuthenticated,
     setShowGuestLimitModal,
   });
-
-  const maxFrames = isAuthenticated
-    ? VALIDATION.PROJECT.MAX_FRAMES
-    : VALIDATION.PROJECT.GUEST_MAX_FRAMES;
 
   // Mobile editor state
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -532,42 +511,9 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
             </div>
           </ErrorBoundary>
         </div>
-
-        {!focusMode && !isMobile && (
-          <ErrorBoundary fallbackTitle="Timeline Error">
-            <footer className="border-t border-[var(--color-accent-warm)]">
-              <PlaybackControls
-                isPlaying={isPlaying}
-                speed={playbackSpeed}
-                loopEnabled={loopPlayback}
-                currentFrame={currentFrameIndex}
-                totalFrames={project?.frames.length ?? 0}
-                onPlay={play}
-                onPause={pause}
-                onReset={reset}
-                onPreviousFrame={handlePreviousFrame}
-                onNextFrame={handleNextFrame}
-                onSpeedChange={setPlaybackSpeed}
-                onLoopToggle={toggleLoop}
-                ghostEnabled={showGhosts}
-                onGhostToggle={toggleGhosts}
-              />
-              <FrameStrip
-                frames={project?.frames ?? []}
-                currentFrameIndex={currentFrameIndex}
-                onFrameSelect={setCurrentFrame}
-                onAddFrame={handleAddFrame}
-                onRemoveFrame={removeFrame}
-                onDuplicateFrame={duplicateFrame}
-                onDurationChange={handleFrameDurationChange}
-                maxFrames={maxFrames}
-                isAuthenticated={isAuthenticated}
-                onShowGuestLimitModal={() => setShowGuestLimitModal(true)}
-              />
-            </footer>
-          </ErrorBoundary>
-        )}
       </main>
+
+      {!focusMode && !isMobile && <TimelinePanel />}
 
       <ConfirmDialog
         open={showRecoveryDialog}
@@ -666,7 +612,6 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         onDrawingModeChange={setDrawingMode}
       />
 
-      {project && <EditorFloatingRemote />}
     </div>
   );
 }

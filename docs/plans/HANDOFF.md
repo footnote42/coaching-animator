@@ -4,6 +4,139 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-15 — Unified Editor Controls Complete (021) ✅
+
+**Branch**: `021-unified-editor-controls`
+
+### What was delivered this session
+
+#### 1. Implementation of Unified Controls
+- **`TimelinePanel.tsx`** — Created a permanent right-side sidebar for desktop viewports, housing all playback and frame management controls.
+- **`MobileDrawer.tsx`** — Integrated a new "Timeline" section for mobile parity, ensuring all controls (playback, frame management, toggles) are reachable within the drawer.
+- **`Editor.tsx`** — Removed the legacy `EditorFloatingRemote` and redundant footer controls. Integrated the new `TimelinePanel`.
+- **`FrameStrip.tsx`** — Added `orientation` prop to support vertical stacking in the right-side panel.
+- **`EditorFloatingRemote.tsx`** — Deleted the deprecated component and all orphaned references.
+
+#### 2. Verification & Quality
+- **E2E Testing** — Implemented comprehensive tests in `tests/e2e/021-timeline-panel.spec.ts` covering desktop sidebar, mobile drawer, and share route stability.
+- **Type Safety** — Resolved all linting and TypeScript issues related to the new components.
+- **Design Compliance** — Verified adherence to `rounded-none` and `bg-surface` brand tokens.
+
+### State after session
+
+```
+Branch: 021-unified-editor-controls
+Implementation: COMPLETE
+Verification: PASS (100% E2E, Lint, TSC)
+Next step: Merge to main
+```
+
+### Next session prompt
+
+```bash
+# Review and merge the unified editor controls
+/speckit.superb.verify
+/speckit.superb.finish
+```
+
+## 2026-05-15 — Planning Complete for 021 Unified Editor Controls
+
+**Branch**: `021-unified-editor-controls`
+
+### What was delivered this session
+
+#### 1. Speckit workflow: specify → plan → tasks
+
+Completed full planning pipeline for EDITOR-013 (Unified Editor Controls):
+
+- **`specs/021-unified-editor-controls/spec.md`** — 4 user stories (US1–US4), 7 FR, 7 UI, 3 CV, 7 SC
+- **`specs/021-unified-editor-controls/research.md`** — 7 findings; key decision: right-side panel over floating remote; confirmed only `EditorFloatingRemote` is deprecated (`FloatingRemote` in ShareViewer is untouched)
+- **`specs/021-unified-editor-controls/plan.md`** — architecture: new `TimelinePanel.tsx`, modified `MobileDrawer.tsx`, restructured `Editor.tsx`, deleted `EditorFloatingRemote.tsx`
+- **`specs/021-unified-editor-controls/quickstart.md`** — 10 manual test scenarios
+- **`specs/021-unified-editor-controls/checklists/requirements.md`** — all items passing
+- **`specs/021-unified-editor-controls/tasks.md`** — 33 tasks, 8 phases, TDD enforced in Phase 2
+- **`.specify/feature.json`** — updated to `specs/021-unified-editor-controls`
+
+#### 2. Next-session prompt
+
+Written to `docs/plans/prompts/2026-05-15-021-implement.md`.
+
+### State after session
+
+```
+Branch: 021-unified-editor-controls
+Planning: COMPLETE
+Implementation: NOT STARTED
+Next step: /speckit.implement
+```
+
+### Open issues
+
+None. Planning artifacts are complete and ready for implementation.
+
+---
+
+## 2026-05-15 — Branch Cleanup + Audit Infrastructure Merged (020) ✅
+
+**Branch**: `main` (merged from `020-frame-edit-own-animations`)
+
+---
+
+### What was delivered this session
+
+#### 1. Branch Cleanup & Merge
+
+- Reviewed all uncommitted state on `020-frame-edit-own-animations`
+- Gitignored tooling experiment artifacts: `.specify/`, `.playwright-mcp/`, `.github/agents|prompts|copilot-instructions.md`
+- Updated `docs/authority/USER-WORKFLOWS.md` — WF1 now correctly describes the working frame-edit and metadata-edit flows (EDITOR-019 complete); removed stale "Known Gaps" entries
+- Fixed `scripts/audit-report.mjs` — Playwright JSON uses `suites[].specs[]` not `suites[].tests[]`; annotations live on `spec.tests[0]`
+- Added `data-testid="animation-card"` to `PublicAnimationCard.tsx` for test selector parity
+- Committed `public/sw.js` (serwist compiled output, tracked in git per project convention)
+- Added `.claude/skills/wf-audit.md` (replacement for deprecated `audit.md`) and `.claude/skills/playwright-cli/` reference skill
+- Added `docs/superpowers/specs/2026-05-04-workflow-audit-testing-design.md` — design doc for the audit system
+- Updated `docs/issues/ISSUES.md` — closed WF1-S5 and WF2-S1+S2 audit bugs (both were fixed in commit `6698b4f` but left in "Open" state)
+
+#### 2. PR #17 — CI Checks & Merge
+
+All required CI checks passed: Lint/Type, Build, Tests (unit + integration), DB Migrations.
+Squash-merged PR #17, deleted feature branch.
+
+**Commit**: `4dad01c feat(020): frame-edit own animations + workflow audit infrastructure`
+
+---
+
+### State after session
+
+```
+Branch: main
+Last commit: 4dad01c (PR #17 squash-merge)
+
+Tests: 18 workflow E2E tests passing (WF1/WF2/WF3)
+Lint: zero errors
+TypeScript: zero errors
+
+Open issues (priority order):
+  HIGH  EDITOR-013 — Unified Floating Editor Controls (deprecate FloatingRemote)
+  HIGH  UX-001     — Welcome popup button contrast (WCAG AA)
+  MED   EDITOR-012 — Entity spawning: placed on every frame, not just added frame
+  MED   EDITOR-010 — Progression buttons missing for new (unsaved) animations
+  MED   PLAYBACK-001 — Floating playback remote should persist and be draggable
+```
+
+---
+
+### Next session
+
+Start with EDITOR-013. Prompt: `docs/plans/prompts/2026-05-15-editor-013-unified-controls.md`
+
+```
+/speckit.specify "EDITOR-013 — Unified Floating Editor Controls: deprecate FloatingRemote, replace with accessible non-scroll editor controls for frame and timeline management."
+```
+
+Branch: `021-unified-editor-controls`
+
+---
+
 ## 2026-05-03 — Security Hardening MVP Complete (Phase 3b) ✅
 
 **Branch**: `main` (merged from `016-security-hardening`)

@@ -1,3 +1,4 @@
 {
-  "feature_directory": "specs/019-save-metadata-unification"
+  "feature": "021-unified-editor-controls",
+  "status": "complete"
 }

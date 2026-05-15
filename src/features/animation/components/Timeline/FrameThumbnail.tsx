@@ -53,6 +53,7 @@ export const FrameThumbnail: React.FC<FrameThumbnailProps> = ({
       className="relative flex flex-col items-center gap-1 cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      data-testid={`frame-item-${frame.id}`}
     >
       {/* Thumbnail preview */}
       <div

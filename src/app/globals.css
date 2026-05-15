@@ -30,6 +30,8 @@
     --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
     --font-family-heading: var(--font-oswald), 'Helvetica Neue', sans-serif;
     --font-family-body: 'Inter', system-ui, sans-serif;
+
+    --animate-spin-slow: spin 3s linear infinite;
 }
 
 /* Additional Tailwind utilities for tactical mono colors */

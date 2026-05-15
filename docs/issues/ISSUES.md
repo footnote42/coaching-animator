@@ -554,8 +554,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ---
 
-### EDITOR-013 — Unified Floating Editor Controls
-- **Status**: `[ ]` Open
+### EDITOR-013 — Unified Editor Controls
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-15 (Phase 2b+, 021-unified-editor-controls)
+- **Summary**: Replaced legacy `EditorFloatingRemote` with a permanent `TimelinePanel` sidebar (desktop) and integrated controls in `MobileDrawer`. Standardized playback, frame management, and sharing controls.
 - **Severity**: High (mobile usability)
 - **Observed**: Users still have to scroll to see the bottom edge of the pitch or the timeline controls (add frame, pace, loop, etc.). The current floating remote was intended to solve this but is not effective enough in practice.
 - **Action**: The add-frame controls and timeline controls must be accessible without scrolling. Options: (a) extend a slide-up/down panel on the right side (mirroring the left-hand menu pattern), or (b) embed all frame controls in an improved floating remote. The existing floating remote in its current form should be deprecated — do not iterate on it; replace it.

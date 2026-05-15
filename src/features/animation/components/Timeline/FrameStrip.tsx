@@ -14,6 +14,7 @@ export interface FrameStripProps {
   maxFrames?: number;
   isAuthenticated?: boolean;
   onShowGuestLimitModal?: () => void;
+  orientation?: 'horizontal' | 'vertical';
 }
 
 export const FrameStrip: React.FC<FrameStripProps> = ({
@@ -27,11 +28,14 @@ export const FrameStrip: React.FC<FrameStripProps> = ({
   maxFrames = 50,
   isAuthenticated = false,
   onShowGuestLimitModal,
+  orientation = 'horizontal',
 }) => {
   const isAtLimit = frames.length >= maxFrames;
   const showLimitWarning = isAtLimit && !isAuthenticated;
+  const isVertical = orientation === 'vertical';
+
   return (
-    <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-warm)] border-t border-[var(--color-accent-warm)] overflow-x-auto">
+    <div className={`flex ${isVertical ? 'flex-col items-center' : 'items-center'} gap-4 p-4 ${isVertical ? 'overflow-y-auto' : 'overflow-x-auto'} scrollbar-thin scrollbar-thumb-border`}>
       {/* Frame thumbnails */}
       {frames.map((frame, index) => (
         <FrameThumbnail
