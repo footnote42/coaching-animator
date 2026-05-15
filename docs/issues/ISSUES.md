@@ -8,14 +8,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 
 ## Phase 2: Launch Credibility
 
-### 🔴 UX-001 — Welcome Popup Button Contrast
-- **Status**: `[ ]` Open
+### ✅ UX-001 — Welcome Popup Button Contrast
+- **Status**: `[x]` Closed
 - **Severity**: High (accessibility)
 - **Observed**: Dark text on dark green background in welcome popup button — difficult to read
-- **Location**: Welcome popup ("Share a replay link with your squad" button)
-- **Files**: Find via grep for welcome popup component
-- **Action**: Increase contrast or change background color to meet WCAG AA
-- **Roadmap ref**: Phase 2, T3 (Landing Credibility)
+- **Resolution**: Text contrast was already correct (`text-text-inverse` = #F8F9FA on `bg-primary` = #1A3D1A, ~11:1 ratio). The real bug was `focus-visible:ring-ring` referencing an undefined token, leaving keyboard users with no visible focus indicator. Fixed in `FirstRunModal.tsx`: replaced `focus-visible:ring-ring` with `focus-visible:ring-accent-warm focus-visible:ring-offset-2 focus-visible:ring-offset-primary` (amber ring, clearly visible on dark green). Closed 2026-05-15.
 
 ---
 

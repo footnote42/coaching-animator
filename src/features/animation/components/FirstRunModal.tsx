@@ -18,7 +18,7 @@ export function FirstRunModal({ open, onDismiss }: FirstRunModalProps) {
       </ul>
       <button
         onClick={onDismiss}
-        className="rounded-none bg-primary text-text-inverse text-sm font-medium w-full py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rounded-none bg-primary text-text-inverse text-sm font-medium w-full py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-warm focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
       >
         Got it
       </button>
