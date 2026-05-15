@@ -410,16 +410,17 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
       )}
 
       <main className="flex-1 flex flex-col">
-        {/* Phase 2: Progression panel — shown for base cloud animations */}
+        {/* Progression panel — shown for authenticated base animations (saved or new) */}
         {showProgressionPanel && !focusMode && (
           <ProgressionPanel
-            baseTitle={baseAnimationMeta!.title}
+            baseTitle={baseAnimationMeta?.title ?? project?.name ?? 'This Animation'}
             progressions={progressions}
             activeIndex={activeProgressionIndex}
             onSelectRequest={handleProgressionSelectRequest}
             onAddProgression={handleAddProgression}
             onReorder={handleProgressionReorder}
-            canAdd={progressions.length < 5}
+            canAdd={!!cloudAnimationId && progressions.length < 5}
+            addDisabledReason={!cloudAnimationId ? 'Save to cloud first to add progressions' : 'Maximum 5 progressions reached'}
             isAdding={isAddingProgression}
           />
         )}
