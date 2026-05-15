@@ -58,3 +58,10 @@ artifacts/
 
 # Workflow audit per-run logs (GAPS.md is committed; AUDIT-*.md files are not)
 docs/audit/AUDIT-*.md
+
+# Tooling experiments (Specify, Playwright MCP, GitHub Copilot speckit integration)
+.specify/
+.playwright-mcp/
+.github/agents/
+.github/prompts/
+.github/copilot-instructions.md

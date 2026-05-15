@@ -1,17 +1,17 @@
 ---
-name: audit
+name: wf-audit
 description: Run the workflow audit. Executes WF1/WF2/WF3 Playwright tests, builds a coverage map, classifies failures and gaps, and writes AUDIT log, GAPS report, and ISSUES entries. Supports --workflow WF1/WF2/WF3 to target one workflow, and --gaps-only to skip test execution.
 ---
 
-# /audit — Workflow Audit Skill
+# /wf-audit — Workflow Audit Skill
 
 Run the full workflow audit for coaching-animator. Tests the three canonical workflows, detects coverage gaps, and produces structured markdown artifacts.
 
 ## Flags
 
-- `/audit` — Run all three workflows and produce all artifacts
-- `/audit --workflow WF1` (or WF2/WF3) — Run a single workflow only
-- `/audit --gaps-only` — Skip test execution, reanalyse coverage from last JSON output
+- `/wf-audit` — Run all three workflows and produce all artifacts
+- `/wf-audit --workflow WF1` (or WF2/WF3) — Run a single workflow only
+- `/wf-audit --gaps-only` — Skip test execution, reanalyse coverage from last JSON output
 
 ## Execution Steps
 
