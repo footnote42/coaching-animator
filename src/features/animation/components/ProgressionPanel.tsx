@@ -24,7 +24,8 @@ interface ProgressionPanelProps {
   onSelectRequest: (index: number) => void; // triggers dirty-state check in parent
   onAddProgression: () => void;
   onReorder: (newOrder: Pick<AnimationSummary, 'id' | 'title' | 'progression_order'>[]) => void;
-  canAdd: boolean; // false when progression_count >= 5
+  canAdd: boolean; // false when progression_count >= 5 or animation not yet saved
+  addDisabledReason?: string; // override the default 'Maximum 5 progressions reached' tooltip
   isAdding: boolean; // true while the add async operation is in flight
 }
 
@@ -85,6 +86,7 @@ export function ProgressionPanel({
   onAddProgression,
   onReorder,
   canAdd,
+  addDisabledReason,
   isAdding,
 }: ProgressionPanelProps) {
   const sensors = useSensors(
@@ -153,7 +155,7 @@ export function ProgressionPanel({
               ? 'border-dashed border-border text-text-primary/50 hover:border-primary hover:text-primary'
               : 'border-dashed border-border/30 text-text-primary/20 cursor-not-allowed'
           }`}
-          title={!canAdd ? 'Maximum 5 progressions reached' : 'Add progression'}
+          title={!canAdd ? (addDisabledReason ?? 'Maximum 5 progressions reached') : 'Add progression'}
         >
           <Plus className="w-3 h-3" />
           {isAdding ? 'Adding…' : 'Add'}

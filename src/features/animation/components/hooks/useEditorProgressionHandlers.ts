@@ -32,7 +32,8 @@ export function useEditorProgressionHandlers({
   const [pendingProgressionIndex, setPendingProgressionIndex] = useState<number | null>(null);
   const [isAddingProgression, setIsAddingProgression] = useState(false);
 
-  const showProgressionPanel = isAuthenticated && cloudAnimationId && baseAnimationMeta && !baseAnimationMeta.is_progression && !isEditMode;
+  const isBaseAnimation = !cloudAnimationId || (baseAnimationMeta !== null && !baseAnimationMeta.is_progression);
+  const showProgressionPanel = isAuthenticated && !isEditMode && isBaseAnimation;
 
   const switchToProgression = async (index: number) => {
     setActiveProgressionIndex(index);
