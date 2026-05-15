@@ -29,17 +29,20 @@ function extractTests(suites, path = '') {
   for (const suite of suites ?? []) {
     const suitePath = path ? `${path} > ${suite.title}` : suite.title;
     tests.push(...extractTests(suite.suites, suitePath));
-    for (const t of suite.tests ?? []) {
-      const workflowSteps = (t.annotations ?? [])
+    for (const spec of suite.specs ?? []) {
+      // annotations live on spec.tests[0], not on spec itself
+      const testRun = spec.tests?.[0];
+      const workflowSteps = (testRun?.annotations ?? [])
         .filter(a => a.type === 'workflow')
         .map(a => a.description);
-      const lastResult = t.results?.[t.results.length - 1];
+      const lastResult = testRun?.results?.[testRun.results.length - 1];
+      const errorMsg = lastResult?.errors?.[0]?.message ?? lastResult?.error?.message ?? null;
       tests.push({
-        title: t.title,
-        path: `${suitePath} > ${t.title}`,
-        status: lastResult?.status ?? 'unknown',
+        title: spec.title,
+        path: `${suitePath} > ${spec.title}`,
+        status: lastResult?.status ?? testRun?.status ?? 'unknown',
         workflowSteps,
-        error: lastResult?.error?.message?.split('\n')[0] ?? null,
+        error: errorMsg?.split('\n')[0] ?? null,
       });
     }
   }
