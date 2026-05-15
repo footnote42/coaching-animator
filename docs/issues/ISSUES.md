@@ -935,8 +935,8 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 **Workflow**: WF1 Core Coaching Loop, Step 5
 **Symptom**: Edit Info button clicked successfully but `[role="dialog"]` did not appear within 5s — edit metadata dialog fails to open from My Playbook
 **Classification**: UI regression
-**Suggested investigation**: `EditMetadataModal` render trigger in `AnimationCard`; confirm dialog has `role="dialog"` attribute; check for silent JS errors on button click
-**Status**: Open
+**Fixed**: 2026-05-08 — `coaching_notes: null → undefined` in `EditMetadataModal` (Zod rejected null for `.optional()` fields, causing 400 on save attempt which prevented the dialog from completing its open sequence)
+**Status**: Closed
 
 ---
 
@@ -945,8 +945,8 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 **Workflow**: WF2 Share & Replay, Steps 1–2
 **Symptom**: Animation card found and visible, but `button[aria-label="Share"]` never became clickable after hover — 120s timeout
 **Classification**: UI regression
-**Suggested investigation**: `AnimationCard` hover state and share button; check if `aria-label` was renamed during 019/020 metadata unification; confirm hover-to-reveal CSS is active
-**Status**: Open
+**Fixed**: 2026-05-08 — Test was not setting `link_shared` visibility before the Share assertion; the overwrite flow defaulted to `private`, hiding the Share button. WF1-S6 now sets `link_shared` explicitly before WF2 runs.
+**Status**: Closed
 
 ---
 
@@ -966,6 +966,7 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 - **Phase 2 — Playback/Share**: PLAYBACK-001, FLOW-003 *(~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
 - **Phase 2 — Landing/Nav**: LANDING-001, NAV-001, CONTACT-001 *(~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
 - **Phase 2 — Gallery/Playbook**: *(~~GALLERY-001~~, ~~GALLERY-002~~ closed)*
+- **Audit Bugs**: *(~~WF1-S5~~, ~~WF2-S1+S2~~ closed 2026-05-08)*
 - **Phase 3** (Quality Safety Net): FEAT-006, ADMIN-001, PERF-001 *(~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed via 3b; ~~3f audit~~ closed)*
 - **Phase 3–4** (Feature Decisions): FEAT-008, FEAT-009
 - **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, FEAT-011, FEAT-012, DESIGN-001, DESIGN-002

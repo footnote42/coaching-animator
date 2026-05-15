@@ -28,8 +28,8 @@ The primary workflow. Phase 2 does not close until this workflow is fully execut
 2. **Create** — Open the editor at `/app`. Place players (red = attack, blue = defence), cones (yellow), and a ball on the pitch. Use the toolbar to choose entity types.
 3. **Animate** — Add frames using the frame strip at the bottom. Each frame captures a snapshot of entity positions. Move entities between frames to show movement sequences.
 4. **Save** — Click "Save to Cloud". On first save, a metadata modal appears: enter a title, optional description, coaching notes, and tags. Click Save.
-5. **Edit frames** — *(EDITOR-019 — not yet implemented)* Re-open the animation in the editor to modify frames and overwrite the original. Current workaround: see Workflow 3 (Remix) to create a modified copy.
-6. **Edit metadata** — In My Playbook (`/my-gallery`), click the pencil icon on an animation card. Update title, description, coaching notes, tags, or YouTube URL. Changes save immediately.
+5. **Edit frames** — In My Playbook (`/my-gallery`), click the pencil (Edit Frames) icon on an animation card. The editor opens with the existing frames pre-loaded. Make changes and click "Save to Cloud" — choose "Overwrite Original" to update the animation in place, or "Save as New" to create a copy.
+6. **Edit metadata** — In My Playbook (`/my-gallery`), click the settings (Edit Info) icon on an animation card. Update title, description, coaching notes, tags, or YouTube URL. Changes save immediately.
 7. **Share** — Click Share on an animation card. Choose visibility: link-only (anyone with the link) or public gallery (discoverable). Copy the share URL.
 8. **Replay** — Open the share link in any browser. The animation plays back in full-screen mobile-optimised view with floating playback controls.
 
@@ -52,7 +52,7 @@ The primary workflow. Phase 2 does not close until this workflow is fully execut
 - [ ] Verify success toast or confirmation
 - [ ] Navigate to `/my-gallery`
 - [ ] Verify an animation card titled `Test Drill 001` is visible
-- [ ] Click the pencil (Edit) icon on the card
+- [ ] Click the settings (Edit Info) icon on the card
 - [ ] Verify the metadata modal opens pre-populated with title, description, and tag
 - [ ] Update the title to `Test Drill 001 (edited)`
 - [ ] Click Save — verify the card title updates to `Test Drill 001 (edited)`
@@ -64,11 +64,15 @@ The primary workflow. Phase 2 does not close until this workflow is fully execut
 - [ ] Verify the floating playback remote is visible
 - [ ] Press Play — verify frames advance correctly
 - [ ] Verify no edit controls are visible to the unauthenticated viewer
-- [ ] **[SKIP — EDITOR-019]** Attempt to re-open animation in editor to edit frames directly from My Playbook — this path does not yet exist
+- [ ] Click the pencil (Edit Frames) icon on the card
+- [ ] Verify the editor opens with existing frames pre-loaded
+- [ ] Add a second frame via the frame strip
+- [ ] Click "Save to Cloud" and choose "Overwrite Original"
+- [ ] Verify the modal closes and the animation is updated
 
 ### Known Gaps
 
-- **EDITOR-019**: Frame editing of saved animations is not implemented. The Edit button opens metadata only. To edit frames, a user must currently use Workflow 3 (Remix), which creates a new animation rather than overwriting the original. **Spec 020 will address this.**
+None. Workflow 1 is fully implemented.
 
 ---
 
@@ -125,7 +129,7 @@ A user (or the original creator) takes an existing public animation and adapts i
 5. Modify the drill — move players, change positions, add or remove frames.
 6. Click Save to Cloud. This creates a **new animation** in your own My Playbook. The original is unchanged.
 
-Note: Remix is for creating a personalised copy or an alternative version. It is not the same as editing your own saved animation — that is Workflow 1 Step 5 (EDITOR-019, pending spec 020).
+Note: Remix is for creating a personalised copy or an alternative version. It is not the same as editing your own saved animation — that is Workflow 1 Step 5 (direct frame editing via the "Edit Frames" button in My Playbook).
 
 ### Test Checklist (agent-executable)
 
@@ -149,32 +153,3 @@ None. Remix is fully implemented.
 
 ---
 
-## Appendix: Session Prompts
-
-### Initiate frame-edit spec (spec 020)
-
-Copy and paste into a new session to begin specifying the missing Workflow 1 Step 5:
-
-```
-/speckit.specify
-
-Feature: Direct frame editing of own saved animations
-
-A user should be able to open any animation they own in the editor,
-modify its frames, and save changes back to the original record
-(overwrite, not remix). This is the missing step in the core coaching
-loop (Workflow 1, Step 5 in docs/authority/USER-WORKFLOWS.md).
-
-Context:
-- Current state: EditMetadataModal handles metadata only; no frame-edit path exists
-- Remix path (?load={id}) creates a new animation — does not overwrite original
-- Spec 011-workflow-clarity was never fully implemented (zero tasks)
-- This should likely be spec 020 or a substantive revision of spec 011
-
-Key questions for the spec:
-- Should "Open in Editor" appear in My Playbook alongside Edit/Share?
-- On save from editor, should it prompt "overwrite original" vs "save as new"?
-- How does this interact with shared/public animations? (Editing a shared
-  animation should invalidate or update the share link — needs a decision)
-- Animation quota (50 per user): overwrite does not consume quota; save-as-new does
-```
