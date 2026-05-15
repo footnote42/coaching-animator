@@ -136,6 +136,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
   return (
     <div
       className="border border-border bg-surface hover:border-primary transition-colors cursor-pointer"
+      data-testid="animation-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onView(animation.id)}
