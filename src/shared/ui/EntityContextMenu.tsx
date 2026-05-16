@@ -13,6 +13,18 @@ export interface EntityContextMenuProps {
     /** Called when edit label is clicked */
     onEditLabel: () => void;
 
+    /** Called when bring forward is clicked */
+    onBringForward?: () => void;
+
+    /** Called when send backward is clicked */
+    onSendBackward?: () => void;
+
+    /** Whether the entity can be moved forward */
+    canBringForward: boolean;
+
+    /** Whether the entity can be moved backward */
+    canSendBackward: boolean;
+
     /** Called when menu should close */
     onClose: () => void;
 }
@@ -27,6 +39,10 @@ export function EntityContextMenu({
     onDuplicate,
     onDelete,
     onEditLabel,
+    onBringForward,
+    onSendBackward,
+    canBringForward,
+    canSendBackward,
     onClose,
 }: EntityContextMenuProps) {
     const menuRef = useRef<HTMLDivElement>(null);
@@ -75,6 +91,36 @@ export function EntityContextMenu({
                 className="w-full px-4 py-2 text-left text-sm hover:bg-pitch-green hover:text-tactics-white transition-colors border-b border-[var(--color-surface-warm)]"
             >
                 Edit Label
+            </button>
+            <button
+                onClick={() => {
+                    if (canBringForward && onBringForward) {
+                        onBringForward();
+                        onClose();
+                    }
+                }}
+                className={`w-full px-4 py-2 text-left text-sm transition-colors border-b border-[var(--color-surface-warm)] ${
+                    canBringForward 
+                    ? "hover:bg-pitch-green hover:text-tactics-white" 
+                    : "opacity-40 cursor-not-allowed pointer-events-none"
+                }`}
+            >
+                Bring Forward
+            </button>
+            <button
+                onClick={() => {
+                    if (canSendBackward && onSendBackward) {
+                        onSendBackward();
+                        onClose();
+                    }
+                }}
+                className={`w-full px-4 py-2 text-left text-sm transition-colors border-b border-[var(--color-surface-warm)] ${
+                    canSendBackward 
+                    ? "hover:bg-pitch-green hover:text-tactics-white" 
+                    : "opacity-40 cursor-not-allowed pointer-events-none"
+                }`}
+            >
+                Send Backward
             </button>
             <button
                 onClick={() => {

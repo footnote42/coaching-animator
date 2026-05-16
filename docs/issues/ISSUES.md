@@ -234,15 +234,12 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Phase 3: Quality Safety Net
 
 ### FEAT-006 — Animation Layering Control
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16 (Phase 3d, 023-entity-layering)
+- **Summary**: Implemented deterministic 3-key rendering sort (Tier → zIndexOffset → ID). Added "Bring Forward" and "Send Backward" actions to `EntityContextMenu` with peer-aware enabled/disabled states. Persistence wired through JSON project state and share payloads.
 - **Severity**: Medium (UX improvement)
 - **Observed**: Animation layering needs work. Cones should always render as first layer (behind players/ball). Need option to move ball or player up/down a layer.
-- **Implementation**: 
-  - Set fixed z-index: cones < players < ball (by default)
-  - Add UI in editor to adjust z-order (send up/send down buttons per entity)
-  - Persist z-order in animation JSON
-- **Files**: `src/features/animation/components/Canvas/EntityLayer.tsx` (likely)
-- **Roadmap ref**: Phase 3 (quality improvement)
+- **Roadmap ref**: Phase 3d (Animation Layering Control)
 
 ---
 

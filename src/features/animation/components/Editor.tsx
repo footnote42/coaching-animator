@@ -109,6 +109,10 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     handleContextMenuDuplicate,
     handleContextMenuDelete,
     handleContextMenuEditLabel,
+    handleContextMenuBringForward,
+    handleContextMenuSendBackward,
+    contextMenuCanBringForward,
+    contextMenuCanSendBackward,
     handleAnnotationContextMenu,
     handleAnnotationContextMenuDelete,
     handleCanvasClick,
@@ -554,6 +558,10 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         onDuplicate={handleContextMenuDuplicate}
         onDelete={handleContextMenuDelete}
         onEditLabel={handleContextMenuEditLabel}
+        onBringForward={handleContextMenuBringForward}
+        onSendBackward={handleContextMenuSendBackward}
+        canBringForward={contextMenuCanBringForward}
+        canSendBackward={contextMenuCanSendBackward}
         onClose={() => setContextMenu(null)}
       />
 

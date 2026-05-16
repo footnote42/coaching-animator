@@ -57,6 +57,7 @@ export interface ProjectStoreState {
     setPlaybackPosition: (position: PlaybackPosition) => void;
 
     setTeamColor: (team: 'attack' | 'defense' | 'other', color: string) => void;
+    updateEntityLayerOffset: (entityId: string, zIndexOffset: number) => void;
 }
 
 export const useProjectStore = create<ProjectStoreState>()(
@@ -773,7 +774,84 @@ export const useProjectStore = create<ProjectStoreState>()(
                 ...state,
                 playbackPosition: position,
             })),
+
+            updateEntityLayerOffset: (entityId: string, zIndexOffset: number) => set((state) => {
+                if (!state.project) return state;
+
+                const updatedFrames = state.project.frames.map((frame) => {
+                    const entity = frame.entities[entityId];
+                    if (!entity) return frame;
+
+                    return {
+                        ...frame,
+                        entities: {
+                            ...frame.entities,
+                            [entityId]: { ...entity, zIndexOffset },
+                        },
+                    };
+                });
+
+                return {
+                    project: {
+                        ...state.project,
+                        updatedAt: new Date().toISOString(),
+                        frames: updatedFrames,
+                    },
+                    isDirty: true,
+                };
+            }),
         }),
         { name: 'ProjectStore' }
     )
 );
+
+/**
+ * Swaps zIndexOffset between two entities of the same type to change their relative order.
+ * Returns the pair of updates required, or null if movement is impossible.
+ */
+export function computeLayerSwap(
+    entities: Entity[],
+    entityId: string,
+    direction: 'forward' | 'backward'
+): Array<{ id: string; zIndexOffset: number }> | null {
+    const target = entities.find((e) => e.id === entityId);
+    if (!target) return null;
+
+    const peers = entities
+        .filter((e) => e.type === target.type)
+        .sort((a, b) => {
+            const az = a.zIndexOffset ?? 0;
+            const bz = b.zIndexOffset ?? 0;
+            if (az !== bz) return az - bz;
+            return a.id.localeCompare(b.id);
+        });
+
+    const currentIndex = peers.findIndex((e) => e.id === entityId);
+    if (currentIndex === -1) return null;
+
+    const swapIndex = direction === 'forward' ? currentIndex + 1 : currentIndex - 1;
+    if (swapIndex < 0 || swapIndex >= peers.length) return null;
+
+    const other = peers[swapIndex];
+    const targetOffset = target.zIndexOffset ?? 0;
+    const otherOffset = other.zIndexOffset ?? 0;
+
+    if (targetOffset === otherOffset) {
+        if (direction === 'forward') {
+            return [
+                { id: target.id, zIndexOffset: targetOffset + 1 },
+                { id: other.id, zIndexOffset: otherOffset }
+            ];
+        } else {
+            return [
+                { id: target.id, zIndexOffset: targetOffset - 1 },
+                { id: other.id, zIndexOffset: otherOffset }
+            ];
+        }
+    }
+
+    return [
+        { id: target.id, zIndexOffset: otherOffset },
+        { id: other.id, zIndexOffset: targetOffset }
+    ];
+}

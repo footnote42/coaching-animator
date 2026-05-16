@@ -4,7 +4,204 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
-## 2026-05-16 — NAV-001 Spec Complete (022-notebook-tab-nav) 📋
+## 2026-05-16 — Animation Layering Control Complete (FEAT-006 / 023-entity-layering) ✅
+
+**Branch**: `023-entity-layering` (pushed)
+
+### What was delivered this session
+
+1.  **Rendering Logic (Phase 3)**:
+    *   Implemented deterministic 3-key sort in `EntityLayer.tsx`: `LAYER_ORDER (Type Tier)` → `zIndexOffset` → `Entity ID (Tie-breaker)`.
+2.  **Context Menu & Interaction (Phase 4)**:
+    *   Enhanced `EntityContextMenu` with "Bring Forward" and "Send Backward" actions.
+    *   Implemented peer-aware logic in `useEditorContextMenuHandlers` to dynamically enable/disable buttons (e.g., cannot bring the top player forward).
+3.  **State Management (Phase 2)**:
+    *   Added `zIndexOffset` to `Entity` and `EntityUpdate` types.
+    *   Added `updateEntityLayerOffset` action to `projectStore` to sync layering changes across **all frames** for visual consistency.
+4.  **Persistence & Sharing (Phase 5)**:
+    *   Updated `SharePayloadV2` and `hydrateSharePayload` to preserve `zIndexOffset`.
+    *   Verified layering persists through share links and is correctly rendered in `ShareViewer`.
+5.  **Quality Assurance (Phase 7-8)**:
+    *   Full unit test coverage for `computeLayerSwap` and `hydrateSharePayload`.
+    *   Manual smoke test verified correct behavior on canvas and context menu states.
+    *   Build, Lint, and TSC verified clean.
+
+### State after session
+
+```
+Branch: 023-entity-layering (pushed)
+Tests: 115 tests passing (including new layering logic tests)
+TSC: clean
+Lint: clean
+Open issues: UX-004 (Gallery previews), UX-007 (Hero page)
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. The last session completed the Animation Layering Control feature (FEAT-006).
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+Then check `docs/issues/ISSUES.md` for the next highest-priority open issue.
+
+---
+
+## 2026-05-16 — FEAT-006 SpecKit Pipeline Complete (023-entity-layering) 📋
+
+**Branch**: `023-entity-layering` (uncommitted — no production code written)
+
+### What was completed this session
+
+Full SpecKit pipeline run for FEAT-006 — Animation Layering Control. No production code written — spec, plan, tasks, and analysis only.
+
+#### 1. Feature specification (`/speckit.specify`)
+
+**File**: `specs/023-entity-layering/spec.md`
+
+- 4 user stories (US1–US4), 3× P1 + 1× P2
+- 10 functional requirements (FR-001–FR-010)
+- 5 UI requirements (UI-001–UI-005)
+- 4 canvas requirements (CV-001–CV-004)
+- 6 measurable success criteria (SC-001–SC-006)
+- Constitutional compliance gate: fully passed
+- Key assumptions: layer offsets are frame-global; single-step increment only; no cross-type user control; no visual z-order badge needed
+
+#### 2. Implementation plan (`/speckit.plan`)
+
+**Files**: `specs/023-entity-layering/plan.md`, `research.md`, `data-model.md`, `quickstart.md`
+
+Key research findings:
+- Type hierarchy (`LAYER_ORDER`) already exists in `EntityLayer.tsx` — no regression needed
+- `EntityUpdate` needs `zIndexOffset?: number` added
+- New store action `updateEntityLayerOffset` must update **all frames** (not just current)
+- `computeLayerSwap` pure helper implements rank-swap strategy (not +1/−1)
+- `hydratePayload.ts` has a gap: must explicitly spread `zIndexOffset` when reconstructing entities from share payloads
+- No Supabase schema migration required — field is inside existing JSONB payload
+
+#### 3. Task list (`/speckit.tasks`)
+
+**File**: `specs/023-entity-layering/tasks.md`
+
+21 tasks across 8 phases:
+
+| Phase | Purpose | Tasks |
+|-------|---------|-------|
+| 1 | Baseline verify | T001 |
+| 2 | Foundational (types + store) | T002–T004 |
+| 3 (US1) | EntityLayer 3-key sort | T005–T006 |
+| 4 (US2) | Context menu UI + handlers | T007–T010 |
+| 5 (US3) | hydratePayload fix | T011–T012 |
+| 6 (US4) | Guest verification | T013 |
+| 7 | Unit + E2E tests | T014–T016 |
+| 8 | Polish + quality gates | T017–T021 |
+
+MVP scope = T001–T010 (type stacking + Bring Forward/Send Backward functional).
+
+#### 4. Analysis (`/speckit.analyze`) + remediations applied
+
+0 CRITICAL, 0 HIGH, 2 MEDIUM, 5 LOW findings. All 4 recommended remediations applied to `tasks.md`:
+- C1: T013 clarified (null-guard covered by T014 unit tests)
+- C2: T007 extended (disabled buttons must not fire callbacks)
+- U1: T016 updated (Konva stage child-order query, not screenshot diff; multi-frame replay assertion added)
+- U2: T014 extended (mixed-type input test case added)
+
+### State after session
+
+```
+Branch: 023-entity-layering (no commits — spec pipeline only)
+Production code changed: none
+Tests: unchanged (116 passing from previous session)
+TSC: clean (pre-session baseline)
+Open issues: UX-004 (Gallery previews), UX-007 (Hero page)
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `023-entity-layering`. This session completed the full SpecKit pipeline for FEAT-006 (Animation Layering Control). No production code has been written yet.
+
+**Next Priority: Implement FEAT-006 — Animation Layering Control**
+
+Run diagnostics first:
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+Then begin implementation following `specs/023-entity-layering/tasks.md`. Execute in phase order:
+
+**Phase 2 — Foundational (start here):**
+- T002: `src/core/types/index.ts` — add `zIndexOffset?: number` to `Entity` and `EntityUpdate`
+- T003: `src/core/stores/projectStore.ts` — add `updateEntityLayerOffset` all-frames action
+- T004: `src/core/stores/projectStore.ts` — add `computeLayerSwap` pure helper (exported)
+
+**Phase 3 — US1 (EntityLayer sort):**
+- T005: `src/features/animation/components/Canvas/EntityLayer.tsx` — 3-key sort (LAYER_ORDER → zIndexOffset → id)
+
+**Phase 4 — US2 (context menu):**
+- T007: `src/shared/ui/EntityContextMenu.tsx` — add Bring Forward / Send Backward props + buttons
+- T008: `src/features/animation/components/hooks/useEditorContextMenuHandlers.ts` — add handlers + flags
+- T009: `src/features/animation/components/Editor.tsx` — wire handlers + flags
+
+**Key architectural notes:**
+- `updateEntityLayerOffset` MUST update all frames, not just current frame
+- `computeLayerSwap` filters to same-type entities only (cross-type immutable)
+- 3-key sort: type tier → `(zIndexOffset ?? 0)` → `a.id.localeCompare(b.id)`
+- `hydratePayload.ts` needs explicit `zIndexOffset` spread (T011) for share-view persistence
+- No Supabase migration — field lives in JSONB payload
+- Test all three routes: `/app`, `/replay/[id]`, `/share/[id]` (shared `EntityLayer` component)
+
+---
+
+## 2026-05-16 — Notebook Tab Navigation Complete (NAV-001) ✅
+
+**Branch**: `main` (all merged and pushed)
+
+### What was delivered this session
+
+1.  **Notebook Tab Navigation (NAV-001)**:
+    *   Full visual rebrand of the desktop navigation to a "Notebook Tab" aesthetic.
+    *   Implemented `useTabOrder` hook for MRU-derived z-indexing, ensuring the most recent tabs stay in front.
+    *   Added plastic laminate sheen and hard-edged shadows matching the `prototype/nav-tabs.html` authority.
+2.  **Mobile Navigation Polish**:
+    *   Updated the mobile dropdown to include colour-coded vertical bars for each section.
+3.  **Page Textures (DESIGN-002)**:
+    *   Applied lined and grid paper background textures to Home, Gallery, and My Playbook.
+4.  **Stability & Performance**:
+    *   Fixed a critical infinite re-render loop in `Navigation.tsx` caused by unstable `useTabOrder` input.
+    *   Verified zero regressions with `npm test`, `lint`, and `tsc`.
+
+### State after session
+
+```
+Branch: main (pushed)
+Tests: 116 passed
+TSC: clean
+Lint: clean
+Open issues: FEAT-006 (Layering), UX-004 (Gallery previews), UX-007 (Hero page)
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. The last session completed the Notebook Tab Navigation (NAV-001) and Page Textures (DESIGN-002).
+
+**Next Priority: FEAT-006 — Animation Layering Control**
+Objective: Fix entity layering order (Cones < Players < Ball) and add "Send up/down" controls for entities in the editor.
+
+**Run diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Key architectural notes:**
+- Layering is currently implicitly handled by order in the entities array.
+- Implementation should involve a fixed base z-order for types (cones lowest) plus an optional `zIndexOffset` per entity.
+- Check `src/features/animation/components/Canvas/EntityLayer.tsx` for rendering order.
+- Update `ProjectActions.tsx` or `EntityPalette.tsx` to add "Move Forward/Backward" buttons.
+
+---
+
 
 **Branch**: `022-notebook-tab-nav`
 

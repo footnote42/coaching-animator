@@ -169,17 +169,17 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22
 
 ## Current Feature
-- **022-notebook-tab-nav** — Notebook Tab Navigation (NAV-001)
-- Spec: `specs/022-notebook-tab-nav/spec.md`
-- Plan: `specs/022-notebook-tab-nav/plan.md`
-- Tasks: `specs/022-notebook-tab-nav/tasks.md` (22 tasks, MVP = T001–T009)
-- Branch: `022-notebook-tab-nav`
+- **023-entity-layering** — Animation Layering Control (FEAT-006)
+- Spec: `specs/023-entity-layering/spec.md`
+- Plan: `specs/023-entity-layering/plan.md`
+- Tasks: `specs/023-entity-layering/tasks.md` (21 tasks, MVP = T001–T010)
+- Branch: `023-entity-layering`
 
 ## Recent Changes
+- 022-notebook-tab-nav: complete — Notebook Tab Navigation + Page Textures (NAV-001)
 - 021-unified-editor-controls: complete — TimelinePanel replaces EditorFloatingRemote; MobileDrawer MobileTimelineSection
 - 020-frame-edit-own-animations: complete — Frame editing for own animations + workflow audit infra
 - 018-share-playback-workflow: Phase 2c complete — Share & Playback Workflow
-- 017-audit-remediation: Phase 3f complete — Audit Remediation (cosmetic fixes, re-score 18+/20)
 
 ## Design Context
 

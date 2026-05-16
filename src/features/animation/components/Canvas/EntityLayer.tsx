@@ -152,9 +152,13 @@ export const EntityLayer: React.FC<EntityLayerProps> = ({
     const LAYER_ORDER: Partial<Record<EntityType, number>> = {
         cone: 0, 'tackle-bag': 1, 'tackle-shield': 1, player: 2, ball: 3,
     };
-    const sorted = [...interpolatedEntities].sort(
-        (a, b) => (LAYER_ORDER[a.type] ?? 2) - (LAYER_ORDER[b.type] ?? 2)
-    );
+    const sorted = [...interpolatedEntities].sort((a, b) => {
+        const tierDiff = (LAYER_ORDER[a.type] ?? 2) - (LAYER_ORDER[b.type] ?? 2);
+        if (tierDiff !== 0) return tierDiff;
+        const zDiff = (a.zIndexOffset ?? 0) - (b.zIndexOffset ?? 0);
+        if (zDiff !== 0) return zDiff;
+        return a.id.localeCompare(b.id);
+    });
 
     return (
         <Layer listening={interactive} scaleX={scaleX} scaleY={scaleY}>

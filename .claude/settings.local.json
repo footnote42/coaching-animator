@@ -117,7 +117,9 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:www.npmjs.com)",
       "Skill(speckit-git-feature)",
-      "Skill(speckit-superb-respond)"
+      "Skill(speckit-superb-respond)",
+      "Skill(speckit.specify)",
+      "Bash(.specify/scripts/plan-setup.sh --json)"
     ]
   },
   "enableAllProjectMcpServers": true,

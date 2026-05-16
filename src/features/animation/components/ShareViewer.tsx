@@ -103,6 +103,7 @@ function normalizeReplayPayload(raw: unknown): ReplayPayload {
             ...entity,
             x: Number.isFinite(entity.x) ? entity.x : 0,
             y: Number.isFinite(entity.y) ? entity.y : 0,
+            zIndexOffset: entity.zIndexOffset || 0,
             parentId: entity.parentId || undefined,
             orientation: entity.orientation || undefined,
           },

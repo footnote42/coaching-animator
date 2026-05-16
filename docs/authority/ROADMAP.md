@@ -63,6 +63,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 2 remainder | Frame editing of own saved animations | ✅ | 020-frame-edit-own-animations | 2026-05-04 | EDITOR-019. Final Phase 2 closure blocker. |
 | 2b+ | Unified Editor Controls | ✅ | 021-unified-editor-controls | 2026-05-15 | Replaced floating remote with TimelinePanel. |
 | 2n | Notebook Tab Navigation | ✅ | 022-notebook-tab-nav | 2026-05-16 | Visual rebrand of navigation to notebook style. |
+| 3d | Animation Layering Control | ✅ | 023-entity-layering | 2026-05-16 | FEAT-006. Support for Bring Forward/Send Backward actions. |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 
@@ -138,7 +139,7 @@ A successful v1 launch requires all of the following. **9/9 met as of 2026-05-04
 | **3a — Technical Debt** | ✅ | Editor.tsx 852→504 LOC; 4 hooks; 25 store selectors. Shipped 2026-04-25. | — |
 | **3b — Security Hardening** | ✅ Shipped 2026-05-03 | Rate limiting on 8 endpoints, diag info-leak prevention. Full RLS audit deferred until 10 external users. | SEC-001, SEC-002, SEC-003 |
 | **3c — E2E Core Loop** | Open | Editor save → POST /api/share → /my-gallery card visible → /share/{id} loads → mobile replay. CI gate. | — |
-| **3d — Search & Layering** | Open | Gallery search by tags, animation entity z-order control | FEAT-006, FEAT-007 |
+| **3d — Search & Layering** | ✅ Shipped 2026-05-16 | Animation entity z-order control (Layering) delivered. Search deferred. | FEAT-006 |
 | **3e — Performance Baseline** | Open | Lighthouse audit across all routes; pre-beta targets | PERF-001 |
 | **3f — Audit Remediation** | ✅ Shipped 2026-05-03 | Closed all P1 violations; re-score 18+/20 achieved. | (audit-2026-04-24) |
 

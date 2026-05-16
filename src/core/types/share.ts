@@ -38,6 +38,7 @@ export interface SharePayloadV2 {
         label?: string;
         color?: string;
         orientation?: string;
+        zIndexOffset?: number;
     }>;
     frames: Array<{
         t: number;

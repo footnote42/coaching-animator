@@ -117,6 +117,9 @@ export interface Entity {
 
     /** Orientation for equipment entities (tackle-shield) */
     orientation?: EntityOrientation;
+
+    /** Manual z-order offset within the same entity type */
+    zIndexOffset?: number;
 }
 
 /**
@@ -308,6 +311,7 @@ export interface EntityUpdate {
     label: string;
     team: Entity['team'];
     parentId: string | null;
+    zIndexOffset?: number;
 }
 
 export interface AnnotationCreate {

@@ -33,11 +33,12 @@ export function hydrateSharePayload(payload: SharePayload): Project {
         // If team is undefined (e.g. equipment in V2), default to neutral
         if (!team) team = 'neutral';
 
-        // V2 might provide color/label, V1 does not
+        // V2 might provide color/label/zIndexOffset, V1 does not
         const color = ('color' in e && e.color) ? e.color : EntityColors.getDefault(type as EntityType, team);
         const label = ('label' in e && e.label) ? e.label : '';
-
-        return { type: type as EntityType, team, color, label };
+        const zIndexOffset = ('zIndexOffset' in e) ? e.zIndexOffset : 0;
+        
+        return { type: type as EntityType, team, color, label, zIndexOffset };
     };
 
     // Initialize entities from payload (base state)
@@ -52,6 +53,7 @@ export function hydrateSharePayload(payload: SharePayload): Project {
                 label: props.label,
                 x: e.x,
                 y: e.y,
+                zIndexOffset: props.zIndexOffset,
                 parentId: undefined, // Setup below if needed
                 orientation: ('orientation' in e && e.orientation) ? e.orientation as EntityOrientation : undefined
             };
