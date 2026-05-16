@@ -4,6 +4,124 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-16 — NAV-001 Spec Complete (022-notebook-tab-nav) 📋
+
+**Branch**: `022-notebook-tab-nav`
+
+### What was delivered this session
+
+Full SpecKit pipeline run for the notebook tab navigation feature (NAV-001). No production code written — spec, plan, tasks, and analysis only.
+
+#### 1. Issue triage (carried over from previous session context)
+
+- Closed **SEC-001, SEC-002, SEC-003** in `docs/issues/ISSUES.md` — rate limiting, parameterised queries, and input sanitisation confirmed implemented in 016-security-hardening
+- Closed **PLAYBACK-001** — TimelinePanel (021) resolves the scroll-accessibility issue; FloatingRemote retained only in ShareViewer
+- Closed **FEAT-012** — MobileDrawer's `MobileTimelineSection` fully satisfies the requirement
+
+#### 2. Prototype built
+
+**File**: `prototype/nav-tabs.html`
+
+Self-contained interactive prototype of the notebook tab navigation concept. Demonstrates:
+- Overlapping tab shapes with `margin-right: -11px`
+- Per-section colours (teal/amber/pitch-green/navy)
+- Plastic sheen via `::after` diagonal gradient
+- MRU z-ordering driven by localStorage
+- Mobile: colour-coded hamburger dropdown entries
+- Page background textures (ruled lines, large grid, small grid)
+
+Open at: `C:\Users\kenho\Projects\coaching-animator\prototype\nav-tabs.html`
+
+#### 3. SpecKit pipeline
+
+| Command | Output |
+|---------|--------|
+| `/speckit.specify` | `specs/022-notebook-tab-nav/spec.md` — 6 user stories (US1–US6), 10 FRs, 9 UI reqs, 7 SCs |
+| `/speckit.plan` | `plan.md`, `research.md`, `data-model.md`, `quickstart.md` |
+| `/speckit.tasks` | `tasks.md` — 22 tasks across 7 phases |
+| `/speckit.analyze` | 1 CRITICAL, 1 HIGH, 3 MEDIUM, 4 LOW findings |
+
+#### 4. Analysis remediation
+
+All findings addressed:
+- **C1 (critical)**: Fixed soft shadow in `plan.md` — `box-shadow` blur `7px` → `0` (hard Tactical Shadow)
+- **H1 (high)**: Rounded tab corners documented as accepted constitutional exception in `plan.md` Complexity Tracking
+- **L3**: `spec.md FR-008` mobile breakpoint clarified to `< 768px` (md: Tailwind)
+- **L4**: `tasks.md T007` — added `aria-label="Site navigation"` instruction
+- **M2**: `tasks.md T002` — T016 contingency (class exists/absent) made explicit
+
+### State after session
+
+```
+Branch: 022-notebook-tab-nav (local only — not pushed)
+Tests: N/A (no production code changed)
+TSC: N/A
+Lint: N/A
+Open issues: ISSUES.md Phase 3 items remain; NAV-001 is now in implementation-ready state
+```
+
+### Spec artefacts
+
+```
+specs/022-notebook-tab-nav/
+├── spec.md          6 user stories, FR/UI/SC requirements
+├── plan.md          5 files to change, 1 to create; CSS + hook + Navigation restructure
+├── research.md      Codebase analysis: Navigation.tsx, globals.css, auth model
+├── data-model.md    Tab visit order (localStorage) + TAB_SECTIONS registry
+├── quickstart.md    7-test manual verification guide (Tests A–G)
+├── tasks.md         22 tasks, 7 phases, MVP = Phases 1–3 (T001–T009)
+└── checklists/
+    └── requirements.md
+```
+
+### Design decisions locked
+
+| Decision | Value |
+|----------|-------|
+| Home tab colour | `#0F766E` teal (provisional) |
+| Gallery tab colour | `#D97706` amber (= `--color-accent-warm`) |
+| My Playbook tab colour | `#1A3D1A` pitch green (= `--color-primary`) — may lighten to `#166534` |
+| Create tab colour | `#1E40AF` navy |
+| Nav cover background | `#18120A` dark leather |
+| MRU localStorage key | `nav_mru_v1` |
+| Mobile breakpoint | `md:` (768px) — aligns with existing Navigation.tsx |
+| Shadow type | Hard-edged: `box-shadow: 0 -3px 0 rgba(0,0,0,0.40)` |
+| Rounded corners | `border-radius: 7px 7px 0 0` — accepted constitutional exception |
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `022-notebook-tab-nav`. The SpecKit pipeline (specify → plan → tasks → analyze) is complete for feature **NAV-001 / 022-notebook-tab-nav** (Notebook Tab Navigation).
+
+**Run diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Start implementation with `/speckit.implement`** or work through tasks manually starting at T001.
+
+**MVP scope is Phases 1–3 (T001–T009):**
+1. Phase 1: Verify baseline (T001–T002)
+2. Phase 2: Add CSS to `src/app/globals.css` — tab colour variables + `.nav-tab` class + texture classes (T003–T005)
+3. Phase 3: Restructure `src/shared/components/Navigation.tsx` — tab strip, active state, cover background (T006–T009)
+
+**Key files:**
+- Spec: `specs/022-notebook-tab-nav/spec.md`
+- Plan: `specs/022-notebook-tab-nav/plan.md`
+- Tasks: `specs/022-notebook-tab-nav/tasks.md`
+- Quickstart: `specs/022-notebook-tab-nav/quickstart.md`
+- Prototype (design authority): `prototype/nav-tabs.html`
+
+**Critical architectural notes:**
+- `Navigation.tsx` is a single `'use client'` component (~183 lines). It uses `usePathname()`, `useUser()`, and local `useState` only — no Zustand.
+- The existing mobile breakpoint is `md:` (768px) — do not introduce a new threshold.
+- Tab colours live as CSS custom properties in `globals.css`, not Tailwind config (there is no `tailwind.config.ts`).
+- `useTabOrder` hook must be SSR-safe: initialise from a default value during render, hydrate from `localStorage` in `useEffect` only.
+- `box-shadow` on `.nav-tab` MUST use zero blur (hard Tactical Shadow) — `box-shadow: 0 -3px 0 rgba(0,0,0,0.40)`. Soft shadows are a constitutional violation.
+- `border-radius: 7px 7px 0 0` on tabs is an accepted constitutional exception (approved 2026-05-16).
+- My Playbook colour `#1A3D1A` may need lightening to `#166534` — confirm against prototype before committing.
+
+---
+
 ## 2026-05-16 — Issue Triage + EDITOR-011/014/017 Complete ✅
 
 **Branch**: `main` (all pushed)

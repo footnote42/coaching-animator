@@ -3,9 +3,27 @@
 import Link from 'next/link';
 import { BrandIcon } from './BrandIcon';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Menu, X, HelpCircle } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
+import { useTabOrder, SectionId } from '@/shared/hooks/useTabOrder';
+
+type NavigationSectionId = SectionId;
+
+interface TabSection {
+  id: NavigationSectionId;
+  label: string;
+  href: string;
+  cssVar: string;
+  requiresAuth: boolean;
+}
+
+const TAB_SECTIONS: TabSection[] = [
+  { id: 'home', label: 'Home', href: '/', cssVar: '--c-tab-home', requiresAuth: false },
+  { id: 'gallery', label: 'Gallery', href: '/gallery', cssVar: '--c-tab-gallery', requiresAuth: false },
+  { id: 'playbook', label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true },
+  { id: 'create', label: 'Create', href: '/app', cssVar: '--c-tab-create', requiresAuth: false },
+];
 
 interface NavigationProps {
   /** Simplified variant for auth pages - just logo, no navigation links */
@@ -20,6 +38,18 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
   const { user, profile, loading, signOut } = useUser();
   const userRole = profile?.role;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const sectionIds = useMemo(() => TAB_SECTIONS.map(s => s.id), []);
+  const [visitOrder, recordVisit] = useTabOrder(sectionIds);
+  
+  const currentSection = TAB_SECTIONS.find(sec => pathname === sec.href || (sec.id === 'home' && pathname === '/'));
+  const activeId = currentSection?.id;
+
+  useEffect(() => {
+    if (activeId) {
+      recordVisit(activeId);
+    }
+  }, [activeId, recordVisit]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -52,90 +82,70 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
     ? profile.display_name.substring(0, 2).toUpperCase()
     : user?.email?.substring(0, 2).toUpperCase() || 'U';
 
-  const navLinks = (
-    <>
-      <Link
-        href="/gallery"
-        className={`text-sm transition-colors ${isActive('/gallery')
-          ? 'text-primary font-medium'
-          : 'text-text-primary hover:text-primary'
-          }`}
-      >
-        Public Gallery
-      </Link>
-
-      {loading ? (
-        <div className="w-20 h-8 bg-surface-warm animate-pulse" />
-      ) : user ? (
-        <>
-          <Link
-            href="/my-gallery"
-            className={`text-sm transition-colors ${isActive('/my-gallery')
-              ? 'text-primary font-medium'
-              : 'text-text-primary hover:text-primary'
-              }`}
-          >
-            My Playbook
-          </Link>
-
-          {userRole === 'admin' && (
-            <Link
-              href="/admin"
-              className={`text-sm transition-colors ${isActive('/admin')
-                ? 'text-accent-warm font-medium'
-                : 'text-accent-warm/80 hover:text-accent-warm'
-                }`}
-            >
-              Admin
-            </Link>
-          )}
-
-          <Link href="/help" className="hidden md:flex p-1.5 text-text-primary/70 hover:text-primary transition-colors" aria-label="Help"><HelpCircle className="w-4 h-4" /></Link>
-          <Link href="/help" className="md:hidden text-sm transition-colors text-text-primary hover:text-primary">Help</Link>
-
-          <Link
-            href="/app"
-            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors md:inline-flex md:items-center md:justify-center text-center"
-          >
-            Create
-          </Link>
-
-          <button
-            onClick={handleSignOut}
-            className="text-sm text-text-primary/70 hover:text-text-primary transition-colors text-left"
-          >
-            Sign Out
-          </button>
-        </>
-      ) : (
-        <>
-          <Link href="/help" className="hidden md:flex p-1.5 text-text-primary/70 hover:text-primary transition-colors" aria-label="Help"><HelpCircle className="w-4 h-4" /></Link>
-          <Link href="/help" className="md:hidden text-sm transition-colors text-text-primary hover:text-primary">Help</Link>
-
-          <Link
-            href="/app"
-            className="px-4 py-2 bg-primary text-text-inverse text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm md:inline-flex md:items-center md:justify-center text-center"
-          >
-            Get Started
-          </Link>
-        </>
-      )}
-    </>
-  );
 
   return (
-    <nav className={`sticky top-0 z-50 border-b border-border bg-surface ${className}`}>
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <BrandIcon variant="header" priority />
-          <span className="font-heading font-bold text-lg text-primary">Coaching Animator</span>
-        </Link>
+    <nav 
+      className={`sticky top-0 z-50 border-b border-border/30 ${className}`}
+      style={{ backgroundColor: 'var(--c-nav-cover)' }}
+      aria-label="Site navigation"
+    >
+      <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+        <div className="flex items-center gap-8 h-full">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 py-2">
+            <BrandIcon variant="header" priority />
+            <span className="font-heading font-bold text-lg text-white">Coaching Animator</span>
+          </Link>
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:flex items-end h-full pt-2">
+            {TAB_SECTIONS
+              .filter(sec => !sec.requiresAuth || user)
+              .map((sec) => {
+                const active = pathname === sec.href || (sec.id === 'home' && pathname === '/');
+                return (
+                  <Link
+                    key={sec.id}
+                    href={sec.href}
+                    className={`nav-tab text-white text-sm font-medium flex items-center justify-center ${active ? 'nav-tab-active' : ''}`}
+                    style={{ 
+                      backgroundColor: `var(${sec.cssVar})`,
+                      zIndex: 10 - visitOrder.indexOf(sec.id)
+                    }}
+                  >
+                    <span>{sec.label}</span>
+                  </Link>
+                );
+              })
+            }
+          </div>
+        </div>
 
         <div className="flex items-center gap-4">
-          {/* Desktop Navigation Links */}
+          {/* Desktop Utility Links (Admin, Help, Sign Out) */}
           <div className="hidden md:flex items-center gap-4">
-            {navLinks}
+            {userRole === 'admin' && (
+              <Link
+                href="/admin"
+                className={`text-sm transition-colors ${isActive('/admin')
+                  ? 'text-accent-warm font-medium'
+                  : 'text-accent-warm/80 hover:text-accent-warm'
+                  }`}
+              >
+                Admin
+              </Link>
+            )}
+            <Link href="/help" className="p-1.5 text-white/70 hover:text-white transition-colors" aria-label="Help">
+              <HelpCircle className="w-4 h-4" />
+            </Link>
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-white/70 hover:text-white transition-colors"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
 
           {/* Persistent Auth / Profile */}
@@ -151,7 +161,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             ) : (
               <Link
                 href="/login"
-                className="text-sm font-medium text-text-primary hover:text-primary transition-colors shrink-0"
+                className="text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
               >
                 Sign In
               </Link>
@@ -160,7 +170,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-text-primary hover:text-primary transition-colors shrink-0"
+            className="md:hidden p-2 text-white/80 hover:text-white transition-colors shrink-0"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -171,8 +181,62 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-surface px-4 py-3 flex flex-col gap-3">
-          {navLinks}
+        <div className="md:hidden border-t border-border/30 bg-[#18120A] px-4 py-3 flex flex-col gap-3">
+          {TAB_SECTIONS
+            .filter(sec => !sec.requiresAuth || user)
+            .map((sec) => {
+              const active = pathname === sec.href || (sec.id === 'home' && pathname === '/');
+              return (
+                <div key={sec.id} className="flex items-center gap-3 min-h-[24px]">
+                  <div 
+                    className="w-1 self-stretch" 
+                    style={{ backgroundColor: `var(${sec.cssVar})` }} 
+                  />
+                  <Link
+                    href={sec.href}
+                    className={`text-sm transition-colors ${active ? 'text-white font-medium' : 'text-white/70 hover:text-white'}`}
+                  >
+                    {sec.label}
+                  </Link>
+                </div>
+              );
+            })
+          }
+          
+          {/* Mobile Utilities */}
+          {userRole === 'admin' && (
+            <div className="flex items-center gap-3 pt-2 border-t border-white/10 min-h-[24px]">
+              <div className="w-1 self-stretch bg-accent-warm" />
+              <Link
+                href="/admin"
+                className={`text-sm transition-colors ${isActive('/admin') ? 'text-accent-warm font-medium' : 'text-accent-warm/70 hover:text-accent-warm'}`}
+              >
+                Admin
+              </Link>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 min-h-[24px]">
+            <div className="w-1 self-stretch bg-white/20" />
+            <Link 
+              href="/help" 
+              className={`text-sm transition-colors ${isActive('/help') ? 'text-white font-medium' : 'text-white/70 hover:text-white'}`}
+            >
+              Help
+            </Link>
+          </div>
+
+          {user && (
+            <div className="flex items-center gap-3 min-h-[24px]">
+              <div className="w-1 self-stretch bg-white/20" />
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-white/70 hover:text-white transition-colors text-left"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       )}
     </nav>

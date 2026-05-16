@@ -62,6 +62,7 @@ Canvas-based animation tool for rugby coaching drills with cloud storage, galler
 | 2m | Save & Metadata Unification | ✅ | 019-save-metadata-unification | 2026-05-04 | Tags, YouTube URL, unified edit modal, sidebar cleanup |
 | 2 remainder | Frame editing of own saved animations | ✅ | 020-frame-edit-own-animations | 2026-05-04 | EDITOR-019. Final Phase 2 closure blocker. |
 | 2b+ | Unified Editor Controls | ✅ | 021-unified-editor-controls | 2026-05-15 | Replaced floating remote with TimelinePanel. |
+| 2n | Notebook Tab Navigation | ✅ | 022-notebook-tab-nav | 2026-05-16 | Visual rebrand of navigation to notebook style. |
 
 **Pulled-forward features delivered:** FEATURE-001 (Endorsement system) → 009-gallery-playbook. Originally scheduled for Phase 4. See *Hygiene Rules* below.
 

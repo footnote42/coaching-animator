@@ -1,4 +1,3 @@
 {
-  "feature": "021-unified-editor-controls",
-  "status": "complete"
+  "feature_directory": "specs/022-notebook-tab-nav"
 }

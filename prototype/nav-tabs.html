@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAV-001 — Notebook Tab Prototype</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-home:     #0F766E;  /* teal       */
+      --c-gallery:  #D97706;  /* amber      */
+      --c-playbook: #1A3D1A;  /* pitch green */
+      --c-create:   #1E40AF;  /* navy       */
+
+      --cover:   #18120A;  /* dark leather brown — notebook cover */
+      --content: #FAFAF8;
+      --divider: #D1D5DB;
+      --overlap: 11px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--content);
+      min-height: 100vh;
+    }
+
+    /* ─── NOTEBOOK COVER ─────────────────────── */
+    .nav-cover {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--cover);
+      border-bottom: 2px solid var(--divider);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 10px 20px 0;
+      background-image:
+        repeating-linear-gradient(
+          92deg,
+          rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px,
+          transparent 1px, transparent 28px
+        ),
+        radial-gradient(ellipse at 15% 60%, rgba(255,255,255,0.04) 0%, transparent 55%);
+    }
+
+    /* ─── TABS ────────────────────────────────── */
+    .tabs { display: flex; align-items: flex-end; }
+
+    .tab {
+      position: relative;
+      padding: 8px 18px 10px;
+      border-radius: 7px 7px 0 0;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      color: rgba(255,255,255,0.92);
+      margin-right: calc(-1 * var(--overlap));
+      box-shadow:
+        0 -3px 7px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+      transition: padding-top 0.1s ease, padding-bottom 0.1s ease;
+    }
+
+    /* Plastic laminate sheen */
+    .tab::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 7px 7px 0 0;
+      background: linear-gradient(
+        148deg,
+        rgba(255,255,255,0.38) 0%,
+        rgba(255,255,255,0.16) 30%,
+        rgba(255,255,255,0.03) 58%,
+        rgba(0,0,0,0.10) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Right-edge depth reveal — visible on partially-hidden tabs */
+    .tab::before {
+      content: '';
+      position: absolute;
+      top: 4px; right: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(to right, transparent, rgba(0,0,0,0.22));
+      border-radius: 0 7px 0 0;
+      pointer-events: none;
+    }
+
+    .tab span { position: relative; z-index: 1; }
+
+    .tab[data-id="home"]     { background: var(--c-home); }
+    .tab[data-id="gallery"]  { background: var(--c-gallery); }
+    .tab[data-id="playbook"] { background: var(--c-playbook); }
+    .tab[data-id="create"]   { background: var(--c-create); }
+
+    .tab:not(.active) {
+      padding-top: 6px;
+      opacity: 0.88;
+    }
+
+    /* Active: taller, extends past divider, "opens" into content */
+    .tab.active {
+      padding-top: 10px;
+      padding-bottom: 12px;
+      margin-bottom: -2px;
+      opacity: 1;
+      box-shadow:
+        0 -4px 10px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.28);
+    }
+
+    /* ─── NAV RIGHT ───────────────────────────── */
+    .nav-right {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 8px;
+    }
+
+    .profile-chip {
+      width: 30px; height: 30px;
+      background: var(--c-gallery);
+      color: white;
+      font-weight: 700; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+
+    .ham-btn {
+      display: none;
+      background: none; border: none;
+      color: rgba(255,255,255,0.65);
+      font-size: 21px; cursor: pointer;
+      line-height: 1; padding: 2px 4px;
+    }
+
+    /* ─── MOBILE MENU ─────────────────────────── */
+    .mobile-menu {
+      display: none; flex-direction: column;
+      background: #201810;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .mobile-menu.open { display: flex; }
+
+    .mobile-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 22px;
+      background: none; border: none;
+      cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      color: rgba(255,255,255,0.75); text-align: left;
+    }
+    .mobile-item:hover { background: rgba(255,255,255,0.04); }
+    .mobile-item.active { color: white; background: rgba(255,255,255,0.06); }
+
+    .mob-bar {
+      width: 4px; height: 20px;
+      border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* ─── CONTENT ─────────────────────────────── */
+    .content { min-height: calc(100vh - 55px); padding: 48px 28px; }
+
+    .page { display: none; max-width: 620px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #1a1a1a; }
+    p  { color: #555; line-height: 1.75; margin-top: 12px; font-size: 15px; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 3px;
+      color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    /* Background textures */
+    .bg-lined {
+      background-image: linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px);
+      background-size: 100% 30px;
+      background-position: 0 29px;
+    }
+    .bg-grid-lg {
+      background-image:
+        linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.055) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .bg-grid-sm {
+      background-image:
+        linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.055) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* ─── Z-ORDER READOUT ─────────────────────── */
+    .z-panel {
+      margin-top: 36px; padding: 16px 18px;
+      background: rgba(0,0,0,0.04);
+      border-left: 3px solid var(--c-gallery);
+      font-size: 12px; color: #666;
+    }
+    .z-label {
+      display: block;
+      font-size: 10px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #999;
+      margin-bottom: 8px;
+    }
+    .z-pills { line-height: 2; }
+    .z-pill {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 3px;
+      color: white; font-size: 11px; font-weight: 700;
+      margin: 2px 4px 2px 0;
+    }
+    .z-note { margin-top: 10px; font-size: 11px; color: #aaa; }
+
+    /* ─── DEMO CONTROLS ───────────────────────── */
+    .demo-bar {
+      position: fixed; bottom: 18px; right: 18px;
+      display: flex; gap: 8px;
+    }
+    .demo-btn {
+      padding: 7px 14px;
+      background: #18120A; color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 4px;
+      font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit; letter-spacing: 0.03em;
+    }
+    .demo-btn:hover { background: #2a1e0e; color: white; }
+
+    /* ─── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 600px) {
+      .tabs { display: none !important; }
+      .ham-btn { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav-cover">
+  <div class="tabs" id="tabs"></div>
+  <div class="nav-right">
+    <div class="profile-chip" title="Profile">KH</div>
+    <button class="ham-btn" id="ham-btn" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu"></div>
+
+<div class="content">
+
+  <div class="page bg-lined" id="page-home">
+    <h1>Home</h1>
+    <span class="badge" style="background:var(--c-home)">Teal</span>
+    <p>Horizontal ruled lines — notepad aesthetic. Distinct from the graph-paper pages.</p>
+    <p>Click any tab to navigate. The tab you just left sits immediately behind the
+       active one. The previous sits behind that — and so on. On first load the
+       order is left-to-right, front-to-back.</p>
+    <div class="z-panel">
+      <span class="z-label">Current z-order — front to back</span>
+      <div class="z-pills" id="z-pills"></div>
+      <div class="z-note">Stored in localStorage — refresh the page to verify persistence.</div>
+    </div>
+  </div>
+
+  <div class="page bg-grid-lg" id="page-gallery">
+    <h1>Public Gallery</h1>
+    <span class="badge" style="background:var(--c-gallery)">Amber — 28px grid</span>
+    <p>Larger graph-paper squares — expansive, suits browsing a public collection.</p>
+    <p>Amber is the brightest tab in the set. As the most public-facing section it
+       earns a warm, inviting colour.</p>
+  </div>
+
+  <div class="page bg-grid-sm" id="page-playbook">
+    <h1>My Playbook</h1>
+    <span class="badge" style="background:var(--c-playbook)">Pitch Green — 16px grid</span>
+    <p>Tighter graph-paper grid — precise, personal. The coach's own workspace.</p>
+    <p>Pitch green ties My Playbook to the app's primary brand colour, reinforcing
+       that this is the core working environment.</p>
+  </div>
+
+  <div class="page" id="page-create">
+    <h1>Create</h1>
+    <span class="badge" style="background:var(--c-create)">Navy — no texture</span>
+    <p>Clean background — the pitch canvas provides its own visual environment.
+       Competing texture would distract from the animation editor.</p>
+  </div>
+
+</div>
+
+<div class="demo-bar">
+  <button class="demo-btn" id="mob-toggle">Simulate Mobile</button>
+  <button class="demo-btn" id="reset-btn">Reset Z-order</button>
+</div>
+
+<script>
+  'use strict';
+
+  const SECTIONS = [
+    { id: 'home',     label: 'Home',        cssVar: '--c-home'     },
+    { id: 'gallery',  label: 'Gallery',     cssVar: '--c-gallery'  },
+    { id: 'playbook', label: 'My Playbook', cssVar: '--c-playbook' },
+    { id: 'create',   label: 'Create',      cssVar: '--c-create'   },
+  ];
+
+  const KEY  = 'nav001_order';
+  const MAX_Z = SECTIONS.length + 2;
+
+  /* ── Resolve CSS colour variable ── */
+  function resolveColor(cssVar) {
+    return getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+  }
+
+  /* ── Persistence ── */
+  function loadOrder() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (Array.isArray(stored)
+          && stored.length === SECTIONS.length
+          && SECTIONS.every(s => stored.includes(s.id))) {
+        return stored;
+      }
+    } catch (_) { /* fall through */ }
+    return SECTIONS.map(s => s.id);
+  }
+
+  function saveOrder(order) {
+    localStorage.setItem(KEY, JSON.stringify(order));
+  }
+
+  let visitOrder = loadOrder();
+  let current    = visitOrder[0];
+
+  /* ── Build DOM ── */
+  function buildDOM() {
+    const tabsEl   = document.getElementById('tabs');
+    const mobileEl = document.getElementById('mobile-menu');
+
+    SECTIONS.forEach(sec => {
+      /* Desktop tab */
+      const tab  = document.createElement('button');
+      tab.className = 'tab';
+      tab.dataset.id = sec.id;
+
+      const span = document.createElement('span');
+      span.textContent = sec.label;
+      tab.appendChild(span);
+      tab.addEventListener('click', () => navigate(sec.id));
+      tabsEl.appendChild(tab);
+
+      /* Mobile item */
+      const item = document.createElement('button');
+      item.className   = 'mobile-item';
+      item.dataset.id  = sec.id;
+
+      const bar = document.createElement('span');
+      bar.className = 'mob-bar';
+      bar.style.background = 'var(' + sec.cssVar + ')';
+
+      const label = document.createElement('span');
+      label.textContent = sec.label;
+
+      item.appendChild(bar);
+      item.appendChild(label);
+      item.addEventListener('click', () => { navigate(sec.id); closeMobile(); });
+      mobileEl.appendChild(item);
+    });
+  }
+
+  /* ── Render ── */
+  function render() {
+    SECTIONS.forEach(sec => {
+      const rank    = visitOrder.indexOf(sec.id);
+      const zIndex  = MAX_Z - rank;
+      const isActive = sec.id === current;
+
+      const tab   = document.querySelector('.tab[data-id="' + sec.id + '"]');
+      const page  = document.getElementById('page-' + sec.id);
+      const mItem = document.querySelector('.mobile-item[data-id="' + sec.id + '"]');
+
+      if (tab)   { tab.style.zIndex = zIndex; tab.classList.toggle('active', isActive); }
+      if (page)  { page.classList.toggle('active', isActive); }
+      if (mItem) { mItem.classList.toggle('active', isActive); }
+    });
+
+    /* Z-order readout */
+    const pillsEl = document.getElementById('z-pills');
+    if (pillsEl) {
+      while (pillsEl.firstChild) pillsEl.removeChild(pillsEl.firstChild);
+      visitOrder.forEach((id, i) => {
+        const sec   = SECTIONS.find(s => s.id === id);
+        const pill  = document.createElement('span');
+        pill.className   = 'z-pill';
+        pill.style.background = resolveColor(sec.cssVar);
+        pill.textContent = (i + 1) + '. ' + sec.label;
+        pillsEl.appendChild(pill);
+      });
+    }
+  }
+
+  /* ── Navigate ── */
+  function navigate(id) {
+    current    = id;
+    visitOrder = [id, ...visitOrder.filter(s => s !== id)];
+    saveOrder(visitOrder);
+    render();
+  }
+
+  /* ── Mobile ── */
+  let mobileOpen = false;
+
+  function toggleMobile() {
+    mobileOpen = !mobileOpen;
+    document.getElementById('mobile-menu').classList.toggle('open', mobileOpen);
+    document.getElementById('ham-btn').textContent = mobileOpen ? '✕' : '☰';
+  }
+
+  function closeMobile() {
+    mobileOpen = false;
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('ham-btn').textContent = '☰';
+  }
+
+  document.getElementById('ham-btn').addEventListener('click', toggleMobile);
+
+  /* ── Demo controls ── */
+  let mobileSimulated = false;
+  document.getElementById('mob-toggle').addEventListener('click', () => {
+    mobileSimulated = !mobileSimulated;
+    document.getElementById('tabs').style.display = mobileSimulated ? 'none' : '';
+    document.getElementById('ham-btn').style.display = mobileSimulated ? 'block' : '';
+    document.getElementById('mob-toggle').textContent =
+      mobileSimulated ? 'Show Desktop' : 'Simulate Mobile';
+    if (!mobileSimulated) closeMobile();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    visitOrder = SECTIONS.map(s => s.id);
+    current    = visitOrder[0];
+    saveOrder(visitOrder);
+    render();
+  });
+
+  /* ── Init ── */
+  buildDOM();
+  render();
+</script>
+</body>
+</html>

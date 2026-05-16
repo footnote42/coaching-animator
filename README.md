@@ -295,7 +295,7 @@ This project follows a spec-driven development workflow with comprehensive docum
 3. **Incremental Improvements (005)** — Pick-and-choose approach (14 issues)
    - See: `archive/specs/005-incremental-improvements/` for details
 
-**Latest Handoff**: See `docs/prompts/HANDOFF-2026-04-25.md` for detailed recommendations and context
+**Latest Handoff**: See `docs/plans/HANDOFF.md` for the session diary
 
 ### Documentation Quick Links
 

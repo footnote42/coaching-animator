@@ -6,7 +6,7 @@ Prefer Claude Code tools (Read, Grep, Glob) over shell commands. Forward slashes
 
 ## Workflow
 
-Use `/handoff` to end sessions cleanly — summarises work, writes a next-session prompt, and updates relevant docs.
+Use `/handoff` to end sessions cleanly — appends a new entry to `docs/plans/HANDOFF.md` (the rolling session diary). This is the single canonical location for handoff state.
 
 ## Commands (Critical - Run Before Every Push)
 
@@ -169,14 +169,17 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - TypeScript 5 · Node 22
 
 ## Current Feature
-- **019-save-metadata-unification** — Save & Metadata Unification
-- Plan: `specs/019-save-metadata-unification/plan.md`
+- **022-notebook-tab-nav** — Notebook Tab Navigation (NAV-001)
+- Spec: `specs/022-notebook-tab-nav/spec.md`
+- Plan: `specs/022-notebook-tab-nav/plan.md`
+- Tasks: `specs/022-notebook-tab-nav/tasks.md` (22 tasks, MVP = T001–T009)
+- Branch: `022-notebook-tab-nav`
 
 ## Recent Changes
+- 021-unified-editor-controls: complete — TimelinePanel replaces EditorFloatingRemote; MobileDrawer MobileTimelineSection
+- 020-frame-edit-own-animations: complete — Frame editing for own animations + workflow audit infra
 - 018-share-playback-workflow: Phase 2c complete — Share & Playback Workflow
 - 017-audit-remediation: Phase 3f complete — Audit Remediation (cosmetic fixes, re-score 18+/20)
-- 016-security-hardening: Phase 3b complete — MVP Security Pass (rate limiting + injection hardening)
-- 015-cosmetic-polish: Phase 2l complete — Cosmetic Polish and Branding
 
 ## Design Context
 

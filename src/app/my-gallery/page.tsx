@@ -183,7 +183,7 @@ function MyGalleryContent() {
   const hasSearchOrFilter = !!(q || type);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-texture-grid-sm">
       {/* Page Header */}
       <header className="border-b border-border bg-[var(--color-surface-warm)] relative overflow-hidden">
         {/* Tactical Motif Background */}

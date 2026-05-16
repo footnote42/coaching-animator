@@ -1,20 +1,17 @@
 # Session Handoff
 
 ## Summary of Work Completed
-- **Spec planning for `021-unified-editor-controls`** is complete. Branch `021-unified-editor-controls` is checked out. All planning artifacts written: `spec.md`, `plan.md`, `research.md`, `quickstart.md`, `checklists/requirements.md`, `tasks.md` (33 tasks across 8 phases).
+- **`021-unified-editor-controls` — COMPLETE and merged to `main`** (commit `405f968`). `TimelinePanel.tsx` replaces the deprecated `EditorFloatingRemote`. `MobileDrawer` has a new Timeline section. Footer removed from `Editor.tsx`. All E2E tests pass, lint/TSC clean.
 
 ## Next Session Prompt
-You are resuming work on the `coaching-animator` project on branch `021-unified-editor-controls`.
+You are resuming work on the `coaching-animator` project on branch `main`.
 
-Planning is complete for EDITOR-013 (Unified Editor Controls). Run `/speckit.implement` to begin implementation.
+021 (Unified Editor Controls / EDITOR-013) is complete and merged. Check `docs/plans/HANDOFF.md` and `docs/issues/ISSUES.md` to identify the next highest-priority issue.
 
-Key context:
-- Replace `EditorFloatingRemote` (editor-only, delete it) with a new permanent right-side `TimelinePanel`
-- CRITICAL: `FloatingRemote` in `ShareViewer.tsx` is different — do NOT touch it
-- Add Timeline section to `MobileDrawer.tsx` for mobile access
-- Remove the footer block from `Editor.tsx` (absorbed into TimelinePanel)
-- Full task list: `specs/021-unified-editor-controls/tasks.md`
-- Full next-session prompt: `docs/plans/prompts/2026-05-15-021-implement.md`
+Run diagnostics before starting new work:
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
 
 ---
 
@@ -31,3 +28,7 @@ Key context:
 *1. Review `docs/issues/ISSUES.md` and check the Phase 2 / Phase 3 tracker to identify the next critical path (likely the Security & Compliance sprint).*
 *2. Run diagnostics (`npm run dev`, `npm run lint`, `npx tsc --noEmit`, `npm test`) to verify the repository is clean before beginning new tasks.*
 *3. Propose a plan for the next spec.*
+
+---
+
+**Archived**: 2026-05-16. Superseded by `docs/plans/HANDOFF.md` as the canonical rolling diary. This file was created as a side-effect of the `wiki:sync` skill.

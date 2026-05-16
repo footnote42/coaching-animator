@@ -111,7 +111,13 @@
       "Bash(kill -9 27392)",
       "Bash(echo \"Server PID: $!\")",
       "Bash(pkill -9 -f \"next-server\\\\|next dev\")",
-      "Bash(kill -9 38908)"
+      "Bash(kill -9 38908)",
+      "Bash(echo \"EXIT:$?\")",
+      "WebSearch",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Skill(speckit-git-feature)",
+      "Skill(speckit-superb-respond)"
     ]
   },
   "enableAllProjectMcpServers": true,

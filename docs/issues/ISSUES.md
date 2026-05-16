@@ -247,7 +247,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### SEC-001 — Full Security Review
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 3b, 016-security-hardening)
+- **Summary**: Rate limiting, input sanitisation, and injection hardening implemented across all API routes. Auth token handling via Supabase httpOnly cookies. XSS protection via React's default escaping + Supabase parameterised queries throughout.
 - **Severity**: High (pre-beta mandatory)
 - **Scope**: Comprehensive security audit covering:
   - Rate limiting on API endpoints
@@ -265,7 +267,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### SEC-002 — Rate Limiting Implementation
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 3b, 016-security-hardening)
+- **Summary**: `checkRateLimit` / `getRateLimitHeaders` utility implemented and wired to all mutating API routes: create animation, upvote, remix, progression create/reorder, version restore. Returns 429 with retry-after headers.
 - **Severity**: High (security)
 - **Observed**: API endpoints need rate limiting to prevent abuse. Suggested endpoints: auth, upload, comment, search.
 - **Implementation**: 
@@ -278,7 +282,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### SEC-003 — SQL Injection Prevention (Free-Text Fields)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-04 (Phase 3b, 016-security-hardening)
+- **Summary**: All database queries use Supabase client's parameterised statements throughout. Free-text input hardening applied during audit. No raw SQL strings in the codebase.
 - **Severity**: High (data safety)
 - **Observed**: Free-text fields (animation descriptions, tags, search queries) are vulnerable to SQL injection if using raw SQL or improper parameterization.
 - **Action**: 
@@ -335,15 +341,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### DESIGN-002 — Notebook Page Aesthetic & Graph Paper Differentiator
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16 (Phase 2n, 022-notebook-tab-nav)
+- **Summary**: Page textures (page-texture-lined, page-texture-grid-lg, page-texture-grid-sm) implemented and applied to Home, Gallery, and My Playbook respectively. Notebook tab navigation (NAV-001) provides the physical motif foundation.
 - **Severity**: Low (design identity / delight)
-- **Observed**: The graph paper background effect with different grid sizes successfully differentiates Gallery from Playbook — this is confirmed as a strong design direction. Additionally, the physical notebook tab aesthetic (pages appearing to sit inside a coach's notebook) has been identified as a desired visual motif.
-- **Design direction**: 
-  - Preserve and refine the graph paper grid differentiation between Gallery (one grid size) and My Playbook (different grid size).
-  - Add a physical notebook tab effect at the top of relevant pages — styled as if each page is a tabbed section of a coach's notebook (paper texture, visible tab labels, layered depth).
-  - Coordinate with NAV-001 (navigation tab redesign) to ensure consistency.
-- **Note**: User confirmed 2026-05-02 that the graph paper effect is liked and wants it retained; notebook tab concept is a new desired direction.
-- **Roadmap ref**: Phase 4 (design polish) — can be introduced incrementally; graph paper must not be regressed
 
 ---
 
@@ -546,7 +547,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### PLAYBACK-001 — Playback Remote Should Float and Persist
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-15 (Phase 2b+, 021-unified-editor-controls)
+- **Summary**: Resolved by EDITOR-013. Desktop editor now has a fixed `TimelinePanel` sidebar (always visible, no scrolling required). Mobile has a full `MobileTimelineSection` inside `MobileDrawer` with play/pause, prev/next frame, speed, loop, ghost, add/delete frame. `FloatingRemote` retained only in `ShareViewer` where the full-screen fixed layout makes scroll inaccessibility impossible.
 - **Severity**: Medium (usability at pitch)
 - **Observed**: Playback controls disappear when scrolling and are fixed in document flow. Coaches at the pitch need controls always accessible.
 - **Proposal**: Floating draggable remote (drag to reposition); always-on-screen; possibly bottom-anchored by default
@@ -579,12 +582,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### NAV-001 — Selected Page Indicator (Tabs)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16 (Phase 2n, 022-notebook-tab-nav)
+- **Summary**: Implemented notebook tab navigation for desktop with MRU-derived layering and plastic sheen. Mobile dropdown updated with colour-coded sidebars. Page textures (lined/grid) added to main content containers.
 - **Severity**: Low (visual polish)
-- **Observed**: Top menu emboldens selected page text — too subtle. Wants rounded "notebook tab" style with unique layered colors.
-- **Action**: Redesign navigation menu to use tab-like visual indicators for the active page, with distinct colors for different sections.
-- **See also**: DESIGN-002 (physical notebook tab aesthetic)
-- **Roadmap ref**: Phase 2e (Landing Refinements) / Global UI polish
 
 ---
 
@@ -593,7 +594,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FEAT-012 — Mobile FrameStrip (swipe-accessible frame navigation on <768px)
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-15 (Phase 2b+, 021-unified-editor-controls)
+- **Summary**: `MobileDrawer` now includes `MobileTimelineSection` with prev/next frame navigation, add/delete frame, play/pause, speed, loop, and ghost controls. Thumbnail strip not required — no longer a concern.
 - **Severity**: Medium (mobile usability)
 - **Observed**: On viewports <768px, the FrameStrip (frame thumbnail strip) is hidden as part
   of the 2i mobile layout remodel. Coaches cannot visually navigate between frames on mobile
@@ -965,12 +968,12 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 ## Quick Reference by Roadmap Phase
 
 - **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, UX-011, UX-018 *(~~UX-010~~, ~~UX-012~~, ~~UX-013~~, ~~UX-014~~ closed)*
-- **Phase 2 — Editor/Workflow**: EDITOR-010, EDITOR-011, EDITOR-012, EDITOR-013, EDITOR-014, EDITOR-017 *(~~EDITOR-019~~, ~~EDITOR-016~~, ~~EDITOR-018~~, ~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
-- **Phase 2 — Playback/Share**: PLAYBACK-001, FLOW-003 *(~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
+- **Phase 2 — Editor/Workflow**: *(~~EDITOR-010~~, ~~EDITOR-011~~, ~~EDITOR-012~~, ~~EDITOR-013~~, ~~EDITOR-014~~, ~~EDITOR-017~~, ~~EDITOR-019~~, ~~EDITOR-016~~, ~~EDITOR-018~~, ~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
+- **Phase 2 — Playback/Share**: FLOW-003 *(~~PLAYBACK-001~~, ~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
 - **Phase 2 — Landing/Nav**: LANDING-001, NAV-001, CONTACT-001 *(~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
 - **Phase 2 — Gallery/Playbook**: *(~~GALLERY-001~~, ~~GALLERY-002~~ closed)*
 - **Audit Bugs**: *(~~WF1-S5~~, ~~WF2-S1+S2~~ closed 2026-05-08)*
-- **Phase 3** (Quality Safety Net): FEAT-006, ADMIN-001, PERF-001 *(~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed via 3b; ~~3f audit~~ closed)*
+- **Phase 3** (Quality Safety Net): FEAT-006, ADMIN-001, PERF-001 *(~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed 3b; ~~3f audit~~ closed)*
 - **Phase 3–4** (Feature Decisions): FEAT-008, FEAT-009
-- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, FEAT-011, FEAT-012, DESIGN-001, DESIGN-002
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, FEAT-011, ~~FEAT-012~~ (closed 021), DESIGN-001, DESIGN-002
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005

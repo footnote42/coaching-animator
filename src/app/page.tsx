@@ -52,7 +52,7 @@ const FEATURES = [
 export default function HomePage() {
   return (
     <>
-      <main>
+      <main className="page-texture-lined">
       {/* Hero Section — Alt A: The Grounded Coach */}
       <section className="bg-primary text-text-inverse relative overflow-hidden">
         <HeroBackground />

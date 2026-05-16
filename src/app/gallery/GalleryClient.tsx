@@ -237,7 +237,7 @@ function GalleryContent() {
   const currentPage = Math.floor(offset / limit) + 1;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-texture-grid-lg">
       {/* Page Header */}
       <header className="border-b border-border bg-[var(--color-background)] relative overflow-hidden">
         {/* Rugby Lines Motif Background */}

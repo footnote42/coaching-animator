@@ -67,3 +67,94 @@ body {
         transition-duration: 0.01ms !important;
     }
 }
+
+:root {
+  --c-tab-home: #0F766E;
+  --c-tab-gallery: #D97706;
+  --c-tab-playbook: #1A3D1A;
+  --c-tab-create: #1E40AF;
+  --c-nav-cover: #18120A;
+}
+
+/* ─── NOTEBOOK TABS ────────────────────────── */
+.nav-tab {
+  position: relative;
+  padding: 8px 18px 10px;
+  border-radius: 7px 7px 0 0;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.92);
+  margin-right: -11px; /* Overlap */
+  box-shadow:
+    0 -3px 0 rgba(0,0,0,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.22);
+  transition: padding-top 0.1s ease, padding-bottom 0.1s ease;
+}
+
+/* Plastic laminate sheen */
+.nav-tab::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 7px 7px 0 0;
+  background: linear-gradient(
+    148deg,
+    rgba(255,255,255,0.38) 0%,
+    rgba(255,255,255,0.16) 30%,
+    rgba(255,255,255,0.03) 58%,
+    rgba(0,0,0,0.10) 100%
+  );
+  pointer-events: none;
+}
+
+/* Right-edge depth reveal — visible on partially-hidden tabs */
+.nav-tab::before {
+  content: '';
+  position: absolute;
+  top: 4px; 
+  right: 0; 
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.22));
+  border-radius: 0 7px 0 0;
+  pointer-events: none;
+}
+
+.nav-tab:not(.nav-tab-active) {
+  padding-top: 6px;
+  opacity: 0.88;
+}
+
+.nav-tab.nav-tab-active {
+  padding-top: 10px;
+  padding-bottom: 12px;
+  margin-bottom: -1px; /* Cover nav border */
+  opacity: 1;
+  box-shadow:
+    0 -3px 0 rgba(0,0,0,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.28);
+}
+
+/* ─── PAGE TEXTURES ────────────────────────── */
+.page-texture-lined {
+  background-image: linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px);
+  background-size: 100% 30px;
+  background-position: 0 29px;
+}
+
+.page-texture-grid-lg {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.page-texture-grid-sm {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.055) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
