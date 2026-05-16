@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { BrandIcon } from '@/shared/components/BrandIcon';
+import { getInitials } from './profileUtils';
 
 const BADGE_MAX_BYTES = 500 * 1024; // 500 KB
 const BADGE_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
@@ -241,8 +241,6 @@ export default function ProfilePage() {
 
   const animationCount = profile?.animation_count || 0;
   const maxAnimations = profile?.max_animations || 50;
-  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -251,16 +249,7 @@ export default function ProfilePage() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
             <div className="w-24 h-24 rounded-none bg-pitch-green flex items-center justify-center overflow-hidden border-2 border-border flex-shrink-0">
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={displayName || 'Profile'}
-                  width={96}
-                  height={96}
-                  className="object-cover w-full h-full"
-                  unoptimized
-                />
-              ) : clubBadgeUrl ? (
+              {clubBadgeUrl ? (
                 <Image
                   src={clubBadgeUrl}
                   alt="Club badge"
@@ -270,7 +259,9 @@ export default function ProfilePage() {
                   unoptimized
                 />
               ) : (
-                <BrandIcon size={56} />
+                <span className="text-3xl font-heading font-bold text-tactics-white">
+                  {getInitials(displayName, user.email || null)}
+                </span>
               )}
             </div>
 
