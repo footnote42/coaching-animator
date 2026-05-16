@@ -4,6 +4,95 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-16 — Issue Triage + EDITOR-011/014/017 Complete ✅
+
+**Branch**: `main` (all pushed)
+
+### What was delivered this session
+
+Continued from the previous session which completed 021. This session was pure issue triage and patch work — no new spec.
+
+#### 1. Diagnostics & issue triage
+
+- Ran full diagnostic suite (lint, TSC, unit tests) — found 3 failing tests in `TimelinePanel.test.tsx`
+- Root cause: missing `// @vitest-environment jsdom` pragma and `import React from 'react'` in test file (JSX in `vi.mock` callbacks requires React in scope)
+- Fixed both; all 19 test files now passing
+- Cross-referenced git log with ISSUES.md: EDITOR-010 (progression panel) was already fixed in commit `07f3b72` but not closed in the tracker — closed it
+- EDITOR-012 (entity spawn persistence) — investigated `addEntityWithPropagate` and `propagateEntity` logic; confirmed the existing toast opt-in mechanism is correct UX — closed as-designed
+
+#### 2. EDITOR-014 — Entity spawn offsetting
+
+**File**: `src/features/animation/components/hooks/useEditorEntityHandlers.ts`
+
+Added `findSpawnPosition()` helper: checks up to 9 candidate positions (centre + 8 cardinal/diagonal offsets at 40px each) against existing frame entities. All six add-entity handlers now call `spawnPosition()` instead of hardcoding canvas centre. Entities no longer stack when added consecutively.
+
+#### 3. EDITOR-017 — Save button layout
+
+**File**: `src/features/animation/components/Sidebar/ProjectActions.tsx`
+
+Added `mt-2` to Save Local button — all three save-tier buttons (Save Local, Save to Cloud, Sign in to Save) now share the same top margin.
+
+#### 4. EDITOR-011 — Team colour selection + Other Role player
+
+The largest change of the session. After a design discussion:
+
+**Schema** (`src/core/types/index.ts`):
+- Added `'other'` to `TeamType`
+- Added `teamColors?: { attack: string; defense: string; other: string }` to `ProjectSettings`
+
+**Store** (`src/core/stores/projectStore.ts`):
+- New `setTeamColor(team, color)` action: updates `settings.teamColors` AND retroactively walks every frame recolouring all entities of that team
+- `newProject()` now seeds `teamColors` from `EntityColors.getDefault()` defaults
+- `addEntity` colour fallback changed from `DESIGN_TOKENS.colours[team][0]` to `EntityColors.getDefault(entity.type, team)` — supports all team types including `'other'`; removed now-unused `DESIGN_TOKENS` import
+
+**EntityColors** (`src/features/animation/services/entityColors.ts`):
+- Added `other: '#EAB308'` (amber) to `TEAM_DEFAULTS`
+
+**EntityPalette** (`src/features/animation/components/Sidebar/EntityPalette.tsx`):
+- New "Team Colours" section: 3 colour swatches (Attack, Defence, Other Role), click to expand inline `ColorPicker`
+- New "+ Other Role" button: spawns unlabelled amber player token with `team: 'other'`
+
+**Editor + MobileDrawer**: wired `teamColors`, `onTeamColorChange`, `onAddOtherPlayer` through both paths.
+
+### State after session
+
+```
+Branch: main (pushed, 4 commits ahead of previous session)
+Tests: 19/19 files passing, 113/113 tests passing
+TSC: clean
+Lint: clean
+Open issues: all Phase 2 editor/UX issues from EDITOR-011 batch are now CLOSED
+Remaining open: Phase 2–3 gallery/UX issues (UX-004, UX-007, UX-009, UX-010, etc.)
+```
+
+### Commits this session
+
+```
+7eac6c4  feat(editor): team colour selection and Other Role player (EDITOR-011)
+164349b  fix(editor): offset entity spawn to avoid stacking; fix save button spacing (EDITOR-014, EDITOR-017)
+d846516  chore(issues): close EDITOR-012 — entity spawn toast accepted as correct UX
+5f44933  fix(tests): add React import and jsdom env to TimelinePanel.test.tsx; close EDITOR-010
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. The last session closed all open Phase 2 editor issues (EDITOR-010 through EDITOR-017). The codebase is in a clean state.
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+Then check `docs/issues/ISSUES.md` for the next highest-priority open issue. The remaining open items are mostly Phase 2–3 gallery/UX concerns (UX-004, UX-007, UX-009, UX-010 etc.) and do not have a clear ordering — the user will need to decide which to tackle next.
+
+**Key architectural notes for the next session:**
+- `TeamType` now includes `'other'` — any code that pattern-matches on team values must handle it
+- `ProjectSettings.teamColors` is optional (for backward compat with saved projects) — always apply defaults when reading: `rawTeamColors ?? { attack: EntityColors.getDefault('player', 'attack'), ... }`
+- `setTeamColor` in the store is the canonical way to change team colours — do not update entity colours directly for team-wide changes
+- The `DESIGN_TOKENS` import was removed from `projectStore.ts` — EntityColors is now the sole source for entity colour defaults
+
+---
+
 ## 2026-05-15 — Unified Editor Controls Complete (021) ✅
 
 **Branch**: `021-unified-editor-controls`
@@ -25,18 +114,21 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 ### State after session
 
 ```
-Branch: 021-unified-editor-controls
+Branch: main (merged from 021-unified-editor-controls)
 Implementation: COMPLETE
 Verification: PASS (100% E2E, Lint, TSC)
-Next step: Merge to main
+Next step: Identify next priority from ISSUES.md
 ```
 
 ### Next session prompt
 
+You are resuming work on the `coaching-animator` project on branch `main`.
+
+021 (Unified Editor Controls / EDITOR-013) is complete and merged to `main` (commit `405f968`). Check `docs/plans/HANDOFF.md` and `docs/issues/ISSUES.md` to identify the next highest-priority issue.
+
+Run diagnostics before starting new work:
 ```bash
-# Review and merge the unified editor controls
-/speckit.superb.verify
-/speckit.superb.finish
+npm run lint && npx tsc --noEmit && npm test -- --run
 ```
 
 ## 2026-05-15 — Planning Complete for 021 Unified Editor Controls
