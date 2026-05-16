@@ -19,7 +19,7 @@ export function LinkToFoundationModal({ animation, onClose, onSuccess }: LinkToF
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getWithRetry<{ animations: { id: string; title: string; progression_count: number }[] }>('/api/animations?is_progression=false&limit=100').then((res) => {
+    getWithRetry<{ animations: { id: string; title: string; progression_count: number }[] }>('/api/animations?is_progression=false&limit=50').then((res) => {
       if (res.ok && res.data) {
         // Filter out the animation itself if it happens to be in the list
         setFoundations(res.data.animations.filter(a => a.id !== animation.id));

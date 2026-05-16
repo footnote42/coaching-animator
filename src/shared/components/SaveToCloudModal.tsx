@@ -65,7 +65,7 @@ export function SaveToCloudModal({
 
   useEffect(() => {
     if (isProgression && foundations.length === 0) {
-      getWithRetry<{ animations: { id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[] }>('/api/animations?is_progression=false&limit=100').then((res) => {
+      getWithRetry<{ animations: { id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[] }>('/api/animations?is_progression=false&limit=50').then((res) => {
         if (res.ok && res.data) {
           setFoundations(res.data.animations);
         }
