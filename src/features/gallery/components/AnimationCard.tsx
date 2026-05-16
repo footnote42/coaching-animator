@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { Clock, Layers, EyeOff, Link as LinkIcon, Globe, Pencil, Trash2, Play, History, Share2, FilePlus, Unlink, Settings } from 'lucide-react';
+import { Clock, Layers, EyeOff, Link as LinkIcon, Globe, Pencil, Trash2, Play, History, Share2, FilePlus, Unlink, Settings, MoreHorizontal } from 'lucide-react';
 import { AnimationType, Visibility } from '@/lib/schemas/animations';
 import { VersionHistoryModal } from './VersionHistoryModal';
 import { MiniPitchSVG } from './MiniPitchSVG';
 import { ProgressionStrip } from './ProgressionStrip';
 import { ShareSheet } from '@/features/animation/components/ShareSheet';
-import { cardActionHover } from '@/shared/ui/card-action-hover';
 
 export interface AnimationSummary {
   id: string;
@@ -105,8 +104,21 @@ export function AnimationCard({
   onLinkToFoundation,
 }: AnimationCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [showVersionHistory, setShowVersionHistory] = useState(false); // V2.0: Version history modal
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMoreOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setIsMoreOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMoreOpen]);
 
   const canCopyLink = animation.visibility !== 'private';
   const isRfuEndorsed = animation.is_rfu_endorsed || animation.endorsed_by === 'RFU';
@@ -214,7 +226,7 @@ export function AnimationCard({
           </p>
         )}
 
-        <div className="flex items-center gap-3 text-xs text-text-primary/70 mb-2">
+        <div className="flex items-center gap-3 text-xs text-text-primary/70 mb-3">
           <span className="inline-flex items-center gap-1">
             <Clock className="w-3.5 h-3.5" />
             {formatDuration(animation.duration_ms)}
@@ -233,111 +245,166 @@ export function AnimationCard({
           )}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-text-primary/50">
-          <span>{formatDate(animation.created_at)}</span>
+        <p className="text-xs text-text-primary/50 mb-2">{formatDate(animation.created_at)}</p>
 
-          <div className="flex items-center gap-1">
-            {showCopyLink && canCopyLink && (
+        {/* Action row */}
+        {showActions ? (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/app?load=${animation.id}&mode=edit`;
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border border-border hover:border-primary hover:text-primary transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit Frames
+            </button>
+
+            <div className="relative ml-auto" ref={moreMenuRef}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsShareOpen(true);
+                  setIsMoreOpen((prev) => !prev);
                 }}
-                className={`p-2.5 ${cardActionHover}`}
-                aria-label="Share"
+                onKeyDown={(e) => { if (e.key === 'Escape') setIsMoreOpen(false); }}
+                className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium border transition-colors ${isMoreOpen ? 'border-primary text-primary' : 'border-border hover:border-primary hover:text-primary'}`}
+                aria-label="More actions"
+                aria-expanded={isMoreOpen}
+                aria-haspopup="menu"
               >
-                <Share2 className="w-4 h-4" />
+                <MoreHorizontal className="w-3.5 h-3.5" />
+                More
               </button>
-            )}
-            {showActions && (
-              <>
-                {animation.is_progression ? (
+
+              {isMoreOpen && (
+                <div
+                  role="menu"
+                  className="absolute bottom-full right-0 mb-1 w-52 bg-surface border border-border shadow-md z-20 py-1"
+                  onKeyDown={(e) => { if (e.key === 'Escape') setIsMoreOpen(false); }}
+                >
+                  {/* Share */}
+                  {showCopyLink && canCopyLink && (
+                    <>
+                      <button
+                        role="menuitem"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMoreOpen(false);
+                          setIsShareOpen(true);
+                        }}
+                      >
+                        <Share2 className="w-4 h-4 flex-shrink-0" />
+                        Share
+                      </button>
+                      <div className="border-t border-border my-1" />
+                    </>
+                  )}
+
+                  {/* Progressions */}
+                  {animation.is_progression ? (
+                    <button
+                      role="menuitem"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMoreOpen(false);
+                        onUnlinkProgression?.(animation.id);
+                      }}
+                    >
+                      <Unlink className="w-4 h-4 flex-shrink-0" />
+                      Make Base Animation
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        role="menuitem"
+                        disabled={(animation.progression_count ?? 0) >= 5}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors ${(animation.progression_count ?? 0) >= 5 ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if ((animation.progression_count ?? 0) < 5) {
+                            setIsMoreOpen(false);
+                            window.location.href = `/app?parentId=${animation.id}`;
+                          }
+                        }}
+                      >
+                        <FilePlus className="w-4 h-4 flex-shrink-0" />
+                        {(animation.progression_count ?? 0) >= 5 ? 'Progressions Full (5/5)' : 'Add Progression'}
+                      </button>
+                      <button
+                        role="menuitem"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMoreOpen(false);
+                          onLinkToFoundation?.(animation.id);
+                        }}
+                      >
+                        <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                        Link to Foundation
+                      </button>
+                    </>
+                  )}
+
+                  <div className="border-t border-border my-1" />
+
                   <button
+                    role="menuitem"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onUnlinkProgression?.(animation.id);
+                      setIsMoreOpen(false);
+                      setShowVersionHistory(true);
                     }}
-                    className={`p-2.5 ${cardActionHover}`}
-                    title="Make base animation (Unlink)"
-                    aria-label="Unlink"
                   >
-                    <Unlink className="w-4 h-4" />
+                    <History className="w-4 h-4 flex-shrink-0" />
+                    Version History
                   </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if ((animation.progression_count ?? 0) < 5) {
-                          window.location.href = `/app?parentId=${animation.id}`;
-                        }
-                      }}
-                      disabled={(animation.progression_count ?? 0) >= 5}
-                      className={`p-2.5 ${cardActionHover} ${(animation.progression_count ?? 0) >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      title={(animation.progression_count ?? 0) >= 5 ? 'Maximum 5 progressions reached' : 'Add progression'}
-                      aria-label="Add Progression"
-                    >
-                      <FilePlus className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLinkToFoundation?.(animation.id);
-                      }}
-                      className={`p-2.5 ${cardActionHover}`}
-                      title="Link to Foundation"
-                      aria-label="Link to Foundation"
-                    >
-                      <LinkIcon className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowVersionHistory(true);
-                  }}
-                  className={`p-2.5 ${cardActionHover}`}
-                  aria-label="Version History"
-                >
-                  <History className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.location.href = `/app?load=${animation.id}&mode=edit`;
-                  }}
-                  className={`p-2.5 ${cardActionHover}`}
-                  aria-label="Edit Frames"
-                  title="Edit Frames"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit?.(animation.id);
-                  }}
-                  className={`p-2.5 ${cardActionHover}`}
-                  aria-label="Edit Info"
-                  title="Edit Info"
-                >
-                  <Settings className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete?.(animation.id);
-                  }}
-                  className={`p-2.5 text-red-600 ${cardActionHover}`}
-                  aria-label="Delete"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </>
-            )}
+                  <button
+                    role="menuitem"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-text-primary hover:bg-surface-warm transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMoreOpen(false);
+                      onEdit?.(animation.id);
+                    }}
+                  >
+                    <Settings className="w-4 h-4 flex-shrink-0" />
+                    Edit Info
+                  </button>
+
+                  <div className="border-t border-border my-1" />
+
+                  <button
+                    role="menuitem"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-surface-warm transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMoreOpen(false);
+                      onDelete?.(animation.id);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 flex-shrink-0" />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : showCopyLink && canCopyLink ? (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsShareOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border border-border hover:border-primary hover:text-primary transition-colors"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            Share
+          </button>
+        ) : null}
       </div>
 
       {/* Progression strip (T026) — always visible below card body when progressions exist */}
