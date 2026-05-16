@@ -17,10 +17,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-010 — Progression Buttons Missing for New Animations
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-15 (022-progression-panel-new-anim, commit 07f3b72)
+- **Summary**: Panel now renders for all authenticated, non-edit-mode, non-progression sessions. Add button is disabled with "Save to cloud first" tooltip until animation is saved.
 - **Severity**: Medium (usability)
 - **Observed**: The progression buttons at the top of the animation page are not always present, especially noticeable when creating a new animation. They only appear once the animation is saved and has progressions.
-- **Action**: Refactor the progression panel logic to allow local unsaved progressions, or show an empty state to add the first progression.
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
