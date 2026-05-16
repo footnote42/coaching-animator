@@ -53,6 +53,9 @@ function AnimationsTab() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminAnimation | null>(null);
   const [togglingTemplate, setTogglingTemplate] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const LIMIT = 20;
 
@@ -83,11 +86,53 @@ function AnimationsTab() {
 
   const handleSearchChange = (val: string) => {
     setSearch(val);
+    setSelectedIds(new Set());
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setOffset(0);
       fetchAnimations(val, 0);
     }, 300);
+  };
+
+  const allPageSelected = animations.length > 0 && animations.every(a => selectedIds.has(a.id));
+
+  const toggleSelectAll = () => {
+    if (allPageSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(animations.map(a => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true);
+    setError(null);
+    const ids = [...selectedIds];
+    try {
+      const res = await fetch('/api/admin/animations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || 'Delete failed');
+      setAnimations(prev => prev.filter(a => !selectedIds.has(a.id)));
+      setTotal(prev => prev - (data.deleted ?? ids.length));
+      setSelectedIds(new Set());
+      setConfirmBulkDelete(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Bulk delete failed');
+    } finally {
+      setBulkDeleting(false);
+    }
   };
 
   const handleDelete = async (animation: AdminAnimation) => {
@@ -160,6 +205,18 @@ function AnimationsTab() {
         </div>
       )}
 
+      {selectedIds.size > 0 && (
+        <div className="mb-3 flex items-center justify-between px-3 py-2 bg-red-50 border border-red-100 rounded">
+          <span className="text-sm text-red-700 font-medium">{selectedIds.size} selected</span>
+          <button
+            onClick={() => setConfirmBulkDelete(true)}
+            className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700"
+          >
+            Delete Selected
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="py-12 text-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
@@ -171,6 +228,15 @@ function AnimationsTab() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs text-text-primary/60 border-b border-border">
+              <th className="pb-2 pr-3 w-8">
+                <input
+                  type="checkbox"
+                  checked={allPageSelected}
+                  onChange={toggleSelectAll}
+                  className="rounded border-border"
+                  aria-label="Select all on this page"
+                />
+              </th>
               <th className="pb-2 font-medium">Title</th>
               <th className="pb-2 font-medium">Type</th>
               <th className="pb-2 font-medium">Visibility</th>
@@ -181,7 +247,16 @@ function AnimationsTab() {
           </thead>
           <tbody className="divide-y divide-border">
             {animations.map(anim => (
-              <tr key={anim.id}>
+              <tr key={anim.id} className={selectedIds.has(anim.id) ? 'bg-red-50/50' : undefined}>
+                <td className="py-2 pr-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(anim.id)}
+                    onChange={() => toggleSelect(anim.id)}
+                    className="rounded border-border"
+                    aria-label={`Select ${anim.title || 'Untitled'}`}
+                  />
+                </td>
                 <td className="py-2 pr-4 font-medium text-text-primary max-w-xs truncate">{anim.title || 'Untitled'}</td>
                 <td className="py-2 pr-4 text-text-primary/70">{anim.animation_type}</td>
                 <td className="py-2 pr-4">
@@ -228,14 +303,14 @@ function AnimationsTab() {
       {(hasPrev || hasNext) && (
         <div className="mt-4 flex justify-end gap-2">
           <button
-            onClick={() => setOffset(o => Math.max(0, o - LIMIT))}
+            onClick={() => { setOffset(o => Math.max(0, o - LIMIT)); setSelectedIds(new Set()); }}
             disabled={!hasPrev}
             className="px-3 py-1.5 text-sm font-medium text-text-primary bg-surface-warm rounded hover:bg-surface-warm disabled:opacity-40"
           >
             Prev
           </button>
           <button
-            onClick={() => setOffset(o => o + LIMIT)}
+            onClick={() => { setOffset(o => o + LIMIT); setSelectedIds(new Set()); }}
             disabled={!hasNext}
             className="px-3 py-1.5 text-sm font-medium text-text-primary bg-surface-warm rounded hover:bg-surface-warm disabled:opacity-40"
           >
@@ -244,7 +319,7 @@ function AnimationsTab() {
         </div>
       )}
 
-      {/* Confirm delete dialog */}
+      {/* Single delete confirm dialog */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-primary/60 flex items-center justify-center z-50">
           <div className="bg-surface border border-border shadow-xl max-w-sm w-full mx-4 p-6">
@@ -265,6 +340,34 @@ function AnimationsTab() {
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {deletingId === confirmDelete.id ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk delete confirm dialog */}
+      {confirmBulkDelete && (
+        <div className="fixed inset-0 bg-primary/60 flex items-center justify-center z-50">
+          <div className="bg-surface border border-border shadow-xl max-w-sm w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Delete {selectedIds.size} Animations</h3>
+            <p className="text-sm text-text-primary/70 mb-4">
+              Permanently delete <strong>{selectedIds.size} animations</strong>? This cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmBulkDelete(false)}
+                disabled={bulkDeleting}
+                className="px-4 py-2 text-sm font-medium text-text-primary bg-surface-warm rounded-lg hover:bg-surface-warm disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {bulkDeleting ? 'Deleting…' : `Delete ${selectedIds.size}`}
               </button>
             </div>
           </div>

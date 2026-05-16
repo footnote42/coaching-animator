@@ -120,11 +120,16 @@ export async function PATCH(request: NextRequest) {
   return NextResponse.json({ success: true, tags: newTags });
 }
 
+const DeleteSchema = z.union([
+  z.object({ id: z.string().uuid() }),
+  z.object({ ids: z.array(z.string().uuid()).min(1).max(100) }),
+]);
+
 export async function DELETE(request: NextRequest) {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) return authResult;
 
-  let body: { id?: string };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
@@ -134,18 +139,21 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  if (!body.id || typeof body.id !== 'string') {
+  const parsed = DeleteSchema.safeParse(body);
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: { code: 'MISSING_ID', message: 'Animation id is required' } },
+      { error: { code: 'INVALID_PARAMS', message: parsed.error.message } },
       { status: 400 }
     );
   }
 
+  const ids = 'ids' in parsed.data ? parsed.data.ids : [parsed.data.id];
   const supabase = await createSupabaseServerClient();
+
   const { error, count } = await supabase
     .from('saved_animations')
     .delete({ count: 'exact' })
-    .eq('id', body.id);
+    .in('id', ids);
 
   if (error) {
     console.error('[Admin Animations API] DELETE error:', error);
@@ -155,12 +163,5 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  if (count === 0) {
-    return NextResponse.json(
-      { error: { code: 'NOT_FOUND', message: 'Animation not found or already deleted' } },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, deleted: count ?? ids.length });
 }

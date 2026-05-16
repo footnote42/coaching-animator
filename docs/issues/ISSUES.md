@@ -653,7 +653,9 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### ADMIN-001 — Admin Bulk Deletion
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Added checkbox column with select-all to animations table; bulk action bar appears when any rows selected; confirm dialog before bulk delete; API extended to accept `{ ids: string[] }` using Supabase `.in()`.
 - **Severity**: Medium (Admin efficiency)
 - **Observed**: Admin Dashboard lacks multi-select for deleting animations in bulk.
 - **Action**: Implement multi-select checkboxes and a "Delete Selected" action in the admin dashboard.
