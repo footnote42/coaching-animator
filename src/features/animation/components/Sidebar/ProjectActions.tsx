@@ -176,7 +176,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     size="sm"
                     onClick={handleSave}
                     disabled={!project || isLoading.save}
-                    className="w-full bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white"
+                    className="w-full mt-2 bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white"
                 >
                     {isLoading.save ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

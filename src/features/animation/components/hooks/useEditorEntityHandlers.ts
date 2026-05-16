@@ -3,6 +3,29 @@ import { useProjectStore } from '@/core/stores/projectStore';
 import { EntityColors } from '@/features/animation/services/entityColors';
 import { toast } from 'sonner';
 
+const SPAWN_OFFSET_PX = 40;
+const SPAWN_OFFSETS = [
+  { dx: 0, dy: 0 },
+  { dx: 1, dy: 0 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 0, dy: -1 },
+  { dx: 1, dy: 1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }, { dx: -1, dy: -1 },
+];
+
+function findSpawnPosition(
+  cx: number, cy: number,
+  entities: Record<string, { x: number; y: number }>,
+): { x: number; y: number } {
+  const list = Object.values(entities);
+  const threshold = SPAWN_OFFSET_PX * 0.75;
+  for (const { dx, dy } of SPAWN_OFFSETS) {
+    const x = cx + dx * SPAWN_OFFSET_PX;
+    const y = cy + dy * SPAWN_OFFSET_PX;
+    if (!list.some(e => Math.abs(e.x - x) < threshold && Math.abs(e.y - y) < threshold)) {
+      return { x, y };
+    }
+  }
+  return { x: cx, y: cy };
+}
+
 interface UseEditorEntityHandlersParams {
   setShowRecoveryDialog: (show: boolean) => void;
   recoveredProject: unknown;
@@ -23,6 +46,7 @@ export function useEditorEntityHandlers({
   const addEntity = useProjectStore(s => s.addEntity);
   const propagateEntity = useProjectStore(s => s.propagateEntity);
   const project = useProjectStore(s => s.project);
+  const currentFrameIndex = useProjectStore(s => s.currentFrameIndex);
   const newProject = useProjectStore(s => s.newProject);
   const loadProject = useProjectStore(s => s.loadProject);
 
@@ -46,6 +70,11 @@ export function useEditorEntityHandlers({
     newProject();
   };
 
+  const spawnPosition = () => {
+    const entities = project?.frames[currentFrameIndex]?.entities ?? {};
+    return findSpawnPosition(canvasWidth / 2, canvasHeight / 2, entities);
+  };
+
   const addEntityWithPropagate = (entityData: Parameters<typeof addEntity>[0]) => {
     const newId = addEntity(entityData);
     if ((project?.frames.length ?? 0) > 1) {
@@ -57,10 +86,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddAttackPlayer = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'player',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'player', x, y,
       team: 'attack',
       color: stripColors?.attack || EntityColors.getDefault('player', 'attack'),
       label: '',
@@ -68,10 +96,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddDefensePlayer = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'player',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'player', x, y,
       team: 'defense',
       color: stripColors?.defense || EntityColors.getDefault('player', 'defense'),
       label: '',
@@ -79,10 +106,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddBall = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'ball',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'ball', x, y,
       team: 'neutral',
       color: EntityColors.getDefault('ball'),
       label: '',
@@ -90,10 +116,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddCone = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'cone',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'cone', x, y,
       team: 'neutral',
       color: EntityColors.getDefault('cone'),
       label: '',
@@ -101,10 +126,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddTackleShield = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'tackle-shield',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'tackle-shield', x, y,
       team: 'neutral',
       color: EntityColors.getDefault('tackle-shield'),
       label: '',
@@ -112,10 +136,9 @@ export function useEditorEntityHandlers({
   };
 
   const handleAddTackleBag = () => {
+    const { x, y } = spawnPosition();
     addEntityWithPropagate({
-      type: 'tackle-bag',
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      type: 'tackle-bag', x, y,
       team: 'neutral',
       color: EntityColors.getDefault('tackle-bag'),
       label: '',

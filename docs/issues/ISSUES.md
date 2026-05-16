@@ -45,10 +45,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-014 — Entity Spawn Offsetting
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Added `findSpawnPosition()` helper in `useEditorEntityHandlers.ts`. Checks existing frame entities against up to 9 candidate positions (centre + 8 cardinal/diagonal offsets at 40px steps). All six add-entity handlers now call `spawnPosition()` instead of hardcoding canvas centre.
 - **Severity**: Low (usability)
 - **Observed**: Adding multiple entities without moving the first results in them sitting directly on top of each other at the centre of the pitch, making selection difficult.
-- **Action**: Implement a spawn offset; if the centre point is already occupied by a just-added entity that hasn't been moved, offset the next entity slightly.
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
@@ -69,10 +70,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-017 — Save Local / Save to Cloud Button Layout Inconsistency
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Added `mt-2` to the Save Local button in `ProjectActions.tsx` to match the spacing on Save to Cloud and Sign in to Save. All three save-tier buttons now share the same top margin.
 - **Severity**: Low (visual polish)
 - **Observed**: In the Project Information pane (left side of the editor), the 'Save Local' and 'Save to Cloud' buttons have inconsistent layout and spacing. Different button colours are acceptable but the structural layout must match.
-- **Action**: Standardise button container layout, padding, and spacing for both save buttons. Use the same layout component/style regardless of colour differentiation.
 - **Roadmap ref**: Phase 2l (Cosmetic Polish)
 
 ---
