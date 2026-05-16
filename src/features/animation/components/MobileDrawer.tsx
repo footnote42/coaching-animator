@@ -15,10 +15,13 @@ interface MobileDrawerProps {
   onSaveToCloud?: () => void;
   onAddAttackPlayer: () => void;
   onAddDefensePlayer: () => void;
+  onAddOtherPlayer: () => void;
   onAddBall: () => void;
   onAddCone: () => void;
   onAddTackleShield: () => void;
   onAddTackleBag: () => void;
+  teamColors: { attack: string; defense: string; other: string };
+  onTeamColorChange: (team: 'attack' | 'defense' | 'other', color: string) => void;
   drawingMode: DrawingMode;
   onDrawingModeChange: (mode: DrawingMode) => void;
 }
@@ -30,10 +33,13 @@ export function MobileDrawer({
   onSaveToCloud,
   onAddAttackPlayer,
   onAddDefensePlayer,
+  onAddOtherPlayer,
   onAddBall,
   onAddCone,
   onAddTackleShield,
   onAddTackleBag,
+  teamColors,
+  onTeamColorChange,
   drawingMode,
   onDrawingModeChange,
 }: MobileDrawerProps) {
@@ -91,10 +97,13 @@ export function MobileDrawer({
             <EntityPalette
               onAddAttackPlayer={onAddAttackPlayer}
               onAddDefensePlayer={onAddDefensePlayer}
+              onAddOtherPlayer={onAddOtherPlayer}
               onAddBall={onAddBall}
               onAddCone={onAddCone}
               onAddTackleShield={onAddTackleShield}
               onAddTackleBag={onAddTackleBag}
+              teamColors={teamColors}
+              onTeamColorChange={onTeamColorChange}
               drawingMode={drawingMode}
               onDrawingModeChange={onDrawingModeChange}
             />

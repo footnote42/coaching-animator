@@ -53,6 +53,7 @@ import { ShareSheet } from '@/features/animation/components/ShareSheet';
 
 import { Toaster } from 'sonner';
 import { MobileDrawer } from './MobileDrawer';
+import { EntityColors } from '@/features/animation/services/entityColors';
 import Link from 'next/link';
 
 interface EditorProps {
@@ -80,6 +81,8 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const isDirty = useProjectStore(s => s.isDirty);
   const newProject = useProjectStore(s => s.newProject);
   const updateEntity = useProjectStore(s => s.updateEntity);
+  const setTeamColor = useProjectStore(s => s.setTeamColor);
+  const rawTeamColors = useProjectStore(s => s.project?.settings?.teamColors);
 
   const selectedEntityId = useUIStore(s => s.selectedEntityId);
   const selectedAnnotationId = useUIStore(s => s.selectedAnnotationId);
@@ -132,6 +135,12 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveredProject, setRecoveredProject] = useState<unknown>(null);
 
+  const teamColors = rawTeamColors ?? {
+    attack: EntityColors.getDefault('player', 'attack'),
+    defense: EntityColors.getDefault('player', 'defense'),
+    other: EntityColors.getDefault('player', 'other'),
+  };
+
   const {
     showGuestLimitModal,
     setShowGuestLimitModal,
@@ -139,6 +148,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     handleSkipRecovery,
     handleAddAttackPlayer,
     handleAddDefensePlayer,
+    handleAddOtherPlayer,
     handleAddBall,
     handleAddCone,
     handleAddTackleShield,
@@ -370,10 +380,13 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
               <EntityPalette
                 onAddAttackPlayer={handleAddAttackPlayer}
                 onAddDefensePlayer={handleAddDefensePlayer}
+                onAddOtherPlayer={handleAddOtherPlayer}
                 onAddBall={handleAddBall}
                 onAddCone={handleAddCone}
                 onAddTackleShield={handleAddTackleShield}
                 onAddTackleBag={handleAddTackleBag}
+                teamColors={teamColors}
+                onTeamColorChange={setTeamColor}
                 drawingMode={drawingMode}
                 onDrawingModeChange={setDrawingMode}
               />
@@ -605,10 +618,13 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         onSaveToCloud={onSaveToCloud}
         onAddAttackPlayer={handleAddAttackPlayer}
         onAddDefensePlayer={handleAddDefensePlayer}
+        onAddOtherPlayer={handleAddOtherPlayer}
         onAddBall={handleAddBall}
         onAddCone={handleAddCone}
         onAddTackleShield={handleAddTackleShield}
         onAddTackleBag={handleAddTackleBag}
+        teamColors={teamColors}
+        onTeamColorChange={setTeamColor}
         drawingMode={drawingMode}
         onDrawingModeChange={setDrawingMode}
       />

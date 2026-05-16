@@ -14,9 +14,9 @@ import {
     PlaybackPosition,
     Entity
 } from '../types';
-import { DESIGN_TOKENS } from '../constants/design-tokens';
 import { VALIDATION } from '../constants/validation';
 import { validateHexColor, validateEntityLabel, validateProject } from '../utils/validation';
+import { EntityColors } from '@/features/animation/services/entityColors';
 
 export interface ProjectStoreState {
     project: Project | null;
@@ -55,6 +55,8 @@ export interface ProjectStoreState {
     toggleLoop: () => void;
 
     setPlaybackPosition: (position: PlaybackPosition) => void;
+
+    setTeamColor: (team: 'attack' | 'defense' | 'other', color: string) => void;
 }
 
 export const useProjectStore = create<ProjectStoreState>()(
@@ -92,6 +94,11 @@ export const useProjectStore = create<ProjectStoreState>()(
                     settings: {
                         defaultTransitionDuration: 2000,
                         exportResolution: '720p',
+                        teamColors: {
+                            attack: EntityColors.getDefault('player', 'attack'),
+                            defense: EntityColors.getDefault('player', 'defense'),
+                            other: EntityColors.getDefault('player', 'other'),
+                        },
                     },
                 };
 
@@ -380,7 +387,7 @@ export const useProjectStore = create<ProjectStoreState>()(
 
                     // Apply defaults
                     const team = entity.team ?? 'neutral';
-                    const color = entity.color ?? DESIGN_TOKENS.colours[team][0];
+                    const color = entity.color ?? EntityColors.getDefault(entity.type, team);
 
                     // Generate default label for players (Att 01, Def 01, etc.)
                     let label = entity.label ?? '';
@@ -572,6 +579,37 @@ export const useProjectStore = create<ProjectStoreState>()(
                             if (frame.entities[entityId]) return frame;
                             return { ...frame, entities: { ...frame.entities, [entityId]: { ...source } } };
                         }),
+                    },
+                    isDirty: true,
+                };
+            }),
+
+            setTeamColor: (team, color) => set((state) => {
+                if (!state.project) return state;
+                const updatedFrames = state.project.frames.map(frame => ({
+                    ...frame,
+                    entities: Object.fromEntries(
+                        Object.entries(frame.entities).map(([id, entity]) => [
+                            id,
+                            entity.team === team ? { ...entity, color } : entity,
+                        ])
+                    ),
+                }));
+                return {
+                    project: {
+                        ...state.project,
+                        settings: {
+                            ...state.project.settings,
+                            teamColors: {
+                                attack: EntityColors.getDefault('player', 'attack'),
+                                defense: EntityColors.getDefault('player', 'defense'),
+                                other: EntityColors.getDefault('player', 'other'),
+                                ...state.project.settings.teamColors,
+                                [team]: color,
+                            },
+                        },
+                        frames: updatedFrames,
+                        updatedAt: new Date().toISOString(),
                     },
                     isDirty: true,
                 };

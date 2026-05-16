@@ -21,6 +21,7 @@ const TEAM_DEFAULTS = {
     attack: attack[0],   // Blue
     defense: defense[0], // Red
     neutral: neutral[0], // White
+    other: '#EAB308',    // Amber — distinct from all equipment defaults
 } as const;
 
 /**

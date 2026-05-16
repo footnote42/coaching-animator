@@ -27,10 +27,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-011 — Team Colour Selection & Legend Alignment
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Added `teamColors` to `ProjectSettings` (attack/defense/other). New `setTeamColor` store action updates settings and retroactively recolours all matching entities across all frames. "Team Colours" section added to EntityPalette sidebar with inline ColorPicker per team. "Other Role" player type added (team: 'other', amber default, no auto-label). All wired through Editor + MobileDrawer.
 - **Severity**: Low (UX clarity)
 - **Observed**: The legend indicates team colours, but there's no option to change the team colours and immediately have those selections amend the colours of the entities on the pitch.
-- **Action**: Implement a UI for selecting team colours globally for the animation, and connect it to the EntityColors resolution logic.
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---

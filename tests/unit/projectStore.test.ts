@@ -101,6 +101,11 @@ describe('ProjectStore - newProject', () => {
         expect(updatedState.project?.settings).toEqual({
             defaultTransitionDuration: 2000,
             exportResolution: '720p',
+            teamColors: {
+                attack: '#2563EB',
+                defense: '#DC2626',
+                other: '#EAB308',
+            },
         });
     });
 

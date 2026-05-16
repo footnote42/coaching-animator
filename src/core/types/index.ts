@@ -58,6 +58,13 @@ export interface ProjectSettings {
 
     /** Pitch layout variant (defaults to 'standard') */
     pitchLayout?: PitchLayout;
+
+    /** Per-project team colours; retroactively applied to all entities of that team */
+    teamColors?: {
+        attack: string;
+        defense: string;
+        other: string;
+    };
 }
 
 /**
@@ -174,7 +181,8 @@ export type EntityOrientation = 'up' | 'down' | 'left' | 'right';
 export type TeamType =
     | 'attack'
     | 'defense'
-    | 'neutral';
+    | 'neutral'
+    | 'other';
 
 /**
  * Annotation shape types.

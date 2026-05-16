@@ -1,56 +1,58 @@
+import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
+import { ColorPicker } from '@/shared/ui/ColorPicker';
 import { DrawingMode } from '@/core/types';
 
 export interface EntityPaletteProps {
-  /** Called when attack player button clicked */
   onAddAttackPlayer: () => void;
-
-  /** Called when defense player button clicked */
   onAddDefensePlayer: () => void;
-
-  /** Called when ball button clicked */
+  onAddOtherPlayer: () => void;
   onAddBall: () => void;
-
-  /** Called when cone button clicked */
   onAddCone: () => void;
-
-  /** Called when tackle shield button clicked */
   onAddTackleShield: () => void;
-
-  /** Called when tackle bag button clicked */
   onAddTackleBag: () => void;
+
+  teamColors: { attack: string; defense: string; other: string };
+  onTeamColorChange: (team: 'attack' | 'defense' | 'other', color: string) => void;
 
   /** @deprecated Marker button removed - kept for backwards compatibility */
   onAddMarker?: () => void;
 
-  /** Current drawing mode */
   drawingMode: DrawingMode;
-
-  /** Called to change drawing mode */
   onDrawingModeChange: (mode: DrawingMode) => void;
 }
 
-/**
- * Entity palette sidebar component.
- * Provides buttons to add different entity types to the canvas.
- */
+const TEAM_LABELS: Record<'attack' | 'defense' | 'other', string> = {
+  attack: 'Attack',
+  defense: 'Defence',
+  other: 'Other Role',
+};
+
 export function EntityPalette({
   onAddAttackPlayer,
   onAddDefensePlayer,
+  onAddOtherPlayer,
   onAddBall,
   onAddCone,
   onAddTackleShield,
   onAddTackleBag,
-  // onAddMarker removed - markers deprecated
+  teamColors,
+  onTeamColorChange,
   drawingMode,
   onDrawingModeChange,
 }: EntityPaletteProps) {
+  const [openPicker, setOpenPicker] = useState<'attack' | 'defense' | 'other' | null>(null);
+
   const handleArrowClick = () => {
     onDrawingModeChange(drawingMode === 'arrow' ? 'none' : 'arrow');
   };
 
   const handleLineClick = () => {
     onDrawingModeChange(drawingMode === 'line' ? 'none' : 'line');
+  };
+
+  const togglePicker = (team: 'attack' | 'defense' | 'other') => {
+    setOpenPicker(prev => (prev === team ? null : team));
   };
 
   return (
@@ -78,6 +80,15 @@ export function EntityPalette({
         <Button
           variant="outline"
           size="sm"
+          onClick={onAddOtherPlayer}
+          className="justify-start"
+          aria-label="Add other role player"
+        >
+          + Other Role
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAddBall}
           className="justify-start"
           aria-label="Add ball"
@@ -93,6 +104,33 @@ export function EntityPalette({
         >
           + Cone
         </Button>
+      </div>
+
+      <h3 className="text-sm font-semibold text-pitch-green mt-4 mb-2">Team Colours</h3>
+      <div className="flex flex-col gap-1">
+        {(['attack', 'defense', 'other'] as const).map(team => (
+          <div key={team}>
+            <button
+              onClick={() => togglePicker(team)}
+              className="flex items-center gap-2 w-full px-2 py-1 text-sm text-left hover:bg-[var(--color-surface-warm)] transition-colors"
+              aria-label={`Change ${TEAM_LABELS[team]} colour`}
+            >
+              <span
+                className="inline-block w-4 h-4 flex-shrink-0 border border-[var(--color-border)]"
+                style={{ backgroundColor: teamColors[team] }}
+              />
+              <span className="text-[var(--color-text-primary)]">{TEAM_LABELS[team]}</span>
+            </button>
+            {openPicker === team && (
+              <div className="mt-1 mb-1">
+                <ColorPicker
+                  value={teamColors[team]}
+                  onChange={(color) => onTeamColorChange(team, color)}
+                />
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       <h3 className="text-sm font-semibold text-pitch-green mt-4 mb-2">Equipment</h3>

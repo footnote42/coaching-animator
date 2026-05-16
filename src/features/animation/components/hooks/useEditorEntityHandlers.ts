@@ -47,6 +47,7 @@ export function useEditorEntityHandlers({
   const propagateEntity = useProjectStore(s => s.propagateEntity);
   const project = useProjectStore(s => s.project);
   const currentFrameIndex = useProjectStore(s => s.currentFrameIndex);
+  const teamColors = useProjectStore(s => s.project?.settings?.teamColors);
   const newProject = useProjectStore(s => s.newProject);
   const loadProject = useProjectStore(s => s.loadProject);
 
@@ -90,7 +91,7 @@ export function useEditorEntityHandlers({
     addEntityWithPropagate({
       type: 'player', x, y,
       team: 'attack',
-      color: stripColors?.attack || EntityColors.getDefault('player', 'attack'),
+      color: teamColors?.attack || stripColors?.attack || EntityColors.getDefault('player', 'attack'),
       label: '',
     });
   };
@@ -100,7 +101,17 @@ export function useEditorEntityHandlers({
     addEntityWithPropagate({
       type: 'player', x, y,
       team: 'defense',
-      color: stripColors?.defense || EntityColors.getDefault('player', 'defense'),
+      color: teamColors?.defense || stripColors?.defense || EntityColors.getDefault('player', 'defense'),
+      label: '',
+    });
+  };
+
+  const handleAddOtherPlayer = () => {
+    const { x, y } = spawnPosition();
+    addEntityWithPropagate({
+      type: 'player', x, y,
+      team: 'other',
+      color: teamColors?.other || EntityColors.getDefault('player', 'other'),
       label: '',
     });
   };
@@ -152,6 +163,7 @@ export function useEditorEntityHandlers({
     handleSkipRecovery,
     handleAddAttackPlayer,
     handleAddDefensePlayer,
+    handleAddOtherPlayer,
     handleAddBall,
     handleAddCone,
     handleAddTackleShield,
