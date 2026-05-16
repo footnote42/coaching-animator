@@ -36,10 +36,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### EDITOR-012 — Entity Spawning & Persistence Logic
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16 (via 005-editor-canvas, propagateEntity + opt-in toast)
+- **Summary**: Entity is placed only on the current frame. If the animation has multiple frames, a toast prompts "Add entity to all subsequent frames?" — user opts in via Yes/No. Accepted as correct UX.
 - **Severity**: Medium (UX friction)
-- **Observed**: When adding entities to an existing multi-frame animation, they are currently placed in the centre of the pitch for *every* frame. This requires the user to move or delete them on every frame individually.
-- **Action**: Change spawning logic: an entity should be placed only in the frame where it was added. It should then maintain that same position in all *subsequent* frames by default, awaiting user movement, rather than resetting to centre on every frame.
 - **Roadmap ref**: Phase 2 (Editor & Canvas)
 
 ---
