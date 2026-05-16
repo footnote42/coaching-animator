@@ -62,10 +62,11 @@ export function SaveToCloudModal({
   const [selectedFoundationId, setSelectedFoundationId] = useState<string>(initialParentId || '');
   const [foundations, setFoundations] = useState<{ id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[]>([]);
   const [progressionOrder, setProgressionOrder] = useState<number | null>(null);
+  const autoInitedForRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (isProgression && foundations.length === 0) {
-      getWithRetry<{ animations: { id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[] }>('/api/animations?is_progression=false&limit=50').then((res) => {
+      getWithRetry<{ animations: { id: string; title: string; progression_count: number; tags?: string[]; animation_type?: AnimationType }[] }>('/api/animations?limit=50').then((res) => {
         if (res.ok && res.data) {
           setFoundations(res.data.animations);
         }
@@ -74,21 +75,22 @@ export function SaveToCloudModal({
   }, [isProgression, foundations.length]);
 
   useEffect(() => {
-    if (isProgression && selectedFoundationId && foundations.length > 0) {
-      getWithRetry<{ id: string }[]>(`/api/animations/${selectedFoundationId}/progressions`).then((res) => {
-        if (res.ok && res.data) {
-          const nextSlot = res.data.length + 1;
-          setProgressionOrder(nextSlot);
-          const foundation = foundations.find(f => f.id === selectedFoundationId);
-          if (foundation) {
-             setTitle(`${foundation.title} — Progression ${nextSlot}`);
-             if (foundation.tags?.length && !tags) setTags(foundation.tags.join(', '));
-             if (foundation.animation_type) setAnimationType(foundation.animation_type);
-          }
+    if (!isProgression || !selectedFoundationId || foundations.length === 0) return;
+    if (autoInitedForRef.current === selectedFoundationId) return;
+    getWithRetry<{ progressions: { id: string }[] }>(`/api/animations/${selectedFoundationId}/progressions`).then((res) => {
+      if (res.ok && res.data) {
+        const nextSlot = res.data.progressions.length + 1;
+        autoInitedForRef.current = selectedFoundationId;
+        setProgressionOrder(nextSlot);
+        const foundation = foundations.find(f => f.id === selectedFoundationId);
+        if (foundation) {
+          setTitle(`${foundation.title} — Progression ${nextSlot}`);
+          if (foundation.tags?.length) setTags(foundation.tags.join(', '));
+          if (foundation.animation_type) setAnimationType(foundation.animation_type);
         }
-      });
-    }
-  }, [isProgression, selectedFoundationId, foundations, tags]);
+      }
+    });
+  }, [isProgression, selectedFoundationId, foundations]);
 
   // Cleanup to prevent state updates after unmount
   useEffect(() => {

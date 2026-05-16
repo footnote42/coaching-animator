@@ -19,7 +19,7 @@ export function LinkToFoundationModal({ animation, onClose, onSuccess }: LinkToF
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getWithRetry<{ animations: { id: string; title: string; progression_count: number }[] }>('/api/animations?is_progression=false&limit=50').then((res) => {
+    getWithRetry<{ animations: { id: string; title: string; progression_count: number }[] }>('/api/animations?limit=50').then((res) => {
       if (res.ok && res.data) {
         // Filter out the animation itself if it happens to be in the list
         setFoundations(res.data.animations.filter(a => a.id !== animation.id));
@@ -39,11 +39,11 @@ export function LinkToFoundationModal({ animation, onClose, onSuccess }: LinkToF
 
     try {
       // Get the next slot
-      const progRes = await getWithRetry<{ id: string }[]>(`/api/animations/${selectedFoundationId}/progressions`);
+      const progRes = await getWithRetry<{ progressions: { id: string }[] }>(`/api/animations/${selectedFoundationId}/progressions`);
       if (!progRes.ok || !progRes.data) {
         throw new Error('Failed to get progression count');
       }
-      const nextSlot = progRes.data.length + 1;
+      const nextSlot = progRes.data.progressions.length + 1;
 
       if (nextSlot > 5) {
         throw new Error('This foundation already has 5 progressions');
