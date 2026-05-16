@@ -35,10 +35,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-            <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-950">
+            <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle className="text-gray-500">{title}</DialogTitle>
-                    <DialogDescription className="text-gray-500">{description}</DialogDescription>
+                    <DialogTitle className="text-text-primary">{title}</DialogTitle>
+                    <DialogDescription className="text-gray-600">{description}</DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button

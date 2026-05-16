@@ -178,6 +178,16 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
     const color = getColor();
     const showLabel = entity.type === 'player' && entity.label;
 
+    // Subtle shadow to lift entities above the pitch surface
+    const shadowProps = {
+        shadowEnabled: true,
+        shadowColor: 'rgba(0,0,0,0.35)',
+        shadowBlur: 4,
+        shadowOffsetX: 1,
+        shadowOffsetY: 2,
+        shadowOpacity: 0.4,
+    };
+
     return (
         <Group
             ref={groupRef}
@@ -201,7 +211,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     fill={color}
                     stroke={DESIGN_TOKENS.colours.primary}
                     strokeWidth={isSelected ? 2 : 1}
-                    shadowEnabled={false}
+                    {...shadowProps}
                     opacity={opacity}
                 />
             ) : entity.type === 'cone' ? (
@@ -225,7 +235,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                         fill={color}
                         stroke={DESIGN_TOKENS.colours.primary}
                         strokeWidth={isSelected ? 2 : 1}
-                        shadowEnabled={false}
+                        {...shadowProps}
                         opacity={opacity}
                     />
                     <Rect
@@ -250,7 +260,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     fill={color}
                     stroke={DESIGN_TOKENS.colours.primary}
                     strokeWidth={isSelected ? 2 : 1}
-                    shadowEnabled={false}
+                    {...shadowProps}
                     opacity={opacity}
                 />
             ) : (
@@ -260,7 +270,7 @@ export const PlayerToken: React.FC<PlayerTokenProps> = ({
                     fill={color}
                     stroke={isSelected ? DESIGN_TOKENS.colours.primary : undefined}
                     strokeWidth={isSelected ? 2 : 0}
-                    shadowEnabled={false}
+                    {...shadowProps}
                     opacity={opacity}
                 />
             )}

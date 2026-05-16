@@ -1,4 +1,5 @@
 import { Save, FolderOpen, FilePlus, Loader2, Cloud } from 'lucide-react';
+import { RugbyBallSpinner } from '@/shared/ui/RugbyBallSpinner';
 import { useRef } from 'react';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
@@ -179,7 +180,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                     className="w-full mt-2 bg-[var(--color-accent-warm)] hover:bg-[var(--color-accent-hover)] text-white"
                 >
                     {isLoading.save ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <RugbyBallSpinner className="w-4 h-4 mr-2" />
                     ) : (
                         <Save className="w-4 h-4 mr-2" />
                     )}

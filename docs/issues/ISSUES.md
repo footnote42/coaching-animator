@@ -127,15 +127,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Phase 2–3: Gallery UX
 
 ### UX-004 — Gallery Cards Lack Visual Preview
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Verified complete — gallery cards now display visual pitch thumbnails via `MiniPitchSVG` showing entity positions from the first frame. Sufficient for launch.
 - **Severity**: Medium (reduces engagement)
-- **Observed**: Gallery cards are plain — no visual representation of animation content
-- **Options**: 
-  - Mini frame grab (first or key frame from animation)
-  - Creator-selected thumbnail icon
-- **Implementation**: Requires creator-side choice + storage mechanism
 - **Roadmap ref**: Phase 2 (nice-to-have after launch) or Phase 3
-- **Note**: Can ship as v1.0.1 if not blocking core loop verification
 
 ---
 
@@ -144,16 +140,11 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-007 — Design Direction Research & Hero Page Kit
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Design direction established — tactical/hand-drawn aesthetic confirmed via 022-notebook-tab-nav (notebook tabs, page textures, whiteboard motif). Hero page SVG background and brand icon already implement the coaching diagram aesthetic. Kit visualization deferred to FEATURE-010 as a Phase 4+ enhancement.
 - **Severity**: Medium (landing page credibility)
-- **Observed**: Need research on design approach (modern/enticing vs plain/functional). Also need to consider kit visualization on hero page to signal "this is for rugby coaches."
-- **Exploration**: 
-  - Collect design examples (rugby app landing pages, coaching platforms)
-  - Decide visual approach: tactical/hand-drawn vs modern/minimalist
-  - Consider kit imagery: tackle bags, balls, shields, posts, whiteboard, whistle, boots, gum shield, scrum cap
-- **Action**: Design sprint with design research + kit asset library plan
 - **Roadmap ref**: Phase 2, T3 (Landing Credibility)
-- **Dependency**: Informs overall landing page redesign direction
 
 ---
 
@@ -189,10 +180,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### UX-011 — Entity Depth & Visual Indicators
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Added `shadowProps` object to `PlayerToken.tsx` (`shadowEnabled: true`, `shadowColor: rgba(0,0,0,0.35)`, `shadowBlur: 4`, `shadowOffsetX: 1`, `shadowOffsetY: 2`, `shadowOpacity: 0.4`). Applied to player circles, ball ellipse, tackle shield, and tackle bag via spread. Cone left unshadowed (stroke-only shape — shadow would appear on the stroke ring rather than a fill body).
 - **Severity**: Low (visual polish)
-- **Observed**: Entities look "flat" on the pitch. It's not always clear how they are layered or that they are distinct from the background.
-- **Action**: Add subtle shadows or depth indicators to entities (players, balls, kit) to give a sense of depth and separation from the pitch surface.
 - **Roadmap ref**: Phase 2 (Visual Excellence)
 
 ---
@@ -296,29 +287,18 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Phase 3–4: Feature Decisions
 
 ### FEAT-008 — GIF/Export Format Decision
-- **Status**: `[ ]` Open (decision needed)
+- **Status**: `[~]` Deferred (won't do)
+- **Decision**: Drop export entirely — share link + replay viewer covers the use case. Export UI already removed (UX-002, closed 2026-04-25). No export feature planned.
 - **Severity**: Medium (feature clarity)
-- **Observed**: Export settings still reference WebM and GIF. Unclear if feature is live, planned, or deprecated. Decision needed:
-  - **Option A**: Drop export entirely (rely on share link + replay viewer)
-  - **Option B**: Support GIF only (simple, shareable, low quality)
-  - **Option C**: Support MP4 via client-side encoding (requires ffmpeg.wasm)
-  - **Option D**: Server-side rendering (Vercel Functions + headless Chrome)
-- **Action**: Make deliberate decision and update UI accordingly
-- **Roadmap ref**: Phase 3 (clarification) or Phase 4 (if building new export system)
-- **Note**: Defer unless coaches specifically request it
+- **Roadmap ref**: Not scheduled
 
 ---
 
 ### FEAT-009 — Offline Capability Exploration
-- **Status**: `[ ]` Open
+- **Status**: `[~]` Deferred (won't do)
+- **Decision**: Not planned. Autosave to localStorage already handles transient connectivity loss. Full offline-first requires significant data sync complexity not warranted by current user feedback.
 - **Severity**: Low (nice-to-have)
-- **Observed**: No way to use the app offline. For coaches with unreliable connectivity or fieldside work, offline editing would be valuable.
-- **Exploration**: 
-  - Evaluate Service Worker + IndexedDB for local persistence
-  - Sync strategy for offline edits
-  - Scope: read-only for v1 (browse animations offline), edit sync for v2
-- **Roadmap ref**: Phase 4+ (depends on user feedback)
-- **Complexity**: Medium–Large (data sync, conflict resolution)
+- **Roadmap ref**: Not scheduled
 
 ---
 
@@ -570,10 +550,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ## Navigation & Global UI
 
 ### UX-018 — Recover Autosave Popup Fades Into Darkened Background
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Root cause was `bg-background` in `dialog.tsx` resolving to the parchment theme token (`#F2ECD8`) via Tailwind v4 `@theme`, which blended with the `bg-black/80` overlay. Fixed by changing `DialogContent` default from `bg-background` to `bg-white` and upgrading shadow from `shadow-lg` to `shadow-xl`. Also fixed `ConfirmDialog` title/description from washed-out `text-gray-500` to `text-text-primary` / `text-gray-600`. Fix applies globally to all dialogs.
 - **Severity**: Medium (usability / first impression)
-- **Observed**: When creating a new animation, the 'Recover Auto-saved Project' modal is rendered with the rest of the page dimmed — but the popup itself also appears dulled and nearly blends into the background. Only the Start Fresh and Recover buttons are visually distinct.
-- **Action**: Ensure the modal card has a solid, high-contrast background (e.g. white or near-white) with a clear drop shadow or border so it lifts visually above the overlay. The modal surface should be clearly separated from the backdrop, not merged with it.
 - **Roadmap ref**: Phase 2l (Cosmetic Polish)
 
 ---
@@ -618,10 +598,10 @@ Status legend: `[ ]` Open · `[x]` Closed · `[~]` Deferred
 ---
 
 ### FEAT-011 — Spinning Rugby Ball Save Indicator
-- **Status**: `[ ]` Open
+- **Status**: `[x]` Closed
+- **Completed**: 2026-05-16
+- **Summary**: Created `RugbyBallSpinner` component (`src/shared/ui/RugbyBallSpinner.tsx`) — amber oval with pitch-green seam and lacing marks, animated via existing `animate-spin-slow` token (3s). Replaced `Loader2` spinner on the Save Local button in `ProjectActions.tsx`. Other `Loader2` usages (load, delete, etc.) retain the generic spinner — rugby ball is save-specific for brand resonance.
 - **Severity**: Low (delight)
-- **Observed**: Current save action uses a generic spinner. A spinning rugby ball would reinforce brand personality.
-- **Action**: Create or source a simple CSS/SVG animated rugby ball; replace save spinner globally
 - **Roadmap ref**: Phase 4 (low-effort delight item)
 
 ---
@@ -964,13 +944,13 @@ Workflow-first audit applied the **Workflow 1 blocker test**: "Does this issue p
 
 ## Quick Reference by Roadmap Phase
 
-- **Phase 2** (Launch Credibility): UX-001, UX-004, UX-007, UX-009, UX-011, UX-018 *(~~UX-010~~, ~~UX-012~~, ~~UX-013~~, ~~UX-014~~ closed)*
+- **Phase 2** (Launch Credibility): UX-001, UX-009 *(~~UX-004~~, ~~UX-007~~, ~~UX-010~~, ~~UX-011~~, ~~UX-012~~, ~~UX-013~~, ~~UX-014~~, ~~UX-018~~ closed)*
 - **Phase 2 — Editor/Workflow**: *(~~EDITOR-010~~, ~~EDITOR-011~~, ~~EDITOR-012~~, ~~EDITOR-013~~, ~~EDITOR-014~~, ~~EDITOR-017~~, ~~EDITOR-019~~, ~~EDITOR-016~~, ~~EDITOR-018~~, ~~WORKFLOW-001~~, ~~FEAT-013~~ closed)*
 - **Phase 2 — Playback/Share**: FLOW-003 *(~~PLAYBACK-001~~, ~~PLAYBACK-002~~, ~~FLOW-001~~, ~~FLOW-002~~, ~~FLOW-004~~, ~~EDITOR-002~~ closed)*
-- **Phase 2 — Landing/Nav**: LANDING-001, NAV-001, CONTACT-001 *(~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
+- **Phase 2 — Landing/Nav**: LANDING-001, CONTACT-001 *(~~NAV-001~~, ~~LANDING-002~~, ~~LANDING-003~~, ~~LANDING-004~~ closed)*
 - **Phase 2 — Gallery/Playbook**: *(~~GALLERY-001~~, ~~GALLERY-002~~ closed)*
 - **Audit Bugs**: *(~~WF1-S5~~, ~~WF2-S1+S2~~ closed 2026-05-08)*
-- **Phase 3** (Quality Safety Net): FEAT-006, ADMIN-001, PERF-001 *(~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed 3b; ~~3f audit~~ closed)*
-- **Phase 3–4** (Feature Decisions): FEAT-008, FEAT-009
-- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, FEAT-011, ~~FEAT-012~~ (closed 021), DESIGN-001, DESIGN-002
+- **Phase 3** (Quality Safety Net): ADMIN-001, PERF-001 *(~~FEAT-006~~, ~~SEC-001~~, ~~SEC-002~~, ~~SEC-003~~ closed)*
+- **Phase 3–4** (Feature Decisions): *(~~FEAT-008~~, ~~FEAT-009~~ deferred/won't do)*
+- **Phase 4+** (Growth): ~~FEATURE-001~~ (shipped via 009), FEATURE-002, FEATURE-010, ~~FEAT-011~~ (closed), ~~FEAT-012~~ (closed 021), DESIGN-001, ~~DESIGN-002~~ (closed 022)
 - **Phase 5+** (Coaching Education Platform — Aspiration): ASPIRATION-001, FEATURE-003, FEATURE-004, FEATURE-005
