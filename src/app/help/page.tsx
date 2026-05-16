@@ -41,6 +41,16 @@ export default function HelpPage() {
         </p>
       </section>
 
+      <section className="mb-10">
+        <h2 className="text-2xl font-heading font-bold mb-4">Progressions</h2>
+        <p className="mb-4">
+          Learn how to build multi-stage drills by linking animations into a progression set that coaches can step through live.
+        </p>
+        <Link href="/help/progressions" className="text-primary hover:text-primary/80 font-medium underline transition-colors">
+          Read the Progressions guide
+        </Link>
+      </section>
+
       <section>
         <h2 className="text-2xl font-heading font-bold mb-4">Coaching framework</h2>
         <p className="mb-4">
