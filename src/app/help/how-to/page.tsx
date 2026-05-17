@@ -71,7 +71,7 @@ export default function HowToPage() {
             <li><strong>My Playbook</strong> — your saved animations (requires sign-in)</li>
             <li><strong>Create</strong> — the animation editor</li>
             <li><strong>Help</strong> — this section</li>
-            <li><strong>Portfolio</strong> — your profile, display name, club badge (requires sign-in)</li>
+            <li><strong>Profile</strong> — your profile, display name, club badge (requires sign-in)</li>
           </ul>
         </section>
 

@@ -24,7 +24,7 @@ const TAB_SECTIONS: TabSection[] = [
   { id: 'playbook',  label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true  },
   { id: 'create',    label: 'Create',      href: '/app',       cssVar: '--c-tab-create',    requiresAuth: false },
   { id: 'help',      label: 'Help',        href: '/help',      cssVar: '--c-tab-help',      requiresAuth: false },
-  { id: 'portfolio', label: 'Portfolio',   href: '/profile',   cssVar: '--c-tab-portfolio', requiresAuth: true  },
+  { id: 'profile',   label: 'Profile',     href: '/profile',   cssVar: '--c-tab-profile',   requiresAuth: true  },
 ];
 
 interface NavigationProps {
@@ -91,13 +91,13 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
       aria-label="Site navigation"
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
-        <div className="flex items-center gap-8 h-full">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 py-2">
-            <BrandIcon variant="header" priority />
-            <span className="font-heading font-bold text-lg text-white">Coaching Animator</span>
-          </Link>
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 py-2">
+          <BrandIcon variant="header" priority />
+          <span className="font-heading font-bold text-lg text-white">Coaching Animator</span>
+        </Link>
 
+        <div className="flex items-center gap-4 h-full">
           {/* Desktop Tabs */}
           <div className="hidden md:flex items-end h-full pt-2">
             {TAB_SECTIONS
@@ -109,7 +109,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
                     key={sec.id}
                     href={sec.href}
                     className={`nav-tab text-white text-sm font-medium flex items-center justify-center ${active ? 'nav-tab-active' : ''}`}
-                    style={{ 
+                    style={{
                       backgroundColor: `var(${sec.cssVar})`,
                       zIndex: 10 - visitOrder.indexOf(sec.id)
                     }}
@@ -120,9 +120,6 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               })
             }
           </div>
-        </div>
-
-        <div className="flex items-center gap-4">
           {/* Desktop Utility Links (Admin, Help, Sign Out) */}
           <div className="hidden md:flex items-center gap-4">
             {userRole === 'admin' && (
