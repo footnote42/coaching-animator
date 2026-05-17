@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-export type SectionId = 'home' | 'gallery' | 'playbook' | 'create';
+export type SectionId = 'home' | 'gallery' | 'playbook' | 'create' | 'help' | 'portfolio';
 
 const STORAGE_KEY = 'nav_mru_v1';
 

@@ -51,13 +51,23 @@ export default function HelpPage() {
         </Link>
       </section>
 
-      <section>
+      <section className="mb-10">
         <h2 className="text-2xl font-heading font-bold mb-4">Coaching framework</h2>
         <p className="mb-4">
           Learn how to design effective, engaging sessions using our grassroots-focused approach.
         </p>
         <Link href="/help/coaching" className="text-primary hover:text-primary/80 font-medium underline transition-colors">
           Read the APES Coaching Framework guide
+        </Link>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-heading font-bold mb-4">New to the app?</h2>
+        <p className="mb-4">
+          A step-by-step guide to all the main features — useful if you&apos;re testing the app for the first time.
+        </p>
+        <Link href="/help/how-to" className="text-primary hover:text-primary/80 font-medium underline transition-colors">
+          Read the How-to guide
         </Link>
       </section>
     </div>

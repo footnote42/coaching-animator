@@ -4,6 +4,152 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-17 — Full Manual Test Run (76 tests) ✅
+
+**Branch**: `main` (`c48b632` — no code changes this session)
+
+### What was completed this session
+
+Full system regression test using `playwright-cli` against `http://localhost:3001`, covering all 16 areas of `docs/testing/MANUAL-TEST-SCRIPT.md`. Results recorded in `docs/testing/TEST-RUN-2026-05-17.md`.
+
+**Overall: 76 tests / 66 PASS / 3 FAIL / 4 PARTIAL / 3 NOT RUN**
+
+### Failures requiring fixes
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| T-016 | P1 (ship-blocker) | Guest 10-frame limit not enforced — guests can add unlimited frames past the `VALIDATION.PROJECT.GUEST_MAX_FRAMES = 10` constant |
+| T-045 | P2 | Editor pause button unresponsive during playback — button re-renders every frame, click events don't land |
+| T-074 | P2 | Sidebar "Share Link" auto-saves unsaved animations and generates a share URL without a save-first guard. Toolbar "Share Animation" correctly guards; only the sidebar path is broken |
+| T-133 | P3 | Timeline panel off-screen at 768px viewport (positioned at x≈1690, requires horizontal scroll) |
+
+### Additional observations (not counted as failures)
+
+- T-094: One "T-061 Test Drill (edited)" animation in the test account has corrupt cloud data — `loadProject()` fails schema validation when loading it as a `parentId` for progressions. Other animations load correctly.
+- T-102: Web Share API unavailable in headless Playwright — Share button on gallery cards can't be fully verified in this test environment; not a code bug.
+- T-026: No success toast on profile save — update is immediate/inline. Minor UX gap worth noting.
+- T-061 / T-083: Enter in the Tags field submits the Save modal early — coaching notes can't be filled before the form fires. Blocks T-083 (coaching notes in share view) from being tested.
+
+### State after session
+
+```
+Branch: main (no new commits)
+Test results: docs/testing/TEST-RUN-2026-05-17.md
+Open failures: T-016 (P1), T-045 (P2), T-074 (P2), T-133 (P3)
+TSC: clean · Lint: clean (from previous session)
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. A full manual test run was just completed; results are in `docs/testing/TEST-RUN-2026-05-17.md`.
+
+**Start with diagnostics:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Priority fixes (work in order):**
+
+**1. T-016 (P1) — Guest 10-frame limit not enforced**
+
+The constant `VALIDATION.PROJECT.GUEST_MAX_FRAMES = 10` exists but the "Add Frame" action in the editor is not checking it for guest users. Find where frames are added (`src/core/stores/projectStore.ts` likely has an `addFrame` action) and add the guard: if `!isAuthenticated && frames.length >= GUEST_MAX_FRAMES`, show a prompt to sign in instead of adding the frame.
+
+**2. T-074 (P2) — Sidebar "Share Link" auto-saves without a save-first guard**
+
+The sidebar "Share Link" button (`src/features/animation/components/Sidebar/ProjectActions.tsx` — the Share Link section) auto-saves an unsaved animation and generates a share URL. The toolbar "Share Animation" button is correctly disabled for unsaved animations. The sidebar path needs the same guard: if the animation is unsaved (no cloud ID), prompt the user to save to cloud first before generating a share link, rather than silently auto-saving.
+
+**3. T-045 (P2) — Editor pause button unresponsive during playback**
+
+The play button in the editor re-renders every frame during playback, causing click events to not register. Investigate the play/pause button's ref stability in the timeline panel (`src/features/animation/components/Canvas/FloatingRemote.tsx` or the TimelinePanel). The share view's pause works correctly — compare those implementations. The fix likely involves stabilising the button's ref or using a pointer-event approach that doesn't depend on stable DOM.
+
+**4. T-133 (P3) — Timeline panel off-screen at 768px**
+
+The timeline panel renders at x≈1690 at 768px viewport width, outside the viewport. At desktop (1280px+) it's fine. The layout likely needs a breakpoint where the timeline collapses to the bottom of the canvas or becomes scrollable at tablet widths.
+
+---
+
+## 2026-05-17 — Profile Avatar OAuth Removal ✅
+
+**Branch**: `main` (`c48b632` pushed)
+
+### What was delivered this session
+
+1. **Removed Google OAuth avatar from profile page** (`c48b632`)
+   - Dropped `avatarUrl` / `user?.user_metadata?.avatar_url` entirely — OAuth profile photos are inconsistent in quality and availability.
+   - Removed `BrandIcon` import (added in the previous sub-session), restored `getInitials` from `profileUtils`.
+   - Avatar priority is now: **club badge** (if uploaded) → **initials on pitch-green** (permanent fallback).
+   - File: `src/app/profile/page.tsx`
+
+### State after session
+
+```
+Branch: main (pushed — c48b632)
+Open issues: UX-009 (Gallery Carousel — Low severity; only remaining open issue)
+TSC: clean · Lint: clean
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. Recent sessions delivered polish fixes to the My Playbook card layout and the profile page avatar. The codebase is stable.
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Only open issue**: `UX-009` — Gallery Carousel & Progression Pack Discovery (Low severity, can defer to Phase 3).
+
+**Suggested next work**: Either tackle UX-009 or run `/speckit.specify` for the next feature in the backlog.
+
+---
+
+## 2026-05-17 — My Playbook Card Layout & Profile Avatar Polish ✅
+
+**Branch**: `main` (both commits pushed)
+
+### What was delivered this session
+
+1. **My Playbook AnimationCard layout redesign** (`043298f`)
+   - Replaced congested 7-icon bottom row (up to 7 icons alongside the date, overflowing at 4-column widths) with a clean two-element action strip.
+   - Date moved to its own line above actions.
+   - Primary action: labeled `[✏ Edit Frames]` button — always visible, no guessing.
+   - Secondary actions: `[⊞ More ▾]` dropdown — Share, Add/Unlink Progression, Link to Foundation, Version History, Edit Info, Delete; grouped with dividers and full text labels.
+   - Full ARIA: `role="menu"`, `role="menuitem"`, `aria-expanded`, `aria-haspopup`. Escape + click-outside close.
+   - File: `src/features/gallery/components/AnimationCard.tsx`
+
+2. **Profile page avatar fallback** (`880aa18`)
+   - Removed flat green initials block (was `bg-pitch-green` + `getInitials()` — sloppy for new users with no Google OAuth).
+   - New priority order: OAuth photo → club badge → `BrandIcon` (brand logo on green background).
+   - Club badge is now surfaced prominently in the profile header when uploaded, not just buried in the Club Branding form.
+   - File: `src/app/profile/page.tsx`
+
+### State after session
+
+```
+Branch: main (ahead of origin — both commits pushed)
+Open issues: UX-009 (Gallery Carousel — Low severity; only remaining open issue)
+All 023-entity-layering tasks: complete (21/21)
+TSC: clean (verified pre-commit)
+Lint: clean (verified pre-commit)
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. The last session delivered two polish fixes: My Playbook card layout (overflow dropdown) and profile page avatar fallback (brand logo).
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Only open issue**: `UX-009` (Gallery Carousel & Progression Pack Discovery) — Low severity, Phase 2–3 deferred. Check `docs/issues/ISSUES.md` to confirm no new issues have been added, then decide whether to tackle UX-009 or start the next feature spec.
+
+**Suggested next work**:
+- `UX-009` — Gallery carousel / progression pack terminology and discovery UI (Low priority, can defer to Phase 3)
+- Or run `/speckit.specify` for the next feature in the backlog
+
+---
+
 ## 2026-05-16 — Animation Layering Control Complete (FEAT-006 / 023-entity-layering) ✅
 
 **Branch**: `023-entity-layering` (pushed)

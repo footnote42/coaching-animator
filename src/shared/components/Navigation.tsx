@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { BrandIcon } from './BrandIcon';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import { Menu, X, HelpCircle } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 import { useTabOrder, SectionId } from '@/shared/hooks/useTabOrder';
 
@@ -19,10 +19,12 @@ interface TabSection {
 }
 
 const TAB_SECTIONS: TabSection[] = [
-  { id: 'home', label: 'Home', href: '/', cssVar: '--c-tab-home', requiresAuth: false },
-  { id: 'gallery', label: 'Gallery', href: '/gallery', cssVar: '--c-tab-gallery', requiresAuth: false },
-  { id: 'playbook', label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true },
-  { id: 'create', label: 'Create', href: '/app', cssVar: '--c-tab-create', requiresAuth: false },
+  { id: 'home',      label: 'Home',        href: '/',          cssVar: '--c-tab-home',      requiresAuth: false },
+  { id: 'gallery',   label: 'Gallery',     href: '/gallery',   cssVar: '--c-tab-gallery',   requiresAuth: false },
+  { id: 'playbook',  label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true  },
+  { id: 'create',    label: 'Create',      href: '/app',       cssVar: '--c-tab-create',    requiresAuth: false },
+  { id: 'help',      label: 'Help',        href: '/help',      cssVar: '--c-tab-help',      requiresAuth: false },
+  { id: 'portfolio', label: 'Portfolio',   href: '/profile',   cssVar: '--c-tab-portfolio', requiresAuth: true  },
 ];
 
 interface NavigationProps {
@@ -42,7 +44,11 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
   const sectionIds = useMemo(() => TAB_SECTIONS.map(s => s.id), []);
   const [visitOrder, recordVisit] = useTabOrder(sectionIds);
   
-  const currentSection = TAB_SECTIONS.find(sec => pathname === sec.href || (sec.id === 'home' && pathname === '/'));
+  const currentSection = TAB_SECTIONS.find(sec =>
+    pathname === sec.href ||
+    (sec.id === 'home' && pathname === '/') ||
+    (sec.id === 'help' && pathname.startsWith('/help'))
+  );
   const activeId = currentSection?.id;
 
   useEffect(() => {
@@ -78,11 +84,6 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
     );
   }
 
-  const initials = profile?.display_name
-    ? profile.display_name.substring(0, 2).toUpperCase()
-    : user?.email?.substring(0, 2).toUpperCase() || 'U';
-
-
   return (
     <nav 
       className={`sticky top-0 z-50 border-b border-border/30 ${className}`}
@@ -102,7 +103,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             {TAB_SECTIONS
               .filter(sec => !sec.requiresAuth || user)
               .map((sec) => {
-                const active = pathname === sec.href || (sec.id === 'home' && pathname === '/');
+                const active = sec.id === activeId;
                 return (
                   <Link
                     key={sec.id}
@@ -135,9 +136,6 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
                 Admin
               </Link>
             )}
-            <Link href="/help" className="p-1.5 text-white/70 hover:text-white transition-colors" aria-label="Help">
-              <HelpCircle className="w-4 h-4" />
-            </Link>
             {user && (
               <button
                 onClick={handleSignOut}
@@ -148,24 +146,14 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             )}
           </div>
 
-          {/* Persistent Auth / Profile */}
-          {!loading && (
-            user ? (
-              <Link
-                href="/profile"
-                className="flex items-center justify-center w-8 h-8 bg-primary text-text-inverse font-heading font-bold text-sm shrink-0"
-                aria-label="Profile"
-              >
-                {initials}
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
-              >
-                Sign In
-              </Link>
-            )
+          {/* Sign up CTA for guests */}
+          {!loading && !user && (
+            <Link
+              href="/register"
+              className="text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
+            >
+              Sign up
+            </Link>
           )}
 
           {/* Mobile hamburger */}
@@ -185,7 +173,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           {TAB_SECTIONS
             .filter(sec => !sec.requiresAuth || user)
             .map((sec) => {
-              const active = pathname === sec.href || (sec.id === 'home' && pathname === '/');
+              const active = sec.id === activeId;
               return (
                 <div key={sec.id} className="flex items-center gap-3 min-h-[24px]">
                   <div 
@@ -216,15 +204,14 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             </div>
           )}
 
-          <div className="flex items-center gap-3 min-h-[24px]">
-            <div className="w-1 self-stretch bg-white/20" />
-            <Link 
-              href="/help" 
-              className={`text-sm transition-colors ${isActive('/help') ? 'text-white font-medium' : 'text-white/70 hover:text-white'}`}
-            >
-              Help
-            </Link>
-          </div>
+          {!user && (
+            <div className="flex items-center gap-3 min-h-[24px]">
+              <div className="w-1 self-stretch bg-white/20" />
+              <Link href="/register" className="text-sm text-white/70 hover:text-white transition-colors">
+                Sign up
+              </Link>
+            </div>
+          )}
 
           {user && (
             <div className="flex items-center gap-3 min-h-[24px]">
