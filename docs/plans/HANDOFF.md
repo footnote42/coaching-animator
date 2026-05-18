@@ -4,6 +4,73 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-17 — Nav: "Profile" tab rename + tabs repositioned right ✅
+
+**Branch**: `main` (`b9104c5` pushed)
+
+### What was completed this session
+
+Two targeted nav corrections following the previous session's Help/Portfolio tab work:
+
+1. **Renamed "Portfolio" → "Profile"** throughout (`b9104c5`)
+   - `useTabOrder.ts`: SectionId union `'portfolio'` → `'profile'`
+   - `globals.css`: `--c-tab-portfolio` → `--c-tab-profile`
+   - `Navigation.tsx`: TAB_SECTIONS id/label/cssVar updated
+   - `help/how-to/page.tsx`: nav guide section updated
+
+2. **Moved notebook tabs to the right side of the nav bar**
+   - Tabs previously sat to the right of the logo (left cluster).
+   - Now: logo standalone left; all tabs + Admin + Sign Out/Sign up in a single right group.
+   - Layout: `justify-between` with logo alone on left, `flex items-center h-full` group on right containing tabs (`items-end h-full pt-2`) then utility links.
+
+Lint and TypeScript both clean before commit.
+
+### Open failures (carried from last test run)
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| T-016 | P1 (ship-blocker) | Guest 10-frame limit not enforced |
+| T-045 | P2 | Editor pause button unresponsive during playback |
+| T-074 | P2 | Sidebar "Share Link" auto-saves without guard |
+| T-133 | P3 | Timeline panel off-screen at 768px viewport |
+
+### State after session
+
+```
+Branch: main (pushed — b9104c5)
+Open failures: T-016 (P1), T-045 (P2), T-074 (P2), T-133 (P3)
+TSC: clean · Lint: clean
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. The nav now has 6 notebook tabs (Help, Profile added) positioned on the right side of the bar. A full manual test run is in `docs/testing/TEST-RUN-2026-05-17.md` with 4 open failures to address.
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**Priority fixes (work in order):**
+
+**1. T-016 (P1) — Guest 10-frame limit not enforced**
+
+`VALIDATION.PROJECT.GUEST_MAX_FRAMES = 10` exists but `addFrame` in `src/core/stores/projectStore.ts` doesn't check it for guests. Add the guard: if `!isAuthenticated && frames.length >= GUEST_MAX_FRAMES`, show a sign-in prompt instead of adding the frame.
+
+**2. T-074 (P2) — Sidebar "Share Link" auto-saves without a guard**
+
+`src/features/animation/components/Sidebar/ProjectActions.tsx` — the Share Link button auto-saves an unsaved animation without prompting. The toolbar "Share Animation" is correctly gated. Apply the same guard: if no cloud ID, prompt to save first.
+
+**3. T-045 (P2) — Editor pause button unresponsive during playback**
+
+Play button re-renders every frame; click events don't land. Compare the working pause in the share view. Fix likely involves stabilising the button ref or pointer-event approach in the TimelinePanel.
+
+**4. T-133 (P3) — Timeline panel off-screen at 768px**
+
+Timeline renders at x≈1690 at 768px viewport. Needs a breakpoint to collapse or reposition at tablet widths.
+
+---
+
 ## 2026-05-17 — Full Manual Test Run (76 tests) ✅
 
 **Branch**: `main` (`c48b632` — no code changes this session)

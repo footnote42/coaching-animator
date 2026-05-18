@@ -1,23 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  Trash2, 
-  Repeat, 
-  Ghost, 
-  Share2 
+import React, { useState, useCallback } from 'react';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Trash2,
+  Repeat,
+  Ghost,
+  Share2
 } from 'lucide-react';
 import { useProjectStore } from '@/core/stores/projectStore';
 import { useUIStore } from '@/core/stores/uiStore';
 import { FrameStrip } from '@/features/animation/components/Timeline/FrameStrip';
 import { PlaybackSpeed } from '@/core/types';
 import { ShareSheet } from '@/features/animation/components/ShareSheet';
+import { useUser } from '@/lib/contexts/UserContext';
+import { VALIDATION } from '@/core/constants/validation';
+import { toast } from 'sonner';
+
+const PlayPauseButton = React.memo(function PlayPauseButton({
+  isPlaying,
+  onPlay,
+  onPause,
+}: {
+  isPlaying: boolean;
+  onPlay: () => void;
+  onPause: () => void;
+}) {
+  return (
+    <button
+      onClick={isPlaying ? onPause : onPlay}
+      className="flex-1 mx-2 py-2 bg-primary text-text-inverse flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-warm-accent outline-none rounded-none"
+      aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
+    >
+      {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+      <span className="text-xs font-bold uppercase">{isPlaying ? 'Pause' : 'Play'}</span>
+    </button>
+  );
+});
 
 export function TimelinePanel() {
   const project = useProjectStore(s => s.project);
@@ -26,18 +50,32 @@ export function TimelinePanel() {
   const playbackSpeed = useProjectStore(s => s.playbackSpeed);
   const loopPlayback = useProjectStore(s => s.loopPlayback);
   const showGhosts = useUIStore(s => s.showGhosts);
-  
-  const play = useProjectStore.getState().play;
-  const pause = useProjectStore.getState().pause;
+  const frameCount = useProjectStore(s => s.project?.frames.length ?? 0);
+
+  const { isAuthenticated } = useUser();
+
   const reset = useProjectStore.getState().reset;
   const setCurrentFrame = useProjectStore.getState().setCurrentFrame;
-  const addFrame = useProjectStore.getState().addFrame;
   const removeFrame = useProjectStore.getState().removeFrame;
   const duplicateFrame = useProjectStore.getState().duplicateFrame;
   const setPlaybackSpeed = useProjectStore.getState().setPlaybackSpeed;
   const toggleLoop = useProjectStore.getState().toggleLoop;
   const toggleGhosts = useUIStore.getState().toggleGhosts;
   const updateFrame = useProjectStore.getState().updateFrame;
+
+  const handlePlay = useCallback(() => useProjectStore.getState().play(), []);
+  const handlePause = useCallback(() => useProjectStore.getState().pause(), []);
+
+  const handleAddFrame = useCallback(() => {
+    if (!isAuthenticated && frameCount >= VALIDATION.PROJECT.GUEST_MAX_FRAMES) {
+      toast.info('Sign in to add more than 10 frames.', {
+        action: { label: 'Sign in', onClick: () => { window.location.href = '/login?redirect=/app'; } },
+        duration: 5000,
+      });
+      return;
+    }
+    useProjectStore.getState().addFrame();
+  }, [isAuthenticated, frameCount]);
 
   const [isShareOpen, setIsShareOpen] = useState(false);
 
@@ -82,14 +120,7 @@ export function TimelinePanel() {
             </button>
           </div>
 
-          <button
-            onClick={isPlaying ? pause : play}
-            className="flex-1 mx-2 py-2 bg-primary text-text-inverse flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-warm-accent outline-none rounded-none"
-            aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
-          >
-            {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
-            <span className="text-xs font-bold uppercase">{isPlaying ? 'Pause' : 'Play'}</span>
-          </button>
+          <PlayPauseButton isPlaying={isPlaying} onPlay={handlePlay} onPause={handlePause} />
 
           <button
             onClick={() => setCurrentFrame(currentFrameIndex + 1)}
@@ -175,7 +206,7 @@ export function TimelinePanel() {
               <Trash2 size={14} />
             </button>
             <button
-              onClick={addFrame}
+              onClick={handleAddFrame}
               className="p-1 text-text-primary/40 hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-warm-accent outline-none rounded-none"
               aria-label="Add Frame"
               title="Add New Frame"
@@ -190,7 +221,7 @@ export function TimelinePanel() {
             frames={project.frames}
             currentFrameIndex={currentFrameIndex}
             onFrameSelect={setCurrentFrame}
-            onAddFrame={addFrame}
+            onAddFrame={handleAddFrame}
             onRemoveFrame={removeFrame}
             onDuplicateFrame={duplicateFrame}
             onDurationChange={(id, dur) => updateFrame(id, { duration: dur })}

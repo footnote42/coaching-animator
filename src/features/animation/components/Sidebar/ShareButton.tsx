@@ -15,7 +15,7 @@ import {
 import { Share2, WifiOff, Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
-export function ShareButton() {
+export function ShareButton({ cloudAnimationId }: { cloudAnimationId?: string | null }) {
   const project = useProjectStore((state) => state.project);
   const { shareAnimation, isSharing, error } = useShareAnimation();
   const { isAuthenticated } = useUser();
@@ -47,6 +47,11 @@ export function ShareButton() {
         },
         duration: 5000,
       });
+      return;
+    }
+
+    if (!cloudAnimationId) {
+      toast.info('Save to cloud first before sharing.', { duration: 4000 });
       return;
     }
 

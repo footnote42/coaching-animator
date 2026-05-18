@@ -181,6 +181,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
     return localStorage.getItem('firstRunSeen') !== '1';
   });
   const isMobile = viewportWidth < 768;
+  const showTimelinePanel = viewportWidth >= 1024;
 
   // Sidebar collapse state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -380,6 +381,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
               <ProjectActions
                 isAuthenticated={isAuthenticated}
                 onSaveToCloud={onSaveToCloud}
+                cloudAnimationId={cloudAnimationId}
               />
               <EntityPalette
                 onAddAttackPlayer={handleAddAttackPlayer}
@@ -531,7 +533,7 @@ export function Editor({ isAuthenticated = false, onSaveToCloud, loadingFromClou
         </div>
       </main>
 
-      {!focusMode && !isMobile && <TimelinePanel />}
+      {!focusMode && showTimelinePanel && <TimelinePanel />}
 
       <ConfirmDialog
         open={showRecoveryDialog}

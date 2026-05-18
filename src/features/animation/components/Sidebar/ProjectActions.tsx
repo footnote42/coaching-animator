@@ -22,11 +22,13 @@ import { getFriendlyErrorMessage } from '@/lib/error-messages';
 export interface ProjectActionsProps {
     isAuthenticated?: boolean;
     onSaveToCloud?: () => void;
+    cloudAnimationId?: string | null;
 }
 
 export const ProjectActions: React.FC<ProjectActionsProps> = ({
     isAuthenticated = false,
     onSaveToCloud,
+    cloudAnimationId,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -217,7 +219,7 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
                 <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-2">
                     Share
                 </h3>
-                <ShareButton />
+                <ShareButton cloudAnimationId={cloudAnimationId} />
             </div>
 
             {/* Hidden file input for opening projects */}

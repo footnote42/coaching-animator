@@ -59,6 +59,14 @@ vi.mock('@/core/stores/uiStore', () => ({
   )
 }));
 
+vi.mock('@/lib/contexts/UserContext', () => ({
+  useUser: () => ({ isAuthenticated: true })
+}));
+
+vi.mock('@/core/constants/validation', () => ({
+  VALIDATION: { PROJECT: { GUEST_MAX_FRAMES: 10, MAX_FRAMES: 50 } }
+}));
+
 // Mock child components to isolate TimelinePanel
 vi.mock('@/features/animation/components/Timeline/FrameStrip', () => ({
   FrameStrip: () => <div data-testid="frame-strip-mock">FrameStrip</div>
