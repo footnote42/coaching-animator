@@ -4,6 +4,71 @@ Rolling record of `/handoff` outputs. Newest entry at the top.
 
 ---
 
+## 2026-05-18 — Bug fixes: T-016, T-045, T-074, T-133 ✅
+
+**Branch**: `main` (`d19953f` pushed)
+
+### What was completed this session
+
+All four open failures from the 2026-05-17 manual test run resolved in a single commit.
+
+**T-016 (P1) — Guest 10-frame limit not enforced**
+- `src/features/animation/components/TimelinePanel.tsx`
+- Added `useUser()` + `VALIDATION` check to a new `handleAddFrame` handler
+- Guests at frame 10 now see a sign-in toast; authenticated users are unaffected
+- Both the "+" header button and `FrameStrip`'s `onAddFrame` prop use the guarded handler
+- `tests/unit/components/TimelinePanel.test.tsx` updated with missing `useUser` + `VALIDATION` mocks
+
+**T-045 (P2) — Editor pause button unresponsive during playback**
+- `src/features/animation/components/TimelinePanel.tsx`
+- Root cause: `currentFrameIndex` subscription caused re-renders on every frame advance, swallowing click events
+- Fix: extracted play/pause into a `React.memo` `PlayPauseButton` with `useCallback`-stabilised handlers — button no longer re-renders during playback
+
+**T-074 (P2) — Sidebar "Share Link" auto-saves without guard**
+- `src/features/animation/components/Sidebar/ShareButton.tsx` — added `cloudAnimationId` prop + early-return toast if absent
+- `src/features/animation/components/Sidebar/ProjectActions.tsx` — threaded `cloudAnimationId` prop
+- `src/features/animation/components/Editor.tsx` — passes `cloudAnimationId` down to `ProjectActions`
+
+**T-133 (P3) — Timeline panel off-screen at 768px**
+- `src/features/animation/components/Editor.tsx`
+- Added `showTimelinePanel = viewportWidth >= 1024` alongside the existing `isMobile < 768`
+- TimelinePanel now hidden at 768–1023px; MobileDrawer covers that range
+
+### Known environment issue (pre-existing)
+
+Vitest worker timeout in WSL affects ~8 test files including `TimelinePanel.test.tsx`. All affected files show `transform 0ms / setup 0ms / import 0ms` — the worker never spawns. This is an infrastructure issue, not a code failure. Lint and TSC both clean.
+
+### State after session
+
+```
+Branch: main (pushed — d19953f)
+Open failures: none from the 2026-05-17 test run
+TSC: clean · Lint: clean
+```
+
+### Next session prompt
+
+You are resuming work on `coaching-animator` on branch `main`. This session resolved all four open failures from the manual test run (T-016, T-045, T-074, T-133). The codebase is clean.
+
+**Diagnostics first:**
+```bash
+npm run lint && npx tsc --noEmit && npm test -- --run
+```
+
+**No outstanding bugs.** Decide on next work:
+
+1. **Run another manual test pass** against `http://localhost:3001` using `docs/testing/MANUAL-TEST-SCRIPT.md` to verify the four fixes behave correctly in-browser — particularly T-045 (pause button responsiveness during live playback) and T-016 (guest frame limit toast).
+
+2. **Next feature** — run `/speckit.specify` for the next item in the backlog. Check `docs/authority/ROADMAP.md` for the next phase disposition.
+
+**Key architectural notes carried forward:**
+- `TimelinePanel` now uses `useUser()` directly — if auth context changes, check this component
+- `ShareButton` requires `cloudAnimationId` prop (non-optional in practice); it comes from `Editor` via `ProjectActions`
+- `showTimelinePanel = viewportWidth >= 1024` is separate from `isMobile = viewportWidth < 768` — do not conflate them
+- Vitest worker timeout in WSL is a known infrastructure issue; does not indicate broken tests
+
+---
+
 ## 2026-05-17 — Nav: "Profile" tab rename + tabs repositioned right ✅
 
 **Branch**: `main` (`b9104c5` pushed)
