@@ -1,7 +1,7 @@
 # NOW — coaching-animator
 
 ## Status
-IN PROGRESS — Phase 0: workflow & docs migration (audit follow-up)
+PARKED — Phase 0: workflow & docs migration (audit follow-up) (Parked 2026-09-25 in the final rollout cut.)
 
 ## Next
 Open `00-Planning/DevPlan.html` (vault) in a browser and start Phase 1 item 1.1 — fix `useAutoSave` (interval resets on every edit; gate on isDirty, project via ref, Sonner instead of alert).
