@@ -28,39 +28,16 @@ The repo keeps only repo-coupled docs: `docs/testing/`, `docs/user-guide/`, `doc
 
 ---
 
-## Environment
+## Pre-Push CI Verification
 
-- **OS:** Windows 11, shell is bash (Unix syntax throughout — not PowerShell)
-- **Paths in CLI tools:** Always use forward slashes (`C:/Users/kenho/...`) — backslashes break JSON configs and MCP registration
-- **Windows quirk:** All `notebooklm` commands must be prefixed with `PYTHONUTF8=1` or the CLI crashes with a Unicode error
-
-## Workflow
-
-Use `/park` to end sessions cleanly — overwrites `NOW.md` at the repo root (Status / Next / Context / Blocker / Last session) and commits it. `NOW.md` is the single canonical location for session state. (Replaced the `/handoff` + HANDOFF.md diary on 2026-07-05; the old diary is archived in the vault.)
-
-## Commands
+Run both before every push:
 
 ```bash
-# Development
-npm run dev              # Next.js dev server (port 3000; increments if port is taken)
-
-# Pre-Push CI Verification (run both before every push)
 npm run lint             # ESLint
 npx tsc --noEmit         # TypeScript type check
-
-# Unit tests (Vitest)
-npm test -- --run                        # Run all unit tests once
-npm test -- --run src/core/utils/foo.ts  # Run a single test file
-npm test                                 # Watch mode
-
-# E2E tests (Playwright) — default target is production
-BASE_URL=http://localhost:3001 npm run e2e          # Run all E2E against local dev
-BASE_URL=http://localhost:3001 npm run e2e:headed   # Headed mode (see the browser)
-BASE_URL=http://localhost:3001 npx playwright test tests/e2e/editor.spec.ts  # Single spec
-
-# Build (may fail locally without Supabase env vars — OK, CI handles it)
-npm run build
 ```
+
+Everything else (dev server, unit tests, E2E, build) is in the `dev-commands` skill.
 
 ## Path Aliases (Use in ALL Imports)
 
@@ -75,17 +52,6 @@ import { useProjectStore } from '../../core/stores/projectStore';
 ```
 
 ## Architecture
-
-### Layer Map
-
-```
-src/
-  app/          Next.js App Router pages + API routes
-  core/         Domain model — types, Zustand stores, hooks, constants, utils
-  features/     Feature modules (animation, gallery, legal)
-  shared/       Cross-feature UI components and hooks
-  lib/          Infrastructure — Supabase clients, auth helpers, schemas, contexts
-```
 
 ### State: Two Zustand Stores
 
@@ -194,40 +160,11 @@ Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key i
 - `src/features/animation/components/Canvas/AnnotationLayer.tsx`
 - `src/features/animation/components/Canvas/FloatingRemote.tsx` (share route only)
 
-### Route → File Mapping
-| Route | Page File | Main Component |
-|-------|-----------|----------------|
-| `/app` | `src/app/app/AnimationToolClient.tsx` | `src/features/animation/components/Editor.tsx` |
-| `/replay/[id]` | `src/app/replay/[id]/page.tsx` | `src/features/animation/components/ReplayViewer.tsx` |
-| `/share/[id]` | `src/app/share/[id]/page.tsx` | `src/features/animation/components/ShareViewer.tsx` |
-| `/gallery` | `src/app/gallery/GalleryClient.tsx` | `src/features/gallery/components/PublicAnimationCard.tsx` |
-| `/my-gallery` | `src/app/my-gallery/page.tsx` | `src/features/gallery/components/AnimationCard.tsx` |
-
 ### ShareViewer Layout
 `/share/[id]` is full-screen, no-scroll, mobile-first:
 - `ShareViewer` uses `position: fixed; inset: 0` — **do not** change to `h-screen` or `h-full`
 - Canvas sized by `useShareCanvasSize` (ResizeObserver, fits 4:3 to available space)
 - `FloatingRemote` is positioned relative to the canvas div, not the viewport
-
-## Testing
-
-### Unit Tests (Vitest)
-Test files co-located with source: `*.test.ts` beside `*.ts`. Run a specific file:
-```bash
-npm test -- --run src/core/hooks/useCanvasSize.test.ts
-```
-
-### E2E Tests (Playwright)
-E2E tests live in `tests/e2e/`. The default `BASE_URL` in `tests/e2e/.env.local` targets the deployed Vercel instance. Always set `BASE_URL=http://localhost:3001` (or whichever port `npm run dev` uses) when testing locally.
-
-```bash
-BASE_URL=http://localhost:3001 npx playwright test tests/e2e/editor.spec.ts --headed
-```
-
-**Before running E2E:** Confirm the dev server is running and which port it started on (Next.js increments if 3000 is taken).
-
-### Manual Test Script
-`docs/testing/MANUAL-TEST-SCRIPT.md` — full system verification script for playwright-cli sessions. Results are recorded in `docs/testing/TEST-RUN-*.md`.
 
 ## Quality Guardrails
 
@@ -246,23 +183,6 @@ BASE_URL=http://localhost:3001 npx playwright test tests/e2e/editor.spec.ts --he
 - Permitted OAuth providers: Google, Apple, GitHub. Prohibited: Facebook/Meta, Twitter/X, LinkedIn, Discord
 
 **Full Governance:** `.specify/memory/constitution.md`
-
-## Active Technologies
-
-TypeScript 5 · Next.js 14 (App Router) · React 18 · Konva / react-konva · Zustand · Supabase (auth + Postgres) · Tailwind CSS · Radix UI · Zod · Vitest · Playwright · Sonner (toasts) · Serwist (PWA/service worker)
-
-## Current Work
-
-Audit DevPlan (vault `00-Planning/DevPlan.html`) — phased worklist from the 2026-07-05 engineering audit. Current state and next action: `NOW.md`.
-
-## Recent Changes
-
-- 2026-07-05: docs migrated to Obsidian vault; /park + NOW.md workflow replaces /handoff + HANDOFF.md
-- 023-entity-layering: complete — Animation Layering Control (FEAT-006)
-- 022-notebook-tab-nav: complete — Notebook Tab Navigation + Page Textures (NAV-001)
-- 021-unified-editor-controls: complete — TimelinePanel replaces EditorFloatingRemote; MobileDrawer MobileTimelineSection
-- 020-frame-edit-own-animations: complete — Frame editing for own animations + workflow audit infra
-- 018-share-playback-workflow: Phase 2c complete — Share & Playback Workflow
 
 ## Large Files (do not read in full)
 

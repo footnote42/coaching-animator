@@ -32,6 +32,8 @@ node_modules
 # Test artifacts (generated, not source)
 playwright-report/
 test-results/
+.playwright-cli/
+*.png
 
 # TypeScript build cache
 tsconfig.tsbuildinfo

@@ -119,11 +119,51 @@
       "Skill(speckit-git-feature)",
       "Skill(speckit-superb-respond)",
       "Skill(speckit.specify)",
-      "Bash(.specify/scripts/plan-setup.sh --json)"
+      "Bash(.specify/scripts/plan-setup.sh --json)",
+      "Bash(read -t 30 completion_message)",
+      "Skill(impeccable)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Skill(playwright-cli)",
+      "Bash(echo \"Dev server PID: $!\")",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_run_code_unsafe",
+      "Bash(playwright-cli goto *)",
+      "Bash(playwright-cli open *)",
+      "Bash(playwright-cli snapshot *)",
+      "Bash(playwright-cli click *)",
+      "Bash(playwright-cli fill *)",
+      "Bash(playwright-cli eval *)",
+      "Bash(playwright-cli *)",
+      "Bash('canvas')",
+      "Bash(pkill -f \"next-server\\\\|next dev\")",
+      "Bash(awk '{print $2}')",
+      "Skill(superpowers:brainstorming)",
+      "Skill(impeccable:impeccable)",
+      "Skill(impeccable:shape)",
+      "Bash(pkill -f \"python3 -m http.server 8765\")",
+      "Bash(rm -f *.png)",
+      "Bash(rm -rf .playwright-cli/)"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "cleo"
-  ]
+  ],
+  "skillOverrides": {
+    "handoff": "off",
+    "playwright-cli": "off",
+    "shipit": "off",
+    "speckit-git-commit": "off",
+    "speckit-git-initialize": "off",
+    "speckit-git-remote": "off",
+    "speckit-git-validate": "off",
+    "speckit-superb-check": "off",
+    "speckit-superb-critique": "off",
+    "speckit-superb-debug": "off",
+    "speckit-superb-finish": "off",
+    "speckit-superb-respond": "off",
+    "speckit-superb-review": "off",
+    "speckit-superb-tdd": "off",
+    "speckit-superb-verify": "off"
+  }
 }
