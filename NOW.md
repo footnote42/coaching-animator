@@ -7,6 +7,7 @@ PARKED — Phase 0: workflow & docs migration (audit follow-up) (Parked 2026-09-
 Open `00-Planning/DevPlan.html` (vault) in a browser and start Phase 1 item 1.1 — fix `useAutoSave` (interval resets on every edit; gate on isDirty, project via ref, Sonner instead of alert).
 
 ## Context
+- **Housekeeping on return (flagged 2026-09-25):** review the untracked `prototype/brand.html` and `prototype/roadmap.html` (May prototypes), then keep or delete them. 3 local commits are unpushed: push once you're satisfied.
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`
 - Active worklist: `00-Planning/DevPlan.html` (interactive tracker) + `00-Planning/DevPlan.md`
 - Full audit: `00-Planning/Audit-2026-07-05.md`
