@@ -23,7 +23,8 @@ vi.mock('@/lib/supabase/server', () => ({
 }));
 
 import { GET, POST } from '@/app/api/practices/route';
-import { GET as GET_ONE, DELETE } from '@/app/api/practices/[id]/route';
+import { GET as GET_ONE, PATCH, DELETE } from '@/app/api/practices/[id]/route';
+import { GET as GET_PUBLIC } from '@/app/api/practices/public/route';
 
 const user = { id: 'user-1' };
 const unauthorized = () => NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });
@@ -38,7 +39,7 @@ function post(body: unknown) {
 /** Chainable query-builder stub that resolves to `result` at any terminal call. */
 function builder(result: unknown) {
   const b: Record<string, unknown> = {};
-  for (const m of ['select', 'insert', 'delete', 'eq', 'order']) b[m] = vi.fn(() => b);
+  for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'order', 'range', 'ilike']) b[m] = vi.fn(() => b);
   b.single = vi.fn(async () => result);
   b.maybeSingle = vi.fn(async () => result);
   b.then = (resolve: (v: unknown) => unknown) => resolve(result);
@@ -141,5 +142,103 @@ describe('/api/practices/[id]', () => {
   it('DELETE removes the own practice', async () => {
     mocks.from.mockReturnValue(builder({ data: [{ id: 'p1' }], error: null }));
     expect((await DELETE(req, ctx)).status).toBe(200);
+  });
+});
+
+describe('PATCH /api/practices/[id]', () => {
+  const ctx = { params: { id: 'p1' } };
+  const patch = (body: unknown) =>
+    new NextRequest('http://localhost/api/practices/p1', { method: 'PATCH', body: JSON.stringify(body) });
+
+  it('rejects guests', async () => {
+    mocks.requireAuth.mockResolvedValue(unauthorized());
+    expect((await PATCH(patch({ visibility: 'public' }), ctx)).status).toBe(401);
+  });
+
+  it('is rate limited', async () => {
+    mocks.checkRateLimit.mockResolvedValue({ allowed: false, remaining: 0, resetAt: new Date() });
+    expect((await PATCH(patch({ visibility: 'public' }), ctx)).status).toBe(429);
+  });
+
+  it('rejects an empty or bad body', async () => {
+    expect((await PATCH(patch({}), ctx)).status).toBe(400);
+    expect((await PATCH(patch({ visibility: 'everyone' }), ctx)).status).toBe(400);
+  });
+
+  it('rejects an invalid script', async () => {
+    const res = await PATCH(patch({ script: { schemaVersion: 1 } }), ctx);
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.code).toBe('INVALID_SCRIPT');
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+
+  it('rejects an oversized script', async () => {
+    const res = await PATCH(patch({ script: { pad: 'a'.repeat(70 * 1024) } }), ctx);
+    expect(res.status).toBe(413);
+  });
+
+  it('updates visibility scoped to the owner', async () => {
+    const b = builder({ data: [{ id: 'p1', visibility: 'public' }], error: null });
+    mocks.from.mockReturnValue(b);
+    const res = await PATCH(patch({ visibility: 'public' }), ctx);
+    expect(res.status).toBe(200);
+    expect(b.update).toHaveBeenCalledWith({ visibility: 'public' });
+    expect(b.eq).toHaveBeenCalledWith('owner_id', 'user-1');
+  });
+
+  it('updates a valid script and its schema version', async () => {
+    const b = builder({ data: [{ id: 'p1' }], error: null });
+    mocks.from.mockReturnValue(b);
+    const res = await PATCH(patch({ script: passingSquare }), ctx);
+    expect(res.status).toBe(200);
+    expect(b.update).toHaveBeenCalledWith({ script: passingSquare, schema_version: 1 });
+  });
+
+  it('404s when nothing matched', async () => {
+    mocks.from.mockReturnValue(builder({ data: [], error: null }));
+    expect((await PATCH(patch({ title: 'New' }), ctx)).status).toBe(404);
+  });
+});
+
+describe('GET /api/practices/public', () => {
+  const get = (qs = '') => new NextRequest(`http://localhost/api/practices/public${qs}`);
+  const row = (id: string) => ({
+    id,
+    title: 'T',
+    description: null,
+    created_at: '2026-01-01',
+    script: { ...passingSquare, progressions: [{}, {}] },
+  });
+
+  it('needs no auth and lists public rows newest first with thumbnail data', async () => {
+    mocks.requireAuth.mockResolvedValue(unauthorized());
+    const b = builder({ data: [row('a')], error: null });
+    mocks.from.mockReturnValue(b);
+    const res = await GET_PUBLIC(get());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(mocks.requireAuth).not.toHaveBeenCalled();
+    expect(b.eq).toHaveBeenCalledWith('visibility', 'public');
+    expect(b.order).toHaveBeenCalledWith('created_at', { ascending: false });
+    expect(body.practices[0]).toMatchObject({ id: 'a', progressionCount: 2 });
+    expect(body.practices[0].thumbnail.area).toEqual(passingSquare.area);
+    expect(body.practices[0].thumbnail.markers.length).toBe(passingSquare.base.placements.length);
+    expect(body.practices[0].script).toBeUndefined();
+    expect(body.hasMore).toBe(false);
+  });
+
+  it('searches titles and paginates', async () => {
+    const rows = Array.from({ length: 13 }, (_, i) => row(`p${i}`));
+    const b = builder({ data: rows, error: null });
+    mocks.from.mockReturnValue(b);
+    const body = await (await GET_PUBLIC(get('?q=50%25&page=2'))).json();
+    expect(b.ilike).toHaveBeenCalledWith('title', '%50\\%%');
+    expect(b.range).toHaveBeenCalledWith(12, 24);
+    expect(body.practices).toHaveLength(12);
+    expect(body.hasMore).toBe(true);
+  });
+
+  it('rejects a bad page', async () => {
+    expect((await GET_PUBLIC(get('?page=0'))).status).toBe(400);
   });
 });
