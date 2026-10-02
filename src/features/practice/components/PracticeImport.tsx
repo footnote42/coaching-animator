@@ -13,6 +13,8 @@ import {
   stepCount,
   type ResolvedStep,
 } from '@/features/practice/engine';
+import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
+import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import type { PracticeScript } from '@/features/practice/schema';
 import example from '@/features/practice/examples/passing-square-progressions.json';
@@ -78,6 +80,15 @@ export function PracticeImport() {
   };
 
   const load = () => loadText(text);
+  const [libraryKey, setLibraryKey] = useState(0);
+  const { isGuest } = useGuestPractice(
+    text,
+    (saved) => {
+      setText(saved);
+      loadText(saved);
+    },
+    !!openId,
+  );
 
   useEffect(() => {
     if (!openId) return;
@@ -125,7 +136,9 @@ export function PracticeImport() {
             Use example
           </Button>
         </div>
-        <PracticeLibrary scriptText={text} onOpen={(id) => router.push(`/practice?id=${id}`)} />
+        <PracticeScriptActions text={text} isGuest={isGuest} />
+        <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
+        <PracticeLibrary key={libraryKey} scriptText={text} onOpen={(id) => router.push(`/practice?id=${id}`)} />
         {errors.length > 0 && (
           <div role="alert" className="border border-destructive p-2 text-sm">
             <p className="mb-1 font-medium text-destructive">This script can&apos;t be loaded:</p>
