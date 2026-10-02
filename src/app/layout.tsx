@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Oswald } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
+import { getSiteOrigin } from '@/lib/site-origin';
 import { Navigation } from '@/shared/components/Navigation';
 
 const oswald = Oswald({
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   keywords: ['rugby', 'coaching', 'animation', 'plays', 'tactics', 'visualisation'],
   authors: [{ name: 'Coaching Animator' }],
   creator: 'Coaching Animator',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(getSiteOrigin()),
   openGraph: {
     type: 'website',
     locale: 'en_US',

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import dynamic from 'next/dynamic';
+import { getSiteOrigin } from '@/lib/site-origin';
 
 const ShareViewer = dynamic(
   () => import('@/features/animation/components/ShareViewer').then((m) => m.ShareViewer),
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Animation Not Found' };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? '';
+  const baseUrl = getSiteOrigin();
 
   return {
     title: `Watch ${animation.title} | Coaching Animator`,
@@ -47,16 +48,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `Watch ${animation.title}`,
       description: animation.description || 'Watch this coaching animation.',
       type: 'website',
-      ...(baseUrl && {
-        images: [
-          {
-            url: `${baseUrl}/og-share.png`,
-            width: 1200,
-            height: 630,
-            alt: animation.title,
-          },
-        ],
-      }),
+      images: [
+        {
+          url: `${baseUrl}/og-share.png`,
+          width: 1200,
+          height: 630,
+          alt: animation.title,
+        },
+      ],
     },
   };
 }
