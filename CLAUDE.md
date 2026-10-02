@@ -194,3 +194,17 @@ Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key i
 ## Design Context
 
 See `.impeccable.md` for full design context (brand, aesthetic direction, principles, priority areas).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `footnote42/coaching-animator` via `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `CONTEXT.md` + `docs/adr/` (created lazily). See `docs/agents/domain.md`.
