@@ -1,0 +1,3 @@
+# Accounts are 18+; players share through Guest mode
+
+Youth players may want to share ideas, and UK GDPR would allow accounts from 13. We chose 18+ by self-declaration: accounts for 13–17s would bring in the ICO Children's Code and the Online Safety Act's children's duties, and once comments exist they would put adult coaches and children in the same threads, which RFU safeguarding guidance warns against. Players use Guest mode instead and pass a Practice to their coach with "Copy script", which keeps the coach in the loop and stores no child data. Revisit when comments are designed, with a Children's Code assessment.
