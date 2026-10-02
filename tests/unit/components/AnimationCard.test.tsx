@@ -20,7 +20,6 @@ vi.mock('lucide-react', () => ({
   Share2: () => <div data-testid="icon-share" />,
   FilePlus: () => <div data-testid="icon-file-plus" />,
   Unlink: () => <div data-testid="icon-unlink" />,
-  MoreHorizontal: () => <div data-testid="icon-more" />,
 }));
 
 // Mock Next.js components
