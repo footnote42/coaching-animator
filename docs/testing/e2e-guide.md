@@ -57,11 +57,14 @@ npx playwright install
 
 Environment variables (set in `.env.local` or shell):
 
-```env
-# Playwright tests connect to this URL
-BASE_URL=http://localhost:3000
+By default (BASE_URL unset) Playwright targets `http://localhost:3000` and starts `npm run dev`. To test a deployed site (staging or production), set `BASE_URL` explicitly; no local server is started:
 
-# Optional: Staging environment
+```bash
+BASE_URL=https://coaching-animator.vercel.app npx playwright test
+```
+
+```env
+# Optional: override the target (default http://localhost:3000)
 # BASE_URL=https://staging.example.com
 
 # Optional: Test user credentials (if using pre-existing user)
