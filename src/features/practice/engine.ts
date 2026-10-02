@@ -3,7 +3,8 @@
  *
  * Every consumer (editor, share view, Import, thumbnails) goes through:
  * - validate(script)       -> the script, or path-specific plain-language errors
- * - resolveStep(script, n) -> full state of Step n
+ * - stepCount(script)      -> number of Steps (base plus Progressions)
+ * - resolveStep(script, n) -> full state of Step n, with the Progression chain applied
  * - positionsAt(step, t)   -> every marker's position at t seconds, plus the Step's duration
  *
  * Positions are in cell units: { x: 3, y: 4 } is the centre of cell (3, 4).
@@ -14,6 +15,9 @@ import {
   SCHEMA_VERSION,
   type Area,
   type Cell,
+  type Change,
+  type Commentary,
+  type Lever,
   type Marker,
   type Move,
   type PracticeScript,
@@ -53,8 +57,12 @@ export interface ResolvedMarker extends Marker {
 export interface ResolvedStep {
   index: number;
   area: Area;
+  /** Markers on the Area in this Step, in the order the script declares them. */
   markers: ResolvedMarker[];
   moves: Move[];
+  /** The STEP lever this Step pulls. Undefined for the base Step. */
+  lever?: Lever;
+  commentary: Commentary;
 }
 
 export interface Point {
@@ -102,7 +110,7 @@ interface Issue {
 }
 
 function issueMessage(issue: Issue, input: unknown): string {
-  if (issue.code === 'invalid_type' && valueAt(input, issue.path) === undefined) {
+  if ((issue.code === 'invalid_type' || issue.code === 'invalid_value') && valueAt(input, issue.path) === undefined) {
     return 'is required';
   }
   if (issue.code === 'unrecognized_keys' && issue.keys) {
@@ -121,6 +129,56 @@ function checkCell(cell: Cell, area: Area, path: string, errors: ValidationError
   }
 }
 
+/** Markers on the Area at one Step: starting cells and moves, keyed by marker id. */
+interface StepState {
+  cells: Map<string, Cell>;
+  moves: Map<string, Move>;
+}
+
+/**
+ * Apply one change to `state` in place. Returns an error (with a path relative
+ * to the change) and leaves `state` untouched if the change does not fit.
+ */
+function applyChange(state: StepState, change: Change): ValidationError | null {
+  const { marker } = change;
+  const present = state.cells.has(marker);
+  switch (change.type) {
+    case 'addMarker':
+      if (present) return { path: 'marker', message: `marker "${marker}" is already on the Area in the previous Step` };
+      state.cells.set(marker, change.cell);
+      return null;
+    case 'removeMarker':
+      if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
+      state.cells.delete(marker);
+      state.moves.delete(marker);
+      return null;
+    case 'placeMarker':
+      if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
+      state.cells.set(marker, change.cell);
+      return null;
+    case 'setMove':
+      if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
+      state.moves.set(marker, { marker, waypoints: change.waypoints });
+      return null;
+    case 'removeMove':
+      if (!state.moves.has(marker)) return { path: 'marker', message: `marker "${marker}" has no move in the previous Step` };
+      state.moves.delete(marker);
+      return null;
+  }
+}
+
+function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
+  switch (change.type) {
+    case 'addMarker':
+    case 'placeMarker':
+      return [{ cell: change.cell, path: 'cell' }];
+    case 'setMove':
+      return change.waypoints.map((cell, j) => ({ cell, path: `waypoints[${j}]` }));
+    default:
+      return [];
+  }
+}
+
 function checkReferences(script: PracticeScript): ValidationError[] {
   const errors: ValidationError[] = [];
   const ids = new Set<string>();
@@ -132,34 +190,59 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     ids.add(marker.id);
   });
 
-  const placed = new Set<string>();
+  const state: StepState = { cells: new Map(), moves: new Map() };
+  const everPlaced = new Set<string>();
+
   script.base.placements.forEach((placement, i) => {
     const path = `base.placements[${i}]`;
     if (!ids.has(placement.marker)) {
       errors.push({ path: `${path}.marker`, message: `no marker with id "${placement.marker}"` });
-    } else if (placed.has(placement.marker)) {
+    } else if (state.cells.has(placement.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${placement.marker}" is placed more than once` });
+    } else {
+      state.cells.set(placement.marker, placement.cell);
+      everPlaced.add(placement.marker);
     }
-    placed.add(placement.marker);
     checkCell(placement.cell, script.area, `${path}.cell`, errors);
   });
 
-  script.markers.forEach((marker, i) => {
-    if (!placed.has(marker.id)) {
-      errors.push({ path: `markers[${i}]`, message: `marker "${marker.id}" has no placement in base.placements` });
-    }
-  });
-
-  const moved = new Set<string>();
   script.base.moves.forEach((move, i) => {
     const path = `base.moves[${i}]`;
     if (!ids.has(move.marker)) {
       errors.push({ path: `${path}.marker`, message: `no marker with id "${move.marker}"` });
-    } else if (moved.has(move.marker)) {
+    } else if (!state.cells.has(move.marker)) {
+      errors.push({ path: `${path}.marker`, message: `marker "${move.marker}" is not placed in the base Step` });
+    } else if (state.moves.has(move.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${move.marker}" already has a move` });
+    } else {
+      state.moves.set(move.marker, move);
     }
-    moved.add(move.marker);
     move.waypoints.forEach((cell, j) => checkCell(cell, script.area, `${path}.waypoints[${j}]`, errors));
+  });
+
+  script.progressions.forEach((progression, p) => {
+    progression.changes.forEach((change, c) => {
+      const path = `progressions[${p}].changes[${c}]`;
+      if (!ids.has(change.marker)) {
+        errors.push({ path: `${path}.marker`, message: `no marker with id "${change.marker}"` });
+      } else {
+        const error = applyChange(state, change);
+        if (error) errors.push({ path: `${path}.${error.path}`, message: error.message });
+        else if (change.type === 'addMarker') everPlaced.add(change.marker);
+      }
+      for (const { cell, path: cellPath } of changeCells(change)) {
+        checkCell(cell, script.area, `${path}.${cellPath}`, errors);
+      }
+    });
+  });
+
+  script.markers.forEach((marker, i) => {
+    if (!everPlaced.has(marker.id)) {
+      errors.push({
+        path: `markers[${i}]`,
+        message: `marker "${marker.id}" is never on the Area: place it in base.placements or add it in a Progression`,
+      });
+    }
   });
 
   return errors;
@@ -225,22 +308,40 @@ export function validate(input: unknown): ValidationResult {
   return errors.length > 0 ? { ok: false, errors } : { ok: true, script: parsed.data };
 }
 
-/** Number of Steps in the script. Only the base Step exists in schema v1. */
-export function stepCount(_script: PracticeScript): number {
-  return 1;
+/** Number of Steps in the script: the base plus every Progression. */
+export function stepCount(script: PracticeScript): number {
+  return 1 + script.progressions.length;
 }
 
-/** Full state of Step n of a validated script. */
+/**
+ * Full state of Step n of a validated script: the base with Progressions 1..n
+ * applied in order, so an edit to an earlier Step carries forward.
+ */
 export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
   if (!Number.isInteger(n) || n < 0 || n >= stepCount(script)) {
     throw new RangeError(`Step ${n} does not exist; this Practice has ${stepCount(script)} Step(s)`);
   }
-  const cells = new Map(script.base.placements.map((p) => [p.marker, p.cell]));
+  const state: StepState = {
+    cells: new Map(script.base.placements.map((p) => [p.marker, p.cell])),
+    moves: new Map(script.base.moves.map((m) => [m.marker, m])),
+  };
+  for (const progression of script.progressions.slice(0, n)) {
+    for (const change of progression.changes) {
+      const error = applyChange(state, change);
+      if (error) throw new Error(`Script is not valid: ${error.message}; run validate() first`);
+    }
+  }
+  const markers = script.markers
+    .filter((marker) => state.cells.has(marker.id))
+    .map((marker) => ({ ...marker, cell: state.cells.get(marker.id)! }));
+  const progression = n > 0 ? script.progressions[n - 1] : undefined;
   return {
-    index: 0,
+    index: n,
     area: script.area,
-    markers: script.markers.map((marker) => ({ ...marker, cell: cells.get(marker.id)! })),
-    moves: script.base.moves,
+    markers,
+    moves: markers.flatMap((marker) => state.moves.get(marker.id) ?? []),
+    lever: progression?.lever,
+    commentary: progression ? progression.commentary : script.base.commentary,
   };
 }
 
