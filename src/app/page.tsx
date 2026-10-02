@@ -191,10 +191,10 @@ export default function HomePage() {
               <span className="font-heading font-semibold text-text-primary">Coaching Animator</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-text-primary/70">
-              <a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="/contact" className="hover:text-primary transition-colors">Contact</a>
-              <a href="/sitemap-page" className="hover:text-primary transition-colors">Site Map</a>
+              <a href="/terms" className="inline-flex items-center min-h-[44px] hover:text-primary transition-colors">Terms of Service</a>
+              <a href="/privacy" className="inline-flex items-center min-h-[44px] hover:text-primary transition-colors">Privacy Policy</a>
+              <a href="/contact" className="inline-flex items-center min-h-[44px] hover:text-primary transition-colors">Contact</a>
+              <a href="/sitemap-page" className="inline-flex items-center min-h-[44px] hover:text-primary transition-colors">Site Map</a>
             </div>
             <p className="text-sm text-text-primary/50">
               © {new Date().getFullYear()} Coaching Animator

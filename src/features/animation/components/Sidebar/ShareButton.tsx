@@ -131,7 +131,7 @@ export function ShareButton({ cloudAnimationId }: { cloudAnimationId?: string | 
             <input
               readOnly
               value={shareUrl ?? ''}
-              className="flex-1 border border-border bg-surface px-3 py-2 text-sm font-mono rounded-none focus:outline-none"
+              className="flex-1 border border-border bg-surface px-3 py-2 text-sm font-mono rounded-none focus:outline-none focus:ring-2 focus:ring-primary"
               id="share-url-input"
               onFocus={(e) => e.target.select()}
               aria-label="Share link URL"

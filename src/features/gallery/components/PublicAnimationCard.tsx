@@ -211,10 +211,11 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
           <button
             onClick={handleUpvoteClick}
             disabled={isUpvoting}
-            className={`absolute top-2 ${animation.endorsed_by ? 'right-16' : 'right-2'} flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors ${hasUpvoted
+            className={`absolute top-2 ${animation.endorsed_by ? 'right-16' : 'right-2'} flex items-center gap-1 min-h-[44px] min-w-[44px] justify-center px-2 py-1 text-xs font-medium transition-colors ${hasUpvoted
               ? 'bg-primary text-text-inverse'
               : 'bg-surface/90 hover:bg-surface'
               }`}
+            aria-label={currentUserId ? (hasUpvoted ? `Remove upvote (${upvoteCount})` : `Upvote (${upvoteCount})`) : "Sign in to upvote"}
             title={currentUserId ? (hasUpvoted ? 'Remove upvote' : 'Upvote') : 'Sign in to upvote'}
           >
             <ThumbsUp className={`w-3.5 h-3.5 ${hasUpvoted ? 'fill-current' : ''}`} />
@@ -325,7 +326,7 @@ export function PublicAnimationCard({ animation, onView, currentUserId, onUpvote
         {/* Share action */}
         <button
           onClick={handleShare}
-          className="w-full flex items-center justify-center gap-2 py-2 border border-border hover:border-primary text-sm font-medium transition-colors mt-1"
+          className="w-full min-h-[44px] flex items-center justify-center gap-2 py-2 border border-border hover:border-primary text-sm font-medium transition-colors mt-1"
           aria-label={copied ? 'Link copied' : 'Share animation'}
           id={`share-card-${animation.id}`}
         >

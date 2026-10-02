@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h2>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -170,11 +170,11 @@ export default function RegisterPage() {
           />
           <label htmlFor="terms" className="text-sm text-text-primary/80">
             I agree to the{' '}
-            <a href="/terms" className="text-primary hover:underline">
+            <a href="/terms" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
               Terms of Service
             </a>{' '}
             and{' '}
-            <a href="/privacy" className="text-primary hover:underline">
+            <a href="/privacy" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
               Privacy Policy
             </a>
           </label>
@@ -183,7 +183,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
@@ -236,7 +236,7 @@ export default function RegisterPage() {
 
       <div className="mt-6 text-center text-sm text-text-primary/70">
         Already have an account?{' '}
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign in
         </a>
       </div>

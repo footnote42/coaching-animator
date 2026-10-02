@@ -329,7 +329,7 @@ function GalleryContent() {
                 <button
                   key={option.value}
                   onClick={() => handleSortChange(option.value)}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${sort === option.value
+                  className={`min-h-[44px] px-3 py-2 text-sm font-medium transition-colors ${sort === option.value
                     ? 'bg-primary text-text-inverse'
                     : 'bg-surface border border-border hover:border-primary'
                     }`}
@@ -346,7 +346,7 @@ function GalleryContent() {
             {hasFilters && (
               <button
                 onClick={handleClearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-text-primary/70 hover:text-text-primary"
+                className="flex items-center gap-1 min-h-[44px] px-3 py-2 text-sm text-text-primary/70 hover:text-text-primary"
               >
                 <X className="w-4 h-4" />
                 Clear
@@ -383,7 +383,7 @@ function GalleryContent() {
             <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={fetchGallery}
-              className="px-4 py-2 bg-primary text-text-inverse font-medium"
+              className="min-h-[44px] px-4 py-2 bg-primary text-text-inverse font-medium"
             >
               Try Again
             </button>
@@ -413,7 +413,7 @@ function GalleryContent() {
                 <button
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary"
+                  className="min-h-[44px] px-4 py-2 border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary"
                 >
                   Previous
                 </button>
@@ -423,7 +423,7 @@ function GalleryContent() {
                 <button
                   onClick={() => setOffset(offset + limit)}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary"
+                  className="min-h-[44px] px-4 py-2 border border-border disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary"
                 >
                   Next
                 </button>
@@ -465,7 +465,7 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean | string; onC
       {hasFilters ? (
         <button
           onClick={onClear}
-          className="px-4 py-2 border border-border hover:border-primary"
+          className="min-h-[44px] px-4 py-2 border border-border hover:border-primary"
         >
           Clear Filters
         </button>
