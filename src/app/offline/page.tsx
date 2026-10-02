@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Offline',
+  description: 'You are offline. The page you asked for is not available, but your locally saved animations can still be opened.',
+};
+
 export default function OfflinePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'How to Use Coaching Animator',
+  title: 'How to use Coaching Animator',
+  description: 'Step-by-step guide to building a rugby animation: place players, add frames, preview the movement, then save and share your play.',
 };
 
 export default function HowToPage() {

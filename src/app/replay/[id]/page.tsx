@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${animation.title} | Coaching Animator`,
+    title: animation.title,
     description: animation.description || `A ${animation.animation_type} animation created with Coaching Animator`,
     openGraph: {
       title: animation.title,

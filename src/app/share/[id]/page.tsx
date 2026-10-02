@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const baseUrl = getSiteOrigin();
 
   return {
-    title: `Watch ${animation.title} | Coaching Animator`,
+    title: `Watch ${animation.title}`,
     description: animation.description || 'Watch this coaching animation.',
     openGraph: {
       title: `Watch ${animation.title}`,

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Coaching Framework',
+  title: 'Coaching framework',
+  description: 'A simple framework for using animations in rugby coaching: set the picture, show the movement, then check understanding with players.',
 };
 
 export default function CoachingFrameworkPage() {

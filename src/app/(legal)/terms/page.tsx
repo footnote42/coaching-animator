@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms of Service | Coaching Animator',
-  description: 'Terms of Service for Coaching Animator - Rugby Play Visualization Tool',
+  title: 'Terms of service',
+  description: 'Terms of service for Coaching Animator, the rugby play visualisation tool: how you may use the site and what to expect from us.',
 };
 
 export default function TermsPage() {
