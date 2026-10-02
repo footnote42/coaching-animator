@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { AnimationCard } from '@/features/gallery/components/AnimationCard';
 
@@ -13,6 +13,7 @@ vi.mock('lucide-react', () => ({
   Globe: () => <div data-testid="icon-globe" />,
   Pencil: () => <div data-testid="icon-pencil" />,
   Settings: () => <div data-testid="icon-settings" />,
+  MoreHorizontal: () => <div data-testid="icon-more" />,
   Trash2: () => <div data-testid="icon-trash" />,
   Play: () => <div data-testid="icon-play" />,
   History: () => <div data-testid="icon-history" />,
@@ -87,7 +88,8 @@ describe('AnimationCard', () => {
       />
     );
 
-    const editInfoBtn = screen.getByRole('button', { name: /edit info/i });
+    fireEvent.click(screen.getByRole('button', { name: /more actions/i }));
+    const editInfoBtn = screen.getByRole('menuitem', { name: /edit info/i });
     expect(editInfoBtn).toBeDefined();
     expect(screen.queryByRole('button', { name: /^edit$/i })).toBeNull();
   });
