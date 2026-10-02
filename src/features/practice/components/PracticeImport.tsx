@@ -2,28 +2,35 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, MessageSquare } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
   validate,
   resolveStep,
   positionsAt,
   formatError,
+  stepCount,
   type ResolvedStep,
 } from '@/features/practice/engine';
-import passingSquare from '@/features/practice/examples/passing-square.json';
+import type { PracticeScript } from '@/features/practice/schema';
+import example from '@/features/practice/examples/passing-square-progressions.json';
 
 const PracticeCanvas = dynamic(() => import('@/features/practice/components/PracticeCanvas'), {
   ssr: false,
 });
 
+const LEVER_NAMES = { space: 'Space', time: 'Time', equipment: 'Equipment', people: 'People' } as const;
+
 /**
  * "Import script" box: paste a Practice Script, load it, and play it on the canvas.
+ * A Step strip picks the base or a Progression; Commentary shows over the canvas.
  */
 export function PracticeImport() {
   const [text, setText] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+  const [script, setScript] = useState<PracticeScript | null>(null);
   const [step, setStep] = useState<ResolvedStep | null>(null);
+  const [showCommentary, setShowCommentary] = useState(true);
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const duration = step ? positionsAt(step, 0).duration : 0;
@@ -49,6 +56,12 @@ export function PracticeImport() {
     if (playing && time >= duration) setPlaying(false);
   }, [playing, time, duration]);
 
+  const playStep = (source: PracticeScript, n: number) => {
+    setStep(resolveStep(source, n));
+    setTime(0);
+    setPlaying(true);
+  };
+
   const load = () => {
     const result = validate(text);
     if (!result.ok) {
@@ -56,9 +69,8 @@ export function PracticeImport() {
       return;
     }
     setErrors([]);
-    setStep(resolveStep(result.script, 0));
-    setTime(0);
-    setPlaying(true);
+    setScript(result.script);
+    playStep(result.script, 0);
   };
 
   const restart = () => {
@@ -82,7 +94,7 @@ export function PracticeImport() {
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={load} disabled={!text.trim()}>Load</Button>
-          <Button variant="outline" onClick={() => setText(JSON.stringify(passingSquare, null, 2))}>
+          <Button variant="outline" onClick={() => setText(JSON.stringify(example, null, 2))}>
             Use example
           </Button>
         </div>
@@ -99,9 +111,46 @@ export function PracticeImport() {
       </section>
 
       <section className="flex min-h-64 flex-1 flex-col gap-2">
-        <div className="min-h-0 flex-1">
+        {script && step && (
+          <div role="group" aria-label="Steps" className="flex flex-wrap gap-2">
+            {Array.from({ length: stepCount(script) }, (_, n) => {
+              const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
+              return (
+                <Button
+                  key={n}
+                  size="sm"
+                  variant={n === step.index ? 'default' : 'outline'}
+                  aria-pressed={n === step.index}
+                  onClick={() => playStep(script, n)}
+                >
+                  {lever ? `${n}. ${LEVER_NAMES[lever]}` : 'Base'}
+                </Button>
+              );
+            })}
+          </div>
+        )}
+        <div className="relative min-h-0 flex-1">
           {step ? (
-            <PracticeCanvas step={step} time={time} />
+            <>
+              <PracticeCanvas step={step} time={time} />
+              {showCommentary && (step.lever || step.commentary.points.length > 0) && (
+                <div
+                  aria-live="polite"
+                  className="pointer-events-none absolute left-2 top-2 max-w-xs bg-black/70 p-2 text-sm text-white"
+                >
+                  <p className="font-medium">
+                    {step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : 'Base Step'}
+                  </p>
+                  {step.commentary.points.length > 0 && (
+                    <ul className="mt-1 list-disc space-y-1 pl-5">
+                      {step.commentary.points.map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex h-full items-center justify-center border border-dashed border-[var(--color-border)] text-sm text-text-primary">
               Load a script to see it here.
@@ -120,6 +169,15 @@ export function PracticeImport() {
             </Button>
             <Button variant="outline" size="icon" aria-label="Restart" onClick={restart}>
               <RotateCcw />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={showCommentary ? 'Hide Commentary' : 'Show Commentary'}
+              aria-pressed={showCommentary}
+              onClick={() => setShowCommentary((v) => !v)}
+            >
+              <MessageSquare />
             </Button>
             <span className="font-mono text-xs text-text-primary">
               {time.toFixed(1)}s / {duration.toFixed(1)}s
