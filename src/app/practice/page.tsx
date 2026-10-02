@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { PracticeImport } from '@/features/practice/components/PracticeImport';
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function PracticePage() {
-  return <PracticeImport />;
+  return (
+    <Suspense>
+      <PracticeImport />
+    </Suspense>
+  );
 }
