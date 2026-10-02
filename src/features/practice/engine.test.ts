@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   validate,
   resolveStep,
+  stepCount,
   positionsAt,
   formatError,
   MAX_SCRIPT_BYTES,
@@ -9,6 +10,7 @@ import {
   DEFAULT_PACE,
 } from './engine';
 import passingSquare from './examples/passing-square.json';
+import withProgressions from './examples/passing-square-progressions.json';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
@@ -84,7 +86,9 @@ describe('validate', () => {
   it('rejects a marker with no placement', () => {
     const script = clone(passingSquare);
     script.base.placements.pop();
-    expect(errorsOf(script)).toEqual(['markers[6]: marker "ball" has no placement in base.placements']);
+    expect(errorsOf(script)).toEqual([
+      'markers[6]: marker "ball" is never on the Area: place it in base.placements or add it in a Progression',
+    ]);
   });
 });
 
@@ -137,5 +141,105 @@ describe('resolveStep', () => {
     const result = validate(passingSquare);
     if (!result.ok) throw new Error('example should be valid');
     expect(() => resolveStep(result.script, 1)).toThrow(RangeError);
+  });
+});
+
+describe('Progressions', () => {
+  function scriptOf(input: unknown) {
+    const result = validate(input);
+    if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
+    return result.script;
+  }
+
+  function stepsOf(input: unknown) {
+    const script = scriptOf(input);
+    return Array.from({ length: stepCount(script) }, (_, n) => resolveStep(script, n));
+  }
+
+  const ids = (step: ReturnType<typeof resolveStep>) => step.markers.map((m) => m.id);
+
+  it('accepts the example and counts the base plus every Progression', () => {
+    expect(stepCount(scriptOf(withProgressions))).toBe(3);
+    expect(stepCount(scriptOf(passingSquare))).toBe(1);
+  });
+
+  it('carries an edit to the base forward into every later Step', () => {
+    const script = clone(withProgressions);
+    script.base.placements.find((p) => p.marker === 'c1')!.cell = { x: 0, y: 0 };
+    for (const step of stepsOf(script)) {
+      expect(step.markers.find((m) => m.id === 'c1')!.cell).toEqual({ x: 0, y: 0 });
+    }
+  });
+
+  it('applies changes over the previous Step, keeping what is not changed', () => {
+    const [base, crossover, defended] = stepsOf(withProgressions);
+    expect(base.moves.find((m) => m.marker === 'a1')!.waypoints).toEqual([{ x: 1, y: 1 }]);
+    expect(crossover.moves.find((m) => m.marker === 'a1')!.waypoints).toEqual([{ x: 10, y: 1 }]);
+    expect(defended.moves.find((m) => m.marker === 'a1')!.waypoints).toEqual([{ x: 10, y: 1 }]);
+  });
+
+  it('shows an added defender from its Progression onward', () => {
+    const [base, crossover, defended] = stepsOf(withProgressions);
+    expect(ids(base)).not.toContain('d1');
+    expect(ids(crossover)).not.toContain('d1');
+    expect(defended.markers.find((m) => m.id === 'd1')!.cell).toEqual({ x: 6, y: 1 });
+    expect(positionsAt(defended, 0).positions.d1).toEqual({ x: 6, y: 1 });
+  });
+
+  it('removes a marker, and its move, from its Progression onward', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ changes: unknown[] }> };
+    script.progressions[0].changes.push({ type: 'removeMarker', marker: 'c3' });
+    script.progressions[0].changes.push({ type: 'removeMarker', marker: 'a2' });
+    const [base, crossover, defended] = stepsOf(script);
+    expect(ids(base)).toContain('c3');
+    expect(ids(crossover)).not.toContain('c3');
+    expect(ids(defended)).not.toContain('c3');
+    expect(crossover.moves.map((m) => m.marker)).not.toContain('a2');
+  });
+
+  it('gives each Step its own Lever and Commentary', () => {
+    const [base, crossover, defended] = stepsOf(withProgressions);
+    expect(base.index).toBe(0);
+    expect(base.lever).toBeUndefined();
+    expect(base.commentary.points[0]).toMatch(/target/);
+    expect(crossover.lever).toBe('time');
+    expect(crossover.commentary.points[0]).toMatch(/cross/);
+    expect(defended.index).toBe(2);
+    expect(defended.lever).toBe('people');
+    expect(defended.commentary.points[0]).toMatch(/defender/);
+  });
+
+  it('rejects a change to a marker not on the Area at that Step, naming the field', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ changes: unknown[] }> };
+    script.progressions[0].changes.push({ type: 'setMove', marker: 'd1', waypoints: [{ x: 2, y: 2 }] });
+    expect(errorsOf(script)).toEqual([
+      'progressions[0].changes[2].marker: marker "d1" is not on the Area in the previous Step',
+    ]);
+  });
+
+  it('rejects removing a marker that is already gone, and adding one already present', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ changes: unknown[] }> };
+    script.progressions[0].changes.push({ type: 'removeMarker', marker: 'c1' });
+    script.progressions[1].changes.push({ type: 'removeMarker', marker: 'c1' });
+    script.progressions[1].changes.push({ type: 'addMarker', marker: 'a1', cell: { x: 3, y: 3 } });
+    expect(errorsOf(script)).toEqual([
+      'progressions[1].changes[2].marker: marker "c1" is not on the Area in the previous Step',
+      'progressions[1].changes[3].marker: marker "a1" is already on the Area in the previous Step',
+    ]);
+  });
+
+  it('rejects a change naming an unknown marker or a cell outside the Area', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ changes: unknown[] }> };
+    script.progressions[1].changes.push({ type: 'removeMove', marker: 'zz' });
+    script.progressions[1].changes.push({ type: 'placeMarker', marker: 'c2', cell: { x: 12, y: 0 } });
+    const errors = errorsOf(script);
+    expect(errors[0]).toBe('progressions[1].changes[2].marker: no marker with id "zz"');
+    expect(errors[1]).toMatch(/^progressions\[1\]\.changes\[3\]\.cell: cell \(12, 0\) is outside/);
+  });
+
+  it('rejects a Progression without a Lever', () => {
+    const script = clone(withProgressions) as { progressions: Array<Record<string, unknown>> };
+    delete script.progressions[1].lever;
+    expect(errorsOf(script)).toEqual(['progressions[1].lever: is required']);
   });
 });

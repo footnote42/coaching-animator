@@ -81,7 +81,8 @@
         ],
         "additionalProperties": false,
         "description": "Something drawn in the Area: a player, the ball or equipment."
-      }
+      },
+      "description": "Every marker used in any Step, declared once."
     },
     "base": {
       "type": "object",
@@ -126,7 +127,7 @@
             "additionalProperties": false,
             "description": "Where a marker starts in the Step."
           },
-          "description": "Every marker placed exactly once."
+          "description": "Markers on the Area in Step 0, each placed at most once. A marker left out must be added by a Progression."
         },
         "moves": {
           "default": [],
@@ -176,6 +177,27 @@
             "additionalProperties": false,
             "description": "A run by one marker, starting at time zero from its placement, at the default teaching Pace. Duration comes from distance and Pace."
           }
+        },
+        "commentary": {
+          "default": {
+            "points": []
+          },
+          "type": "object",
+          "properties": {
+            "points": {
+              "default": [],
+              "description": "Coaching points shown over the Step as it plays. For a Progression, the first says why the Step is harder.",
+              "maxItems": 10,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          },
+          "additionalProperties": false,
+          "description": "The words shown over a Step as it plays. The viewer can toggle it."
         }
       },
       "required": [
@@ -183,6 +205,236 @@
       ],
       "additionalProperties": false,
       "description": "Step 0 of the Practice."
+    },
+    "progressions": {
+      "default": [],
+      "description": "Progressions in order. Progression i is Step i + 1 and builds on Step i.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "lever": {
+            "type": "string",
+            "enum": [
+              "space",
+              "time",
+              "equipment",
+              "people"
+            ],
+            "description": "The STEP lever this Progression pulls: Space, Time, Equipment or People."
+          },
+          "commentary": {
+            "default": {
+              "points": []
+            },
+            "type": "object",
+            "properties": {
+              "points": {
+                "default": [],
+                "description": "Coaching points shown over the Step as it plays. For a Progression, the first says why the Step is harder.",
+                "maxItems": 10,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              }
+            },
+            "additionalProperties": false,
+            "description": "The words shown over a Step as it plays. The viewer can toggle it."
+          },
+          "changes": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "addMarker"
+                    },
+                    "marker": {
+                      "type": "string",
+                      "description": "Id of a marker that is not on the Area in the previous Step."
+                    },
+                    "cell": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Column, counted from 0 at the left edge of the Area."
+                        },
+                        "y": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Row, counted from 0 at the top edge of the Area."
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Cell the marker starts on."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "marker",
+                    "cell"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Put a marker on the Area from this Step onward."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "removeMarker"
+                    },
+                    "marker": {
+                      "type": "string",
+                      "description": "Id of a marker on the Area in the previous Step."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "marker"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Take a marker, and its move, off the Area from this Step onward."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "placeMarker"
+                    },
+                    "marker": {
+                      "type": "string",
+                      "description": "Id of a marker on the Area in the previous Step."
+                    },
+                    "cell": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Column, counted from 0 at the left edge of the Area."
+                        },
+                        "y": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Row, counted from 0 at the top edge of the Area."
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false,
+                      "description": "New starting cell."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "marker",
+                    "cell"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Change where a marker starts. Its move, if any, is kept and runs from the new cell."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "setMove"
+                    },
+                    "marker": {
+                      "type": "string",
+                      "description": "Id of the marker that moves."
+                    },
+                    "waypoints": {
+                      "minItems": 1,
+                      "maxItems": 50,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991,
+                            "description": "Column, counted from 0 at the left edge of the Area."
+                          },
+                          "y": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991,
+                            "description": "Row, counted from 0 at the top edge of the Area."
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "additionalProperties": false,
+                        "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
+                      },
+                      "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "marker",
+                    "waypoints"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Add a move for a marker, or replace the marker's existing move."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "removeMove"
+                    },
+                    "marker": {
+                      "type": "string",
+                      "description": "Id of a marker that has a move in the previous Step."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "marker"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Remove a marker's move so it stays on its cell."
+                }
+              ],
+              "description": "One change over the previous Step. Changes apply in order."
+            },
+            "description": "What this Step changes over the previous Step, applied in order."
+          }
+        },
+        "required": [
+          "lever",
+          "changes"
+        ],
+        "additionalProperties": false,
+        "description": "A Step that develops the previous Step. Stores only its change, so edits to earlier Steps carry forward."
+      }
     }
   },
   "required": [
