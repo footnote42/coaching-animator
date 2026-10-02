@@ -19,15 +19,3 @@ export async function checkQuota(userId: string): Promise<{ allowed: boolean; cu
     max: MAX_ANIMATIONS_PER_USER,
   };
 }
-
-export async function getAnimationCount(userId: string): Promise<number> {
-  const supabase = await createSupabaseServerClient();
-  
-  const { data } = await supabase
-    .from('user_profiles')
-    .select('animation_count')
-    .eq('id', userId)
-    .single();
-
-  return data?.animation_count ?? 0;
-}

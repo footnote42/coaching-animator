@@ -64,7 +64,6 @@ export const useAutoSave = () => {
             try {
                 localStorage.setItem('rugby_animator_autosave', jsonString);
                 localStorage.setItem('rugby_animator_autosave_timestamp', new Date().toISOString());
-                console.log('Auto-saved project to localStorage');
             } catch (error) {
                 console.error('Failed to auto-save project:', error);
 
@@ -82,7 +81,6 @@ export const useAutoSave = () => {
                         localStorage.removeItem('rugby_animator_autosave_timestamp');
                         localStorage.setItem('rugby_animator_autosave', jsonString);
                         localStorage.setItem('rugby_animator_autosave_timestamp', new Date().toISOString());
-                        console.log('Cleared old autosave and saved successfully');
                     } catch (retryError) {
                         console.error('Failed to save even after clearing:', retryError);
                     }

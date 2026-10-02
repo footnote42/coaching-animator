@@ -125,7 +125,6 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       if (insertError) {
         if (insertError.code === '23505') {
           // Unique constraint violation - upvote already exists
-          console.log('Upvote already exists (race condition handled)');
           upvoted = true;
           newCount = animation.upvote_count + 1;
         } else {

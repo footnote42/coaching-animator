@@ -149,10 +149,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         // If RPC doesn't exist, fall back to direct update
         if (warnError) {
-          console.log('Warning via RPC failed, trying direct update');
           // Note: This requires a warning_count column which may not exist yet
           // For now, we'll log the warning action
-          console.log(`Warning issued to user ${animation.user_id}: ${reason}`);
+          console.warn(`[Admin Report Action] Warning RPC failed for user ${animation.user_id}`);
         }
         break;
 

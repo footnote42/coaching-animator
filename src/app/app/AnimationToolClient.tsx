@@ -130,9 +130,8 @@ function AnimationToolPageContent() {
     setShowSaveModal(true);
   }, [user, router, saveProject]);
 
-  const handleSaveSuccess = useCallback((id: string) => {
+  const handleSaveSuccess = useCallback(() => {
     setShowSaveModal(false);
-    console.log('Saved animation ID:', id);
   }, []);
 
   const getPayload = useCallback(() => {

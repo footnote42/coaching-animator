@@ -6,6 +6,7 @@ build/
 .env
 .env.local
 .env.production
+.env.staging
 # Allow .env.example files
 !.env*.example
 
@@ -25,8 +26,6 @@ node_modules
 # Next.js build output
 .next/
 
-# Archived specs and legacy files
-/archive
 .worktrees/
 
 # Test artifacts (generated, not source)

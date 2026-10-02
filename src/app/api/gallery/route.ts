@@ -8,7 +8,6 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
-  console.log('[Gallery API] GET request received');
   try {
     // IP-based rate limit for public gallery endpoint
     const ip =

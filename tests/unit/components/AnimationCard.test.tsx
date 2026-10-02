@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { AnimationCard } from '@/features/gallery/components/AnimationCard';
 
@@ -19,6 +19,7 @@ vi.mock('lucide-react', () => ({
   Share2: () => <div data-testid="icon-share" />,
   FilePlus: () => <div data-testid="icon-file-plus" />,
   Unlink: () => <div data-testid="icon-unlink" />,
+  MoreHorizontal: () => <div data-testid="icon-more" />,
 }));
 
 // Mock Next.js components
@@ -87,7 +88,8 @@ describe('AnimationCard', () => {
       />
     );
 
-    const editInfoBtn = screen.getByRole('button', { name: /edit info/i });
+    fireEvent.click(screen.getByRole('button', { name: /more actions/i }));
+    const editInfoBtn = screen.getByRole('menuitem', { name: /edit info/i });
     expect(editInfoBtn).toBeDefined();
     expect(screen.queryByRole('button', { name: /^edit$/i })).toBeNull();
   });
