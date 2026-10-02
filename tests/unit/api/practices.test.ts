@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   requireNotBanned: vi.fn(),
   checkRateLimit: vi.fn(),
   from: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@/lib/server/auth', () => ({
@@ -19,7 +20,7 @@ vi.mock('@/lib/server/rate-limit', () => ({
   getRateLimitHeaders: () => ({}),
 }));
 vi.mock('@/lib/supabase/server', () => ({
-  createSupabaseServerClient: async () => ({ from: mocks.from }),
+  createSupabaseServerClient: async () => ({ from: mocks.from, rpc: mocks.rpc }),
 }));
 
 import { GET, POST } from '@/app/api/practices/route';
@@ -113,18 +114,33 @@ describe('GET /api/practices', () => {
 });
 
 describe('/api/practices/[id]', () => {
-  const ctx = { params: { id: 'p1' } };
-  const req = new NextRequest('http://localhost/api/practices/p1');
+  const id = '11111111-2222-4333-8444-555555555555';
+  const ctx = { params: { id } };
+  const req = new NextRequest(`http://localhost/api/practices/${id}`);
 
-  it('GET returns the practice', async () => {
-    mocks.from.mockReturnValue(builder({ data: { id: 'p1' }, error: null }));
+  it('GET reads through get_shared_practice', async () => {
+    mocks.rpc.mockReturnValue(builder({ data: { id, visibility: 'link' }, error: null }));
     const res = await GET_ONE(req, ctx);
     expect(res.status).toBe(200);
+    expect((await res.json()).practice).toEqual({ id, visibility: 'link' });
+    expect(mocks.rpc).toHaveBeenCalledWith('get_shared_practice', { p_id: id });
+    expect(mocks.from).not.toHaveBeenCalled();
   });
 
-  it('GET returns 404 when RLS hides the row', async () => {
-    mocks.from.mockReturnValue(builder({ data: null, error: null }));
+  it('GET returns 404 when the function hides the row', async () => {
+    mocks.rpc.mockReturnValue(builder({ data: null, error: null }));
     expect((await GET_ONE(req, ctx)).status).toBe(404);
+  });
+
+  it('GET returns 404 on a database error', async () => {
+    mocks.rpc.mockReturnValue(builder({ data: null, error: { message: 'boom' } }));
+    expect((await GET_ONE(req, ctx)).status).toBe(404);
+  });
+
+  it('GET returns 404 for an id that is not a uuid without querying', async () => {
+    const res = await GET_ONE(req, { params: { id: 'p1' } });
+    expect(res.status).toBe(404);
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it('DELETE rejects guests', async () => {

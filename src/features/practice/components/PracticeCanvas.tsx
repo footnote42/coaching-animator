@@ -4,8 +4,8 @@ import { useMemo, useRef } from 'react';
 import { Stage, Layer, Rect, Line, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
-import { EntityColors } from '@/features/animation/services/entityColors';
 import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
+import { markerColour } from '@/features/practice/markerColour';
 
 /** Smallest marker radius on screen, in CSS pixels. */
 const MIN_MARKER_RADIUS_PX = 6;
@@ -13,24 +13,6 @@ const MIN_MARKER_RADIUS_PX = 6;
 const MARKER_RADIUS_CELLS = 0.4;
 /** Below this many pixels per cell the grid lines are too dense to draw. */
 const MIN_GRID_PX = 6;
-
-function markerColour(marker: ResolvedMarker): string {
-  switch (marker.kind) {
-    case 'attacker':
-    case 'defender': {
-      const team = marker.team ?? (marker.kind === 'attacker' ? 'attack' : 'defence');
-      return EntityColors.getDefault('player', team === 'attack' ? 'attack' : 'defense');
-    }
-    case 'coach':
-      return EntityColors.getDefault('player', 'other');
-    case 'ball':
-      return EntityColors.getDefault('ball');
-    case 'cone':
-      return EntityColors.getDefault('cone');
-    case 'tackle-shield':
-      return EntityColors.getDefault('tackle-shield');
-  }
-}
 
 function MarkerShape({ marker, x, y, r }: { marker: ResolvedMarker; x: number; y: number; r: number }) {
   const fill = markerColour(marker);

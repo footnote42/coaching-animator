@@ -68,7 +68,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
   const isActive = (path: string) => pathname === path;
 
   // Share routes are watch-only — no chrome
-  if (pathname.startsWith('/share/')) return null;
+  if (pathname.startsWith('/share/') || pathname.startsWith('/p/')) return null;
 
   // Simplified nav for auth pages
   if (variant === 'simple') {
