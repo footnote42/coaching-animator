@@ -1,10 +1,20 @@
 # NOW — coaching-animator
 
 ## Status
-PARKED — Phase 0: workflow & docs migration (audit follow-up) (Parked 2026-09-25 in the final rollout cut.)
+IN PROGRESS (2026-10-02) — took the slot freed by Comms (queued) and Portfolio (parked). Supabase prod restored 2026-10-02 (was paused since ~July); staging left paused.
 
 ## Next
-Open `00-Planning/DevPlan.html` (vault) in a browser and start Phase 1 item 1.1 — fix `useAutoSave` (interval resets on every edit; gate on isDirty, project via ref, Sonner instead of alert).
+Weekend to Wed 7 Oct (interview week): Animator only after prep blocks, max 2 sessions.
+1. Housekeeping: push the 3 local commits; keep or delete `prototype/brand.html` + `roadmap.html`
+2. Smoke test the live site: load, sign in, save to cloud, share link (watch for T-094)
+3. Phase 1 item 1.1 — fix `useAutoSave` (interval resets on every edit; gate on isDirty, project via ref, Sonner instead of alert)
+4. Phase 1 item 1.2 — T-061 (Enter in Tags submits save form)
+
+From Thu 8 Oct (lean in):
+1. `/polish-audit` → findings filed as GitHub issues
+2. Migrate DevPlan Phases 1, 3, 4 to GitHub issues (single tracker; DevPlan becomes read-only history). Hold Phase 2
+3. `/improve-codebase-architecture` → its output replaces Phase 2 (2.1–2.4) as tickets
+4. Large tickets → Antigravity; Small ones stay with Wayne
 
 ## Context
 - **Housekeeping on return (flagged 2026-09-25):** review the untracked `prototype/brand.html` and `prototype/roadmap.html` (May prototypes), then keep or delete them. 3 local commits are unpushed: push once you're satisfied.
