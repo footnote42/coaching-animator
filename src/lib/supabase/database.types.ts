@@ -213,6 +213,42 @@ export type Database = {
         }
         Relationships: []
       }
+      practices: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          owner_id: string
+          schema_version: number
+          script: Json
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id: string
+          schema_version: number
+          script: Json
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string
+          schema_version?: number
+          script?: Json
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       saved_animations: {
         Row: {
           animation_type: string

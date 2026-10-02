@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
@@ -11,6 +12,7 @@ import {
   formatError,
   type ResolvedStep,
 } from '@/features/practice/engine';
+import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import passingSquare from '@/features/practice/examples/passing-square.json';
 
 const PracticeCanvas = dynamic(() => import('@/features/practice/components/PracticeCanvas'), {
@@ -21,6 +23,8 @@ const PracticeCanvas = dynamic(() => import('@/features/practice/components/Prac
  * "Import script" box: paste a Practice Script, load it, and play it on the canvas.
  */
 export function PracticeImport() {
+  const router = useRouter();
+  const openId = useSearchParams().get('id');
   const [text, setText] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   const [step, setStep] = useState<ResolvedStep | null>(null);
@@ -49,8 +53,8 @@ export function PracticeImport() {
     if (playing && time >= duration) setPlaying(false);
   }, [playing, time, duration]);
 
-  const load = () => {
-    const result = validate(text);
+  const loadText = (source: string) => {
+    const result = validate(source);
     if (!result.ok) {
       setErrors(result.errors.map(formatError));
       return;
@@ -60,6 +64,29 @@ export function PracticeImport() {
     setTime(0);
     setPlaying(true);
   };
+
+  const load = () => loadText(text);
+
+  useEffect(() => {
+    if (!openId) return;
+    let cancelled = false;
+    void (async () => {
+      const res = await fetch(`/api/practices/${openId}`);
+      if (cancelled) return;
+      if (!res.ok) {
+        setErrors(['This Practice could not be found.']);
+        return;
+      }
+      const { practice } = await res.json();
+      const source = JSON.stringify(practice.script, null, 2);
+      setText(source);
+      loadText(source);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openId]);
 
   const restart = () => {
     setTime(0);
@@ -86,6 +113,7 @@ export function PracticeImport() {
             Use example
           </Button>
         </div>
+        <PracticeLibrary scriptText={text} onOpen={(id) => router.push(`/practice?id=${id}`)} />
         {errors.length > 0 && (
           <div role="alert" className="border border-destructive p-2 text-sm">
             <p className="mb-1 font-medium text-destructive">This script can&apos;t be loaded:</p>
