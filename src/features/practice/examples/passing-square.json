@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "title": "Passing square",
+  "area": { "width": 12, "length": 12 },
+  "markers": [
+    { "id": "c1", "kind": "cone" },
+    { "id": "c2", "kind": "cone" },
+    { "id": "c3", "kind": "cone" },
+    { "id": "c4", "kind": "cone" },
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "ball", "kind": "ball" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "c1", "cell": { "x": 1, "y": 1 } },
+      { "marker": "c2", "cell": { "x": 10, "y": 1 } },
+      { "marker": "c3", "cell": { "x": 10, "y": 10 } },
+      { "marker": "c4", "cell": { "x": 1, "y": 10 } },
+      { "marker": "a1", "cell": { "x": 1, "y": 10 } },
+      { "marker": "a2", "cell": { "x": 10, "y": 10 } },
+      { "marker": "ball", "cell": { "x": 2, "y": 10 } }
+    ],
+    "moves": [
+      { "marker": "a1", "waypoints": [{ "x": 1, "y": 1 }] },
+      { "marker": "a2", "waypoints": [{ "x": 10, "y": 1 }] }
+    ]
+  }
+}

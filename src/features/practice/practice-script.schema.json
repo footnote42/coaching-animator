@@ -1,0 +1,196 @@
+{
+  "title": "Practice Script",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1,
+      "description": "Version of this format. Always 1."
+    },
+    "title": {
+      "description": "Short name for the Practice.",
+      "type": "string",
+      "maxLength": 120
+    },
+    "area": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 150,
+          "description": "Width in whole metres, drawn left to right (the x axis)."
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 150,
+          "description": "Length in whole metres, drawn top to bottom (the y axis)."
+        }
+      },
+      "required": [
+        "width",
+        "length"
+      ],
+      "additionalProperties": false,
+      "description": "The space the Practice happens in. The grid has one 1 m cell per square metre."
+    },
+    "markers": {
+      "minItems": 1,
+      "maxItems": 60,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Unique id used by placements and moves, e.g. \"a1\"."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "attacker",
+              "defender",
+              "ball",
+              "cone",
+              "tackle-shield",
+              "coach"
+            ],
+            "description": "What the marker represents."
+          },
+          "team": {
+            "description": "Side the marker plays for. Defaults to attack for attackers and defence for defenders.",
+            "type": "string",
+            "enum": [
+              "attack",
+              "defence"
+            ]
+          },
+          "label": {
+            "description": "Short role or number shown on the marker, e.g. \"9\" or \"SH\". Never a player name.",
+            "type": "string",
+            "maxLength": 4
+          }
+        },
+        "required": [
+          "id",
+          "kind"
+        ],
+        "additionalProperties": false,
+        "description": "Something drawn in the Area: a player, the ball or equipment."
+      }
+    },
+    "base": {
+      "type": "object",
+      "properties": {
+        "placements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "marker": {
+                "type": "string",
+                "description": "Id of the marker being placed."
+              },
+              "cell": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Column, counted from 0 at the left edge of the Area."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Row, counted from 0 at the top edge of the Area."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false,
+                "description": "Cell the marker starts on."
+              }
+            },
+            "required": [
+              "marker",
+              "cell"
+            ],
+            "additionalProperties": false,
+            "description": "Where a marker starts in the Step."
+          },
+          "description": "Every marker placed exactly once."
+        },
+        "moves": {
+          "default": [],
+          "description": "At most one move per marker.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "marker": {
+                "type": "string",
+                "description": "Id of the marker that moves."
+              },
+              "waypoints": {
+                "minItems": 1,
+                "maxItems": 50,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Column, counted from 0 at the left edge of the Area."
+                    },
+                    "y": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Row, counted from 0 at the top edge of the Area."
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "additionalProperties": false,
+                  "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
+                },
+                "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+              }
+            },
+            "required": [
+              "marker",
+              "waypoints"
+            ],
+            "additionalProperties": false,
+            "description": "A run by one marker, starting at time zero from its placement, at the default teaching Pace. Duration comes from distance and Pace."
+          }
+        }
+      },
+      "required": [
+        "placements"
+      ],
+      "additionalProperties": false,
+      "description": "Step 0 of the Practice."
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "area",
+    "markers",
+    "base"
+  ],
+  "additionalProperties": false,
+  "description": "A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves."
+}
