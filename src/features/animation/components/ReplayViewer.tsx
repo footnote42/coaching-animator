@@ -55,7 +55,6 @@ function normalizeReplayPayload(raw: unknown): ReplayPayload {
     payload.frames[0].updates !== undefined;
 
   if (isSharePayload) {
-    console.log('[ReplayViewer] Detected SharePayload, hydrating...');
     try {
       const project = hydrateSharePayload(payload as SharePayloadV1);
       // Transform hydrated project back into ReplayPayload shape

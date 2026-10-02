@@ -6,6 +6,7 @@ build/
 .env
 .env.local
 .env.production
+.env.staging
 # Allow .env.example files
 !.env*.example
 
@@ -25,8 +26,6 @@ node_modules
 # Next.js build output
 .next/
 
-# Archived specs and legacy files
-/archive
 .worktrees/
 
 # Test artifacts (generated, not source)
@@ -61,8 +60,7 @@ artifacts/
 # Workflow audit per-run logs (GAPS.md is committed; AUDIT-*.md files are not)
 docs/audit/AUDIT-*.md
 
-# Tooling experiments (Specify, Playwright MCP, GitHub Copilot speckit integration)
-.specify/
+# Tooling experiments (Playwright MCP, GitHub Copilot integration)
 .playwright-mcp/
 .github/agents/
 .github/prompts/

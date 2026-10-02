@@ -247,10 +247,6 @@ The project follows a **feature-based architecture** (refactored Feb 2024) for s
 │   ├── testing/             # Testing strategy
 │   ├── troubleshooting/     # Debugging guides
 │   └── operations/          # CI/CD, deployment
-├── archive/specs/           # Archived specifications
-│   ├── 003-online-platform/ # Completed: User accounts, galleries
-│   ├── 004-post-launch-improvements/
-│   └── 005-incremental-improvements/
 └── supabase/                # Database migrations
 ```
 
@@ -272,7 +268,7 @@ This project follows a spec-driven development workflow with comprehensive docum
 - ✅ Cookie audit report (no banner required — all items strictly necessary)
 - ✅ Terms of Service updated (CC-BY-SA 4.0, tiered model, remix requirements)
 - ✅ Privacy Policy updated (no telemetry, data residency, deletion timeline)
-- ✅ Constitutional Compliance Check passed (all 8 items verified)
+- ✅ Constraints check passed (see docs/constraints.md)
 - ⏳ Contact form (Phase 2.1 — optional, post-MVP)
 
 **Online Platform (003-online-platform)**: ✅ Complete (111/111 tasks)
@@ -289,11 +285,9 @@ This project follows a spec-driven development workflow with comprehensive docum
 
 **Next Iteration (Proposed)**: Choose one:
 1. **Contact Form (Phase 2.1)** — Email submissions via `/api/contact` (small effort, post-MVP feature)
-   - See: `specs/003-legal-compliance/tasks.md` T029–T036
 2. **Design System Fixes** — UI/UX audit follow-up: rounded corners, token colors, typography (medium effort, score 15→18+/20)
    - See: `docs/issues/audit-2026-04-24-score-15-20.md` (P1–P3 issues ranked)
 3. **Incremental Improvements (005)** — Pick-and-choose approach (14 issues)
-   - See: `archive/specs/005-incremental-improvements/` for details
 
 **Latest Handoff**: See `docs/plans/HANDOFF.md` for the session diary
 
@@ -314,7 +308,7 @@ This project follows a spec-driven development workflow with comprehensive docum
 
 **Submit Issues**:
 - Reference Task IDs (e.g., T001-T111) or issue codes (e.g., CRIT-001, HIGH-001)
-- Check `archive/specs/005-incremental-improvements/` for known issues
+- Search existing GitHub issues for known issues
 - Include steps to reproduce, expected vs actual behavior, and browser/OS details
 
 ---
@@ -438,7 +432,7 @@ npx playwright show-report
 
 - **[PRD v1.0](docs/authority/PRD.md)** - Original product requirements (89% coverage)
 - **[PRD v2.0 (DRAFT)](docs/authority/PRD-v2.0.md)** - Rugby coaching platform vision
-- **[Constitution](docs/authority/constitution.md)** - v3.3 with organizational tier & privacy-preserving metrics
+- **[Binding constraints](docs/constraints.md)** - No telemetry, no ads, no paywalls, OAuth providers, cookie rule
 - **[V2 Vision](docs/authority/V2_VISION.md)** - Future roadmap and features
 
 ---

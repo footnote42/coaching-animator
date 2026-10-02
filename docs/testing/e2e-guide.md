@@ -393,7 +393,7 @@ Each phase's tests build on Phase 1 infrastructure.
 - **Testing Strategy**: `docs/testing/strategy.md`
 - **Test Code**: `tests/e2e/` (primary location)
 - **Playwright Docs**: https://playwright.dev
-- **Project Spec**: `specs/003-online-platform/spec.md`
+- **Spec**: GitHub issue #46
 - **API Contracts**: `docs/architecture/api-contracts.md`
 
 ---

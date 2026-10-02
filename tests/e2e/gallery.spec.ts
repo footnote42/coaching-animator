@@ -9,7 +9,6 @@ import { test, expect } from '@playwright/test';
  * T030: Template filter URL-state tests
  *
  * NOTE: Endorsement and progression tests require seeded data.
- * See specs/009-gallery-playbook/quickstart.md for seed instructions.
  */
 
 test.describe('Gallery — Visual Previews (US2)', () => {

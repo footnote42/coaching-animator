@@ -95,46 +95,6 @@ function checkWebMSupport(): boolean {
 }
 
 /**
- * Check if browser supports MP4 video encoding via MediaRecorder.
- * Note: Most browsers don't support MP4 encoding natively via MediaRecorder.
- * We use a frame-based encoding approach instead.
- */
-export function checkMP4RecorderSupport(): boolean {
-  if (typeof MediaRecorder === 'undefined') {
-    return false;
-  }
-
-  const mp4Types = [
-    'video/mp4',
-    'video/mp4;codecs=avc1',
-    'video/mp4;codecs=h264',
-  ];
-
-  for (const mimeType of mp4Types) {
-    if (MediaRecorder.isTypeSupported(mimeType)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Get user-friendly browser name for display.
- */
-export function getBrowserName(): string {
-  const info = detectBrowser();
-  
-  if (info.isIOS) return 'iOS Safari';
-  if (info.isSafari) return 'Safari';
-  if (info.isChrome) return 'Chrome';
-  if (info.isFirefox) return 'Firefox';
-  if (info.isEdge) return 'Edge';
-  
-  return 'Unknown Browser';
-}
-
-/**
  * Get recommended export format with reason.
  */
 export function getRecommendedFormat(): { format: 'webm' | 'gif'; reason: string } {

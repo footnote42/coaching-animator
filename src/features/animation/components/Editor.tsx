@@ -10,8 +10,6 @@
  * - handleAddPlayer() - Creates player entities
  * - handleAddTackleShield() - Creates tackle shield entities
  * - handleAddTackleBag() - Creates tackle bag entities
- *
- * See specs/004-post-launch-improvements/ARCHITECTURE_CLEANUP_PLAN.md for cleanup history.
  */
 'use client';
 

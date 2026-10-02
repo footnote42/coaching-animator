@@ -73,7 +73,6 @@ export function UserProvider({ children }: UserProviderProps) {
         return;
       }
 
-      console.log('[UserContext] Profile loaded from Supabase:', data);
 
       if (data) {
         const newProfile = {
@@ -87,7 +86,6 @@ export function UserProvider({ children }: UserProviderProps) {
           secondary_strip_color: data.secondary_strip_color || null,
           club_badge_url: data.club_badge_url || null,
         };
-        console.log('[UserContext] Setting profile state:', newProfile);
         setProfile(newProfile);
       }
     } catch (err) {
@@ -114,7 +112,6 @@ export function UserProvider({ children }: UserProviderProps) {
   };
 
   const refreshProfile = async () => {
-    console.log('[UserContext] refreshProfile called, user:', user?.id);
     if (user) {
       await loadProfile(user.id);
     }

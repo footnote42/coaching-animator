@@ -8,12 +8,10 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(_request: NextRequest) {
-  console.log('[Profile API] GET request received');
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
     const user = authResult;
-    console.log('[Profile API] GET for user:', user.id);
 
     const supabase = await createSupabaseServerClient();
     const { data: profile, error } = await supabase
@@ -34,7 +32,6 @@ export async function GET(_request: NextRequest) {
       ...profile,
       email: user.email,
     };
-    console.log('[Profile API] GET returning profile:', JSON.stringify(response, null, 2));
     return NextResponse.json(response);
   } catch (err) {
     console.error('[Profile API] Fatal GET Error:', err);
@@ -46,7 +43,6 @@ export async function GET(_request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  console.log('[Profile API] PUT request received');
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
@@ -71,7 +67,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('[Profile API] PUT body:', body);
 
     const parsed = UpdateProfileSchema.safeParse(body);
     if (!parsed.success) {
@@ -82,7 +77,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('[Profile API] Updating profile for user:', user.id, 'with:', parsed.data);
 
     const supabase = await createSupabaseServerClient();
     // Build update object with only provided fields
@@ -110,7 +104,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('[Profile API] Profile updated successfully:', updated);
     return NextResponse.json(updated);
   } catch (err) {
     console.error('[Profile API] Fatal PUT Error:', err);

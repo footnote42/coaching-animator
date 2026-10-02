@@ -14,7 +14,7 @@ Project documentation was migrated to the Obsidian vault on 2026-07-05. This rep
 | Architecture (DB schema, API contracts, auth patterns, migrations), dev guides, troubleshooting, CI/CD + staging + operations runbooks | vault `02-Reference/` |
 | HANDOFF.md diary (retired), old roadmaps, retrospectives, reviews, prompts | vault `05-Archive/` |
 | Session state / next action | `NOW.md` (repo root — updated via `/park`) |
-| Binding constitution | `.specify/memory/constitution.md` (stays in repo — Speckit reads it) |
+| Binding constraints | `docs/constraints.md` |
 
 ## Still in this repo
 
@@ -24,4 +24,3 @@ Project documentation was migrated to the Obsidian vault on 2026-07-05. This rep
 - [testing/strategy.md](testing/strategy.md) / [testing/e2e-guide.md](testing/e2e-guide.md) — Playwright approach
 - [user-guide/HOW-TO.md](user-guide/HOW-TO.md) — user-facing guide
 - Feature module READMEs: `src/features/animation/`, `src/features/gallery/`, `src/core/`, `src/shared/` (large — see CLAUDE.md before reading)
-- `specs/` — Speckit feature specs 001–023
