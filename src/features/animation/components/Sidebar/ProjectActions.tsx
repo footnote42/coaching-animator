@@ -113,8 +113,8 @@ export const ProjectActions: React.FC<ProjectActionsProps> = ({
             downloadJson(filename, jsonContent);
             toast.success('Project saved locally');
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            alert(`Failed to save project: ${message}`);
+            console.error('[Project] Save error:', error);
+            toast.error("Couldn't save the project file. Please try again.");
         } finally {
             // Reset loading state after a short delay to ensure user sees feedback
             setTimeout(() => setLoadingState('save', false), 300);

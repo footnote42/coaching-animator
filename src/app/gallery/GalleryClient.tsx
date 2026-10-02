@@ -1,5 +1,6 @@
 'use client';
 
+import { toast } from 'sonner';
 import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { BrandIcon } from '@/shared/components/BrandIcon';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -190,13 +191,11 @@ function GalleryContent() {
         const data = await response.json();
         return data;
       } else {
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
-        alert(data.error?.message || `Failed to upvote (${response.status})`);
+        toast.error("Couldn't register your upvote. Please try again.");
       }
     } catch (err) {
       console.error('Failed to upvote:', err);
-      alert(`Failed to upvote: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      toast.error("Couldn't register your upvote. Please try again.");
     }
     return null;
   };
@@ -219,7 +218,7 @@ function GalleryContent() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error?.message || 'Failed to create remix');
+        toast.error("Couldn't create your remix. Please try again.");
         return;
       }
 
@@ -227,7 +226,7 @@ function GalleryContent() {
       router.push(`/app?load=${data.id}`);
     } catch (err) {
       console.error('[Gallery] Remix error:', err);
-      alert('Failed to create remix. Please try again.');
+      toast.error("Couldn't create your remix. Please try again.");
     } finally {
       setRemixingId(null);
     }

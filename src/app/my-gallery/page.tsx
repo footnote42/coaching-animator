@@ -1,5 +1,6 @@
 'use client';
-
+
+import { toast } from 'sonner';
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ArrowUpDown, Plus, Loader2, FolderOpen, Search, Filter } from 'lucide-react';
@@ -102,7 +103,8 @@ function MyGalleryContent() {
         setTotal(data.total);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('[My Gallery] Load error:', err);
+      setError('We could not load your animations. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -157,9 +159,8 @@ function MyGalleryContent() {
       setDeletingId(null);
       await fetchAnimations();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete';
-      setError(message);
-      alert(message);
+      console.error('[My Gallery] Delete error:', err);
+      toast.error("Couldn't delete that animation. Please try again.");
     } finally {
       setIsDeleting(false);
     }

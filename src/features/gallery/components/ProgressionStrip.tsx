@@ -1,5 +1,6 @@
 'use client';
-
+
+import { toast } from 'sonner';
 import React, { useEffect, useState, useRef, KeyboardEvent } from 'react';
 import { MiniPitchSVG } from './MiniPitchSVG';
 import { Unlink, Pencil, Trash2 } from 'lucide-react';
@@ -72,7 +73,8 @@ export function ProgressionStrip({ parentId, progressionCount, isEditable, onPro
       }
       setActionItem(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Action failed');
+      console.error('[Progression] Action error:', err);
+      toast.error("That didn't work. Please try again.");
     } finally {
       setIsActing(false);
     }
@@ -155,7 +157,8 @@ export function ProgressionStrip({ parentId, progressionCount, isEditable, onPro
                         if (!res.ok) throw new Error('Failed to rename');
                         fetchProgressions();
                       } catch (err) {
-                        alert(err instanceof Error ? err.message : 'Rename failed');
+                        console.error('[Progression] Rename error:', err);
+                        toast.error("Couldn't rename that animation. Please try again.");
                       } finally {
                         setIsActing(false);
                       }

@@ -1,5 +1,6 @@
 'use client';
-
+
+import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { X, Clock, User, RotateCcw, Loader2 } from 'lucide-react';
 
@@ -57,7 +58,8 @@ export function VersionHistoryModal({
         const data = await response.json();
         setVersions(data.versions || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        console.error('[Versions] Load error:', err);
+        setError('Could not load version history. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -82,7 +84,7 @@ export function VersionHistoryModal({
       }
 
       const result = await response.json();
-      alert(`Successfully restored! Created new version ${result.new_version}`);
+      toast.success(`Version restored as new version ${result.new_version}`);
 
       // Refresh version list
       const refreshResponse = await fetch(`/api/animations/${animationId}/versions`);
@@ -93,7 +95,8 @@ export function VersionHistoryModal({
 
       onRestore?.();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to restore version');
+      console.error('[Versions] Restore error:', err);
+      toast.error("Couldn't restore that version. Please try again.");
     } finally {
       setRestoringId(null);
     }

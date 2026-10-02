@@ -55,7 +55,8 @@ export default function ResetPasswordPage() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error('[Auth] Password update error:', error);
+      setErrorMessage('We could not update your password. The link may have expired; request a new one.');
       setLoading(false);
       return;
     }

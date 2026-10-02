@@ -13,6 +13,7 @@ vi.mock('lucide-react', () => ({
   Globe: () => <div data-testid="icon-globe" />,
   Pencil: () => <div data-testid="icon-pencil" />,
   Settings: () => <div data-testid="icon-settings" />,
+  MoreHorizontal: () => <div data-testid="icon-more" />,
   Trash2: () => <div data-testid="icon-trash" />,
   Play: () => <div data-testid="icon-play" />,
   History: () => <div data-testid="icon-history" />,
