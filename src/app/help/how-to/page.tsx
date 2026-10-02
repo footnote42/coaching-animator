@@ -10,7 +10,7 @@ export default function HowToPage() {
     <div className="page-texture-lined min-h-screen">
       <div className="max-w-2xl mx-auto px-4 py-8 text-text-primary">
         <div className="mb-6">
-          <Link href="/help" className="text-primary hover:text-primary/80 font-medium transition-colors">
+          <Link href="/help" className="inline-flex items-center min-h-[44px] text-primary hover:text-primary/80 font-medium transition-colors">
             ← Back to Help
           </Link>
         </div>

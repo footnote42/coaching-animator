@@ -17,13 +17,13 @@ export default function NotFound() {
             <div className="mb-6">
                 <BrandIcon variant="large" />
             </div>
-            <h2 className="text-3xl font-heading font-bold text-text-primary mb-2">Page Not Found</h2>
+            <h1 className="text-3xl font-heading font-bold text-text-primary mb-2">Page Not Found</h1>
             <p className="text-text-primary/70 mb-8 max-w-md">
                 The page you are looking for doesn&apos;t exist or has been moved.
             </p>
             <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 min-h-[44px] px-6 py-3 bg-primary text-text-inverse font-medium hover:bg-primary/90 transition-colors"
             >
                 <Home className="w-4 h-4" />
                 Return Home
