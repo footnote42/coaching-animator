@@ -1,28 +1,19 @@
 # NOW — coaching-animator
 
 ## Status
-IN PROGRESS (2026-10-02) — took the slot freed by Comms (queued) and Portfolio (parked). Supabase prod restored 2026-10-02 (was paused since ~July); staging left paused.
+IN PROGRESS (2026-10-03) — restart decided. Grilled purpose and model; spec #46 published and broken into tickets #47–#66. Old DevPlan superseded (read-only history).
 
 ## Next
-Weekend to Wed 7 Oct (interview week): Animator only after prep blocks, max 2 sessions.
-1. Housekeeping: push the 3 local commits; keep or delete `prototype/brand.html` + `roadmap.html`
-2. Smoke test the live site: load, sign in, save to cloud, share link (watch for T-094)
-3. Phase 1 item 1.1 — fix `useAutoSave` (interval resets on every edit; gate on isDirty, project via ref, Sonner instead of alert)
-4. Phase 1 item 1.2 — T-061 (Enter in Tags submits save form)
-
-From Thu 8 Oct (lean in):
-1. `/polish-audit` → findings filed as GitHub issues
-2. Migrate DevPlan Phases 1, 3, 4 to GitHub issues (single tracker; DevPlan becomes read-only history). Hold Phase 2
-3. `/improve-codebase-architecture` → its output replaces Phase 2 (2.1–2.4) as tickets
-4. Large tickets → Antigravity; Small ones stay with Wayne
+Frontier (no blockers): #47 remove dead leftovers, #48 retire Speckit, #49 canonical origin, #50 tracer (script plays on canvas), #51 legal (human), #52 OSA risk assessment (human).
+Critical path: #50 → #55 → #58 → #64 → #65 (DB reset, needs your go-ahead).
+Kept from before: #25, #29, #30, #33, #35, #38, #40, #43, #44, #45.
 
 ## Context
-- **Housekeeping on return (flagged 2026-09-25):** review the untracked `prototype/brand.html` and `prototype/roadmap.html` (May prototypes), then keep or delete them. 3 local commits are unpushed: push once you're satisfied.
+- `prototype/brand.html` / `roadmap.html` keep-or-delete decision now sits in #47
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`
-- Active worklist: `00-Planning/DevPlan.html` (interactive tracker) + `00-Planning/DevPlan.md`
+- Worklist: GitHub issues (spec #46). Domain: `CONTEXT.md`, decisions: `docs/adr/`. DevPlan in vault is history only
 - Full audit: `00-Planning/Audit-2026-07-05.md`
 - HANDOFF.md retired → vault `05-Archive/HANDOFF.md`; this file replaces it (updated via /park)
-- Open bugs carried in: T-061 (Enter in Tags submits save form), T-094 (corrupt cloud animation)
 
 ## Blocker
 None.
