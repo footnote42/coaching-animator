@@ -54,7 +54,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "specs"
+    "node_modules"
   ]
 }

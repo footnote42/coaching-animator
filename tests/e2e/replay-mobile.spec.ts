@@ -10,8 +10,6 @@ import { test, expect } from '@playwright/test'
  * - Mobile (375×667): Canvas fits viewport, touch targets ≥48px
  * - Tablet (500×800): 4:3 aspect ratio preservation
  * - Desktop (1920×1080): Maximum 800×600 canvas dimensions
- *
- * Related: specs/005-incremental-improvements/MOBILE_REPLAY_PLAN.md
  */
 
 // ============================================================================

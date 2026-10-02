@@ -7,7 +7,7 @@ Next.js animation editor for rugby coaching — coaches create, save, and share 
 Active. Phase 2 complete; working through the audit DevPlan (see `NOW.md` for current state and next action).
 
 ## Workflow
-Speckit — `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`. Use `/park` to end sessions — updates `NOW.md` (repo root) and optionally captures ideas to Obsidian.
+`/to-spec` → `/to-tickets` → GitHub issues → implement. Use `/park` to end sessions — updates `NOW.md` (repo root) and optionally captures ideas to Obsidian.
 
 ## Key Paths
 - Session state: `NOW.md` (repo root — single source of truth, updated via `/park`)
@@ -15,7 +15,8 @@ Speckit — `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/sp
 - Stores: `src/core/stores/projectStore.ts`, `uiStore.ts`
 - Canvas: `src/features/animation/components/Canvas/`
 - API routes: `src/app/api/`
-- Specs: `specs/`
+- Binding constraints: `docs/constraints.md`
+- Domain glossary: `CONTEXT.md`; decisions: `docs/adr/`
 
 ## Documentation
 
@@ -24,7 +25,7 @@ Planning and reference docs live in the Obsidian vault: `C:/Users/kenho/Obsidian
 - `02-Reference/` — DB schema, API contracts, auth patterns, dev guides, troubleshooting, ops/CI runbooks
 - `05-Archive/` — retired HANDOFF.md diary, old roadmaps, retrospectives
 
-The repo keeps only repo-coupled docs: `docs/testing/`, `docs/user-guide/`, `docs/CHANGELOG.md`. The binding constitution is `.specify/memory/constitution.md`.
+The repo keeps only repo-coupled docs: `docs/testing/`, `docs/user-guide/`, `docs/CHANGELOG.md`. The binding rules are in `docs/constraints.md`.
 
 ---
 
@@ -112,7 +113,7 @@ All routes live under `src/app/api/`. Conventions:
 - Check rate limits via `checkRateLimit()` (`src/lib/server/rate-limit.ts`).
 - Guard with `requireAuth()` for authenticated endpoints; use `requireNotBanned()` for write actions.
 
-### Tier Architecture (from Constitution)
+### Tier Architecture
 
 - **Tier 0 (Guest):** 10-frame local editing, local storage only (`VALIDATION.PROJECT.GUEST_MAX_FRAMES = 10`)
 - **Tier 1 (Auth):** Cloud storage, gallery, up to 50 animations (`max_animations` on `user_profiles`)
@@ -173,7 +174,7 @@ Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key i
 - **SSR Awareness:** Next.js App Router — always use provided Supabase clients (`lib/supabase/`) to prevent session drift
 - **Auth Resilience:** `UserContext` has a 15s timeout for auth initialisation (mobile/network latency)
 
-## Constitutional Constraints
+## Binding Constraints
 
 **Absolute Prohibitions:**
 - No telemetry, analytics, or tracking
@@ -181,8 +182,9 @@ Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key i
 - No advertising or sponsored content
 - No paywalls for core features
 - Permitted OAuth providers: Google, Apple, GitHub. Prohibited: Facebook/Meta, Twitter/X, LinkedIn, Discord
+- Any non-essential cookie requires a consent banner before it ships
 
-**Full Governance:** `.specify/memory/constitution.md`
+**Full list:** `docs/constraints.md`
 
 ## Large Files (do not read in full)
 
