@@ -82,7 +82,7 @@
         "additionalProperties": false,
         "description": "Something drawn in the Area: a player, the ball or equipment."
       },
-      "description": "Every marker used in any Step, declared once."
+      "description": "Every marker used in any Step, declared once. At most one ball."
     },
     "base": {
       "type": "object",
@@ -97,6 +97,7 @@
                 "description": "Id of the marker being placed."
               },
               "cell": {
+                "description": "Cell the marker starts on. Required for every marker except the ball.",
                 "type": "object",
                 "properties": {
                   "x": {
@@ -116,16 +117,20 @@
                   "x",
                   "y"
                 ],
-                "additionalProperties": false,
-                "description": "Cell the marker starts on."
+                "additionalProperties": false
+              },
+              "holder": {
+                "description": "For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
               }
             },
             "required": [
-              "marker",
-              "cell"
+              "marker"
             ],
             "additionalProperties": false,
-            "description": "Where a marker starts in the Step."
+            "description": "Where a marker starts in the Step: a cell, or for the ball a holder."
           },
           "description": "Markers on the Area in Step 0, each placed at most once. A marker left out must be added by a Progression."
         },
@@ -168,6 +173,34 @@
                   "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
                 },
                 "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+              },
+              "pace": {
+                "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.",
+                "type": "string",
+                "enum": [
+                  "walk",
+                  "jog",
+                  "sprint"
+                ]
+              },
+              "after": {
+                "description": "Leave out to start at time zero.",
+                "type": "object",
+                "properties": {
+                  "move": {
+                    "description": "Start when the move of this marker has finished.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "pass": {
+                    "description": "Start when the pass with this id has been caught.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "additionalProperties": false
               }
             },
             "required": [
@@ -175,7 +208,39 @@
               "waypoints"
             ],
             "additionalProperties": false,
-            "description": "A run by one marker, starting at time zero from its placement, at the default teaching Pace. Duration comes from distance and Pace."
+            "description": "A run by one marker from its starting cell. Duration comes from distance and Pace, never typed. The ball cannot move on its own."
+          }
+        },
+        "passes": {
+          "default": [],
+          "description": "Passes in the order they happen.",
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Unique id for the pass in its Step, e.g. \"p1\". Used by after.pass, setPass and removePass."
+              },
+              "from": {
+                "type": "string",
+                "description": "Id of the marker passing. Must hold the ball when the pass fires."
+              },
+              "to": {
+                "type": "string",
+                "description": "Id of the marker receiving."
+              }
+            },
+            "required": [
+              "id",
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived at its cell (the end of its move, or straight away if it has no move)."
           }
         },
         "commentary": {
@@ -261,6 +326,7 @@
                       "description": "Id of a marker that is not on the Area in the previous Step."
                     },
                     "cell": {
+                      "description": "Cell the marker starts on. Required for every marker except the ball.",
                       "type": "object",
                       "properties": {
                         "x": {
@@ -280,14 +346,18 @@
                         "x",
                         "y"
                       ],
-                      "additionalProperties": false,
-                      "description": "Cell the marker starts on."
+                      "additionalProperties": false
+                    },
+                    "holder": {
+                      "description": "For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.",
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
                     }
                   },
                   "required": [
                     "type",
-                    "marker",
-                    "cell"
+                    "marker"
                   ],
                   "additionalProperties": false,
                   "description": "Put a marker on the Area from this Step onward."
@@ -323,6 +393,7 @@
                       "description": "Id of a marker on the Area in the previous Step."
                     },
                     "cell": {
+                      "description": "Cell the marker starts on. Required for every marker except the ball.",
                       "type": "object",
                       "properties": {
                         "x": {
@@ -342,17 +413,21 @@
                         "x",
                         "y"
                       ],
-                      "additionalProperties": false,
-                      "description": "New starting cell."
+                      "additionalProperties": false
+                    },
+                    "holder": {
+                      "description": "For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.",
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
                     }
                   },
                   "required": [
                     "type",
-                    "marker",
-                    "cell"
+                    "marker"
                   ],
                   "additionalProperties": false,
-                  "description": "Change where a marker starts. Its move, if any, is kept and runs from the new cell."
+                  "description": "Change where a marker starts (or, for the ball, who holds it). Its move, if any, is kept and runs from the new cell."
                 },
                 {
                   "type": "object",
@@ -393,6 +468,34 @@
                         "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
                       },
                       "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+                    },
+                    "pace": {
+                      "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.",
+                      "type": "string",
+                      "enum": [
+                        "walk",
+                        "jog",
+                        "sprint"
+                      ]
+                    },
+                    "after": {
+                      "description": "Leave out to start at time zero.",
+                      "type": "object",
+                      "properties": {
+                        "move": {
+                          "description": "Start when the move of this marker has finished.",
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "pass": {
+                          "description": "Start when the pass with this id has been caught.",
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "required": [
@@ -421,6 +524,56 @@
                   ],
                   "additionalProperties": false,
                   "description": "Remove a marker's move so it stays on its cell."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "setPass"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32,
+                      "description": "Unique id for the pass in its Step, e.g. \"p1\". Used by after.pass, setPass and removePass."
+                    },
+                    "from": {
+                      "type": "string",
+                      "description": "Id of the marker passing. Must hold the ball when the pass fires."
+                    },
+                    "to": {
+                      "type": "string",
+                      "description": "Id of the marker receiving."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "id",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Replace the pass with this id in place, or add it after the existing passes."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "removePass"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "Id of a pass in the previous Step."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "id"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Remove a pass."
                 }
               ],
               "description": "One change over the previous Step. Changes apply in order."
@@ -444,5 +597,5 @@
     "base"
   ],
   "additionalProperties": false,
-  "description": "A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves."
+  "description": "A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves and passes."
 }

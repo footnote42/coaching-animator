@@ -5,11 +5,12 @@
  * - validate(script)       -> the script, or path-specific plain-language errors
  * - stepCount(script)      -> number of Steps (base plus Progressions)
  * - resolveStep(script, n) -> full state of Step n, with the Progression chain applied
- * - positionsAt(step, t)   -> every marker's position at t seconds, plus the Step's duration
+ * - positionsAt(step, t)   -> every marker's position at t seconds, plus the Step's duration and pass flights
  *
  * Positions are in cell units: { x: 3, y: 4 } is the centre of cell (3, 4).
  */
 import {
+  BALL_CARRIER_KINDS,
   CELL_SIZE_M,
   PracticeScriptSchema,
   SCHEMA_VERSION,
@@ -19,9 +20,14 @@ import {
   type Commentary,
   type Lever,
   type Marker,
+  type MarkerKind,
   type Move,
+  type Pace,
+  type Pass,
   type PracticeScript,
 } from './schema';
+
+export type { Pace };
 
 /** Largest script accepted, in bytes of JSON text. */
 export const MAX_SCRIPT_BYTES = 64 * 1024;
@@ -34,11 +40,12 @@ export const PACE_SPEEDS_MPS = {
   walk: 1,
   jog: 2,
   sprint: 4,
-} as const;
-
-export type Pace = keyof typeof PACE_SPEEDS_MPS;
+} as const satisfies Record<Pace, number>;
 
 export const DEFAULT_PACE: Pace = 'jog';
+
+/** Speed of the ball on a pass, in metres per second. Also slower than real time. */
+export const PASS_SPEED_MPS = 8;
 
 export interface ValidationError {
   /** Field path, e.g. `base.moves[2].marker`. Empty string means the whole script. */
@@ -51,7 +58,10 @@ export type ValidationResult =
   | { ok: false; errors: ValidationError[] };
 
 export interface ResolvedMarker extends Marker {
+  /** Starting cell. For the ball, the starting cell of its holder. */
   cell: Cell;
+  /** For the ball: the marker holding it at the start of the Step. */
+  holder?: string;
 }
 
 export interface ResolvedStep {
@@ -60,6 +70,8 @@ export interface ResolvedStep {
   /** Markers on the Area in this Step, in the order the script declares them. */
   markers: ResolvedMarker[];
   moves: Move[];
+  /** Passes in the order they happen. */
+  passes: Pass[];
   /** The STEP lever this Step pulls. Undefined for the base Step. */
   lever?: Lever;
   commentary: Commentary;
@@ -75,6 +87,22 @@ export interface StepPositions {
   duration: number;
   /** Position of every marker, keyed by marker id, in cell units. */
   positions: Record<string, Point>;
+  /** Every pass in the order it happens, with when and where the ball flies. */
+  passes: PassFlight[];
+}
+
+export interface PassFlight {
+  id: string;
+  from: string;
+  to: string;
+  /** Where the ball leaves the passer, in cell units. */
+  start: Point;
+  /** The receiver's cell, where the ball is caught. */
+  end: Point;
+  /** Seconds into the Step the pass is thrown. */
+  fire: number;
+  /** Seconds into the Step the pass is caught. */
+  land: number;
 }
 
 export function formatPath(path: ReadonlyArray<PropertyKey>): string {
@@ -129,36 +157,77 @@ function checkCell(cell: Cell, area: Area, path: string, errors: ValidationError
   }
 }
 
-/** Markers on the Area at one Step: starting cells and moves, keyed by marker id. */
+/** Markers on the Area at one Step, keyed by marker id; passes keyed by pass id, in play order. */
 interface StepState {
+  /** Starting cell of every marker on the Area except the ball. */
   cells: Map<string, Cell>;
+  /** Who holds the ball at the start of the Step, keyed by ball id. */
+  holders: Map<string, string>;
   moves: Map<string, Move>;
+  passes: Map<string, Pass>;
+}
+
+function emptyState(): StepState {
+  return { cells: new Map(), holders: new Map(), moves: new Map(), passes: new Map() };
+}
+
+function onArea(state: StepState, marker: string): boolean {
+  return state.cells.has(marker) || state.holders.has(marker);
+}
+
+/** Set where a marker starts: the ball takes a holder, every other marker a cell. */
+function setStart(
+  state: StepState,
+  marker: string,
+  start: { cell?: Cell; holder?: string },
+  isBall: boolean,
+): ValidationError | null {
+  if (isBall) {
+    if (start.cell) {
+      return { path: 'cell', message: 'the ball is not placed on a cell; give "holder" instead: the id of the marker carrying it' };
+    }
+    if (start.holder === undefined) return { path: 'holder', message: 'is required: the id of the marker carrying the ball' };
+    state.holders.set(marker, start.holder);
+  } else {
+    if (start.holder !== undefined) return { path: 'holder', message: 'only the ball has a holder' };
+    if (!start.cell) return { path: 'cell', message: 'is required' };
+    state.cells.set(marker, start.cell);
+  }
+  return null;
 }
 
 /**
  * Apply one change to `state` in place. Returns an error (with a path relative
  * to the change) and leaves `state` untouched if the change does not fit.
  */
-function applyChange(state: StepState, change: Change): ValidationError | null {
+function applyChange(state: StepState, change: Change, isBall: (id: string) => boolean): ValidationError | null {
+  if (change.type === 'setPass') {
+    state.passes.set(change.id, { id: change.id, from: change.from, to: change.to });
+    return null;
+  }
+  if (change.type === 'removePass') {
+    if (!state.passes.has(change.id)) return { path: 'id', message: `no pass "${change.id}" in the previous Step` };
+    state.passes.delete(change.id);
+    return null;
+  }
   const { marker } = change;
-  const present = state.cells.has(marker);
+  const present = onArea(state, marker);
   switch (change.type) {
     case 'addMarker':
       if (present) return { path: 'marker', message: `marker "${marker}" is already on the Area in the previous Step` };
-      state.cells.set(marker, change.cell);
-      return null;
+      return setStart(state, marker, change, isBall(marker));
     case 'removeMarker':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
       state.cells.delete(marker);
+      state.holders.delete(marker);
       state.moves.delete(marker);
       return null;
     case 'placeMarker':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
-      state.cells.set(marker, change.cell);
-      return null;
+      return setStart(state, marker, change, isBall(marker));
     case 'setMove':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
-      state.moves.set(marker, { marker, waypoints: change.waypoints });
+      state.moves.set(marker, { marker, waypoints: change.waypoints, pace: change.pace, after: change.after });
       return null;
     case 'removeMove':
       if (!state.moves.has(marker)) return { path: 'marker', message: `marker "${marker}" has no move in the previous Step` };
@@ -171,7 +240,7 @@ function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
   switch (change.type) {
     case 'addMarker':
     case 'placeMarker':
-      return [{ cell: change.cell, path: 'cell' }];
+      return change.cell ? [{ cell: change.cell, path: 'cell' }] : [];
     case 'setMove':
       return change.waypoints.map((cell, j) => ({ cell, path: `waypoints[${j}]` }));
     default:
@@ -179,38 +248,202 @@ function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
   }
 }
 
+/**
+ * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
+ * A move waits for its `after`; a pass waits for the previous pass to be
+ * caught and for the receiver's move to finish.
+ */
+function waitEdges(moves: Map<string, Move>, passes: Pass[]): Map<string, string[]> {
+  const edges = new Map<string, string[]>();
+  for (const [marker, { after }] of moves) {
+    edges.set(
+      `move:${marker}`,
+      after?.move !== undefined ? [`move:${after.move}`] : after?.pass !== undefined ? [`pass:${after.pass}`] : [],
+    );
+  }
+  passes.forEach((pass, i) => {
+    const waits = i > 0 ? [`pass:${passes[i - 1].id}`] : [];
+    if (moves.has(pass.to)) waits.push(`move:${pass.to}`);
+    edges.set(`pass:${pass.id}`, waits);
+  });
+  return edges;
+}
+
+/** A loop of waits, as the nodes around it (first repeated at the end), or null. */
+function findLoop(edges: Map<string, string[]>): string[] | null {
+  const done = new Set<string>();
+  const stack: string[] = [];
+  const visit = (node: string): string[] | null => {
+    if (done.has(node)) return null;
+    if (stack.includes(node)) return [...stack.slice(stack.indexOf(node)), node];
+    stack.push(node);
+    for (const next of edges.get(node) ?? []) {
+      const loop = visit(next);
+      if (loop) return loop;
+    }
+    stack.pop();
+    done.add(node);
+    return null;
+  };
+  for (const node of edges.keys()) {
+    const loop = visit(node);
+    if (loop) return loop;
+  }
+  return null;
+}
+
+/** Whether `from` waits, directly or not, on any node in `targets`. */
+function waitsOn(edges: Map<string, string[]>, from: string, targets: Set<string>): boolean {
+  const seen = new Set<string>();
+  const queue = [...(edges.get(from) ?? [])];
+  while (queue.length > 0) {
+    const node = queue.pop()!;
+    if (targets.has(node)) return true;
+    if (seen.has(node)) continue;
+    seen.add(node);
+    queue.push(...(edges.get(node) ?? []));
+  }
+  return false;
+}
+
+/** Something in a Step that a whole-Step check can fault. */
+interface Target {
+  kind: 'ball' | 'move' | 'pass';
+  /** Ball or moving marker id, or pass id. */
+  id: string;
+}
+
+interface StepIssue {
+  target: Target;
+  /** Field within the placement, move, pass or change, e.g. `from`. */
+  field: string;
+  message: string;
+}
+
+function splitNode(node: string): Target {
+  const at = node.indexOf(':');
+  return { kind: node.slice(0, at) as Target['kind'], id: node.slice(at + 1) };
+}
+
+function targetLabel({ kind, id }: Target): string {
+  return kind === 'move' ? `the move of "${id}"` : `${kind} "${id}"`;
+}
+
+/** Checks that need the whole Step: ball holders, passes in order, move waits and loops. */
+function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[] {
+  const issues: StepIssue[] = [];
+  const checkCarrier = (target: Target, field: string, id: string) => {
+    const kind = kinds.get(id);
+    if (kind === undefined) issues.push({ target, field, message: `no marker with id "${id}"` });
+    else if (!onArea(state, id)) issues.push({ target, field, message: `marker "${id}" is not on the Area in this Step` });
+    else if (!(BALL_CARRIER_KINDS as readonly string[]).includes(kind)) {
+      issues.push({ target, field, message: `marker "${id}" is a ${kind}; only attackers, defenders and coaches handle the ball` });
+    }
+  };
+
+  let holder: string | undefined;
+  for (const [ball, ballHolder] of state.holders) {
+    checkCarrier({ kind: 'ball', id: ball }, 'holder', ballHolder);
+    holder = ballHolder;
+  }
+
+  for (const [marker, { after }] of state.moves) {
+    const target: Target = { kind: 'move', id: marker };
+    if (kinds.get(marker) === 'ball') {
+      issues.push({ target, field: 'marker', message: 'the ball does not run on its own; it moves with its holder or on a pass' });
+    }
+    if (!after) continue;
+    if ((after.move === undefined) === (after.pass === undefined)) {
+      issues.push({ target, field: 'after', message: 'give exactly one of "move" or "pass"' });
+    } else if (after.move !== undefined && !state.moves.has(after.move)) {
+      issues.push({ target, field: 'after.move', message: `marker "${after.move}" has no move in this Step` });
+    } else if (after.pass !== undefined && !state.passes.has(after.pass)) {
+      issues.push({ target, field: 'after.pass', message: `no pass "${after.pass}" in this Step` });
+    }
+  }
+
+  for (const pass of state.passes.values()) {
+    const target: Target = { kind: 'pass', id: pass.id };
+    if (state.holders.size === 0) {
+      issues.push({ target, field: 'from', message: 'there is no ball on the Area in this Step' });
+      break;
+    }
+    checkCarrier(target, 'from', pass.from);
+    checkCarrier(target, 'to', pass.to);
+    if (pass.from === pass.to) {
+      issues.push({ target, field: 'to', message: 'a marker cannot pass to itself' });
+    } else if (pass.from !== holder) {
+      issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold the ball when this pass fires; "${holder}" does` });
+    }
+    holder = pass.to;
+  }
+
+  if (issues.length === 0) {
+    const loop = findLoop(waitEdges(state.moves, [...state.passes.values()]));
+    if (loop) {
+      const [first, ...rest] = loop.map(splitNode);
+      issues.push({
+        target: first,
+        field: first.kind === 'move' ? 'after' : 'to',
+        message: `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for ${rest.map(targetLabel).join(', which waits for ')}`,
+      });
+    }
+  }
+  return issues;
+}
+
 function checkReferences(script: PracticeScript): ValidationError[] {
   const errors: ValidationError[] = [];
-  const ids = new Set<string>();
+  const kinds = new Map<string, MarkerKind>();
+  let ballDeclared = false;
 
   script.markers.forEach((marker, i) => {
-    if (ids.has(marker.id)) {
+    if (kinds.has(marker.id)) {
       errors.push({ path: `markers[${i}].id`, message: `duplicate marker id "${marker.id}"` });
+    } else {
+      kinds.set(marker.id, marker.kind);
     }
-    ids.add(marker.id);
+    if (marker.kind === 'ball') {
+      if (ballDeclared) errors.push({ path: `markers[${i}].kind`, message: 'a Practice has at most one ball' });
+      ballDeclared = true;
+    }
   });
+  const isBall = (id: string) => kinds.get(id) === 'ball';
 
-  const state: StepState = { cells: new Map(), moves: new Map() };
+  // Whole-Step problems carry forward to later Steps; report each one once.
+  const reported = new Set<string>();
+  const report = (issues: StepIssue[], locate: (target: Target) => string | undefined, fallback: string) => {
+    for (const { target, field, message } of issues) {
+      const key = `${targetLabel(target)}|${field}|${message}`;
+      if (reported.has(key)) continue;
+      reported.add(key);
+      const at = locate(target);
+      errors.push(at ? { path: `${at}.${field}`, message } : { path: fallback, message: `${targetLabel(target)}: ${message}` });
+    }
+  };
+
+  const state = emptyState();
   const everPlaced = new Set<string>();
 
   script.base.placements.forEach((placement, i) => {
     const path = `base.placements[${i}]`;
-    if (!ids.has(placement.marker)) {
+    if (!kinds.has(placement.marker)) {
       errors.push({ path: `${path}.marker`, message: `no marker with id "${placement.marker}"` });
-    } else if (state.cells.has(placement.marker)) {
+    } else if (onArea(state, placement.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${placement.marker}" is placed more than once` });
     } else {
-      state.cells.set(placement.marker, placement.cell);
-      everPlaced.add(placement.marker);
+      const error = setStart(state, placement.marker, placement, isBall(placement.marker));
+      if (error) errors.push({ path: `${path}.${error.path}`, message: error.message });
+      else everPlaced.add(placement.marker);
     }
-    checkCell(placement.cell, script.area, `${path}.cell`, errors);
+    if (placement.cell) checkCell(placement.cell, script.area, `${path}.cell`, errors);
   });
 
   script.base.moves.forEach((move, i) => {
     const path = `base.moves[${i}]`;
-    if (!ids.has(move.marker)) {
+    if (!kinds.has(move.marker)) {
       errors.push({ path: `${path}.marker`, message: `no marker with id "${move.marker}"` });
-    } else if (!state.cells.has(move.marker)) {
+    } else if (!onArea(state, move.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${move.marker}" is not placed in the base Step` });
     } else if (state.moves.has(move.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${move.marker}" already has a move` });
@@ -220,13 +453,33 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     move.waypoints.forEach((cell, j) => checkCell(cell, script.area, `${path}.waypoints[${j}]`, errors));
   });
 
+  script.base.passes.forEach((pass, i) => {
+    if (state.passes.has(pass.id)) {
+      errors.push({ path: `base.passes[${i}].id`, message: `duplicate pass id "${pass.id}"` });
+    } else {
+      state.passes.set(pass.id, pass);
+    }
+  });
+
+  report(
+    checkStep(state, kinds),
+    ({ kind, id }) => {
+      const [list, i] =
+        kind === 'pass' ? ['passes', script.base.passes.findIndex((p) => p.id === id)]
+        : kind === 'move' ? ['moves', script.base.moves.findIndex((m) => m.marker === id)]
+        : ['placements', script.base.placements.findIndex((p) => p.marker === id)];
+      return i < 0 ? undefined : `base.${list}[${i}]`;
+    },
+    'base',
+  );
+
   script.progressions.forEach((progression, p) => {
     progression.changes.forEach((change, c) => {
       const path = `progressions[${p}].changes[${c}]`;
-      if (!ids.has(change.marker)) {
+      if ('marker' in change && !kinds.has(change.marker)) {
         errors.push({ path: `${path}.marker`, message: `no marker with id "${change.marker}"` });
       } else {
-        const error = applyChange(state, change);
+        const error = applyChange(state, change, isBall);
         if (error) errors.push({ path: `${path}.${error.path}`, message: error.message });
         else if (change.type === 'addMarker') everPlaced.add(change.marker);
       }
@@ -234,6 +487,21 @@ function checkReferences(script: PracticeScript): ValidationError[] {
         checkCell(cell, script.area, `${path}.${cellPath}`, errors);
       }
     });
+
+    const touches = (change: Change, { kind, id }: Target) =>
+      kind === 'pass'
+        ? change.type === 'setPass' && change.id === id
+        : kind === 'move'
+          ? change.type === 'setMove' && change.marker === id
+          : (change.type === 'addMarker' || change.type === 'placeMarker') && change.marker === id;
+    report(
+      checkStep(state, kinds),
+      (target) => {
+        const c = progression.changes.map((change) => touches(change, target)).lastIndexOf(true);
+        return c < 0 ? undefined : `progressions[${p}].changes[${c}]`;
+      },
+      `progressions[${p}]`,
+    );
   });
 
   script.markers.forEach((marker, i) => {
@@ -321,25 +589,33 @@ export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
   if (!Number.isInteger(n) || n < 0 || n >= stepCount(script)) {
     throw new RangeError(`Step ${n} does not exist; this Practice has ${stepCount(script)} Step(s)`);
   }
-  const state: StepState = {
-    cells: new Map(script.base.placements.map((p) => [p.marker, p.cell])),
-    moves: new Map(script.base.moves.map((m) => [m.marker, m])),
-  };
+  const balls = new Set(script.markers.filter((m) => m.kind === 'ball').map((m) => m.id));
+  const isBall = (id: string) => balls.has(id);
+  const state = emptyState();
+  for (const placement of script.base.placements) setStart(state, placement.marker, placement, isBall(placement.marker));
+  for (const move of script.base.moves) state.moves.set(move.marker, move);
+  for (const pass of script.base.passes) state.passes.set(pass.id, pass);
   for (const progression of script.progressions.slice(0, n)) {
     for (const change of progression.changes) {
-      const error = applyChange(state, change);
+      const error = applyChange(state, change, isBall);
       if (error) throw new Error(`Script is not valid: ${error.message}; run validate() first`);
     }
   }
   const markers = script.markers
-    .filter((marker) => state.cells.has(marker.id))
-    .map((marker) => ({ ...marker, cell: state.cells.get(marker.id)! }));
+    .filter((marker) => onArea(state, marker.id))
+    .map((marker): ResolvedMarker => {
+      const holder = state.holders.get(marker.id);
+      return holder === undefined
+        ? { ...marker, cell: state.cells.get(marker.id)! }
+        : { ...marker, holder, cell: state.cells.get(holder)! };
+    });
   const progression = n > 0 ? script.progressions[n - 1] : undefined;
   return {
     index: n,
     area: script.area,
     markers,
     moves: markers.flatMap((marker) => state.moves.get(marker.id) ?? []),
+    passes: [...state.passes.values()],
     lever: progression?.lever,
     commentary: progression ? progression.commentary : script.base.commentary,
   };
@@ -349,6 +625,10 @@ function distance(a: Point, b: Point): number {
   return Math.hypot(b.x - a.x, b.y - a.y);
 }
 
+function speedOf(move: Move): number {
+  return PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE];
+}
+
 function moveDuration(start: Point, move: Move): number {
   let cells = 0;
   let from = start;
@@ -356,12 +636,12 @@ function moveDuration(start: Point, move: Move): number {
     cells += distance(from, to);
     from = to;
   }
-  return (cells * CELL_SIZE_M) / PACE_SPEEDS_MPS[DEFAULT_PACE];
+  return (cells * CELL_SIZE_M) / speedOf(move);
 }
 
-/** Position along a move after `elapsed` seconds at the default Pace. */
+/** Position along a move `elapsed` seconds after it starts. */
 function pointAlong(start: Point, move: Move, elapsed: number): Point {
-  let remaining = (elapsed * PACE_SPEEDS_MPS[DEFAULT_PACE]) / CELL_SIZE_M;
+  let remaining = (Math.max(0, elapsed) * speedOf(move)) / CELL_SIZE_M;
   let from = start;
   for (const to of move.waypoints) {
     const leg = distance(from, to);
@@ -375,22 +655,86 @@ function pointAlong(start: Point, move: Move, elapsed: number): Point {
   return { x: from.x, y: from.y };
 }
 
-/** Every marker's position at `t` seconds into the Step, plus the Step's duration. */
-export function positionsAt(step: ResolvedStep, t: number): StepPositions {
+/**
+ * When every move starts and every pass flies. A move starts at zero or when
+ * what it waits for completes; pass i fires once pass i - 1 is caught and the
+ * receiver has arrived at its cell.
+ */
+function timeline(step: ResolvedStep) {
+  const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
   const moves = new Map(step.moves.map((m) => [m.marker, m]));
-  let duration = 0;
-  const positions: Record<string, Point> = {};
+  const passIndex = new Map(step.passes.map((p, i) => [p.id, i]));
+  const edges = waitEdges(moves, step.passes);
+  const starts = new Map<string, number>();
+  const flights: PassFlight[] = [];
 
-  for (const marker of step.markers) {
-    const start = { x: marker.cell.x, y: marker.cell.y };
-    const move = moves.get(marker.id);
-    if (!move) {
-      positions[marker.id] = start;
-      continue;
+  const startOf = (marker: string): number => {
+    let start = starts.get(marker);
+    if (start === undefined) {
+      const after = moves.get(marker)!.after;
+      start =
+        after?.move !== undefined ? endOf(after.move)
+        : after?.pass !== undefined ? flight(passIndex.get(after.pass)!).land
+        : 0;
+      starts.set(marker, start);
     }
-    duration = Math.max(duration, moveDuration(start, move));
-    positions[marker.id] = pointAlong(start, move, Math.max(0, t));
-  }
+    return start;
+  };
 
-  return { duration, positions };
+  const endOf = (marker: string): number => startOf(marker) + moveDuration(cells.get(marker)!, moves.get(marker)!);
+
+  const pointAt = (marker: string, t: number): Point => {
+    const cell = cells.get(marker)!;
+    const move = moves.get(marker);
+    return move ? pointAlong(cell, move, t - startOf(marker)) : { x: cell.x, y: cell.y };
+  };
+
+  const flight = (i: number): PassFlight => {
+    if (flights[i]) return flights[i];
+    const pass = step.passes[i];
+    const caught = i > 0 ? flight(i - 1).land : 0;
+    const fire = Math.max(caught, moves.has(pass.to) ? endOf(pass.to) : 0);
+    // A passer whose own move waits on this pass (or a later one) has not set off yet.
+    const later = new Set(step.passes.slice(i).map((p) => `pass:${p.id}`));
+    const fromCell = cells.get(pass.from)!;
+    const start =
+      moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, later)
+        ? pointAt(pass.from, fire)
+        : { x: fromCell.x, y: fromCell.y };
+    const waypoints = moves.get(pass.to)?.waypoints;
+    const rest = waypoints ? waypoints[waypoints.length - 1] : cells.get(pass.to)!;
+    const end = { x: rest.x, y: rest.y };
+    const land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+    return (flights[i] = { id: pass.id, from: pass.from, to: pass.to, start, end, fire, land });
+  };
+
+  step.passes.forEach((_, i) => flight(i));
+  return { flights, endOf, pointAt };
+}
+
+/** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */
+export function positionsAt(step: ResolvedStep, t: number): StepPositions {
+  const { flights, endOf, pointAt } = timeline(step);
+  const time = Math.max(0, t);
+  let duration = flights.length > 0 ? flights[flights.length - 1].land : 0;
+  for (const move of step.moves) duration = Math.max(duration, endOf(move.marker));
+
+  const ballAt = (initialHolder: string): Point => {
+    let holder = initialHolder;
+    for (const f of flights) {
+      if (time < f.fire) break;
+      if (time < f.land) {
+        const k = (time - f.fire) / (f.land - f.fire);
+        return { x: f.start.x + (f.end.x - f.start.x) * k, y: f.start.y + (f.end.y - f.start.y) * k };
+      }
+      holder = f.to;
+    }
+    return pointAt(holder, time);
+  };
+
+  const positions: Record<string, Point> = {};
+  for (const marker of step.markers) {
+    positions[marker.id] = marker.holder !== undefined ? ballAt(marker.holder) : pointAt(marker.id, time);
+  }
+  return { duration, positions, passes: flights };
 }

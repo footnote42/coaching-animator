@@ -24,6 +24,15 @@ export const MAX_MARKERS = 60;
 /** Most waypoints a single move may hold. */
 export const MAX_WAYPOINTS = 50;
 
+/** Most passes one Step may hold. */
+export const MAX_PASSES = 50;
+
+/** Named Paces a move can run at. Their speeds live in the engine (`PACE_SPEEDS_MPS`). */
+export const PACES = ['walk', 'jog', 'sprint'] as const;
+
+/** Marker kinds that can hold, pass and receive the ball. */
+export const BALL_CARRIER_KINDS = ['attacker', 'defender', 'coach'] as const;
+
 export const MARKER_KINDS = [
   'attacker',
   'defender',
@@ -89,12 +98,28 @@ export const MarkerSchema = z
   })
   .describe('Something drawn in the Area: a player, the ball or equipment.');
 
+const MarkerIdSchema = z.string().min(1).max(32);
+
+const StartShape = {
+  cell: CellSchema.optional().describe('Cell the marker starts on. Required for every marker except the ball.'),
+  holder: MarkerIdSchema.optional().describe(
+    'For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.',
+  ),
+};
+
 export const PlacementSchema = z
   .strictObject({
     marker: z.string().describe('Id of the marker being placed.'),
-    cell: CellSchema.describe('Cell the marker starts on.'),
+    ...StartShape,
   })
-  .describe('Where a marker starts in the Step.');
+  .describe('Where a marker starts in the Step: a cell, or for the ball a holder.');
+
+export const AfterSchema = z
+  .strictObject({
+    move: MarkerIdSchema.optional().describe('Start when the move of this marker has finished.'),
+    pass: MarkerIdSchema.optional().describe('Start when the pass with this id has been caught.'),
+  })
+  .describe('What a move waits for before it starts. Give exactly one of move or pass. Waits may not loop.');
 
 export const MoveSchema = z
   .strictObject({
@@ -104,9 +129,21 @@ export const MoveSchema = z
       .min(1)
       .max(MAX_WAYPOINTS)
       .describe('Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last.'),
+    pace: z.enum(PACES).optional().describe('How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.'),
+    after: AfterSchema.optional().describe('Leave out to start at time zero.'),
   })
   .describe(
-    'A run by one marker, starting at time zero from its placement, at the default teaching Pace. Duration comes from distance and Pace.',
+    'A run by one marker from its starting cell. Duration comes from distance and Pace, never typed. The ball cannot move on its own.',
+  );
+
+export const PassSchema = z
+  .strictObject({
+    id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
+    from: z.string().describe('Id of the marker passing. Must hold the ball when the pass fires.'),
+    to: z.string().describe('Id of the marker receiving.'),
+  })
+  .describe(
+    'A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived at its cell (the end of its move, or straight away if it has no move).',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;
@@ -130,6 +167,7 @@ export const BaseStepSchema = z
       .array(PlacementSchema)
       .describe('Markers on the Area in Step 0, each placed at most once. A marker left out must be added by a Progression.'),
     moves: z.array(MoveSchema).default([]).describe('At most one move per marker.'),
+    passes: z.array(PassSchema).max(MAX_PASSES).default([]).describe('Passes in the order they happen.'),
     commentary: CommentarySchema.default({ points: [] }),
   })
   .describe('Step 0 of the Practice.');
@@ -138,7 +176,7 @@ export const AddMarkerChangeSchema = z
   .strictObject({
     type: z.literal('addMarker'),
     marker: z.string().describe('Id of a marker that is not on the Area in the previous Step.'),
-    cell: CellSchema.describe('Cell the marker starts on.'),
+    ...StartShape,
   })
   .describe('Put a marker on the Area from this Step onward.');
 
@@ -153,9 +191,9 @@ export const PlaceMarkerChangeSchema = z
   .strictObject({
     type: z.literal('placeMarker'),
     marker: z.string().describe('Id of a marker on the Area in the previous Step.'),
-    cell: CellSchema.describe('New starting cell.'),
+    ...StartShape,
   })
-  .describe('Change where a marker starts. Its move, if any, is kept and runs from the new cell.');
+  .describe('Change where a marker starts (or, for the ball, who holds it). Its move, if any, is kept and runs from the new cell.');
 
 export const SetMoveChangeSchema = z
   .strictObject({
@@ -171,6 +209,20 @@ export const RemoveMoveChangeSchema = z
   })
   .describe("Remove a marker's move so it stays on its cell.");
 
+export const SetPassChangeSchema = z
+  .strictObject({
+    type: z.literal('setPass'),
+    ...PassSchema.shape,
+  })
+  .describe('Replace the pass with this id in place, or add it after the existing passes.');
+
+export const RemovePassChangeSchema = z
+  .strictObject({
+    type: z.literal('removePass'),
+    id: z.string().describe('Id of a pass in the previous Step.'),
+  })
+  .describe('Remove a pass.');
+
 export const ChangeSchema = z
   .discriminatedUnion('type', [
     AddMarkerChangeSchema,
@@ -178,6 +230,8 @@ export const ChangeSchema = z
     PlaceMarkerChangeSchema,
     SetMoveChangeSchema,
     RemoveMoveChangeSchema,
+    SetPassChangeSchema,
+    RemovePassChangeSchema,
   ])
   .describe('One change over the previous Step. Changes apply in order.');
 
@@ -198,14 +252,14 @@ export const PracticeScriptSchema = z
       .array(MarkerSchema)
       .min(1)
       .max(MAX_MARKERS)
-      .describe('Every marker used in any Step, declared once.'),
+      .describe('Every marker used in any Step, declared once. At most one ball.'),
     base: BaseStepSchema,
     progressions: z
       .array(ProgressionSchema)
       .default([])
       .describe('Progressions in order. Progression i is Step i + 1 and builds on Step i.'),
   })
-  .describe('A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves.');
+  .describe('A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves and passes.');
 
 export type Cell = z.infer<typeof CellSchema>;
 export type Area = z.infer<typeof AreaSchema>;
@@ -214,6 +268,8 @@ export type Team = (typeof TEAMS)[number];
 export type Marker = z.infer<typeof MarkerSchema>;
 export type Placement = z.infer<typeof PlacementSchema>;
 export type Move = z.infer<typeof MoveSchema>;
+export type Pace = (typeof PACES)[number];
+export type Pass = z.infer<typeof PassSchema>;
 export type Lever = (typeof LEVERS)[number];
 export type Commentary = z.infer<typeof CommentarySchema>;
 export type Change = z.infer<typeof ChangeSchema>;

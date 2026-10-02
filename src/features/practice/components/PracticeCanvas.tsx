@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef } from 'react';
-import { Stage, Layer, Rect, Line, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
+import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 import { EntityColors } from '@/features/animation/services/entityColors';
@@ -13,6 +13,8 @@ const MIN_MARKER_RADIUS_PX = 6;
 const MARKER_RADIUS_CELLS = 0.4;
 /** Below this many pixels per cell the grid lines are too dense to draw. */
 const MIN_GRID_PX = 6;
+/** Colour of run lines and pass arrows. */
+const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
 function markerColour(marker: ResolvedMarker): string {
   switch (marker.kind) {
@@ -79,7 +81,10 @@ export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
   const { width, height } = useShareCanvasSize(containerRef, areaW / areaL);
   const cellPx = width / areaW;
   const radius = Math.max(cellPx * MARKER_RADIUS_CELLS, MIN_MARKER_RADIUS_PX);
-  const { positions } = positionsAt(step, time);
+  const { positions, passes } = positionsAt(step, time);
+  const px = (cell: number) => (cell + 0.5) * cellPx;
+  // Draw the ball last so it sits on top of its holder.
+  const markers = [...step.markers.filter((m) => m.kind !== 'ball'), ...step.markers.filter((m) => m.kind === 'ball')];
 
   const gridLines = useMemo(() => {
     if (cellPx < MIN_GRID_PX) return [];
@@ -99,17 +104,35 @@ export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
           ))}
         </Layer>
         <Layer listening={false}>
-          {step.markers.map((marker) => {
-            const p = positions[marker.id];
+          {step.moves.map((move) => {
+            const start = step.markers.find((m) => m.id === move.marker)!.cell;
             return (
-              <MarkerShape
-                key={marker.id}
-                marker={marker}
-                x={(p.x + 0.5) * cellPx}
-                y={(p.y + 0.5) * cellPx}
-                r={radius}
+              <Line
+                key={`run-${move.marker}`}
+                points={[start, ...move.waypoints].flatMap((c) => [px(c.x), px(c.y)])}
+                stroke={LINE_COLOUR}
+                strokeWidth={2}
+                dash={[6, 6]}
+                lineJoin="round"
               />
             );
+          })}
+          {passes.map((pass) => (
+            <Arrow
+              key={`pass-${pass.id}`}
+              points={[px(pass.start.x), px(pass.start.y), px(pass.end.x), px(pass.end.y)]}
+              stroke={LINE_COLOUR}
+              fill={LINE_COLOUR}
+              strokeWidth={2}
+              pointerLength={8}
+              pointerWidth={8}
+            />
+          ))}
+        </Layer>
+        <Layer listening={false}>
+          {markers.map((marker) => {
+            const p = positions[marker.id];
+            return <MarkerShape key={marker.id} marker={marker} x={px(p.x)} y={px(p.y)} r={radius} />;
           })}
         </Layer>
       </Stage>
