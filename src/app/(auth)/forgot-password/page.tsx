@@ -21,7 +21,8 @@ export default function ForgotPasswordPage() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error('[Auth] Reset request error:', error);
+      setErrorMessage('We could not send the reset email. Please check the address and try again.');
       setLoading(false);
       return;
     }

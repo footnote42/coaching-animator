@@ -74,7 +74,8 @@ function AnimationsTab() {
       setAnimations(data.animations);
       setTotal(data.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('[Admin] Error:', err);
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -129,7 +130,8 @@ function AnimationsTab() {
       setSelectedIds(new Set());
       setConfirmBulkDelete(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bulk delete failed');
+      console.error('[Admin] Bulk delete error:', err);
+      setError('Bulk delete failed. Please try again.');
     } finally {
       setBulkDeleting(false);
     }
@@ -150,7 +152,8 @@ function AnimationsTab() {
       setTotal(prev => prev - 1);
       setConfirmDelete(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Delete failed');
+      console.error('[Admin] Delete error:', err);
+      setError('Delete failed. Please try again.');
     } finally {
       setDeletingId(null);
     }
@@ -172,7 +175,8 @@ function AnimationsTab() {
         a.id === anim.id ? { ...a, tags: data.tags } : a
       ));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to toggle template');
+      console.error('[Admin] Template toggle error:', err);
+      setError('Could not update the template. Please try again.');
     } finally {
       setTogglingTemplate(null);
     }
@@ -441,7 +445,8 @@ export default function AdminPage() {
       setReports(data.reports);
       setTotal(data.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('[Admin] Error:', err);
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -478,7 +483,8 @@ export default function AdminPage() {
       setShowReasonModal(null);
       setActionReason('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Action failed');
+      console.error('[Admin] Action error:', err);
+      setError('That action failed. Please try again.');
     } finally {
       setProcessingId(null);
     }

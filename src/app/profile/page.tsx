@@ -91,7 +91,7 @@ export default function ProfilePage() {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error('[Profile] Save error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('We could not save your profile. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -137,7 +137,8 @@ export default function ProfilePage() {
       setClubBadgeUrl(publicUrl);
       await refreshProfile();
     } catch (err) {
-      setBadgeError(err instanceof Error ? err.message : 'Upload failed');
+      console.error('[Profile] Badge upload error:', err);
+      setBadgeError('Badge upload failed. Please try again.');
     } finally {
       setBadgeUploading(false);
       // Reset input so the same file can be re-selected if needed
@@ -157,7 +158,8 @@ export default function ProfilePage() {
       setClubBadgeUrl(null);
       await refreshProfile();
     } catch (err) {
-      setBadgeError(err instanceof Error ? err.message : 'Remove failed');
+      console.error('[Profile] Badge remove error:', err);
+      setBadgeError('Could not remove the badge. Please try again.');
     } finally {
       setBadgeUploading(false);
     }
@@ -190,7 +192,8 @@ export default function ProfilePage() {
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.unlinkIdentity(identity);
     if (error) {
-      setError(error.message);
+      console.error('[Profile] Auth update error:', error);
+      setError('That change could not be saved. Please try again.');
     } else {
       setSuccess('Account unlinked successfully');
       // Refresh session to update identities
@@ -213,7 +216,8 @@ export default function ProfilePage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      setError(error.message);
+      console.error('[Profile] Auth update error:', error);
+      setError('That change could not be saved. Please try again.');
     } else {
       setSuccess('Password set successfully');
       setPassword('');
