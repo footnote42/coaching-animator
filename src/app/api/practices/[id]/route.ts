@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { requireAuth, isAuthError } from '@/lib/server/auth';
+import { getSharedPractice } from '@/lib/server/practices';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -13,20 +14,14 @@ const notFound = () =>
   NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Practice not found' } }, { status: 404 });
 
 /**
- * GET /api/practices/[id]: full Practice including script. Row-level security
- * decides access: the owner at any visibility, anyone for link and public.
+ * GET /api/practices/[id]: full Practice including script, read through
+ * get_shared_practice(): the owner at any visibility, anyone for link and public.
  */
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
-    const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase
-      .from('practices')
-      .select('id, owner_id, title, description, visibility, script, schema_version, created_at, updated_at')
-      .eq('id', params.id)
-      .maybeSingle();
-
-    if (error || !data) return notFound();
-    return NextResponse.json({ practice: data });
+    const practice = await getSharedPractice(params.id);
+    if (!practice) return notFound();
+    return NextResponse.json({ practice });
   } catch (err) {
     console.error('[Practices API] Fatal GET [id] Error:', err);
     return NextResponse.json(
