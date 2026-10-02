@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Oswald } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
+import { getSiteOrigin } from '@/lib/site-origin';
 import { Navigation } from '@/shared/components/Navigation';
 
 const oswald = Oswald({
@@ -16,14 +17,14 @@ export const metadata: Metadata = {
     default: 'Coaching Animator - Rugby Play Visualisation',
     template: '%s | Coaching Animator',
   },
-  description: 'Create and share animated rugby plays. Visualize tactics, demonstrate formations, and share with your team.',
+  description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   keywords: ['rugby', 'coaching', 'animation', 'plays', 'tactics', 'visualisation'],
   authors: [{ name: 'Coaching Animator' }],
   creator: 'Coaching Animator',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  metadataBase: new URL(getSiteOrigin()),
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'en_GB',
     siteName: 'Coaching Animator',
     title: 'Coaching Animator - Rugby Play Visualisation',
     description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',

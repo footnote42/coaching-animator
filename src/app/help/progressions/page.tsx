@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Progressions',
+  description: 'Learn how to link animations into a progression, building a drill from a simple starting point to the full game-realistic version.',
 };
 
 export default function ProgressionsHelpPage() {

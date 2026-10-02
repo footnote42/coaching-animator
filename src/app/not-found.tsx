@@ -1,7 +1,13 @@
 
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandIcon } from '@/shared/components/BrandIcon';
 import { Home } from 'lucide-react';
+
+export const metadata: Metadata = {
+    title: 'Page not found',
+    description: 'We could not find the page you were looking for. Head back to the Coaching Animator home page or browse the gallery.',
+};
 
 export const dynamic = 'force-dynamic';
 

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | Coaching Animator',
-  description: 'Privacy Policy for Coaching Animator - Rugby Play Visualization Tool',
+  title: 'Privacy policy',
+  description: 'Privacy policy for Coaching Animator, the rugby play visualisation tool: what data we store, why, and how you can control it.',
 };
 
 export default function PrivacyPage() {

@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Help',
+  description: 'Help for Coaching Animator: the core workflow, what is on the pitch, and guides for building and sharing rugby animations.',
 };
 
 export default function HelpPage() {
