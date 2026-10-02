@@ -26,6 +26,7 @@ export function PracticeLibrary({ scriptText, onOpen }: Props) {
   const [visibility, setVisibility] = useState<PracticeSummary['visibility']>('private');
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const res = await fetch('/api/practices');
@@ -76,6 +77,25 @@ export function PracticeLibrary({ scriptText, onOpen }: Props) {
     if (res.ok) setPractices((list) => list.filter((p) => p.id !== id));
   };
 
+  const changeVisibility = async (id: string, next: PracticeSummary['visibility']) => {
+    setPublishing(null);
+    const res = await fetch(`/api/practices/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visibility: next }),
+    });
+    if (res.ok) {
+      setPractices((list) => list.map((p) => (p.id === id ? { ...p, visibility: next } : p)));
+    } else {
+      setMessage('Could not change visibility.');
+    }
+  };
+
+  const pickVisibility = (id: string, next: PracticeSummary['visibility']) => {
+    if (next === 'public') setPublishing(id);
+    else void changeVisibility(id, next);
+  };
+
   const field =
     'border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
 
@@ -109,6 +129,11 @@ export function PracticeLibrary({ scriptText, onOpen }: Props) {
           <option value="link">Anyone with the link</option>
           <option value="public">Public</option>
         </select>
+        {visibility === 'public' && (
+          <p className="text-xs text-text-primary">
+            Public Practices appear in Explore. Please do not name or identify players.
+          </p>
+        )}
         <Button onClick={save} disabled={saving || !title.trim() || !scriptText.trim()}>
           Save
         </Button>
@@ -126,7 +151,16 @@ export function PracticeLibrary({ scriptText, onOpen }: Props) {
                 <button type="button" onClick={() => onOpen(p.id)} className="flex-1 truncate text-left underline">
                   {p.title}
                 </button>
-                <span className="text-xs text-text-primary">{p.visibility}</span>
+                <select
+                  aria-label={`Visibility of ${p.title}`}
+                  value={p.visibility}
+                  onChange={(e) => pickVisibility(p.id, e.target.value as PracticeSummary['visibility'])}
+                  className="border border-[var(--color-border)] bg-[var(--color-surface)] p-1 text-xs"
+                >
+                  <option value="private">Private</option>
+                  <option value="link">Anyone with the link</option>
+                  <option value="public">Public</option>
+                </select>
                 <Button variant="outline" size="sm" onClick={() => remove(p.id)} aria-label={`Delete ${p.title}`}>
                   Delete
                 </Button>
@@ -135,6 +169,20 @@ export function PracticeLibrary({ scriptText, onOpen }: Props) {
           </ul>
         )}
       </div>
+
+      {publishing && (
+        <div role="dialog" aria-labelledby="publish-title" className="border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm">
+          <h3 id="publish-title" className="font-medium text-text-primary">Publish to Explore</h3>
+          <p className="my-2 text-text-primary">
+            Anyone will be able to find this Practice. Please do not name or identify players in the title,
+            description or commentary.
+          </p>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => changeVisibility(publishing, 'public')}>Publish</Button>
+            <Button size="sm" variant="outline" onClick={() => setPublishing(null)}>Cancel</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
