@@ -153,9 +153,18 @@ export const PassSchema = z
     id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
     from: z.string().describe('Id of the marker passing. Must hold the ball when the pass fires.'),
     to: z.string().describe('Id of the marker receiving.'),
+    at: z
+      .number()
+      .int()
+      .min(0)
+      .max(MAX_WAYPOINTS - 1)
+      .optional()
+      .describe(
+        "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
+      ),
   })
   .describe(
-    'A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived at its cell (the end of its move, or straight away if it has no move).',
+    'A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move).',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;

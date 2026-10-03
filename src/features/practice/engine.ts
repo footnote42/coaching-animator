@@ -97,7 +97,7 @@ export interface PassFlight {
   to: string;
   /** Where the ball leaves the passer, in cell units. */
   start: Point;
-  /** The receiver's cell, where the ball is caught. */
+  /** Where the ball is caught: the receiver's cell, or a point on its run for a catch on the run. */
   end: Point;
   /** Seconds into the Step the pass is thrown. */
   fire: number;
@@ -207,7 +207,9 @@ function setStart(
  */
 function applyChange(state: StepState, change: Change, isBall: (id: string) => boolean): ValidationError | null {
   if (change.type === 'setPass') {
-    state.passes.set(change.id, { id: change.id, from: change.from, to: change.to });
+    const { type: _type, ...pass } = change;
+    void _type;
+    state.passes.set(change.id, pass);
     return null;
   }
   if (change.type === 'removePass') {
@@ -260,7 +262,7 @@ function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
 /**
  * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
  * A move waits for its `after`; a pass waits for the previous pass to be
- * caught and for the receiver's move to finish.
+ * caught and for the receiver's move (to finish, or reach the catch waypoint).
  */
 function waitEdges(moves: Map<string, Move>, passes: Pass[]): Map<string, string[]> {
   const edges = new Map<string, string[]>();
@@ -385,6 +387,15 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
       issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold the ball when this pass fires; "${holder}" does` });
     }
     holder = pass.to;
+    if (pass.at !== undefined) {
+      const move = state.moves.get(pass.to);
+      if (!move) {
+        issues.push({ target, field: 'at', message: `marker "${pass.to}" has no move in this Step, so there is nothing to catch on the run; leave out "at" or give "${pass.to}" a move` });
+      } else if (pass.at >= move.waypoints.length) {
+        const count = move.waypoints.length;
+        issues.push({ target, field: 'at', message: `waypoint ${pass.at} is outside the move of "${pass.to}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})` });
+      }
+    }
   }
 
   if (issues.length === 0) {
@@ -668,10 +679,11 @@ function speedOf(move: Move): number {
   return PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE];
 }
 
-function moveDuration(start: Point, move: Move): number {
+/** Seconds a move takes from its start to waypoint `upto` (default: the last). */
+function moveDuration(start: Point, move: Move, upto = move.waypoints.length - 1): number {
   let cells = 0;
   let from = start;
-  for (const to of move.waypoints) {
+  for (const to of move.waypoints.slice(0, upto + 1)) {
     cells += distance(from, to);
     from = to;
   }
@@ -697,7 +709,7 @@ function pointAlong(start: Point, move: Move, elapsed: number): Point {
 /**
  * When every move starts and every pass flies. A move starts at zero or when
  * what it waits for completes; pass i fires once pass i - 1 is caught and the
- * receiver has arrived at its cell.
+ * receiver has arrived at its cell, or at waypoint `at` for a catch on the run.
  */
 function timeline(step: ResolvedStep) {
   const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
@@ -720,7 +732,8 @@ function timeline(step: ResolvedStep) {
     return start;
   };
 
-  const endOf = (marker: string): number => startOf(marker) + moveDuration(cells.get(marker)!, moves.get(marker)!);
+  const endOf = (marker: string, upto?: number): number =>
+    startOf(marker) + moveDuration(cells.get(marker)!, moves.get(marker)!, upto);
 
   const pointAt = (marker: string, t: number): Point => {
     const cell = cells.get(marker)!;
@@ -732,7 +745,8 @@ function timeline(step: ResolvedStep) {
     if (flights[i]) return flights[i];
     const pass = step.passes[i];
     const caught = i > 0 ? flight(i - 1).land : 0;
-    const fire = Math.max(caught, moves.has(pass.to) ? endOf(pass.to) : 0);
+    const receiver = moves.get(pass.to);
+    const fire = Math.max(caught, receiver ? endOf(pass.to, pass.at) : 0);
     // A passer whose own move waits on this pass (or a later one) has not set off yet.
     const later = new Set(step.passes.slice(i).map((p) => `pass:${p.id}`));
     const fromCell = cells.get(pass.from)!;
@@ -740,10 +754,18 @@ function timeline(step: ResolvedStep) {
       moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, later)
         ? pointAt(pass.from, fire)
         : { x: fromCell.x, y: fromCell.y };
-    const waypoints = moves.get(pass.to)?.waypoints;
-    const rest = waypoints ? waypoints[waypoints.length - 1] : cells.get(pass.to)!;
-    const end = { x: rest.x, y: rest.y };
-    const land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+    const rest = receiver ? receiver.waypoints[receiver.waypoints.length - 1] : cells.get(pass.to)!;
+    let end = { x: rest.x, y: rest.y };
+    let land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+    if (pass.at !== undefined && receiver) {
+      // Catch on the run: lead the receiver. Every Pace is slower than the ball,
+      // so aiming at where the receiver will be when the ball lands converges.
+      end = pointAt(pass.to, fire);
+      for (let k = 0; k < 40; k++) {
+        land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+        end = pointAt(pass.to, land);
+      }
+    }
     return (flights[i] = { id: pass.id, from: pass.from, to: pass.to, start, end, fire, land });
   };
 

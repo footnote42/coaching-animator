@@ -42,7 +42,9 @@ export type Edit =
   | { type: 'setPace'; marker: string; pace: Pace }
   | { type: 'removeMove'; marker: string }
   | { type: 'addPass'; from: string; to: string }
-  | { type: 'removePass'; id: string };
+  | { type: 'removePass'; id: string }
+  /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
+  | { type: 'setCatch'; id: string; at: number | null };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
 export type EditorTool = 'select' | 'run' | 'pass' | MarkerKind;
@@ -173,8 +175,24 @@ export function repairPasses(script: PracticeScript): PracticeScript {
   return cleanWaits(withBase(script, { passes }));
 }
 
-/** Drop `after` waits that point at a move or pass no longer in the base Step. */
-function cleanWaits(script: PracticeScript): PracticeScript {
+/** Drop catch waypoints the receiver's run no longer has. */
+function cleanCatches(script: PracticeScript): PracticeScript {
+  let changed = false;
+  const passes = script.base.passes.map((pass) => {
+    if (pass.at === undefined) return pass;
+    const move = script.base.moves.find((m) => m.marker === pass.to);
+    if (move && pass.at < move.waypoints.length) return pass;
+    changed = true;
+    const { at: _dropped, ...rest } = pass;
+    void _dropped;
+    return rest;
+  });
+  return changed ? withBase(script, { passes }) : script;
+}
+
+/** Drop `after` waits that point at a move or pass no longer in the base Step, and stale catch waypoints. */
+function cleanWaits(input: PracticeScript): PracticeScript {
+  const script = cleanCatches(input);
   const moved = new Set(script.base.moves.map((m) => m.marker));
   const passIds = new Set(script.base.passes.map((p) => p.id));
   let changed = false;
@@ -327,6 +345,20 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'removePass': {
       if (!script.base.passes.some((p) => p.id === edit.id)) return script;
       return repairPasses(withBase(script, { passes: script.base.passes.filter((p) => p.id !== edit.id) }));
+    }
+
+    case 'setCatch': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass || (pass.at ?? null) === edit.at) return script;
+      const { at: _old, ...rest } = pass;
+      void _old;
+      if (edit.at !== null) {
+        const move = script.base.moves.find((m) => m.marker === pass.to);
+        if (!move) return 'The receiver has no run: draw one to catch on the run.';
+        if (edit.at < 0 || edit.at >= move.waypoints.length) return 'That point is not on the receiver’s run.';
+      }
+      const next = edit.at === null ? rest : { ...rest, at: edit.at };
+      return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
     }
   }
 }

@@ -528,16 +528,33 @@ export function PracticeImport() {
               <span>Passes:</span>
               {passes.map((pass) => {
                 const name = (id: string) => script.markers.find((m) => m.id === id)?.label ?? id;
+                const run = script.base.moves.find((m) => m.marker === pass.to);
                 return (
-                  <Button
-                    key={pass.id}
-                    variant="outline"
-                    className="h-11"
-                    aria-label={`Delete pass ${name(pass.from)} to ${name(pass.to)}`}
-                    onClick={() => edit({ type: 'removePass', id: pass.id })}
-                  >
-                    {name(pass.from)} &rarr; {name(pass.to)} <Trash2 />
-                  </Button>
+                  <span key={pass.id} className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      className="h-11"
+                      aria-label={`Delete pass ${name(pass.from)} to ${name(pass.to)}`}
+                      onClick={() => edit({ type: 'removePass', id: pass.id })}
+                    >
+                      {name(pass.from)} &rarr; {name(pass.to)} <Trash2 />
+                    </Button>
+                    {run && run.waypoints.length > 1 && (
+                      <select
+                        aria-label={`Where ${name(pass.to)} catches`}
+                        value={pass.at ?? ''}
+                        onChange={(e) =>
+                          edit({ type: 'setCatch', id: pass.id, at: e.target.value === '' ? null : Number(e.target.value) })
+                        }
+                        className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
+                      >
+                        <option value="">Catch at end of run</option>
+                        {run.waypoints.slice(0, -1).map((_, i) => (
+                          <option key={i} value={i}>Catch at point {i + 1}, run on</option>
+                        ))}
+                      </select>
+                    )}
+                  </span>
                 );
               })}
             </div>

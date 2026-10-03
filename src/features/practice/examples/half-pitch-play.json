@@ -38,13 +38,13 @@
       { "id": "p1", "from": "a9", "to": "a10" },
       { "id": "p2", "from": "a10", "to": "a12" },
       { "id": "p3", "from": "a12", "to": "a13" },
-      { "id": "p4", "from": "a13", "to": "a14" }
+      { "id": "p4", "from": "a13", "to": "a14", "at": 0 }
     ],
     "commentary": {
       "points": [
         "Five attackers against three defenders: move the ball before the defence drifts across",
         "Each receiver arrives at pace, so pass in front of them",
-        "14 holds width until the last pass, then runs onto it"
+        "14 holds width until the last pass, then runs onto it and keeps going"
       ]
     }
   },

@@ -243,6 +243,12 @@
               "to": {
                 "type": "string",
                 "description": "Id of the marker receiving."
+              },
+              "at": {
+                "description": "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 49
               }
             },
             "required": [
@@ -251,7 +257,7 @@
               "to"
             ],
             "additionalProperties": false,
-            "description": "A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived at its cell (the end of its move, or straight away if it has no move)."
+            "description": "A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move)."
           }
         },
         "commentary": {
@@ -555,6 +561,12 @@
                     "to": {
                       "type": "string",
                       "description": "Id of the marker receiving."
+                    },
+                    "at": {
+                      "description": "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 49
                     }
                   },
                   "required": [
