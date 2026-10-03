@@ -1,10 +1,10 @@
 # NOW — coaching-animator
 
 ## Status
-LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, and the full editor on phones (#107).
+LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), and #84 the MCP endpoint (live, but the AI flow needs work: see below).
 
 ## Next
-Frontier: #84 MCP endpoint (uses the personal tokens from #83).
+Frontier: rework the AI + MCP flow. First real try (Claude Code, MCP not connected) wrote a JSON file and pointed at localhost with a made-up "Import Practice" button instead of saving to the account. Fix the skill so it uses the MCP tools when present, make setup easier, and look at OAuth so claude.ai connectors work.
 Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer tickets: #92, #93.
 - README needs a refresh (out of date since the restart).
 
@@ -13,7 +13,7 @@ Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer ticket
 - Rotate the DeepSeek API key, and the staging Supabase keys if `.env.staging` held real values.
 - Remove the old Vercel env vars `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_BASE_URL`.
 - Optional: delete the `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` GitHub secrets.
-- Local leftovers safe to delete: `.specify/`, `archive/`, `prototype/*.html`, the `restart` branch, the two locked folders under `.claude/worktrees/` and `../ca-check` (after a reboot), and the merged Antigravity worktrees `../ca-pro`, `../ca-pro-2`, `../ca-pro-83`, `../ca-flash`.
+- Local leftovers safe to delete: `.specify/`, `archive/`, `prototype/*.html`, the `restart` branch, the two locked folders under `.claude/worktrees/` and the empty `../ca-s84` folder (after a reboot).
 
 ## Context
 - Spec #72 (iteration 2) and its tickets #73-#93; spec #46 (restart, done). Glossary `CONTEXT.md` (Tag and Source added), ADRs `docs/adr/` (0004: AI stays outside the app), constraints `docs/constraints.md`, `SECURITY.md`.
