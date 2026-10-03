@@ -29,6 +29,7 @@ export function useEditorWorkspace() {
   const loadedId = useRef<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [tool, setTool] = useState<EditorTool>('select');
   const [rawSelection, setSelection] = useState<EditorSelection>(NO_SELECTION);
   const [ghost, setGhost] = useState(false);
@@ -218,6 +219,7 @@ export function useEditorWorkspace() {
       setPracticeId(openId);
       setTitle(practice.title ?? '');
       setDescription(practice.description ?? '');
+      setTags(practice.tags ?? []);
       openScript(result.script);
     })();
     return () => {
@@ -231,6 +233,7 @@ export function useEditorWorkspace() {
     setPracticeId(null);
     setTitle('');
     setDescription('');
+    setTags([]);
     openScript(emptyScript());
     if (openId) router.replace('/practice');
   };
@@ -268,6 +271,8 @@ export function useEditorWorkspace() {
     setTitle,
     description,
     setDescription,
+    tags,
+    setTags,
     tool,
     selection,
     setSelection,

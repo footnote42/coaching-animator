@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { useUser } from '@/lib/contexts/UserContext';
 import { MyPracticesList, type Visibility } from './MyPracticesList';
+import { TagPicker } from './TagPicker';
 
 interface Props {
   /** Current script text from the Import box; saved as-is. */
@@ -14,6 +15,8 @@ interface Props {
   practiceId: string | null;
   title: string;
   description: string;
+  tags: string[];
+  onTagsChange: (tags: string[]) => void;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
   /** Called with the Practice's id after a successful save. */
@@ -34,6 +37,8 @@ export function PracticeLibrary({
   practiceId,
   title,
   description,
+  tags,
+  onTagsChange,
   onTitleChange,
   onDescriptionChange,
   onSaved,
@@ -68,8 +73,8 @@ export function PracticeLibrary({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         practiceId
-          ? { title, description: description || null, script }
-          : { title, description: description || null, visibility, script },
+          ? { title, description: description || null, tags, script }
+          : { title, description: description || null, visibility, tags, script },
       ),
     }).catch(() => null);
     setSaving(false);
@@ -112,6 +117,7 @@ export function PracticeLibrary({
           onChange={(e) => onDescriptionChange(e.target.value)}
           className={`${field} h-16 resize-none`}
         />
+        <TagPicker value={tags} onChange={onTagsChange} />
         {!practiceId && (
           <select
             aria-label="Visibility"
