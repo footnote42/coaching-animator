@@ -1,14 +1,14 @@
 # NOW — coaching-animator
 
 ## Status
-LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), and #84 the MCP endpoint (live, but the AI flow needs work: see below).
+LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), #84 the MCP endpoint, #109 the skill saves straight to the account over MCP (tested end to end), #110 copy-ready MCP setup on /profile and #81 Gallery card previews.
 
 ## Next
-Frontier: #109 skill saves via MCP first (first real try had neither skill nor MCP installed, so the AI wrote a local file and pointed at localhost), then #110 copy-ready MCP setup on /profile.
-Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer tickets: #92, #93.
+Frontier: #86 light/dark prototype (maintainer), which unblocks #87 light theme, #88 landing page and #89 new look. Then #90 Help refresh and #91 Lighthouse and mobile checklist (after the look, or they need redoing). Maintainer tickets: #92, #93.
 - Parked: OAuth on `/api/mcp` so claude.ai and desktop connectors can sign in without a token. Revisit when Coaches outside Claude Code need it.
 - The skill is installed for Claude Code at `~/.claude/skills/coaching-animator` (a junction to `skill/coaching-animator` in the main checkout, so it updates on pull).
 - README needs a refresh (out of date since the restart).
+- Cloud sessions (claude.ai/code) work for tickets that need no local Supabase: environment setup script must cd into the repo before `npm ci` (it starts in /root). #110 and #81 were built this way.
 
 ## Waiting on you
 - #76: sign up once on production with an email address and confirm the confirmation email arrives, then close #76.
@@ -29,4 +29,4 @@ Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer ticket
 None.
 
 ## Last session
-2026-10-03: Batch 2 landed through three Sonnet agents and Antigravity: Tags (#78), Source (#79), personal tokens (#83), account deletion deletes the auth user via the service-role key (#98), missing Practices 404 (#68, root loading.tsx removed), editor ball choice (#71). Migrations 0603-0606 applied in order. Supabase CLI pinned in CI after a rate-limit failure.
+2026-10-03: #84 MCP endpoint merged (#108). First AI + MCP try went wrong (no skill or MCP installed), so #109 made the skill MCP-first (#111) and the skill was installed for every location; the MCP server is registered for Claude Code at user scope and a test Practice saved to the account. #110 (#112) and #81 (#113) built in two cloud sessions and merged.
