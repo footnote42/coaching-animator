@@ -439,6 +439,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          age_confirmed_at: string | null
           animation_count: number | null
           ban_reason: string | null
           banned_at: string | null
@@ -454,6 +455,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          age_confirmed_at?: string | null
           animation_count?: number | null
           ban_reason?: string | null
           banned_at?: string | null
@@ -469,6 +471,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          age_confirmed_at?: string | null
           animation_count?: number | null
           ban_reason?: string | null
           banned_at?: string | null

@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <article className="prose prose-slate max-w-none">
       <h1 className="text-3xl font-heading font-bold text-text-primary mb-8">Privacy Policy</h1>
 
-      <p className="text-text-primary/70 mb-8">Last updated: April 2026</p>
+      <p className="text-text-primary/70 mb-8">Last updated: May 2026</p>
 
       <section className="mb-8 p-4 bg-blue-50 border-l-4 border-primary">
         <h2 className="text-lg font-heading font-semibold text-text-primary mb-2">No Telemetry, Analytics, or Tracking</h2>
@@ -26,6 +26,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
           <li>Email address (when you create an account)</li>
           <li>Display name (optional; for public gallery attribution)</li>
+          <li>The date you confirmed you are 18 or over</li>
           <li>Animation content you create and save</li>
         </ul>
 
@@ -129,19 +130,28 @@ export default function PrivacyPage() {
         </p>
       </section>
 
+      {/* REVIEW #51: wording (whole cookie section) */}
       <section className="mb-8">
         <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">7. Cookies & Browser Storage</h2>
         <p className="text-text-primary/80 mb-4">
-          <strong>Strictly Necessary Cookies:</strong> We use session cookies and localStorage only for:
+          We only set cookies and use on-device storage that the Service needs to work. Nothing else is set.
         </p>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
-          <li>Authentication (Supabase session tokens)</li>
-          <li>Session recovery (so you remain logged in across page reloads)</li>
-          <li>Guest animation storage (Tier 0 users&apos; offline editing)</li>
-        </ul>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">Cookies set when you sign in</h3>
         <p className="text-text-primary/80 mb-4">
-          <strong>No Consent-Required Cookies:</strong> We do not use advertising, analytics, or tracking cookies.
-          No banner is displayed because no cookie consent is required — all cookies are strictly necessary for core functionality.
+          Signing in sets Supabase session cookies, whose names start with <code>sb-</code>. They keep you signed in
+          between page loads and are removed when you sign out or they expire. They are not set for Guests.
+        </p>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">On-device storage for Guests</h3>
+        <p className="text-text-primary/80 mb-4">
+          If you use the editor without signing in, your work is kept in your browser&apos;s localStorage under the key{' '}
+          <code>practice.device</code>. It stays on your device and is not sent to us. You can clear it at any time
+          from your browser settings.
+        </p>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">No consent banner</h3>
+        <p className="text-text-primary/80 mb-4">
+          We do not show a cookie consent banner because we set no non-essential cookies: no analytics, advertising or tracking.
+          Strictly necessary cookies are exempt from the consent requirement in the Privacy and Electronic Communications
+          Regulations (PECR). If that ever changes, we will ask for your consent first.
         </p>
         <p className="text-text-primary/80">
           See our <a href="/terms" className="text-primary hover:underline">Terms of Service</a> for details on how your data is stored and managed.
@@ -151,8 +161,10 @@ export default function PrivacyPage() {
       <section className="mb-8">
         <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">8. Children&apos;s Privacy</h2>
         <p className="text-text-primary/80 mb-4">
-          The Service is not intended for children under 13. We do not knowingly collect
-          personal information from children under 13.
+          Accounts are for people aged 18 or over, and we ask you to confirm this when you sign up.
+          We do not knowingly collect personal information from anyone under 18. Players under 18 can use the editor as a Guest,
+          where their work stays on their own device. If you believe a child has an account, please
+          <a href="/contact" className="text-primary hover:underline"> contact us</a>.
         </p>
       </section>
 

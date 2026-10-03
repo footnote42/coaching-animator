@@ -50,6 +50,7 @@ export const viewport: Viewport = {
 import { OfflineIndicator } from '@/shared/components/OfflineIndicator';
 import { Toaster } from 'sonner';
 import { Footer } from '@/shared/components/Footer';
+import { AgeConfirmationDialog } from '@/shared/components/AgeConfirmationDialog';
 
 export default function RootLayout({
   children,
@@ -68,6 +69,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <OfflineIndicator />
+          <AgeConfirmationDialog />
         </UserProvider>
         <Toaster position="bottom-left" />
 

@@ -11,41 +11,48 @@ test.describe('Legal Compliance: Legal Pages', () => {
     await expect(page).toHaveTitle(/Terms of Service/);
   });
 
-  test('ToS contains all required sections (FR-006 to FR-010)', async ({ page }) => {
+  test('ToS contains all required sections', async ({ page }) => {
+    await page.goto('http://localhost:3000/terms');
+    const h = (name: RegExp) => page.getByRole('heading', { name });
+
+    await expect(h(/Description of Service/)).toBeVisible();
+    await expect(page.getByText('Tiered Access Model')).toBeVisible();
+    await expect(page.getByText(/CC-BY-SA 4\.0/).first()).toBeVisible();
+    await expect(page.getByText(/Creative Commons/).first()).toBeVisible();
+    await expect(page.getByText(/Tier 0/).first()).toBeVisible();
+    await expect(page.getByText(/Tier 1/).first()).toBeVisible();
+    await expect(page.getByText(/50 animations/).first()).toBeVisible();
+    await expect(page.getByText(/10 frames/).first()).toBeVisible();
+    await expect(h(/Remixed Animations/)).toBeVisible();
+    await expect(page.getByText(/ShareAlike/).first()).toBeVisible();
+    await expect(h(/Prohibited Content/)).toBeVisible();
+  });
+
+  test('ToS states 18+ accounts, no player details, Gallery permission', async ({ page }) => {
     await page.goto('http://localhost:3000/terms');
 
-    // FR-006: Description of Service
-    await expect(page.locator('text=cloud-first')).toBeVisible();
-    await expect(page.locator('text=tiered access')).toBeVisible();
+    await expect(page.getByText(/You must be 18 or over to create an account/)).toBeVisible();
+    await expect(page.getByText(/at least 13 years old/)).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'No names or identifying details of players' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Publishing to the Gallery' })).toBeVisible();
+    await expect(page.getByText(/you give everyone permission to view it/)).toBeVisible();
+  });
 
-    // FR-007: Content Licensing (CC-BY-SA)
-    await expect(page.locator('text=CC-BY-SA')).toBeVisible();
-    await expect(page.locator('text=Creative Commons')).toBeVisible();
-    await expect(page.locator('text=public gallery')).toBeVisible();
+  test('ToS explains how to report content and complain', async ({ page }) => {
+    await page.goto('http://localhost:3000/terms');
 
-    // FR-008: Tiered Access Model
-    await expect(page.locator('text=Tier 0')).toBeVisible();
-    await expect(page.locator('text=Tier 1')).toBeVisible();
-    await expect(page.locator('text=50 animations')).toBeVisible();
-    await expect(page.locator('text=10 frames')).toBeVisible();
-
-    // FR-009: Remix & Attribution
-    await expect(page.locator('text=remix')).toBeVisible();
-    await expect(page.locator('text=credit')).toBeVisible();
-    await expect(page.locator('text=ShareAlike')).toBeVisible();
-
-    // FR-010: Prohibited Content
-    await expect(page.locator('text=Prohibited Content')).toBeVisible();
-    await expect(page.locator('text=Advertising')).toBeVisible();
-    await expect(page.locator('text=No.*data.*sale')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Reporting Content & Complaints/ })).toBeVisible();
+    await expect(page.getByText(/Report button/)).toBeVisible();
+    await expect(page.getByText(/safeguarding/).first()).toBeVisible();
+    await expect(page.getByText(/We aim to reply within 14 days/)).toBeVisible();
+    await expect(page.getByRole('link', { name: 'contact form' })).toHaveAttribute('href', '/contact');
   });
 
   test('ToS describes content ownership clearly', async ({ page }) => {
     await page.goto('http://localhost:3000/terms');
 
-    // Verify private vs public content distinction
-    await expect(page.locator('text=Private.*Tier 0')).toBeVisible();
-    await expect(page.locator('text=retain.*ownership')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Private Animations' })).toBeVisible();
+    await expect(page.getByText(/You retain full ownership/)).toBeVisible();
   });
 
   test('Privacy Policy page loads without authentication', async ({ page }) => {
@@ -53,35 +60,38 @@ test.describe('Legal Compliance: Legal Pages', () => {
     await expect(page).toHaveTitle(/Privacy Policy/);
   });
 
-  test('Privacy Policy contains all required sections (FR-011 to FR-016)', async ({ page }) => {
+  test('Privacy Policy contains all required sections', async ({ page }) => {
     await page.goto('http://localhost:3000/privacy');
 
-    // FR-012: No Telemetry Statement
-    await expect(page.locator('text=telemetry|analytics|tracking')).toBeVisible();
-    await expect(page.locator('text=do not collect|no analytics')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /No Telemetry, Analytics, or Tracking/ })).toBeVisible();
+    await expect(page.getByText(/We do not collect telemetry data/)).toBeVisible();
+    await expect(page.getByText(/Supabase/).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Data Storage/ })).toBeVisible();
+    await expect(page.getByText(/Email address/).first()).toBeVisible();
+    await expect(page.getByText(/within 30 days/).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Cookies & Browser Storage/ })).toBeVisible();
+  });
 
-    // FR-013: Data Residency
-    await expect(page.locator('text=Supabase')).toBeVisible();
-    await expect(page.locator('text=data.*stored|storage')).toBeVisible();
+  test('Privacy Policy says accounts are 18+', async ({ page }) => {
+    await page.goto('http://localhost:3000/privacy');
 
-    // FR-014: Data Collected
-    await expect(page.locator('text=email')).toBeVisible();
-    await expect(page.locator('text=animation')).toBeVisible();
-
-    // FR-015: Data Deletion
-    await expect(page.locator('text=delete.*account|delete.*data')).toBeVisible();
-    await expect(page.locator('text=30 days')).toBeVisible();
-
-    // FR-016: Cookie Reference
-    await expect(page.locator('text=cookies|Cookie')).toBeVisible();
+    await expect(page.getByText(/Accounts are for people aged 18 or over/)).toBeVisible();
+    await expect(page.getByText(/under 13/)).toHaveCount(0);
   });
 
   test('Privacy Policy has no mention of selling data', async ({ page }) => {
     await page.goto('http://localhost:3000/privacy');
 
-    // Verify Constitution compliance: no data selling
-    await expect(page.locator('text=sell.*data|sell.*personal')).not.toBeVisible();
-    await expect(page.locator('text=do not sell|not.*sold')).toBeVisible();
+    await expect(page.getByText(/We do not sell, rent, or trade your personal data/)).toBeVisible();
+  });
+
+  test('Terms and Privacy pages show one site footer linking to both', async ({ page }) => {
+    for (const route of ['/terms', '/privacy', '/']) {
+      await page.goto(`http://localhost:3000${route}`);
+      await expect(page.locator('footer')).toHaveCount(1);
+      await expect(page.locator('footer').getByRole('link', { name: 'Terms' })).toHaveAttribute('href', '/terms');
+      await expect(page.locator('footer').getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy');
+    }
   });
 
   test('Contact page loads without authentication', async ({ page }) => {
