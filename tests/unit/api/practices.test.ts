@@ -41,7 +41,7 @@ function post(body: unknown) {
 /** Chainable query-builder stub that resolves to `result` at any terminal call. */
 function builder(result: unknown) {
   const b: Record<string, unknown> = {};
-  for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'order', 'range', 'ilike']) b[m] = vi.fn(() => b);
+  for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'order', 'range', 'ilike', 'contains', 'in']) b[m] = vi.fn(() => b);
   b.single = vi.fn(async () => result);
   b.maybeSingle = vi.fn(async () => result);
   b.then = (resolve: (v: unknown) => unknown) => resolve(result);
@@ -264,6 +264,50 @@ describe('GET /api/practices/public', () => {
     expect(b.range).toHaveBeenCalledWith(12, 24);
     expect(body.practices).toHaveLength(12);
     expect(body.hasMore).toBe(true);
+  });
+
+  it('returns the card summary fields', async () => {
+    const b = builder({
+      data: [{ ...row('a'), owner_id: 'u1', tags: ['Attack', 'Support'], source_url: 'https://example.com/v' }],
+      error: null,
+    });
+    mocks.from.mockReturnValue(b);
+    const body = await (await GET_PUBLIC(get())).json();
+    const card = body.practices[0];
+    expect(card.tags).toEqual(['Attack', 'Support']);
+    expect(card.hasSource).toBe(true);
+    expect(card.progressionCount).toBe(2);
+    expect(card.area).toEqual({
+      width: passingSquareProgressions.area.width,
+      length: passingSquareProgressions.area.length,
+    });
+    expect(card.playerCount).toBe(
+      card.thumbnail.markers.filter((m: { kind: string }) => m.kind === 'attacker' || m.kind === 'defender').length
+    );
+    expect(card.playerCount).toBeGreaterThan(0);
+    expect(card).toHaveProperty('coachName');
+    expect(card.source_url).toBeUndefined();
+  });
+
+  it('filters by a known Tag', async () => {
+    const b = builder({ data: [row('a')], error: null });
+    mocks.from.mockReturnValue(b);
+    const res = await GET_PUBLIC(get('?tag=Lineout'));
+    expect(res.status).toBe(200);
+    expect(b.contains).toHaveBeenCalledWith('tags', ['Lineout']);
+  });
+
+  it('does not filter by Tag when none is given', async () => {
+    const b = builder({ data: [row('a')], error: null });
+    mocks.from.mockReturnValue(b);
+    await GET_PUBLIC(get());
+    expect(b.contains).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unknown Tag', async () => {
+    const res = await GET_PUBLIC(get('?tag=Nonsense'));
+    expect(res.status).toBe(400);
+    expect(mocks.from).not.toHaveBeenCalled();
   });
 
   it('rejects a bad page', async () => {

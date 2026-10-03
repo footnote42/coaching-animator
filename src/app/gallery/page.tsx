@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { GalleryClient } from '@/features/practice/components/GalleryClient';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function GalleryPage() {
-  return <GalleryClient />;
+  return (
+    <Suspense>
+      <GalleryClient />
+    </Suspense>
+  );
 }

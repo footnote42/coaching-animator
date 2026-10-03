@@ -43,6 +43,7 @@ export const UpdatePracticeSchema = z
 export const PublicPracticesQuerySchema = z.object({
   q: z.string().trim().max(100).optional(),
   page: z.coerce.number().int().min(1).max(1000).default(1),
+  tag: z.enum(PRACTICE_TAGS).optional(),
 });
 
 export const PRACTICE_REPORT_REASONS = ['inappropriate', 'spam', 'copyright', 'safeguarding', 'other'] as const;
