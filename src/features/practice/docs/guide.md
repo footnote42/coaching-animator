@@ -63,7 +63,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 - `kind`: one of `attacker`, `defender`, `ball`, `cone`, `tackle-shield`, `coach`.
 - `team`: `attack` or `defence`. Defaults to `attack` for attackers and `defence` for defenders; usually leave it out.
 - `label`: at most 4 characters, shown on the marker.
-- At most one `ball` per script, and at most {{MAX_MARKERS}} markers in all.
+- At most {{MAX_BALLS}} markers of kind `ball` per script (see "More than one ball"), and at most {{MAX_MARKERS}} markers in all.
 - Only attackers, defenders and coaches can hold, pass and receive the ball.
 
 ## Placements and the ball holder
@@ -71,7 +71,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 `base.placements` says where each marker starts in Step 0. Each marker is placed at most once.
 
 - Every marker except the ball: `{ "marker": "a1", "cell": { "x": 2, "y": 8 } }`.
-- The ball: `{ "marker": "ball", "holder": "a1" }`. The ball has no cell; it rides with its holder. The holder must be an attacker, defender or coach on the Area.
+- The ball: `{ "marker": "ball", "holder": "a1" }`. The ball has no cell; it rides with its holder. The holder must be an attacker, defender or coach on the Area, and no two balls may start with the same holder.
 - Two markers may share a cell (a player standing on a cone, for example).
 - A marker left out of `base.placements` is not on the Area in Step 0; a Progression must add it with `addMarker`, or the script is rejected.
 
@@ -98,10 +98,10 @@ A move's duration is the straight-line length of its path (start cell to each wa
 
 ## Passes
 
-A pass is `{ "id", "from", "to", "at"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
+A pass is `{ "id", "from", "to", "ball"?, "at"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
-- The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it.
+- The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
 - `from` and `to` are different attackers, defenders or coaches on the Area.
 - Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move.
 - The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell, or for a catch on the run to the point on the receiver's run where they meet the ball.
@@ -116,7 +116,25 @@ In rugby the receiver usually runs onto the ball and keeps going. Give the pass 
 
 - Leave `at` out to fire the pass at the end of the receiver's move (the receiver stops, then catches).
 - `at` must name a waypoint of the receiver's move: from `0` to the number of waypoints minus 1. A receiver with no move cannot have `at`.
-- The receiver's move must not wait for the pass to its own marker: that is a loop and is rejected. To show a catch followed by a run, put both in one move and use `at`.
+- A receiver whose move waits (`after`) on this very pass, directly or through other passes and moves, has not set off yet, so `at` is rejected for that pass. See "Receive, pass, run, receive again".
+
+### Receive, pass, run, receive again
+
+A player can catch, pass, run somewhere and be passed to again, all in one Step. Give the run `"after": { "pass": "p2" }`, where `p2` is the pass the player makes. A pass to a player whose run has not started, because the run waits on that very pass (directly or through other passes and moves), does not wait for the run: it fires as soon as the ball is free and is caught on the player's starting cell. A pass to a player whose run is not waiting on it works as always and waits for the run to finish (or to reach `at`).
+
+Example, circle passing where each player runs to a cone behind them and back to their spot after their own pass: `p1` goes from `a1` to `a3`, and the move of `a3` is `{ "marker": "a3", "waypoints": [cone, spot], "after": { "pass": "p2" } }`. `p1` is caught on `a3`'s spot at once, `a3` passes `p2` and sets off, and `a3` is back on the spot before the ball comes round to `a3` again.
+
+Moves can still wait on each other in a loop (`a1` after the move of `a2`, `a2` after the move of `a1`); that is rejected.
+
+### More than one ball
+
+A script may declare up to {{MAX_BALLS}} markers of kind `ball`, for example two balls to raise the tempo of circle passing. Each ball has a holder in `base.placements` (or `addMarker` in a Progression) and its own chain of passes.
+
+- Give each pass its `ball`: `{ "id": "p13", "ball": "ball2", "from": "a4", "to": "a2" }`. Leave `ball` out to pass the first ball declared in `markers`, so a script with one ball needs no `ball` anywhere, and adding a second ball later does not change the existing passes.
+- Passes stay in one list. A pass fires once the previous pass of the same ball has been caught, so the balls move at the same time.
+- A pass must come from the current holder of its ball.
+- A player cannot hold two balls at once. Two balls cannot start with the same holder, and a player must pass on the ball they hold before catching another (checked against the timing of the Step).
+- A Progression adds a ball with `{ "type": "addMarker", "marker": "ball2", "holder": "a4" }` and its passes with `setPass`, giving each `"ball": "ball2"`.
 
 ## `after`: chaining moves
 
@@ -163,7 +181,7 @@ After the changes apply, the Step must still follow every rule above: the ball h
 ## Limits
 
 - Script size: at most {{MAX_SCRIPT_BYTES}} bytes of JSON.
-- Markers: at most {{MAX_MARKERS}}, with at most one ball.
+- Markers: at most {{MAX_MARKERS}}, with at most {{MAX_BALLS}} balls.
 - Waypoints: at most {{MAX_WAYPOINTS}} per move.
 - Passes: at most {{MAX_PASSES}} per Step.
 - Coaching points: at most {{MAX_COACHING_POINTS}} per Step, each at most 200 characters.

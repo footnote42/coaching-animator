@@ -30,6 +30,9 @@ export const MAX_MARKERS = 60;
 /** Most waypoints a single move may hold. */
 export const MAX_WAYPOINTS = 50;
 
+/** Most balls a script may declare. */
+export const MAX_BALLS = 3;
+
 /** Most passes one Step may hold. */
 export const MAX_PASSES = 50;
 
@@ -153,6 +156,9 @@ export const PassSchema = z
     id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
     from: z.string().describe('Id of the marker passing. Must hold the ball when the pass fires.'),
     to: z.string().describe('Id of the marker receiving.'),
+    ball: MarkerIdSchema.optional().describe(
+      'Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.',
+    ),
     at: z
       .number()
       .int()
@@ -164,7 +170,7 @@ export const PassSchema = z
       ),
   })
   .describe(
-    'A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move).',
+    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time.',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;
@@ -283,7 +289,7 @@ export const PracticeScriptSchema = z
       .array(MarkerSchema)
       .min(1)
       .max(MAX_MARKERS)
-      .describe('Every marker used in any Step, declared once. At most one ball.'),
+      .describe('Every marker used in any Step, declared once. At most 3 balls.'),
     base: BaseStepSchema,
     progressions: z
       .array(ProgressionSchema)

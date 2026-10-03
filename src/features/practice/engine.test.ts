@@ -393,7 +393,7 @@ describe('Motion: Pace, ball and passes', () => {
     const flight = 10 / PASS_SPEED_MPS;
     const { duration, passes } = at(script, 0);
     expect(passes).toEqual([
-      { id: 'p1', from: 'a1', to: 'a2', start: { x: 0, y: 0 }, end: { x: 10, y: 0 }, fire: 0, land: flight },
+      { id: 'p1', ball: 'ball', from: 'a1', to: 'a2', start: { x: 0, y: 0 }, end: { x: 10, y: 0 }, fire: 0, land: flight },
     ]);
     expect(duration).toBeCloseTo(flight);
     expect(at(script, flight / 2).positions.ball.x).toBeCloseTo(5);
@@ -506,13 +506,6 @@ describe('Motion: Pace, ball and passes', () => {
     expect(errorsOf(moves)).toEqual([
       'base.moves[0].after: moves and passes wait on each other in a loop: the move of "a1" waits for the move of "a2", which waits for the move of "a1"',
     ]);
-    const receiverWaits = drill({
-      moves: [{ marker: 'a2', waypoints: [{ x: 10, y: 4 }], after: { pass: 'p1' } }],
-      passes: [{ id: 'p1', from: 'a1', to: 'a2' }],
-    });
-    expect(errorsOf(receiverWaits)).toEqual([
-      'base.moves[0].after: moves and passes wait on each other in a loop: the move of "a2" waits for pass "p1", which waits for the move of "a2"',
-    ]);
   });
 
   it('rejects a move for the ball', () => {
@@ -556,8 +549,14 @@ describe('Motion: Pace, ball and passes', () => {
       'progressions[0].changes[0].from: marker "a1" does not hold the ball when this pass fires; "a2" does',
       'progressions[1].changes[0].id: no pass "p9" in the previous Step',
     ]);
-    const loop = drill({ passes: [{ id: 'p1', from: 'a1', to: 'a2' }] }, [
-      { lever: 'time', changes: [{ type: 'setMove', marker: 'a2', waypoints: [{ x: 10, y: 4 }], after: { pass: 'p1' } }] },
+    const loop = drill({}, [
+      {
+        lever: 'time',
+        changes: [
+          { type: 'setMove', marker: 'a2', waypoints: [{ x: 10, y: 4 }], after: { move: 'a3' } },
+          { type: 'setMove', marker: 'a3', waypoints: [{ x: 20, y: 4 }], after: { move: 'a2' } },
+        ],
+      },
     ]);
     expect(errorsOf(loop)[0]).toMatch(/^progressions\[0\]\.changes\[0\]\.after: moves and passes wait on each other in a loop/);
   });

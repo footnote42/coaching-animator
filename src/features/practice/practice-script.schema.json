@@ -93,7 +93,7 @@
         "additionalProperties": false,
         "description": "Something drawn in the Area: a player, the ball or equipment."
       },
-      "description": "Every marker used in any Step, declared once. At most one ball."
+      "description": "Every marker used in any Step, declared once. At most 3 balls."
     },
     "base": {
       "type": "object",
@@ -244,6 +244,12 @@
                 "type": "string",
                 "description": "Id of the marker receiving."
               },
+              "ball": {
+                "description": "Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              },
               "at": {
                 "description": "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
                 "type": "integer",
@@ -257,7 +263,7 @@
               "to"
             ],
             "additionalProperties": false,
-            "description": "A pass of the ball. Passes fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move)."
+            "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time."
           }
         },
         "commentary": {
@@ -561,6 +567,12 @@
                     "to": {
                       "type": "string",
                       "description": "Id of the marker receiving."
+                    },
+                    "ball": {
+                      "description": "Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.",
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 32
                     },
                     "at": {
                       "description": "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",

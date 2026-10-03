@@ -109,9 +109,15 @@ export function ballHolder(script: PracticeScript): string | undefined {
   return ball && script.base.placements.find((p) => p.marker === ball.id)?.holder;
 }
 
-/** Who holds the ball once every base pass has been caught. */
+/**
+ * Who holds the ball once every base pass of it has been caught. The editor
+ * draws passes of the first ball; passes naming another ball (from an imported
+ * script) are left alone.
+ */
 export function holderAfterPasses(script: PracticeScript): string | undefined {
-  const last = script.base.passes[script.base.passes.length - 1];
+  const first = script.markers.find((m) => m.kind === 'ball')?.id;
+  const mine = script.base.passes.filter((p) => (p.ball ?? first) === first);
+  const last = mine[mine.length - 1];
   return last ? last.to : ballHolder(script);
 }
 
@@ -158,18 +164,22 @@ function placeBall(script: PracticeScript, ballId: string, holder: string): Prac
 }
 
 /**
- * Keep only passes that still chain from the ball's holder: each must come from
- * whoever holds the ball when it fires and go to another carrier.
+ * Keep only passes that still chain from their ball's holder: each must come
+ * from whoever holds that ball when it fires and go to another carrier.
  */
 export function repairPasses(script: PracticeScript): PracticeScript {
-  let holder = ballHolder(script);
+  const holders = new Map<string, string>();
+  for (const p of script.base.placements) if (p.holder !== undefined) holders.set(p.marker, p.holder);
+  const firstBall = script.markers.find((m) => m.kind === 'ball')?.id;
   const passes: Pass[] = [];
   for (const pass of script.base.passes) {
-    if (holder === undefined) break;
+    const ball = pass.ball ?? firstBall;
+    const holder = ball === undefined ? undefined : holders.get(ball);
+    if (ball === undefined || holder === undefined) continue;
     if (pass.from !== holder || pass.to === pass.from || !isCarrier(kindOf(script, pass.to))) continue;
     if (!script.base.placements.some((p) => p.marker === pass.to)) continue;
     passes.push(pass);
-    holder = pass.to;
+    holders.set(ball, pass.to);
   }
   if (passes.length === script.base.passes.length) return script;
   return cleanWaits(withBase(script, { passes }));

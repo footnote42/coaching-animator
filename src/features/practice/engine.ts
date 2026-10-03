@@ -12,6 +12,7 @@
 import {
   BALL_CARRIER_KINDS,
   CELL_SIZE_M,
+  MAX_BALLS,
   PracticeScriptSchema,
   SCHEMA_VERSION,
   type Area,
@@ -93,6 +94,8 @@ export interface StepPositions {
 
 export interface PassFlight {
   id: string;
+  /** Id of the ball being passed. */
+  ball: string;
   from: string;
   to: string;
   /** Where the ball leaves the passer, in cell units. */
@@ -259,12 +262,18 @@ function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
   }
 }
 
+/** A pass with the ball it moves settled: a pass that names no ball moves the default ball. */
+type BallPass = Pass & { ball: string };
+
 /**
  * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
- * A move waits for its `after`; a pass waits for the previous pass to be
- * caught and for the receiver's move (to finish, or reach the catch waypoint).
+ * A move waits for its `after`. A pass waits for the previous pass of the same
+ * ball to be caught and for the receiver's move (to finish, or reach the catch
+ * waypoint). The exception is a receiver whose move waits on this very pass,
+ * directly or not: it has not set off, so the pass does not wait for it and is
+ * caught on its starting cell. Those passes are returned in `inPlace`.
  */
-function waitEdges(moves: Map<string, Move>, passes: Pass[]): Map<string, string[]> {
+function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
   const edges = new Map<string, string[]>();
   for (const [marker, { after }] of moves) {
     edges.set(
@@ -272,12 +281,25 @@ function waitEdges(moves: Map<string, Move>, passes: Pass[]): Map<string, string
       after?.move !== undefined ? [`move:${after.move}`] : after?.pass !== undefined ? [`pass:${after.pass}`] : [],
     );
   }
-  passes.forEach((pass, i) => {
-    const waits = i > 0 ? [`pass:${passes[i - 1].id}`] : [];
-    if (moves.has(pass.to)) waits.push(`move:${pass.to}`);
-    edges.set(`pass:${pass.id}`, waits);
-  });
-  return edges;
+  const lastOfBall = new Map<string, string>();
+  for (const pass of passes) {
+    const previous = lastOfBall.get(pass.ball);
+    edges.set(`pass:${pass.id}`, previous === undefined ? [] : [`pass:${previous}`]);
+    lastOfBall.set(pass.ball, pass.id);
+  }
+  for (const pass of passes) {
+    if (moves.has(pass.to)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.to}`);
+  }
+  // A receiver that waits on its own pass, directly or not, would make a loop.
+  const inPlace = new Set<string>();
+  for (const pass of passes) {
+    if (moves.has(pass.to) && waitsOn(edges, `move:${pass.to}`, new Set([`pass:${pass.id}`]))) inPlace.add(pass.id);
+  }
+  for (const id of inPlace) {
+    const waits = edges.get(`pass:${id}`)!;
+    waits.splice(waits.length - 1, 1);
+  }
+  return { edges, inPlace };
 }
 
 /** A loop of waits, as the nodes around it (first repeated at the end), or null. */
@@ -352,10 +374,17 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     }
   };
 
-  let holder: string | undefined;
+  // The ball a pass moves when it names none: the first ball the script declares.
+  const defaultBall = [...kinds].find(([, kind]) => kind === 'ball')?.[0];
+  const holders = new Map<string, string>();
   for (const [ball, ballHolder] of state.holders) {
-    checkCarrier({ kind: 'ball', id: ball }, 'holder', ballHolder);
-    holder = ballHolder;
+    const target: Target = { kind: 'ball', id: ball };
+    checkCarrier(target, 'holder', ballHolder);
+    const other = [...holders].find(([, h]) => h === ballHolder)?.[0];
+    if (other !== undefined) {
+      issues.push({ target, field: 'holder', message: `marker "${ballHolder}" already holds ball "${other}"; a player cannot hold two balls at once` });
+    }
+    holders.set(ball, ballHolder);
   }
 
   for (const [marker, { after }] of state.moves) {
@@ -381,12 +410,26 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     }
     checkCarrier(target, 'from', pass.from);
     checkCarrier(target, 'to', pass.to);
+    const ball = pass.ball ?? defaultBall;
+    const holder = ball === undefined ? undefined : holders.get(ball);
+    if (ball === undefined || holder === undefined) {
+      issues.push({
+        target,
+        field: 'ball',
+        message:
+          pass.ball !== undefined && kinds.get(pass.ball) !== 'ball'
+            ? `marker "${pass.ball}" is not a ball`
+            : `ball "${ball}" is not on the Area in this Step; name the ball being passed`,
+      });
+      continue;
+    }
     if (pass.from === pass.to) {
       issues.push({ target, field: 'to', message: 'a marker cannot pass to itself' });
     } else if (pass.from !== holder) {
-      issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold the ball when this pass fires; "${holder}" does` });
+      const which = state.holders.size > 1 ? `ball "${ball}"` : 'the ball';
+      issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold ${which} when this pass fires; "${holder}" does` });
     }
-    holder = pass.to;
+    holders.set(ball, pass.to);
     if (pass.at !== undefined) {
       const move = state.moves.get(pass.to);
       if (!move) {
@@ -399,7 +442,10 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
   }
 
   if (issues.length === 0) {
-    const loop = findLoop(waitEdges(state.moves, [...state.passes.values()]));
+    const passes = [...state.passes.values()].map((pass): BallPass => ({ ...pass, ball: pass.ball ?? defaultBall! }));
+    const moves = [...state.moves.values()];
+    const { edges, inPlace } = waitEdges(state.moves, passes);
+    const loop = findLoop(edges);
     if (loop) {
       const [first, ...rest] = loop.map(splitNode);
       issues.push({
@@ -407,6 +453,21 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
         field: first.kind === 'move' ? 'after' : 'to',
         message: `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for ${rest.map(targetLabel).join(', which waits for ')}`,
       });
+    } else {
+      for (const pass of passes) {
+        if (inPlace.has(pass.id) && pass.at !== undefined) {
+          issues.push({
+            target: { kind: 'pass', id: pass.id },
+            field: 'at',
+            message: `the move of "${pass.to}" waits for this pass, so it is caught on the cell "${pass.to}" starts on; leave out "at"`,
+          });
+        }
+      }
+      if (issues.length === 0 && state.holders.size > 1) {
+        const { flights } = timeline(state.cells, moves, passes);
+        const twice = heldTwice(flights, state.holders);
+        if (twice) issues.push(twice);
+      }
     }
   }
   return issues;
@@ -415,7 +476,7 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
 function checkReferences(script: PracticeScript): ValidationError[] {
   const errors: ValidationError[] = [];
   const kinds = new Map<string, MarkerKind>();
-  let ballDeclared = false;
+  let balls = 0;
 
   script.markers.forEach((marker, i) => {
     if (kinds.has(marker.id)) {
@@ -424,8 +485,8 @@ function checkReferences(script: PracticeScript): ValidationError[] {
       kinds.set(marker.id, marker.kind);
     }
     if (marker.kind === 'ball') {
-      if (ballDeclared) errors.push({ path: `markers[${i}].kind`, message: 'a Practice has at most one ball' });
-      ballDeclared = true;
+      balls += 1;
+      if (balls > MAX_BALLS) errors.push({ path: `markers[${i}].kind`, message: `a Practice has at most ${MAX_BALLS} balls` });
     }
   });
   const isBall = (id: string) => kinds.get(id) === 'ball';
@@ -708,14 +769,15 @@ function pointAlong(start: Point, move: Move, elapsed: number): Point {
 
 /**
  * When every move starts and every pass flies. A move starts at zero or when
- * what it waits for completes; pass i fires once pass i - 1 is caught and the
- * receiver has arrived at its cell, or at waypoint `at` for a catch on the run.
+ * what it waits for completes; a pass fires once the previous pass of its ball
+ * is caught and the receiver has arrived at its cell, or at waypoint `at` for
+ * a catch on the run. A receiver whose move waits on the pass has not set off:
+ * the pass fires as soon as the ball is free and is caught on its cell.
  */
-function timeline(step: ResolvedStep) {
-  const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
-  const moves = new Map(step.moves.map((m) => [m.marker, m]));
-  const passIndex = new Map(step.passes.map((p, i) => [p.id, i]));
-  const edges = waitEdges(moves, step.passes);
+function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]) {
+  const moves = new Map(moveList.map((m) => [m.marker, m]));
+  const passIndex = new Map(passes.map((p, i) => [p.id, i]));
+  const { edges, inPlace } = waitEdges(moves, passes);
   const starts = new Map<string, number>();
   const flights: PassFlight[] = [];
 
@@ -743,21 +805,23 @@ function timeline(step: ResolvedStep) {
 
   const flight = (i: number): PassFlight => {
     if (flights[i]) return flights[i];
-    const pass = step.passes[i];
-    const caught = i > 0 ? flight(i - 1).land : 0;
+    const pass = passes[i];
+    let previous = i - 1;
+    while (previous >= 0 && passes[previous].ball !== pass.ball) previous--;
+    const caught = previous >= 0 ? flight(previous).land : 0;
     const receiver = moves.get(pass.to);
-    const fire = Math.max(caught, receiver ? endOf(pass.to, pass.at) : 0);
-    // A passer whose own move waits on this pass (or a later one) has not set off yet.
-    const later = new Set(step.passes.slice(i).map((p) => `pass:${p.id}`));
+    const waits = receiver !== undefined && !inPlace.has(pass.id);
+    const fire = Math.max(caught, waits ? endOf(pass.to, pass.at) : 0);
+    // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
     const start =
-      moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, later)
+      moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))
         ? pointAt(pass.from, fire)
         : { x: fromCell.x, y: fromCell.y };
-    const rest = receiver ? receiver.waypoints[receiver.waypoints.length - 1] : cells.get(pass.to)!;
+    const rest = waits ? receiver.waypoints[receiver.waypoints.length - 1] : cells.get(pass.to)!;
     let end = { x: rest.x, y: rest.y };
     let land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
-    if (pass.at !== undefined && receiver) {
+    if (pass.at !== undefined && waits) {
       // Catch on the run: lead the receiver. Every Pace is slower than the ball,
       // so aiming at where the receiver will be when the ball lands converges.
       end = pointAt(pass.to, fire);
@@ -766,23 +830,54 @@ function timeline(step: ResolvedStep) {
         end = pointAt(pass.to, land);
       }
     }
-    return (flights[i] = { id: pass.id, from: pass.from, to: pass.to, start, end, fire, land });
+    return (flights[i] = { id: pass.id, ball: pass.ball, from: pass.from, to: pass.to, start, end, fire, land });
   };
 
-  step.passes.forEach((_, i) => flight(i));
+  passes.forEach((_, i) => flight(i));
   return { flights, endOf, pointAt };
+}
+
+/** The first pair of holds of different balls by one player that overlap in time, as a fault on the later catch. */
+function heldTwice(flights: PassFlight[], startHolders: Map<string, string>): StepIssue | null {
+  interface Hold { ball: string; holder: string; from: number; to: number; pass?: string }
+  const holds: Hold[] = [];
+  for (const [ball, first] of startHolders) {
+    let hold: Hold = { ball, holder: first, from: 0, to: Infinity };
+    for (const f of flights.filter((x) => x.ball === ball)) {
+      hold.to = f.fire;
+      holds.push(hold);
+      hold = { ball, holder: f.to, from: f.land, to: Infinity, pass: f.id };
+    }
+    holds.push(hold);
+  }
+  for (const a of holds) {
+    for (const b of holds) {
+      const later = a.from < b.from || (a.from === b.from && a.ball < b.ball);
+      if (b.pass === undefined || a.ball === b.ball || a.holder !== b.holder || !later) continue;
+      if (Math.min(a.to, b.to) - b.from > 1e-9) {
+        return {
+          target: { kind: 'pass', id: b.pass },
+          field: 'to',
+          message: `marker "${b.holder}" catches ball "${b.ball}" while still holding ball "${a.ball}"; a player cannot hold two balls at once`,
+        };
+      }
+    }
+  }
+  return null;
 }
 
 /** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */
 export function positionsAt(step: ResolvedStep, t: number): StepPositions {
-  const { flights, endOf, pointAt } = timeline(step);
+  const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
+  const defaultBall = step.markers.find((m) => m.holder !== undefined)?.id;
+  const { flights, endOf, pointAt } = timeline(cells, step.moves, step.passes.map((p) => ({ ...p, ball: p.ball ?? defaultBall! })));
   const time = Math.max(0, t);
-  let duration = flights.length > 0 ? flights[flights.length - 1].land : 0;
+  let duration = Math.max(0, ...flights.map((f) => f.land));
   for (const move of step.moves) duration = Math.max(duration, endOf(move.marker));
 
-  const ballAt = (initialHolder: string): Point => {
+  const ballAt = (ball: string, initialHolder: string): Point => {
     let holder = initialHolder;
-    for (const f of flights) {
+    for (const f of flights.filter((x) => x.ball === ball)) {
       if (time < f.fire) break;
       if (time < f.land) {
         const k = (time - f.fire) / (f.land - f.fire);
@@ -795,7 +890,7 @@ export function positionsAt(step: ResolvedStep, t: number): StepPositions {
 
   const positions: Record<string, Point> = {};
   for (const marker of step.markers) {
-    positions[marker.id] = marker.holder !== undefined ? ballAt(marker.holder) : pointAt(marker.id, time);
+    positions[marker.id] = marker.holder !== undefined ? ballAt(marker.id, marker.holder) : pointAt(marker.id, time);
   }
   return { duration, positions, passes: flights };
 }
