@@ -7,6 +7,7 @@
 import { formatError, resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
 import {
   BALL_CARRIER_KINDS,
+  MAX_BALLS,
   MAX_COACHING_POINTS,
   MAX_MARKERS,
   MAX_PASSES,
@@ -41,7 +42,12 @@ export type Edit =
   | { type: 'removeWaypoint'; marker: string; index: number }
   | { type: 'setPace'; marker: string; pace: Pace }
   | { type: 'removeMove'; marker: string }
-  | { type: 'addPass'; from: string; to: string }
+  /** `ball` is the ball passed; left out, it is the first ball. */
+  | { type: 'addPass'; from: string; to: string; ball?: string }
+  /** Change which ball a pass moves. */
+  | { type: 'setPassBall'; id: string; ball: string }
+  /** Add another ball (up to the limit), held by a player who has none. */
+  | { type: 'addBall'; holder: string }
   | { type: 'removePass'; id: string }
   /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
   | { type: 'setCatch'; id: string; at: number | null }
@@ -104,30 +110,37 @@ export function startCell(script: PracticeScript, id: string): Cell | undefined 
   return placement.holder !== undefined ? startCell(script, placement.holder) : placement.cell;
 }
 
-/** Id of the ball's holder at the start of the base Step, if there is a ball. */
-export function ballHolder(script: PracticeScript): string | undefined {
-  const ball = script.markers.find((m) => m.kind === 'ball');
-  return ball && script.base.placements.find((p) => p.marker === ball.id)?.holder;
+/** Ids of the declared balls, in order. The first is the default for a pass. */
+export function ballIds(script: PracticeScript): string[] {
+  return script.markers.filter((m) => m.kind === 'ball').map((m) => m.id);
 }
 
-/**
- * Who holds the ball once every base pass of it has been caught. The editor
- * draws passes of the first ball; passes naming another ball (from an imported
- * script) are left alone.
- */
-export function holderAfterPasses(script: PracticeScript): string | undefined {
-  const first = script.markers.find((m) => m.kind === 'ball')?.id;
-  const mine = script.base.passes.filter((p) => (p.ball ?? first) === first);
+/** Id of a ball's holder at the start of the base Step (default: the first ball), if there is one. */
+export function ballHolder(script: PracticeScript, ball: string | undefined = ballIds(script)[0]): string | undefined {
+  return ball === undefined ? undefined : script.base.placements.find((p) => p.marker === ball)?.holder;
+}
+
+/** Who holds a ball (default: the first) once every base pass of it has been caught. */
+export function holderAfterPasses(script: PracticeScript, ball: string | undefined = ballIds(script)[0]): string | undefined {
+  const first = ballIds(script)[0];
+  const mine = script.base.passes.filter((p) => (p.ball ?? first) === ball);
   const last = mine[mine.length - 1];
-  return last ? last.to : ballHolder(script);
+  return last ? last.to : ballHolder(script, ball);
 }
 
-/** Nearest placed attacker, defender or coach to a cell, skipping `except`. */
-function nearestCarrier(script: PracticeScript, cell: Cell, except?: string): string | undefined {
+/** Players holding a ball at the start of the base Step, leaving out the holder of ball `except`. */
+function holdersExcept(script: PracticeScript, except?: string): Set<string> {
+  const holders = new Set<string>();
+  for (const p of script.base.placements) if (p.holder !== undefined && p.marker !== except) holders.add(p.holder);
+  return holders;
+}
+
+/** Nearest placed attacker, defender or coach to a cell, skipping `except` and anyone in `busy`. */
+function nearestCarrier(script: PracticeScript, cell: Cell, except?: string, busy?: Set<string>): string | undefined {
   let best: string | undefined;
   let bestDistance = Infinity;
   for (const p of script.base.placements) {
-    if (p.marker === except || !p.cell || !isCarrier(kindOf(script, p.marker))) continue;
+    if (p.marker === except || busy?.has(p.marker) || !p.cell || !isCarrier(kindOf(script, p.marker))) continue;
     const d = Math.hypot(p.cell.x - cell.x, p.cell.y - cell.y);
     if (d < bestDistance) {
       bestDistance = d;
@@ -230,9 +243,9 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'addMarker': {
       const cell = snapCell(edit.at, area);
       if (edit.kind === 'ball') {
-        const holder = nearestCarrier(script, cell);
-        if (!holder) return 'Place a player first: the ball starts in a player’s hands.';
         const existing = script.markers.find((m) => m.kind === 'ball');
+        const holder = nearestCarrier(script, cell, undefined, holdersExcept(script, existing?.id));
+        if (!holder) return 'Place a player first: the ball starts in a player’s hands.';
         if (existing) return placeBall(script, existing.id, holder);
         if (script.markers.length >= MAX_MARKERS) return `A Practice holds at most ${MAX_MARKERS} markers.`;
         const id = script.markers.some((m) => m.id === 'ball') ? `ball${nextNumber(script.markers.map((m) => m.id), 'ball')}` : 'ball';
@@ -256,7 +269,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const kind = kindOf(script, edit.marker);
       if (kind === undefined) return `No marker "${edit.marker}".`;
       if (kind === 'ball') {
-        const holder = nearestCarrier(script, cell);
+        const holder = nearestCarrier(script, cell, undefined, holdersExcept(script, edit.marker));
         return holder ? placeBall(script, edit.marker, holder) : 'Place a player first: the ball starts in a player’s hands.';
       }
       const current = startCell(script, edit.marker);
@@ -275,18 +288,23 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
           ...script.base,
           placements: script.base.placements.filter((p) => p.marker !== edit.marker),
           moves: script.base.moves.filter((m) => m.marker !== edit.marker),
-          passes: kind === 'ball' ? [] : script.base.passes,
+          passes: kind === 'ball' ? script.base.passes.filter((p) => (p.ball ?? ballIds(script)[0]) !== edit.marker) : script.base.passes,
         },
       };
-      const ball = next.markers.find((m) => m.kind === 'ball');
-      if (ball && ballHolder(script) === edit.marker) {
-        const holder = nearestCarrier(next, startCell(script, edit.marker)!);
+      // A ball whose holder was removed goes to the nearest free player, or goes too.
+      for (const ball of ballIds(next)) {
+        if (ballHolder(script, ball) !== edit.marker) continue;
+        const holder = nearestCarrier(next, startCell(script, edit.marker)!, undefined, holdersExcept(next, ball));
         next = holder
-          ? withBase(next, { placements: next.base.placements.map((p) => (p.marker === ball.id ? { marker: ball.id, holder } : p)) })
+          ? withBase(next, { placements: next.base.placements.map((p) => (p.marker === ball ? { marker: ball, holder } : p)) })
           : {
               ...next,
-              markers: next.markers.filter((m) => m.id !== ball.id),
-              base: { ...next.base, placements: next.base.placements.filter((p) => p.marker !== ball.id), passes: [] },
+              markers: next.markers.filter((m) => m.id !== ball),
+              base: {
+                ...next.base,
+                placements: next.base.placements.filter((p) => p.marker !== ball),
+                passes: next.base.passes.filter((p) => (p.ball ?? ballIds(script)[0]) !== ball),
+              },
             };
       }
       return cleanWaits(repairPasses(next));
@@ -337,8 +355,36 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (!script.base.moves.some((m) => m.marker === edit.marker)) return script;
       return mapMove(script, edit.marker, () => null);
 
+    case 'addBall': {
+      if (!isCarrier(kindOf(script, edit.holder))) return 'Only attackers, defenders and coaches hold the ball.';
+      if (ballIds(script).length >= MAX_BALLS) return `A Practice holds at most ${MAX_BALLS} balls.`;
+      if (holdersExcept(script).has(edit.holder)) return 'That player already has a ball.';
+      if (script.markers.length >= MAX_MARKERS) return `A Practice holds at most ${MAX_MARKERS} markers.`;
+      const ids = script.markers.map((m) => m.id);
+      const id = ids.includes('ball') ? `ball${nextNumber(ids, 'ball')}` : 'ball';
+      return placeBall({ ...script, markers: [...script.markers, { id, kind: 'ball' }] }, id, edit.holder);
+    }
+
+    case 'setPassBall': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass) return script;
+      const balls = ballIds(script);
+      if (!balls.includes(edit.ball)) return `No ball "${edit.ball}".`;
+      if ((pass.ball ?? balls[0]) === edit.ball) return script;
+      const { ball: _old, ...rest } = pass;
+      void _old;
+      const next = edit.ball === balls[0] ? rest : { ...rest, ball: edit.ball };
+      const moved = repairPasses(withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) }));
+      return moved.base.passes.length === script.base.passes.length
+        ? moved
+        : 'That ball is not with the passer at that point in its passes.';
+    }
+
     case 'addPass': {
-      const holder = holderAfterPasses(script);
+      const balls = ballIds(script);
+      const ball = edit.ball ?? balls[0];
+      if (ball !== undefined && !balls.includes(ball)) return `No ball "${ball}".`;
+      const holder = holderAfterPasses(script, ball);
       if (holder === undefined) return 'Place the ball first: a pass needs someone holding it.';
       if (edit.from === edit.to) return 'A player cannot pass to themselves.';
       if (!isCarrier(kindOf(script, edit.from)) || !isCarrier(kindOf(script, edit.to))) {
@@ -350,7 +396,8 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       }
       if (script.base.passes.length >= MAX_PASSES) return `A Step holds at most ${MAX_PASSES} passes.`;
       const id = `p${nextNumber(script.base.passes.map((p) => p.id), 'p')}`;
-      return withBase(script, { passes: [...script.base.passes, { id, from: edit.from, to: edit.to }] });
+      const pass: Pass = { id, from: edit.from, to: edit.to, ...(ball !== balls[0] && { ball }) };
+      return withBase(script, { passes: [...script.base.passes, pass] });
     }
 
     case 'removePass': {

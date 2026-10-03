@@ -19,6 +19,8 @@ interface EditLayerProps {
   geometry: CanvasGeometry;
   tool: EditorTool;
   selection: EditorSelection;
+  /** The ball a new pass moves, when the Area has more than one. */
+  ball?: string;
   onSelect: (selection: EditorSelection) => void;
   /** Make an edit; returns whether it was made. */
   onEdit: (edit: Edit) => boolean;
@@ -28,7 +30,7 @@ interface EditLayerProps {
  * Konva layer over the Practice for hand editing the base Step: taps place markers,
  * drags snap markers and waypoints to cells, and selection rings show what is picked.
  */
-export function PracticeEditLayer({ step, geometry, tool, selection, onSelect, onEdit }: EditLayerProps) {
+export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSelect, onEdit }: EditLayerProps) {
   const { width, height, cellPx, radius } = geometry;
   const [dragging, setDragging] = useState<string | null>(null);
   const px = (cell: number) => (cell + 0.5) * cellPx;
@@ -55,7 +57,7 @@ export function PracticeEditLayer({ step, geometry, tool, selection, onSelect, o
 
   const tapMarker = (id: string) => {
     if (tool === 'pass' && selection.marker && selection.marker !== id) {
-      if (onEdit({ type: 'addPass', from: selection.marker, to: id })) onSelect({ marker: id, waypoint: null });
+      if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball })) onSelect({ marker: id, waypoint: null });
       return;
     }
     onSelect({ marker: id, waypoint: null });

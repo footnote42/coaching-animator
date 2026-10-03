@@ -34,6 +34,7 @@ export function useEditorWorkspace() {
   const [sourceTitle, setSourceTitle] = useState('');
   const [tool, setTool] = useState<EditorTool>('select');
   const [rawSelection, setSelection] = useState<EditorSelection>(NO_SELECTION);
+  const [passBall, setPassBall] = useState<string | null>(null);
   const [ghost, setGhost] = useState(false);
   const [showCommentary, setShowCommentary] = useState(true);
   const [time, setTime] = useState(0);
@@ -63,6 +64,9 @@ export function useEditorWorkspace() {
   const selectedMarker = step?.markers.find((m) => m.id === selection.marker);
   const selectedMove = step?.moves.find((m) => m.marker === selection.marker);
   const passes = step?.passes ?? [];
+  const balls = step?.markers.filter((m) => m.kind === 'ball') ?? [];
+  /** The ball a new pass moves: the Coach's pick if it is still there, else the first. */
+  const activeBall = balls.find((b) => b.id === passBall)?.id ?? balls[0]?.id;
   const editing = step !== null && !playing && time === 0;
 
   useEffect(() => {
@@ -300,6 +304,9 @@ export function useEditorWorkspace() {
     selectedMarker,
     selectedMove,
     passes,
+    balls,
+    activeBall,
+    setPassBall,
     editing,
     stopPlayback,
     commit,

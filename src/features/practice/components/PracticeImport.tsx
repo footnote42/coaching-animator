@@ -26,7 +26,7 @@ import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary'
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
 import { markerColour } from '@/features/practice/markerColour';
-import { PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
+import { BALL_CARRIER_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
 
@@ -114,6 +114,9 @@ export function PracticeImport() {
     selectedMarker,
     selectedMove,
     passes,
+    balls,
+    activeBall,
+    setPassBall,
     editing,
     stopPlayback,
     commit,
@@ -136,8 +139,15 @@ export function PracticeImport() {
   const placeKind = PALETTE.find((p) => p.kind === tool);
   const toolHint = TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
-  const ball = step?.markers.find((m) => m.kind === 'ball');
-  const holdsBall = selectedMarker && ball?.holder === selectedMarker.id;
+  const heldBall = selectedMarker && balls.find((b) => b.holder === selectedMarker.id);
+  const canGiveBall =
+    selectedMarker &&
+    !heldBall &&
+    balls.length > 0 &&
+    balls.length < MAX_BALLS &&
+    (BALL_CARRIER_KINDS as readonly string[]).includes(selectedMarker.kind);
+  const ballName = (id: string) => `Ball ${balls.findIndex((b) => b.id === id) + 1}`;
+  const ballSelect = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm';
   const stepArea = step?.area ?? script.area;
 
   return (
@@ -364,18 +374,34 @@ export function PracticeImport() {
               ) : (
                 <span className="text-xs">No run yet: use Draw a run.</span>
               )}
-              {holdsBall && (
+              {heldBall && (
                 <Button
                   variant="outline"
                   className="h-11"
-                  onClick={() => ball && edit({ type: 'removeMarker', marker: ball.id })}
+                  onClick={() => edit({ type: 'removeMarker', marker: heldBall.id })}
                 >
                   Remove ball
+                </Button>
+              )}
+              {canGiveBall && (
+                <Button variant="outline" className="h-11" onClick={() => edit({ type: 'addBall', holder: selectedMarker.id })}>
+                  Give a ball
                 </Button>
               )}
             </>
           )}
   
+          {editing && tool === 'pass' && balls.length > 1 && (
+            <>
+              <label htmlFor="pass-ball">Ball for new passes</label>
+              <select id="pass-ball" value={activeBall} onChange={(e) => setPassBall(e.target.value)} className={ballSelect}>
+                {balls.map((b) => (
+                  <option key={b.id} value={b.id}>{ballName(b.id)}</option>
+                ))}
+              </select>
+            </>
+          )}
+
           {editing && passes.length > 0 && (
             <div role="group" aria-label="Passes" className="flex flex-wrap items-center gap-2">
               <span>Passes:</span>
@@ -392,6 +418,18 @@ export function PracticeImport() {
                     >
                       {name(pass.from)} &rarr; {name(pass.to)} <Trash2 />
                     </Button>
+                    {balls.length > 1 && (
+                      <select
+                        aria-label={`Ball for pass ${name(pass.from)} to ${name(pass.to)}`}
+                        value={pass.ball ?? balls[0].id}
+                        onChange={(e) => edit({ type: 'setPassBall', id: pass.id, ball: e.target.value })}
+                        className={ballSelect}
+                      >
+                        {balls.map((b) => (
+                          <option key={b.id} value={b.id}>{ballName(b.id)}</option>
+                        ))}
+                      </select>
+                    )}
                     {run && run.waypoints.length > 1 && (
                       <select
                         aria-label={`Where ${name(pass.to)} catches`}
@@ -429,6 +467,7 @@ export function PracticeImport() {
                         geometry={geometry}
                         tool={tool}
                         selection={selection}
+                        ball={balls.length > 1 ? activeBall : undefined}
                         onSelect={setSelection}
                         onEdit={edit}
                       />
