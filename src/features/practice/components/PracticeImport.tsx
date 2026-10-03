@@ -133,67 +133,78 @@ export function PracticeImport() {
       <section className="flex min-w-0 flex-col gap-3 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
-          <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
+          <Button variant="outline" className={cn(TOOL_BUTTON, 'hidden md:inline-flex')} onClick={newPractice}>
             <FilePlus /> New
           </Button>
         </div>
-        <PracticeLibrary
-          key={libraryKey}
-          scriptText={scriptText}
-          practiceId={practiceId}
-          title={title}
-          description={description}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onSaved={saved}
-          onOpen={(id) => router.push(`/practice?id=${id}`)}
-        />
-        <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
-        <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
-        <PracticeScriptActions text={scriptText} isGuest={isGuest} />
-        <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
-        <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
-        <details className="flex flex-col gap-2">
-          <summary className="cursor-pointer py-2 text-sm font-medium text-text-primary">Practice Script</summary>
-          <label htmlFor="practice-script" className="text-sm text-text-primary">
-            The script for this Practice. Paste one (JSON) and apply it, or edit on the canvas.
-          </label>
-          <textarea
-            id="practice-script"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            spellCheck={false}
-            className="mt-2 h-48 w-full resize-y border border-[var(--color-border)] bg-[var(--color-surface)] p-2 font-mono text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        
+        <div className="hidden flex-col gap-3 md:flex">
+          <PracticeLibrary
+            key={libraryKey}
+            scriptText={scriptText}
+            practiceId={practiceId}
+            title={title}
+            description={description}
+            onTitleChange={setTitle}
+            onDescriptionChange={setDescription}
+            onSaved={saved}
+            onOpen={(id) => router.push(`/practice?id=${id}`)}
           />
-          <div className="mt-2 flex flex-wrap gap-2">
-            <Button onClick={() => applyText(text)} disabled={!text.trim() || text === scriptText}>
-              Apply script
-            </Button>
-            <Button variant="outline" onClick={() => applyText(JSON.stringify(example))}>
-              Use example
-            </Button>
-          </div>
-        </details>
-        {errors.length > 0 && (
-          <div role="alert" className="border border-destructive p-2 text-sm">
-            <p className="mb-1 font-medium text-destructive">This script can&apos;t be loaded:</p>
-            <ul className="list-disc space-y-1 pl-5 font-mono text-xs">
-              {errors.map((error, i) => (
-                <li key={i}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {problems.length > 0 && (
-          <div role="status" className="border border-[var(--color-border)] p-2 text-sm">
-            <p className="mb-1 font-medium text-text-primary">Not ready to save yet:</p>
-            <ul className="list-disc space-y-1 pl-5 font-mono text-xs">
-              {problems.slice(0, 5).map((problem, i) => (
-                <li key={i}>{problem}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
+        </div>
+
+        <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
+
+        <div className="rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-text-primary md:hidden">
+          Only drag, delete, label and Commentary edits are offered on a phone. Bigger changes go through a tablet, desktop or your AI.
+        </div>
+
+        <div className="hidden flex-col gap-3 md:flex">
+          <PracticeScriptActions text={scriptText} isGuest={isGuest} />
+          <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
+          <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
+          <details className="flex flex-col gap-2">
+            <summary className="cursor-pointer py-2 text-sm font-medium text-text-primary">Practice Script</summary>
+            <label htmlFor="practice-script" className="text-sm text-text-primary">
+              The script for this Practice. Paste one (JSON) and apply it, or edit on the canvas.
+            </label>
+            <textarea
+              id="practice-script"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              spellCheck={false}
+              className="mt-2 h-48 w-full resize-y border border-[var(--color-border)] bg-[var(--color-surface)] p-2 font-mono text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button onClick={() => applyText(text)} disabled={!text.trim() || text === scriptText}>
+                Apply script
+              </Button>
+              <Button variant="outline" onClick={() => applyText(JSON.stringify(example))}>
+                Use example
+              </Button>
+            </div>
+          </details>
+          {errors.length > 0 && (
+            <div role="alert" className="border border-destructive p-2 text-sm">
+              <p className="mb-1 font-medium text-destructive">This script can&apos;t be loaded:</p>
+              <ul className="list-disc space-y-1 pl-5 font-mono text-xs">
+                {errors.map((error, i) => (
+                  <li key={i}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {problems.length > 0 && (
+            <div role="status" className="border border-[var(--color-border)] p-2 text-sm">
+              <p className="mb-1 font-medium text-text-primary">Not ready to save yet:</p>
+              <ul className="list-disc space-y-1 pl-5 font-mono text-xs">
+                {problems.slice(0, 5).map((problem, i) => (
+                  <li key={i}>{problem}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
@@ -212,52 +223,56 @@ export function PracticeImport() {
               </Button>
             );
           })}
-          <AddProgressionButton
-            script={script}
-            onAdd={(next) => commit(next) && playStep(next.progressions.length)}
-          />
+          <div className="hidden md:block">
+            <AddProgressionButton
+              script={script}
+              onAdd={(next) => commit(next) && playStep(next.progressions.length)}
+            />
+          </div>
         </div>
 
         <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1">
-          {(
-            [
-              { id: 'select', name: 'Select and drag', icon: <MousePointer2 /> },
-              { id: 'run', name: 'Draw a run', icon: <Spline /> },
-              { id: 'pass', name: 'Add a pass', icon: <ArrowRightLeft /> },
-            ] as const
-          ).map(({ id, name, icon }) => (
-            <Button
-              key={id}
-              variant={tool === id ? 'default' : 'outline'}
-              className={TOOL_BUTTON}
-              aria-label={name}
-              aria-pressed={tool === id}
-              title={name}
-              onClick={() => pickTool(id)}
-            >
-              {icon}
-            </Button>
-          ))}
-          <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
-          {PALETTE.map(({ kind, name }) => (
-            <Button
-              key={kind}
-              variant={tool === kind ? 'default' : 'outline'}
-              className={TOOL_BUTTON}
-              aria-label={`Place ${name.toLowerCase()}`}
-              aria-pressed={tool === kind}
-              title={`Place ${name.toLowerCase()}`}
-              onClick={() => pickTool(kind)}
-            >
-              <span
-                aria-hidden
-                className={cn('inline-block h-4 w-4 border border-black/40', kind === 'tackle-shield' ? 'w-2.5' : kind !== 'cone' && 'rounded-full')}
-                style={{ backgroundColor: markerColour({ kind }) }}
-              />
-              <span className="hidden lg:inline">{name}</span>
-            </Button>
-          ))}
-          <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
+          <div className="hidden flex-wrap items-center gap-1 md:flex">
+            {(
+              [
+                { id: 'select', name: 'Select and drag', icon: <MousePointer2 /> },
+                { id: 'run', name: 'Draw a run', icon: <Spline /> },
+                { id: 'pass', name: 'Add a pass', icon: <ArrowRightLeft /> },
+              ] as const
+            ).map(({ id, name, icon }) => (
+              <Button
+                key={id}
+                variant={tool === id ? 'default' : 'outline'}
+                className={TOOL_BUTTON}
+                aria-label={name}
+                aria-pressed={tool === id}
+                title={name}
+                onClick={() => pickTool(id)}
+              >
+                {icon}
+              </Button>
+            ))}
+            <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
+            {PALETTE.map(({ kind, name }) => (
+              <Button
+                key={kind}
+                variant={tool === kind ? 'default' : 'outline'}
+                className={TOOL_BUTTON}
+                aria-label={`Place ${name.toLowerCase()}`}
+                aria-pressed={tool === kind}
+                title={`Place ${name.toLowerCase()}`}
+                onClick={() => pickTool(kind)}
+              >
+                <span
+                  aria-hidden
+                  className={cn('inline-block h-4 w-4 border border-black/40', kind === 'tackle-shield' ? 'w-2.5' : kind !== 'cone' && 'rounded-full')}
+                  style={{ backgroundColor: markerColour({ kind }) }}
+                />
+                <span className="hidden lg:inline">{name}</span>
+              </Button>
+            ))}
+            <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
+          </div>
           <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
             <Undo2 />
           </Button>
@@ -292,7 +307,16 @@ export function PracticeImport() {
         <div className="flex min-h-11 flex-wrap items-center gap-2 text-sm text-text-primary">
           {editing && selectedMarker && (
             <>
-              <span className="font-medium">{selectedMarker.label ?? selectedMarker.id}</span>
+              <label htmlFor="marker-label" className="sr-only">Label</label>
+              <input
+                id="marker-label"
+                type="text"
+                placeholder={selectedMarker.id}
+                value={selectedMarker.label ?? ''}
+                onChange={(e) => edit({ type: 'setLabel', marker: selectedMarker.id, label: e.target.value })}
+                maxLength={4}
+                className="h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-center text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              />
               {selectedMove ? (
                 <>
                   <label htmlFor="run-pace">Pace</label>

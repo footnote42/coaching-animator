@@ -55,6 +55,10 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
+    {
+      name: 'tablet',
+      use: { ...devices['iPad Mini landscape'] },
+    },
   ],
 
   // Web server for local testing (skipped when BASE_URL points at a deployed site)
