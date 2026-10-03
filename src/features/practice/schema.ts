@@ -270,7 +270,7 @@ export const ProgressionSchema = z
   .strictObject({
     lever: z.enum(LEVERS).describe('The STEP lever this Progression pulls: Space, Time, Equipment or People.'),
     commentary: CommentarySchema.default({ points: [] }),
-    changes: z.array(ChangeSchema).min(1).describe('What this Step changes over the previous Step, applied in order.'),
+    changes: z.array(ChangeSchema).describe('What this Step changes over the previous Step, applied in order. Empty while a Progression is being built.'),
   })
   .describe('A Step that develops the previous Step. Stores only its change, so edits to earlier Steps carry forward.');
 
