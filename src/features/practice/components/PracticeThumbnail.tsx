@@ -14,16 +14,20 @@ interface PracticeThumbnailProps {
   /** Accessible name. Omit to hide the image from assistive technology. */
   title?: string;
   className?: string;
+  /** Seconds into the Step to draw. Defaults to 0, the resting positions. */
+  time?: number;
 }
 
 /**
- * Pure SVG render of a Step's resting positions (where each marker starts) in
- * its Area. No Konva and no client code, so it renders on the server and in
- * Gallery cards. Scales to its box, keeping the Area's aspect ratio.
+ * Pure SVG render of a Step's positions in its Area: where each marker starts,
+ * or where it is `time` seconds in. No Konva and no client code, so it renders
+ * on the server and in Gallery cards. Scales to its box, keeping the Area's
+ * aspect ratio.
  */
-export function PracticeThumbnail({ step, showMoves = true, title, className }: PracticeThumbnailProps) {
+export function PracticeThumbnail({ step, showMoves = true, title, className, time = 0 }: PracticeThumbnailProps) {
   const { width: w, length: l } = step.area;
-  const { positions } = positionsAt(step, 0);
+  const start0 = positionsAt(step, 0).positions;
+  const { positions } = time > 0 ? positionsAt(step, time) : { positions: start0 };
   // The SVG is in metres; its on-screen size is unknown here, so no pixel minimum.
   const r = markerRadius(step.area, 1, 0);
   const stroke = r * 0.12;
@@ -60,7 +64,7 @@ export function PracticeThumbnail({ step, showMoves = true, title, className }: 
       )}
       {showMoves &&
         step.moves.map((move) => {
-          const start = positions[move.marker];
+          const start = start0[move.marker];
           if (!start) return null;
           const points = [start, ...move.waypoints].map((p) => `${p.x + 0.5},${p.y + 0.5}`).join(' ');
           return (
