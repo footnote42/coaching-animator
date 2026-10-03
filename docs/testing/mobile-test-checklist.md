@@ -37,4 +37,4 @@ One row per device and task. Raise an issue for each failure.
 
 ## Lighthouse
 
-Baselines: `lighthouse-mobile-baseline.md` (mobile) and the desktop baseline beside it. Act only on a score under 90 or a drop of more than 5 points from the baseline. Lighthouse runs by hand, not in CI.
+Baselines: `lighthouse-mobile-baseline.md` (mobile) and `lighthouse-desktop-baseline.md` (desktop). Act only on a score under 90 or a drop of more than 5 points from the baseline. Lighthouse runs by hand, not in CI.
