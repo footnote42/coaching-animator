@@ -60,7 +60,8 @@ export default defineConfig({
   // Web server for local testing (skipped when BASE_URL points at a deployed site)
   webServer: BASE_URL.includes('localhost')
     ? {
-      command: 'npm run dev',
+      // CI builds first and serves the build; locally the dev server is enough
+      command: process.env.CI ? 'npm run start' : 'npm run dev',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
