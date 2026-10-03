@@ -81,7 +81,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.119.0
 
       - name: Start Supabase local instance
         run: supabase start
@@ -149,7 +149,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.119.0
 
       # Applies the repo migrations to a throwaway database; no hosted project is used.
       - name: Start local Supabase
