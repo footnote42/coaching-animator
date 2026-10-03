@@ -6,13 +6,12 @@ import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
+import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 
-/** Smallest marker radius on screen, in CSS pixels. */
-const MIN_MARKER_RADIUS_PX = 6;
-/** Marker radius as a fraction of one cell. */
-const MARKER_RADIUS_CELLS = 0.4;
-/** Below this many pixels per cell the grid lines are too dense to draw. */
+/** Below this many pixels between grid lines they are too dense to draw. */
 const MIN_GRID_PX = 6;
+/** Colour of pitch markings. */
+const PITCH_LINE_COLOUR = 'rgba(255,255,255,0.75)';
 /** Colour of run lines and pass arrows. */
 const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
@@ -62,19 +61,22 @@ export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
   const { width: areaW, length: areaL } = step.area;
   const { width, height } = useShareCanvasSize(containerRef, areaW / areaL);
   const cellPx = width / areaW;
-  const radius = Math.max(cellPx * MARKER_RADIUS_CELLS, MIN_MARKER_RADIUS_PX);
+  const radius = markerRadius(step.area, cellPx);
   const { positions, passes } = positionsAt(step, time);
   const px = (cell: number) => (cell + 0.5) * cellPx;
   // Draw the ball last so it sits on top of its holder.
   const markers = [...step.markers.filter((m) => m.kind !== 'ball'), ...step.markers.filter((m) => m.kind === 'ball')];
 
+  const spacing = gridSpacing(step.area);
   const gridLines = useMemo(() => {
-    if (cellPx < MIN_GRID_PX) return [];
+    if (spacing * cellPx < MIN_GRID_PX) return [];
     const lines: number[][] = [];
-    for (let i = 1; i < areaW; i++) lines.push([i * cellPx, 0, i * cellPx, height]);
-    for (let j = 1; j < areaL; j++) lines.push([0, j * cellPx, width, j * cellPx]);
+    for (let i = spacing; i < areaW; i += spacing) lines.push([i * cellPx, 0, i * cellPx, height]);
+    for (let j = spacing; j < areaL; j += spacing) lines.push([0, j * cellPx, width, j * cellPx]);
     return lines;
-  }, [areaW, areaL, cellPx, width, height]);
+  }, [areaW, areaL, spacing, cellPx, width, height]);
+  const pitch = isPitch(step.area);
+  const markings = pitchLines(step.area);
 
   return (
     <div ref={containerRef} className="flex h-full w-full items-center justify-center overflow-hidden">
@@ -83,6 +85,16 @@ export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
           <Rect width={width} height={height} fill={DESIGN_TOKENS.colours.primary} />
           {gridLines.map((points, i) => (
             <Line key={i} points={points} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+          ))}
+          {pitch && <Rect width={width} height={height} stroke={PITCH_LINE_COLOUR} strokeWidth={2} />}
+          {markings.map(({ y, dashed }) => (
+            <Line
+              key={`pitch-${y}`}
+              points={[0, y * cellPx, width, y * cellPx]}
+              stroke={PITCH_LINE_COLOUR}
+              strokeWidth={2}
+              dash={dashed ? [8, 6] : undefined}
+            />
           ))}
         </Layer>
         <Layer listening={false}>

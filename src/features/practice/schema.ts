@@ -15,8 +15,14 @@ export const SCHEMA_VERSION = 1;
 /** Each grid cell is a square this many metres on a side. */
 export const CELL_SIZE_M = 1;
 
-/** Largest Area side, in metres (a full pitch with in-goals is about 70 x 144). */
+/** Largest Area side, in metres (the full-pitch template is 70 x 120). */
 export const MAX_AREA_SIDE_M = 150;
+
+/**
+ * Templates an Area starts from. The first three are open grass; the pitch
+ * templates show pitch markings. Their default sizes live in `area.ts`.
+ */
+export const AREA_TEMPLATES = ['square', 'horizontal', 'vertical', 'half-pitch', 'full-pitch'] as const;
 
 /** Most markers a script may hold. */
 export const MAX_MARKERS = 60;
@@ -63,6 +69,12 @@ export const CellSchema = z
 
 export const AreaSchema = z
   .strictObject({
+    template: z
+      .enum(AREA_TEMPLATES)
+      .optional()
+      .describe(
+        'Template the Area started from: square, horizontal or vertical rectangle (open grass), half-pitch or full-pitch (drawn with pitch markings, which stretch to the width and length). Leave out for open grass.',
+      ),
     width: z
       .number()
       .int()
@@ -223,6 +235,15 @@ export const RemovePassChangeSchema = z
   })
   .describe('Remove a pass.');
 
+export const SetAreaChangeSchema = z
+  .strictObject({
+    type: z.literal('setArea'),
+    ...AreaSchema.shape,
+  })
+  .describe(
+    'Replace the Area (its template, width and length) from this Step onward. Only in a Progression that pulls the Space lever. Every cell used from this Step on must fit the new Area.',
+  );
+
 export const ChangeSchema = z
   .discriminatedUnion('type', [
     AddMarkerChangeSchema,
@@ -232,6 +253,7 @@ export const ChangeSchema = z
     RemoveMoveChangeSchema,
     SetPassChangeSchema,
     RemovePassChangeSchema,
+    SetAreaChangeSchema,
   ])
   .describe('One change over the previous Step. Changes apply in order.');
 
@@ -263,6 +285,7 @@ export const PracticeScriptSchema = z
 
 export type Cell = z.infer<typeof CellSchema>;
 export type Area = z.infer<typeof AreaSchema>;
+export type AreaTemplate = (typeof AREA_TEMPLATES)[number];
 export type MarkerKind = (typeof MARKER_KINDS)[number];
 export type Team = (typeof TEAMS)[number];
 export type Marker = z.infer<typeof MarkerSchema>;

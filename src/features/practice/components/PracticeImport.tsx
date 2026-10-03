@@ -16,7 +16,8 @@ import {
 import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
 import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
-import type { PracticeScript } from '@/features/practice/schema';
+import { AreaControl } from '@/features/practice/components/AreaControl';
+import type { Area, PracticeScript } from '@/features/practice/schema';
 import example from '@/features/practice/examples/passing-square-progressions.json';
 
 const PracticeCanvas = dynamic(() => import('@/features/practice/components/PracticeCanvas'), {
@@ -80,6 +81,19 @@ export function PracticeImport() {
   };
 
   const load = () => loadText(text);
+
+  /** Set the base Area in the pasted text (or the loaded script if the text no longer parses) and reload. */
+  const setArea = (area: Area) => {
+    let source: unknown = script;
+    try {
+      source = JSON.parse(text);
+    } catch {
+      // keep the loaded script
+    }
+    const next = JSON.stringify({ ...(source as object), area }, null, 2);
+    setText(next);
+    loadText(next);
+  };
   const [libraryKey, setLibraryKey] = useState(0);
   const { isGuest } = useGuestPractice(
     text,
@@ -136,6 +150,9 @@ export function PracticeImport() {
             Use example
           </Button>
         </div>
+        {script && (
+          <AreaControl key={`${script.area.template}-${script.area.width}x${script.area.length}`} area={script.area} onChange={setArea} />
+        )}
         <PracticeScriptActions text={text} isGuest={isGuest} />
         <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
         <PracticeLibrary key={libraryKey} scriptText={text} onOpen={(id) => router.push(`/practice?id=${id}`)} />

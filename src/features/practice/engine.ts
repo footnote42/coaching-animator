@@ -157,8 +157,13 @@ function checkCell(cell: Cell, area: Area, path: string, errors: ValidationError
   }
 }
 
+function areaOf({ template, width, length }: Area): Area {
+  return template === undefined ? { width, length } : { template, width, length };
+}
+
 /** Markers on the Area at one Step, keyed by marker id; passes keyed by pass id, in play order. */
 interface StepState {
+  area: Area;
   /** Starting cell of every marker on the Area except the ball. */
   cells: Map<string, Cell>;
   /** Who holds the ball at the start of the Step, keyed by ball id. */
@@ -167,8 +172,8 @@ interface StepState {
   passes: Map<string, Pass>;
 }
 
-function emptyState(): StepState {
-  return { cells: new Map(), holders: new Map(), moves: new Map(), passes: new Map() };
+function emptyState(area: Area): StepState {
+  return { area, cells: new Map(), holders: new Map(), moves: new Map(), passes: new Map() };
 }
 
 function onArea(state: StepState, marker: string): boolean {
@@ -208,6 +213,10 @@ function applyChange(state: StepState, change: Change, isBall: (id: string) => b
   if (change.type === 'removePass') {
     if (!state.passes.has(change.id)) return { path: 'id', message: `no pass "${change.id}" in the previous Step` };
     state.passes.delete(change.id);
+    return null;
+  }
+  if (change.type === 'setArea') {
+    state.area = areaOf(change);
     return null;
   }
   const { marker } = change;
@@ -422,7 +431,7 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     }
   };
 
-  const state = emptyState();
+  const state = emptyState(script.area);
   const everPlaced = new Set<string>();
 
   script.base.placements.forEach((placement, i) => {
@@ -474,8 +483,21 @@ function checkReferences(script: PracticeScript): ValidationError[] {
   );
 
   script.progressions.forEach((progression, p) => {
+    // A Step has one Area: the last setArea in its Progression, or the previous Step's.
+    let resized: number | undefined;
+    progression.changes.forEach((change, c) => {
+      if (change.type === 'setArea') resized = c;
+    });
+    const resize = resized === undefined ? undefined : progression.changes[resized];
+    const area = resize?.type === 'setArea' ? areaOf(resize) : state.area;
+    const set = new Set<string>();
     progression.changes.forEach((change, c) => {
       const path = `progressions[${p}].changes[${c}]`;
+      if (change.type === 'setArea' && progression.lever !== 'space') {
+        errors.push({ path: `${path}.type`, message: 'only a Progression that pulls the Space lever can change the Area' });
+      }
+      if (change.type === 'addMarker' || change.type === 'placeMarker') set.add(`cell:${change.marker}`);
+      if (change.type === 'setMove') set.add(`move:${change.marker}`);
       if ('marker' in change && !kinds.has(change.marker)) {
         errors.push({ path: `${path}.marker`, message: `no marker with id "${change.marker}"` });
       } else {
@@ -484,9 +506,26 @@ function checkReferences(script: PracticeScript): ValidationError[] {
         else if (change.type === 'addMarker') everPlaced.add(change.marker);
       }
       for (const { cell, path: cellPath } of changeCells(change)) {
-        checkCell(cell, script.area, `${path}.${cellPath}`, errors);
+        checkCell(cell, area, `${path}.${cellPath}`, errors);
       }
     });
+
+    // Cells carried forward from the previous Step must fit a resized Area too.
+    if (resized !== undefined) {
+      const path = `progressions[${p}].changes[${resized}]`;
+      const outside = (cell: Cell) => cell.x >= area.width || cell.y >= area.length;
+      for (const [marker, cell] of state.cells) {
+        if (!set.has(`cell:${marker}`) && outside(cell)) {
+          errors.push({ path, message: `marker "${marker}" starts on cell (${cell.x}, ${cell.y}), outside the new ${area.width} x ${area.length} m Area; move or remove it in this Progression` });
+        }
+      }
+      for (const [marker, move] of state.moves) {
+        const cell = set.has(`move:${marker}`) ? undefined : move.waypoints.find(outside);
+        if (cell) {
+          errors.push({ path, message: `the move of "${marker}" runs to cell (${cell.x}, ${cell.y}), outside the new ${area.width} x ${area.length} m Area; change or remove it in this Progression` });
+        }
+      }
+    }
 
     const touches = (change: Change, { kind, id }: Target) =>
       kind === 'pass'
@@ -591,7 +630,7 @@ export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
   }
   const balls = new Set(script.markers.filter((m) => m.kind === 'ball').map((m) => m.id));
   const isBall = (id: string) => balls.has(id);
-  const state = emptyState();
+  const state = emptyState(script.area);
   for (const placement of script.base.placements) setStart(state, placement.marker, placement, isBall(placement.marker));
   for (const move of script.base.moves) state.moves.set(move.marker, move);
   for (const pass of script.base.passes) state.passes.set(pass.id, pass);
@@ -612,7 +651,7 @@ export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
   const progression = n > 0 ? script.progressions[n - 1] : undefined;
   return {
     index: n,
-    area: script.area,
+    area: state.area,
     markers,
     moves: markers.flatMap((marker) => state.moves.get(marker.id) ?? []),
     passes: [...state.passes.values()],

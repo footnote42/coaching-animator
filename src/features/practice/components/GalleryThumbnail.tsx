@@ -1,3 +1,5 @@
+import { markerRadius } from '@/features/practice/area';
+
 interface ThumbnailMarker {
   kind: string;
   team?: string;
@@ -19,6 +21,7 @@ function fillFor(m: ThumbnailMarker): string {
 
 /** Resting positions of the base Step inside the Area, as a pure SVG. */
 export function GalleryThumbnail({ area, markers }: GalleryThumbnailData) {
+  const r = markerRadius(area, 1, 0);
   return (
     <svg
       viewBox={`0 0 ${area.width} ${area.length}`}
@@ -33,10 +36,10 @@ export function GalleryThumbnail({ area, markers }: GalleryThumbnailData) {
           key={i}
           cx={m.cell.x + 0.5}
           cy={m.cell.y + 0.5}
-          r={m.kind === 'ball' || m.kind === 'cone' ? 0.3 : 0.45}
+          r={m.kind === 'ball' || m.kind === 'cone' ? r * 0.7 : r}
           fill={fillFor(m)}
           stroke="#000000"
-          strokeWidth={0.06}
+          strokeWidth={r * 0.15}
         />
       ))}
     </svg>

@@ -242,6 +242,53 @@ describe('Progressions', () => {
     expect(errors[1]).toMatch(/^progressions\[1\]\.changes\[4\]\.cell: cell \(12, 0\) is outside/);
   });
 
+  it('resizes the Area from a Space Progression onward', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ lever: string; changes: unknown[] }> };
+    script.progressions[0].lever = 'space';
+    script.progressions[0].changes.push({ type: 'setArea', width: 20, length: 14 });
+    const [base, crossover, defended] = stepsOf(script);
+    expect(base.area).toEqual({ width: 12, length: 12 });
+    expect(crossover.area).toEqual({ width: 20, length: 14 });
+    expect(defended.area).toEqual({ width: 20, length: 14 });
+  });
+
+  it('checks cells against the Area of the Step that uses them', () => {
+    const grown = clone(withProgressions) as { progressions: Array<{ lever: string; changes: unknown[] }> };
+    grown.progressions[0].lever = 'space';
+    grown.progressions[0].changes.push({ type: 'setArea', template: 'horizontal', width: 20, length: 12 });
+    grown.progressions[1].changes.push({ type: 'placeMarker', marker: 'c2', cell: { x: 15, y: 1 } });
+    expect(validate(grown).ok).toBe(true);
+
+    // The same cell is outside the base Area when used before the resize.
+    const early = clone(grown);
+    early.progressions[0].changes.splice(2, 1);
+    expect(errorsOf(early)).toEqual([
+      expect.stringMatching(/^progressions\[1\]\.changes\[3\]\.cell: cell \(15, 1\) is outside the 12 x 12 m Area/),
+    ]);
+  });
+
+  it('rejects shrinking the Area under markers carried forward, naming the setArea change', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ lever: string; changes: unknown[] }> };
+    script.progressions[1].lever = 'space';
+    script.progressions[1].changes.push({ type: 'setArea', width: 8, length: 12 });
+    const errors = errorsOf(script);
+    expect(errors).toContain(
+      'progressions[1].changes[3]: marker "c2" starts on cell (10, 1), outside the new 8 x 12 m Area; move or remove it in this Progression',
+    );
+    expect(errors).toContain(
+      'progressions[1].changes[3]: the move of "a1" runs to cell (10, 1), outside the new 8 x 12 m Area; change or remove it in this Progression',
+    );
+    expect(errors.every((e) => e.startsWith('progressions[1]'))).toBe(true);
+  });
+
+  it('only lets a Space Progression change the Area', () => {
+    const script = clone(withProgressions) as { progressions: Array<{ changes: unknown[] }> };
+    script.progressions[0].changes.push({ type: 'setArea', width: 20, length: 20 });
+    expect(errorsOf(script)).toEqual([
+      'progressions[0].changes[2].type: only a Progression that pulls the Space lever can change the Area',
+    ]);
+  });
+
   it('rejects a Progression without a Lever', () => {
     const script = clone(withProgressions) as { progressions: Array<Record<string, unknown>> };
     delete script.progressions[1].lever;
