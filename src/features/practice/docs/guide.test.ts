@@ -42,5 +42,7 @@ describe('worked examples', () => {
     expect(duration).toBeGreaterThan(0);
     // The ball ends with the last receiver.
     expect(positions.ball).toEqual(positions.a14);
+    // The 14 catches on the run and keeps going after the catch.
+    expect(passes[3].land).toBeLessThan(duration);
   });
 });
