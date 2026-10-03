@@ -20,8 +20,7 @@ export default function FeedbackPage() {
     setError(null);
 
     try {
-      // TODO: configure Formspree endpoint
-      const response = await fetch('https://formspree.io/f/placeholder', {
+      const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, area, what, rating }),
@@ -33,7 +32,7 @@ export default function FeedbackPage() {
         throw new Error('Submission failed');
       }
     } catch {
-      setError('Failed to send. Please try again or email support@coachinganimator.com directly.');
+      setError('Failed to send. Please try again or email hello@waynetellis.com directly.');
     } finally {
       setIsSubmitting(false);
     }

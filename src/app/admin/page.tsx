@@ -1,17 +1,19 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { PracticeReportsTab } from '@/app/admin/PracticeReportsTab';
+import { FeedbackTab } from '@/app/admin/FeedbackTab';
 
 /**
- * Admin dashboard: Practice reports, with hide, delete, dismiss and ban owner.
+ * Admin dashboard: Practice reports (hide, delete, dismiss, ban owner) and Feedback.
  * Middleware and the admin API routes enforce the admin role; this check only
  * moves a non-admin who lands here somewhere useful.
  */
 export default function AdminPage() {
   const router = useRouter();
+  const [tab, setTab] = useState<'reports' | 'feedback'>('reports');
 
   useEffect(() => {
     const check = async () => {
@@ -40,8 +42,23 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div role="tablist" className="flex gap-2 mb-4">
+          {(['reports', 'feedback'] as const).map((t) => (
+            <button
+              key={t}
+              role="tab"
+              aria-selected={tab === t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                tab === t ? 'bg-primary text-text-inverse' : 'bg-surface-warm text-text-primary'
+              }`}
+            >
+              {t === 'reports' ? 'Reports' : 'Feedback'}
+            </button>
+          ))}
+        </div>
         <div className="bg-surface border border-border px-6 py-4">
-          <PracticeReportsTab />
+          {tab === 'reports' ? <PracticeReportsTab /> : <FeedbackTab />}
         </div>
       </main>
     </div>

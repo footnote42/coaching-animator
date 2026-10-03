@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      feedback: {
+        Row: {
+          area: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          rating: string
+          read_at: string | null
+          what: string
+        }
+        Insert: {
+          area: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          rating: string
+          read_at?: string | null
+          what: string
+        }
+        Update: {
+          area?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          rating?: string
+          read_at?: string | null
+          what?: string
+        }
+        Relationships: []
+      }
       moderation_blocklist: {
         Row: {
           created_at: string

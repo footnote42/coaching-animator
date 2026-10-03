@@ -44,6 +44,11 @@ Every table has RLS enabled. For the Practice tables:
 - Anyone, signed in or not, can insert a report. The policy forces `status = 'open'`, no resolution fields, and `reporter_id` either null or the caller's own id.
 - Only admins can read and resolve reports, through `is_admin()`.
 
+`feedback` (`20260602000000_feedback.sql`)
+
+- Anyone, signed in or not, can insert a submission (through `POST /api/feedback`, rate limited). The policy forces `read_at` to null.
+- Only admins can read submissions and mark them read, through `is_admin()`.
+
 The legacy tables (`saved_animations`, `content_reports`, `upvotes`, `collections`, `collection_items`, `animation_versions`) and the `club-badges` storage policies are dropped by `20260601000000_restart_reset.sql`.
 
 ## Authentication and authorisation

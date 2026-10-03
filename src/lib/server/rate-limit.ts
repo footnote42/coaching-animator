@@ -28,6 +28,7 @@ const DEFAULT_CONFIGS: Record<string, RateLimitConfig> = {
   'resend_verification': { maxRequests: 3, windowMs: 60 * 60 * 1000 },
   'practice_save': { maxRequests: 20, windowMs: 60 * 60 * 1000 },
   'practice_report': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
+  'feedback': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
 };
 
 export async function checkRateLimit(
