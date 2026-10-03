@@ -180,8 +180,8 @@ export default async function ReplayPage({ params }: PageProps) {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-surface-warm">
+      {/* Replay actions (site footer comes from the root layout) */}
+      <div className="border-t border-border bg-surface-warm">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center">
           <p className="text-sm text-text-primary/70 mb-4">
             Created with{' '}
@@ -195,7 +195,7 @@ export default async function ReplayPage({ params }: PageProps) {
             remixedFromTitle={remixedFromTitle}
           />
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

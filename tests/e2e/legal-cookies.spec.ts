@@ -24,8 +24,8 @@ test.describe('Legal Compliance: Cookie Audit', () => {
         // Verify no advertising or analytics cookies
         expect(cookie.name).not.toMatch(/^(_ga|_gid|utm_|fbp|fr|ttuid|analytics)/);
 
-        // Supabase auth cookies are strictly necessary - these are OK
-        if (cookie.name.includes('auth-token') || cookie.name.includes('auth.')) {
+        // Supabase sb-* session cookies are strictly necessary - these are OK
+        if (cookie.name.startsWith('sb-')) {
           // These are permitted as strictly necessary
           continue;
         }
@@ -84,11 +84,14 @@ test.describe('Legal Compliance: Cookie Audit', () => {
     expect(true).toBe(true);
   });
 
-  test('privacy policy references cookie decision', async ({ page }) => {
+  test('privacy policy lists sign-in cookies, Guest storage and the no-banner decision', async ({ page }) => {
     await page.goto('http://localhost:3000/privacy');
 
-    // Check that privacy policy mentions cookies
-    const cookiesSection = page.locator('text=Cookie').or(page.locator('text=Storage'));
-    await expect(cookiesSection).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Cookies & Browser Storage/ })).toBeVisible();
+    await expect(page.getByText(/Supabase session cookies/)).toBeVisible();
+    await expect(page.locator('code', { hasText: 'sb-' })).toBeVisible();
+    await expect(page.locator('code', { hasText: 'practice.device' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'No consent banner' })).toBeVisible();
+    await expect(page.getByText(/Privacy and Electronic Communications/)).toBeVisible();
   });
 });

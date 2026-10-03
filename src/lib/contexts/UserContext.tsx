@@ -16,6 +16,8 @@ interface UserProfile {
   primary_strip_color: string | null;
   secondary_strip_color: string | null;
   club_badge_url: string | null;
+  /** null = not yet confirmed 18+; undefined = unknown (profile failed to load) */
+  age_confirmed_at?: string | null;
 }
 
 interface UserContextValue {
@@ -44,7 +46,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color, club_badge_url')
+        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color, club_badge_url, age_confirmed_at')
         .eq('id', userId)
         .single();
 
@@ -85,6 +87,7 @@ export function UserProvider({ children }: UserProviderProps) {
           primary_strip_color: data.primary_strip_color || null,
           secondary_strip_color: data.secondary_strip_color || null,
           club_badge_url: data.club_badge_url || null,
+          age_confirmed_at: data.age_confirmed_at ?? null,
         };
         setProfile(newProfile);
       }
