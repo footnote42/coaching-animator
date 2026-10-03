@@ -22,8 +22,9 @@ You are continuing work on github.com/footnote42/coaching-animator (local path `
 
 ## Work, in order
 
-1. **#64, #66 and #43 are done** (on `restart`). Skip them. The E2E spec is `tests/e2e/guest-coach-viewer.spec.ts`; CI runs it in the `e2e` job against a local Supabase. See `NOW.md` for how to run it locally.
-2. **#38: Lighthouse baseline.** Only after the maintainer has cut over to production. Otherwise leave it.
+1. **#64, #66, #43, #51, and #52 are done** (on `restart`). Skip them. All agent implementation tasks for the restart are complete.
+2. **#65: Production DB reset & cutover.** Waiting on maintainer.
+3. **#38: Lighthouse baseline.** Only after the maintainer has cut over to production. Otherwise leave it.
 
 ## When you stop
 

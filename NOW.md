@@ -1,14 +1,12 @@
 # NOW — coaching-animator
 
 ## Status
-IN PROGRESS (2026-10-03). Restart is on branch `restart` (pushed). `main` is untouched and still serves production. Closed on `restart`: #25 #29 #30 #33 #35 #40 #43 #44 #45 #47–#64 #66 #67.
+READY FOR CUTOVER (2026-10-03). Restart is on branch `restart` (pushed). `main` is untouched and still serves production. Closed on `restart`: #25 #29 #30 #33 #35 #40 #43 #44 #45 #47–#64 #66 #67.
 
 ## Next
-1. #64, #66 (E2E `tests/e2e/guest-coach-viewer.spec.ts`) and #43 (CI `e2e` job on a local Supabase; deploys depend on it) are done.
-2. #51 and #52 are reviewed, signed off and closed.
-3. #38 (Lighthouse baseline) after cutover.
-4. Cutover: apply migrations, merge `restart` → `main`, then #65. Confirm the `e2e` job passes on `main` after the merge.
-5. Running the E2E locally: `npx supabase start`, then set `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` to the local values in the shell (they override `.env.local`, which points at production) and run `npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium`. The spec skips if Supabase is not local.
+1. Cutover & DB reset (#65): apply migrations in order to production, delete `club-badges` storage bucket, merge `restart` → `main`, and verify the CI `e2e` job passes on `main`.
+2. #38 (Lighthouse baseline) after production cutover.
+3. Running the E2E locally: `npx supabase start`, then set `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` to the local values in the shell (they override `.env.local`, which points at production) and run `npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium`. The spec skips if Supabase is not local.
 
 ## Waiting on you
 - #65: production DB reset. Apply migrations in order: 20260301000000_practices, 20260302000000_practices_shared_lookup, 20260303000000_practice_moderation, 20260401000000_rate_limit_hit, 20260501000000_age_confirmed_at, then 20260601000000_restart_reset. Delete the club-badges storage bucket by hand. Decide whether to wipe existing practices rows.
@@ -25,7 +23,7 @@ IN PROGRESS (2026-10-03). Restart is on branch `restart` (pushed). `main` is unt
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`. PRD, ROADMAP and DevPlan are marked superseded.
 
 ## Blocker
-None for agents. Production cutover needs your go-ahead.
+None for agents. Production cutover (#65) needs maintainer execution.
 
 ## Last session
-2026-10-03 (later): #66 E2E spec and #43 CI gate landed on `restart`. The spec passes locally on the dev server and on `next start`, both against a local Supabase. CSP `connect-src` now also allows a non-hosted Supabase origin (needed for local/CI; production unchanged).
+2026-10-03 (parked): #66 (E2E), #43 (CI gate), #51 (Terms/Privacy/18+ legal review & specs) and #52 (OSA risk assessment approved & dated) landed on `restart`. All pre-push checks (lint, tsc, vitest, build) passing. All agent-scoped restart tasks are complete. Ready for maintainer cutover.
