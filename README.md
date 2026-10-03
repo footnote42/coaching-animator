@@ -329,6 +329,8 @@ This project follows a spec-driven development workflow with comprehensive docum
    SUPABASE_ANON_KEY=your-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    FRONTEND_URL=https://your-domain.com
+   # Rate limiting uses the existing Supabase project (rate_limits table +
+   # rate_limit_hit function); it needs no additional environment variables.
    ```
 
 2. **Build and Deploy**

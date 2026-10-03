@@ -491,6 +491,10 @@ export type Database = {
     }
     Functions: {
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      rate_limit_hit: {
+        Args: { p_key: string; p_window_seconds: number }
+        Returns: { hit_count: number; window_start: string }[]
+      }
     }
     Enums: {
       [_ in never]: never
