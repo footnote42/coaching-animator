@@ -17,7 +17,7 @@ IN PROGRESS (2026-10-03). Restart is on branch `restart` (pushed). `main` is unt
 - Remove the old Vercel env vars `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_BASE_URL`. If `NEXT_PUBLIC_SITE_URL` is unset, the canonical origin is used.
 - Local leftovers that are safe to delete: `.specify/`, `archive/` (untracked), and `prototype/brand.html` / `roadmap.html` (keep or delete).
 - CI now also runs on pushes to `restart` (to prove the gate before cutover). Drop `restart` from the push trigger in `.github/workflows/ci.yml` once merged.
-- Your PowerShell profile line 1 sets `DEEPSEEK_API_KEY` without quotes, so every shell prints the key as an error. Quote it, and consider rotating the key since it has been echoed into agent logs.
+- Rotate the DeepSeek API key: it was echoed into agent logs and synced to OneDrive. It has moved out of the PowerShell profile into the Windows user environment; set the new key with `[Environment]::SetEnvironmentVariable('DEEPSEEK_API_KEY', '<new key>', 'User')`.
 
 ## Context
 - Spec #46, glossary `CONTEXT.md`, ADRs `docs/adr/`, constraints `docs/constraints.md`, `SECURITY.md`.
