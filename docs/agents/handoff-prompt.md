@@ -22,19 +22,7 @@ You are continuing work on github.com/footnote42/coaching-animator (local path `
 
 ## Work, in order
 
-1. **#64: switch over and delete the old model.**
-   - Check `git fetch origin && git branch -r | grep agent/64`. If `origin/agent/64-switch-over` exists, a previous agent did this work. Review it, merge it into `restart`, resolve conflicts, verify, push, and close #64.
-   - If it doesn't exist, implement #64 per the issue. The route decisions are already made:
-     - `/practice` stays the editor, and `/app` redirects to it.
-     - The Gallery moves from `/explore` to `/gallery`, and `/explore` redirects there.
-     - `/my-practices` is a new page, and `/my-gallery` redirects to it.
-     - `/p/[id]` is the share view, and `/share/:id` and `/replay/:id` redirect to `/p/:id`.
-   - Delete:
-     - the old `src/features/animation` and `src/features/gallery`. First move any hooks the new code imports.
-     - payload V1/V2, collections, version history, GIF export, replay, PWA/offline (serwist and `sw.ts`), and old API routes.
-     - unused dependencies, and the duplicate thumbnail (keep one of GalleryThumbnail and PracticeThumbnail).
-   - Write a reset migration, dated after `20260501000000`. It keeps auth users, `user_profiles`, `rate_limits`, `moderation_blocklist`, `practices` and `practice_reports`. It drops `saved_animations`, `animation_versions`, `collections`, `collection_items`, `upvotes` and `content_reports`, plus anything only those tables use.
-   - Update `database.types.ts`, and rewrite CLAUDE.md's architecture sections for the Practice model.
+1. **#64 is done** (merged into `restart`). Skip it.
 2. **#66: end-to-end test, Guest to Coach to viewer**, in Playwright against localhost (`playwright.config.ts` already defaults to it).
    - Guest: import an example script, play it, Copy script, sign in, and keep the Practice.
    - Coach: add a Progression with a Lever, then share it.
