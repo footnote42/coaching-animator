@@ -130,7 +130,6 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      {/* REVIEW #51: wording (whole cookie section) */}
       <section className="mb-8">
         <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">7. Cookies & Browser Storage</h2>
         <p className="text-text-primary/80 mb-4">

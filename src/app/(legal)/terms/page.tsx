@@ -41,7 +41,6 @@ export default function TermsPage() {
         </p>
         <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
           <li>You must provide accurate information when creating an account</li>
-          {/* REVIEW #51: wording */}
           <li>You must be 18 or over to create an account, and you confirm this when you sign up. Players under 18 can use the editor as a Guest without an account</li>
           <li>You are responsible for all activity on your account</li>
           <li>You must notify us immediately of any unauthorized use</li>
@@ -68,7 +67,6 @@ export default function TermsPage() {
           <li>Any remix or adaptation must credit you as the original creator</li>
           <li>Any remix must also be shared under CC-BY-SA 4.0 (ShareAlike requirement)</li>
         </ul>
-        {/* REVIEW #51: wording */}
         <h3 className="text-lg font-semibold text-text-primary mb-3">Publishing to the Gallery</h3>
         <p className="text-text-primary/80 mb-4">
           When you publish a Practice to the Gallery, you give everyone permission to view it. Once remixing is available,
@@ -84,7 +82,6 @@ export default function TermsPage() {
           <li>Release your remix under CC-BY-SA 4.0</li>
           <li>Understand that others may remix your remix under the same license</li>
         </ul>
-        {/* REVIEW #51: wording */}
         <h3 className="text-lg font-semibold text-text-primary mb-3">No names or identifying details of players</h3>
         <p className="text-text-primary/80 mb-4">
           Do not put the names or identifying details of players (for example full names, photos, shirt numbers with a team name,
@@ -189,7 +186,6 @@ export default function TermsPage() {
         </ul>
       </section>
 
-      {/* REVIEW #51: wording (whole section, including the response time target) */}
       <section className="mb-8">
         <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">12. Reporting Content & Complaints</h2>
         <h3 className="text-lg font-semibold text-text-primary mb-3">Reporting content</h3>

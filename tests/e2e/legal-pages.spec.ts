@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Legal Compliance: Legal Pages', () => {
   test('Terms of Service page loads without authentication', async ({ page }) => {
     await page.goto('http://localhost:3000/terms');
-    await expect(page).toHaveTitle(/Terms of Service/);
+    await expect(page).toHaveTitle(/Terms of Service/i);
   });
 
   test('ToS contains all required sections', async ({ page }) => {
@@ -57,7 +57,7 @@ test.describe('Legal Compliance: Legal Pages', () => {
 
   test('Privacy Policy page loads without authentication', async ({ page }) => {
     await page.goto('http://localhost:3000/privacy');
-    await expect(page).toHaveTitle(/Privacy Policy/);
+    await expect(page).toHaveTitle(/Privacy Policy/i);
   });
 
   test('Privacy Policy contains all required sections', async ({ page }) => {
