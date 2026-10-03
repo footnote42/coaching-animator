@@ -34,5 +34,5 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PracticeSharePage({ params }: PageProps) {
   const loaded = await loadPractice(params.id);
   if (!loaded) notFound();
-  return <PracticeShareViewer practiceId={loaded.practice.id} title={loaded.practice.title} tags={loaded.practice.tags} script={loaded.script} />;
+  return <PracticeShareViewer practiceId={loaded.practice.id} title={loaded.practice.title} tags={loaded.practice.tags} sourceUrl={loaded.practice.source_url} sourceTitle={loaded.practice.source_title} script={loaded.script} />;
 }

@@ -35,9 +35,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 }
 
-const LIST_COLUMNS = 'id, title, description, visibility, tags, schema_version, created_at, updated_at';
+const LIST_COLUMNS = 'id, title, description, visibility, tags, source_url, source_title, schema_version, created_at, updated_at';
 
-/** PATCH /api/practices/[id]: owner only; partial { title, description, visibility, tags, script }. */
+/** PATCH /api/practices/[id]: owner only; partial { title, description, visibility, tags, sourceUrl, sourceTitle, script }. */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const authResult = await requireAuth();
@@ -72,13 +72,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         { status: 400 }
       );
     }
-    const { title, description, visibility, tags, script } = parsed.data;
+    const { title, description, visibility, tags, sourceUrl, sourceTitle, script } = parsed.data;
 
     const update: {
       title?: string;
       description?: string | null;
       visibility?: 'private' | 'link' | 'public';
       tags?: string[];
+      source_url?: string | null;
+      source_title?: string | null;
       script?: Json;
       schema_version?: number;
     } = {};
@@ -86,6 +88,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (description !== undefined) update.description = description;
     if (visibility !== undefined) update.visibility = visibility;
     if (tags !== undefined) update.tags = tags;
+    if (sourceUrl !== undefined) update.source_url = sourceUrl;
+    if (sourceTitle !== undefined) update.source_title = sourceTitle;
 
     if (script !== undefined) {
       if (new TextEncoder().encode(JSON.stringify(script ?? null)).length > MAX_SCRIPT_BYTES) {

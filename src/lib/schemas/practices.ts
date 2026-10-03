@@ -9,11 +9,22 @@ export const PracticeTagsSchema = z
   .max(MAX_PRACTICE_TAGS)
   .refine((t) => new Set(t).size === t.length, { message: 'Tags must not repeat' });
 
+/** An https link only; anything else (http:, javascript:, data:) is rejected. */
+export const SourceUrlSchema = z
+  .string()
+  .trim()
+  .max(2000)
+  .refine((v) => v.startsWith('https://') && URL.canParse(v), { message: 'Source link must be an https URL' });
+
+export const SourceTitleSchema = z.string().trim().max(200);
+
 export const CreatePracticeSchema = z.object({
   title: z.string().trim().min(1).max(100),
   description: z.string().max(2000).nullish(),
   visibility: PracticeVisibilitySchema.default('private'),
   tags: PracticeTagsSchema.default([]),
+  sourceUrl: SourceUrlSchema.nullish(),
+  sourceTitle: SourceTitleSchema.nullish(),
   script: z.unknown(),
 });
 
@@ -23,6 +34,8 @@ export const UpdatePracticeSchema = z
     description: z.string().max(2000).nullable().optional(),
     visibility: PracticeVisibilitySchema.optional(),
     tags: PracticeTagsSchema.optional(),
+    sourceUrl: SourceUrlSchema.nullable().optional(),
+    sourceTitle: SourceTitleSchema.nullable().optional(),
     script: z.unknown().optional(),
   })
   .refine((v) => Object.values(v).some((x) => x !== undefined), { message: 'Nothing to update' });
