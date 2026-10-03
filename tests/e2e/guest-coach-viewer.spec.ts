@@ -95,21 +95,46 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
 
   // Viewer on a phone, signed out.
   const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true })
+  await phone.grantPermissions(['clipboard-read', 'clipboard-write'])
   const viewer = await phone.newPage()
   await viewer.goto(`/p/${id}`)
   await expect(viewer.getByRole('heading', { name: EXAMPLE_TITLE })).toBeVisible({ timeout: 60_000 })
   await expect(viewer.getByText('Base Step (1/4)')).toBeVisible()
+
+  // Home brand link
+  await expect(viewer.getByRole('link', { name: 'Coaching Animator home' })).toHaveAttribute('href', '/')
+
+  // Report label
+  await expect(viewer.getByRole('button', { name: 'Report' })).toBeVisible()
+
+  // Share copies link on fallback and confirms
+  await viewer.getByRole('button', { name: 'Share' }).click()
+  await expect(viewer.getByText('Link copied.')).toBeVisible()
+
+  // Full screen button exists in Chromium
+  await expect(viewer.getByRole('button', { name: 'Full screen' })).toBeVisible()
 
   const next = viewer.getByRole('button', { name: 'Next Step' })
   for (let n = 0; n < 3; n++) await next.click()
   await expect(viewer.getByText('Step 3: Time lever (4/4)')).toBeVisible()
   await expect(next).toBeDisabled()
 
-  // Commentary shows the new coaching point and can be hidden.
+  // Commentary shows the new coaching point, dismisses with close X, and restores with nav button.
   await expect(viewer.getByText(NEW_POINT)).toBeVisible()
-  await viewer.getByRole('button', { name: 'Hide Commentary' }).click()
+  await viewer.getByRole('button', { name: 'Close Commentary' }).click()
   await expect(viewer.getByText(NEW_POINT)).toBeHidden()
   await expect(viewer.getByRole('button', { name: 'Show Commentary' })).toHaveAttribute('aria-pressed', 'false')
+
+  await viewer.getByRole('button', { name: 'Show Commentary' }).click()
+  await expect(viewer.getByText(NEW_POINT)).toBeVisible()
+  await expect(viewer.getByRole('button', { name: 'Hide Commentary' })).toHaveAttribute('aria-pressed', 'true')
+
+  // Overflow menu: Copy script with explanation
+  await viewer.getByRole('button', { name: 'More options' }).click()
+  await expect(viewer.getByRole('menu')).toBeVisible()
+  await expect(viewer.getByText('Copy the Practice Script to adapt or hand to an AI.')).toBeVisible()
+  await viewer.getByRole('menuitem', { name: /Copy script/ }).click()
+  await expect(viewer.getByText('Script copied.')).toBeVisible()
 
   // Speed.
   const speed = viewer.getByRole('group', { name: 'Speed' })
@@ -118,4 +143,45 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await expect(speed.getByRole('button', { name: 'Normal speed' })).toHaveAttribute('aria-pressed', 'false')
 
   await phone.close()
+
+  // Viewer on a tablet (portrait and landscape), signed out.
+  const tablet = await browser.newContext({ viewport: { width: 768, height: 1024 }, hasTouch: true })
+  await tablet.grantPermissions(['clipboard-read', 'clipboard-write'])
+  const tabletViewer = await tablet.newPage()
+  await tabletViewer.goto(`/p/${id}`)
+  await expect(tabletViewer.getByRole('heading', { name: EXAMPLE_TITLE })).toBeVisible({ timeout: 60_000 })
+  await expect(tabletViewer.getByRole('button', { name: 'Report' })).toBeVisible()
+
+  // Full screen toggle.
+  const fsBtn = tabletViewer.getByRole('button', { name: 'Full screen' })
+  await expect(fsBtn).toBeVisible()
+  await fsBtn.click()
+  const exitFsBtn = tabletViewer.getByRole('button', { name: 'Exit full screen' })
+  await expect(exitFsBtn).toBeVisible()
+  await exitFsBtn.click()
+  await expect(tabletViewer.getByRole('button', { name: 'Full screen' })).toBeVisible()
+
+  // Share.
+  await tabletViewer.getByRole('button', { name: 'Share' }).click()
+  await expect(tabletViewer.getByText('Link copied.')).toBeVisible()
+
+  // Commentary dismiss and restore.
+  await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeVisible()
+  await tabletViewer.getByRole('button', { name: 'Close Commentary' }).click()
+  await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeHidden()
+  await tabletViewer.getByRole('button', { name: 'Show Commentary' }).click()
+  await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeVisible()
+
+  await tablet.close()
+
+  // Viewer on tablet landscape (1024x768).
+  const tabletLandscape = await browser.newContext({ viewport: { width: 1024, height: 768 }, hasTouch: true })
+  const landscapeViewer = await tabletLandscape.newPage()
+  await landscapeViewer.goto(`/p/${id}`)
+  await expect(landscapeViewer.getByRole('heading', { name: EXAMPLE_TITLE })).toBeVisible({ timeout: 60_000 })
+  await expect(landscapeViewer.getByRole('button', { name: 'Report' })).toBeVisible()
+  await expect(landscapeViewer.getByRole('button', { name: 'Full screen' })).toBeVisible()
+  await expect(landscapeViewer.getByRole('button', { name: 'Share' })).toBeVisible()
+
+  await tabletLandscape.close()
 })
