@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "title": "Passing square with Progressions",
+  "area": { "width": 12, "length": 12 },
+  "markers": [
+    { "id": "c1", "kind": "cone" },
+    { "id": "c2", "kind": "cone" },
+    { "id": "c3", "kind": "cone" },
+    { "id": "c4", "kind": "cone" },
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "d1", "kind": "defender", "label": "D" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "c1", "cell": { "x": 1, "y": 1 } },
+      { "marker": "c2", "cell": { "x": 10, "y": 1 } },
+      { "marker": "c3", "cell": { "x": 10, "y": 10 } },
+      { "marker": "c4", "cell": { "x": 1, "y": 10 } },
+      { "marker": "a1", "cell": { "x": 1, "y": 10 } },
+      { "marker": "a2", "cell": { "x": 10, "y": 10 } },
+      { "marker": "ball", "holder": "a1" }
+    ],
+    "moves": [
+      { "marker": "a1", "waypoints": [{ "x": 1, "y": 1 }] },
+      { "marker": "a2", "waypoints": [{ "x": 10, "y": 1 }] }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a1", "to": "a2" }
+    ],
+    "commentary": {
+      "points": [
+        "Hands up early to show a target",
+        "Pass in front of the receiver so they run onto the ball"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "time",
+      "commentary": {
+        "points": [
+          "Runners cross in the middle, so the pass has to be timed to the crossing",
+          "Call the switch early and loud"
+        ]
+      },
+      "changes": [
+        { "type": "setMove", "marker": "a1", "waypoints": [{ "x": 10, "y": 1 }] },
+        { "type": "setMove", "marker": "a2", "waypoints": [{ "x": 1, "y": 1 }] }
+      ]
+    },
+    {
+      "lever": "people",
+      "commentary": {
+        "points": [
+          "A defender closes the space, so the pass has to beat a player",
+          "Fix the defender before you pass"
+        ]
+      },
+      "changes": [
+        { "type": "addMarker", "marker": "d1", "cell": { "x": 6, "y": 1 } },
+        { "type": "setMove", "marker": "d1", "waypoints": [{ "x": 6, "y": 5 }], "pace": "walk" },
+        { "type": "setPass", "id": "p2", "from": "a2", "to": "a1" }
+      ]
+    }
+  ]
+}

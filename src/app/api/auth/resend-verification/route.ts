@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { getSiteOrigin } from '@/lib/site-origin';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export const dynamic = 'force-dynamic';
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
       type: 'signup',
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/confirm`,
+        emailRedirectTo: `${getSiteOrigin()}/auth/confirm`,
       },
     });
 

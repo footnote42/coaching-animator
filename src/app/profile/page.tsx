@@ -1,16 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getInitials } from './profileUtils';
-
-const BADGE_MAX_BYTES = 500 * 1024; // 500 KB
-const BADGE_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
-
 
 
 export default function ProfilePage() {
@@ -20,13 +15,6 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
-  const [clubName, setClubName] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('');
-  const [secondaryColor, setSecondaryColor] = useState('');
-  const [clubBadgeUrl, setClubBadgeUrl] = useState<string | null>(null);
-  const [badgeUploading, setBadgeUploading] = useState(false);
-  const [badgeError, setBadgeError] = useState<string | null>(null);
-  const badgeInputRef = useRef<HTMLInputElement>(null);
 
   // OAuth / Password Management State
   const [password, setPassword] = useState('');
@@ -35,14 +23,8 @@ export default function ProfilePage() {
 
   // Sync local display name with profile once loaded
   useEffect(() => {
-    console.log('[Profile] profile.display_name changed:', profile?.display_name);
-    console.log('[Profile] profile.animation_count:', profile?.animation_count);
     if (profile) {
       setDisplayName(profile.display_name || '');
-      setClubName(profile.club_name || '');
-      setPrimaryColor(profile.primary_strip_color || '');
-      setSecondaryColor(profile.secondary_strip_color || '');
-      setClubBadgeUrl(profile.club_badge_url ?? null);
     }
   }, [profile]);
 
@@ -66,100 +48,27 @@ export default function ProfilePage() {
     setSuccess(null);
 
     try {
-      console.log('[Profile] Saving profile...');
       const { ok, status, error: apiError } = await putWithRetry(
         '/api/user/profile',
         {
           display_name: displayName.trim() || null,
-          club_name: clubName.trim() || null,
-          primary_strip_color: primaryColor || null,
-          secondary_strip_color: secondaryColor || null,
         }
       );
 
-      console.log('[Profile] API response - ok:', ok, 'status:', status);
 
       if (!ok) {
         throw new Error(apiError || `Failed to update profile (${status})`);
       }
 
-      console.log('[Profile] Calling refreshProfile...');
       await refreshProfile(); // Update global state
-      console.log('[Profile] refreshProfile complete');
 
       setSuccess('Profile updated successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error('[Profile] Save error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('We could not save your profile. Please try again.');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleBadgeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-
-    setBadgeError(null);
-
-    if (!BADGE_ALLOWED_TYPES.includes(file.type)) {
-      setBadgeError('Only PNG, JPG, and SVG files are allowed.');
-      return;
-    }
-    if (file.size > BADGE_MAX_BYTES) {
-      setBadgeError('File must be under 500 KB.');
-      return;
-    }
-
-    setBadgeUploading(true);
-    try {
-      const supabase = createSupabaseBrowserClient();
-      const ext = file.name.split('.').pop() ?? 'png';
-      const path = `${user.id}/badge.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('club-badges')
-        .upload(path, file, { upsert: true, contentType: file.type });
-
-      if (uploadError) throw new Error(uploadError.message);
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('club-badges')
-        .getPublicUrl(path);
-
-      const { ok, error: apiError } = await putWithRetry('/api/user/profile', {
-        club_badge_url: publicUrl,
-      });
-
-      if (!ok) throw new Error(apiError || 'Failed to save badge URL');
-
-      setClubBadgeUrl(publicUrl);
-      await refreshProfile();
-    } catch (err) {
-      setBadgeError(err instanceof Error ? err.message : 'Upload failed');
-    } finally {
-      setBadgeUploading(false);
-      // Reset input so the same file can be re-selected if needed
-      if (badgeInputRef.current) badgeInputRef.current.value = '';
-    }
-  };
-
-  const handleBadgeRemove = async () => {
-    if (!user) return;
-    setBadgeError(null);
-    setBadgeUploading(true);
-    try {
-      const { ok, error: apiError } = await putWithRetry('/api/user/profile', {
-        club_badge_url: null,
-      });
-      if (!ok) throw new Error(apiError || 'Failed to remove badge');
-      setClubBadgeUrl(null);
-      await refreshProfile();
-    } catch (err) {
-      setBadgeError(err instanceof Error ? err.message : 'Remove failed');
-    } finally {
-      setBadgeUploading(false);
     }
   };
 
@@ -190,7 +99,8 @@ export default function ProfilePage() {
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.unlinkIdentity(identity);
     if (error) {
-      setError(error.message);
+      console.error('[Profile] Auth update error:', error);
+      setError('That change could not be saved. Please try again.');
     } else {
       setSuccess('Account unlinked successfully');
       // Refresh session to update identities
@@ -213,7 +123,8 @@ export default function ProfilePage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      setError(error.message);
+      console.error('[Profile] Auth update error:', error);
+      setError('That change could not be saved. Please try again.');
     } else {
       setSuccess('Password set successfully');
       setPassword('');
@@ -239,9 +150,6 @@ export default function ProfilePage() {
 
   if (!user) return null; // Wait for redirect
 
-  const animationCount = profile?.animation_count || 0;
-  const maxAnimations = profile?.max_animations || 50;
-
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-surface border-b border-border">
@@ -249,20 +157,9 @@ export default function ProfilePage() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
             <div className="w-24 h-24 rounded-none bg-pitch-green flex items-center justify-center overflow-hidden border-2 border-border flex-shrink-0">
-              {clubBadgeUrl ? (
-                <Image
-                  src={clubBadgeUrl}
-                  alt="Club badge"
-                  width={96}
-                  height={96}
-                  className="object-contain w-full h-full p-2"
-                  unoptimized
-                />
-              ) : (
                 <span className="text-3xl font-heading font-bold text-tactics-white">
                   {getInitials(displayName, user.email || null)}
                 </span>
-              )}
             </div>
 
             {/* Coach Info */}
@@ -270,9 +167,6 @@ export default function ProfilePage() {
               <h1 className="text-4xl font-heading font-bold text-text-primary uppercase tracking-tight">
                 {displayName ? displayName : <span className="italic opacity-50">Add your name</span>}
               </h1>
-              <p className="text-lg text-text-primary/60 mt-1">
-                {clubName ? clubName : <span className="italic opacity-50 text-sm">Add your club</span>}
-              </p>
             </div>
           </div>
         </div>
@@ -307,146 +201,8 @@ export default function ProfilePage() {
                 className="w-full px-3 py-2 border border-border rounded-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <p className="mt-1 text-xs text-text-primary/60">
-                Shown on public animations.
+                Your name as Coach.
               </p>
-            </div>
-
-            <div>
-              <label htmlFor="clubName" className="block text-sm font-medium text-text-primary mb-1">
-                Club Name
-              </label>
-              <input
-                type="text"
-                id="clubName"
-                value={clubName}
-                onChange={(e) => setClubName(e.target.value)}
-                maxLength={100}
-                placeholder="e.g. Hampshire RFC"
-                className="w-full px-3 py-2 border border-border rounded-none focus:ring-2 focus:ring-primary focus:border-primary"
-              />
-              <p className="mt-1 text-xs text-text-primary/60">
-                Your primary club or team.
-              </p>
-            </div>
-
-            {/* Club Branding */}
-            <div className="pt-6 border-t border-border">
-              <h3 className="text-sm font-bold text-text-primary uppercase tracking-widest mb-4">Club Branding</h3>
-              
-              <div className="space-y-6">
-                {/* Club Badge */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Club Badge
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 border border-border bg-surface-warm flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {clubBadgeUrl ? (
-                        <Image
-                          src={clubBadgeUrl}
-                          alt="Club badge"
-                          width={64}
-                          height={64}
-                          className="object-contain w-full h-full"
-                          unoptimized
-                        />
-                      ) : (
-                        <svg className="w-8 h-8 text-text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        ref={badgeInputRef}
-                        type="file"
-                        id="clubBadge"
-                        accept="image/png,image/jpeg,image/svg+xml"
-                        onChange={handleBadgeUpload}
-                        disabled={badgeUploading}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="clubBadge"
-                        className={`px-3 py-1.5 text-sm border border-border rounded-none cursor-pointer hover:bg-surface-warm ${badgeUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        {badgeUploading ? 'Uploading...' : clubBadgeUrl ? 'Change Badge' : 'Upload Badge'}
-                      </label>
-                      {clubBadgeUrl && (
-                        <button
-                          type="button"
-                          onClick={handleBadgeRemove}
-                          disabled={badgeUploading}
-                          className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-none hover:bg-red-50 disabled:opacity-50"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <p className="mt-1 text-xs text-text-primary/60">PNG, JPG or SVG, max 500 KB</p>
-                  {badgeError && (
-                    <p className="mt-1 text-xs text-red-600">{badgeError}</p>
-                  )}
-                </div>
-
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="primaryColor" className="block text-sm font-medium text-text-primary mb-1">
-                      Primary Strip Colour
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        id="primaryColor"
-                        value={primaryColor || '#3b82f6'}
-                        onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="w-10 h-10 rounded-none border border-border cursor-pointer"
-                      />
-                      <span className="text-sm text-text-primary/60">{primaryColor || 'Not set'}</span>
-                      {primaryColor && (
-                        <button type="button" onClick={() => setPrimaryColor('')} className="text-xs text-text-primary/40 hover:text-text-primary/70">Clear</button>
-                      )}
-                    </div>
-                    <p className="mt-1 text-xs text-text-primary/60">Default colour for attack players</p>
-                  </div>
-
-                  <div>
-                    <label htmlFor="secondaryColor" className="block text-sm font-medium text-text-primary mb-1">
-                      Secondary Strip Colour
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        id="secondaryColor"
-                        value={secondaryColor || '#ef4444'}
-                        onChange={(e) => setSecondaryColor(e.target.value)}
-                        className="w-10 h-10 rounded-none border border-border cursor-pointer"
-                      />
-                      <span className="text-sm text-text-primary/60">{secondaryColor || 'Not set'}</span>
-                      {secondaryColor && (
-                        <button type="button" onClick={() => setSecondaryColor('')} className="text-xs text-text-primary/40 hover:text-text-primary/70">Clear</button>
-                      )}
-                    </div>
-                    <p className="mt-1 text-xs text-text-primary/60">Default colour for defense players</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t">
-              <h3 className="text-sm font-medium text-text-primary mb-2">Usage</h3>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-text-primary/70">Saved Animations</span>
-                <span className="font-medium">{animationCount} / {maxAnimations}</span>
-              </div>
-              <div className="mt-2 w-full bg-surface-warm rounded-none h-2">
-                <div
-                  className="bg-primary h-2 rounded-none transition-all"
-                  style={{ width: `${Math.min((animationCount / maxAnimations) * 100, 100)}%` }}
-                />
-              </div>
             </div>
 
             <div className="flex justify-end">
@@ -574,16 +330,16 @@ export default function ProfilePage() {
           <h2 className="text-lg font-semibold text-text-primary mb-4">Quick Links</h2>
           <div className="space-y-2">
             <a
-              href="/my-gallery"
+              href="/my-practices"
               className="block text-primary hover:text-primary/80"
             >
-              My Playbook →
+              My Practices →
             </a>
             <a
               href="/gallery"
               className="block text-primary hover:text-primary/80"
             >
-              Public Gallery →
+              Gallery →
             </a>
           </div>
         </div>

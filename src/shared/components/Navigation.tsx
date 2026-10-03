@@ -21,8 +21,8 @@ interface TabSection {
 const TAB_SECTIONS: TabSection[] = [
   { id: 'home',      label: 'Home',        href: '/',          cssVar: '--c-tab-home',      requiresAuth: false },
   { id: 'gallery',   label: 'Gallery',     href: '/gallery',   cssVar: '--c-tab-gallery',   requiresAuth: false },
-  { id: 'playbook',  label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true  },
-  { id: 'create',    label: 'Create',      href: '/app',       cssVar: '--c-tab-create',    requiresAuth: false },
+  { id: 'playbook',  label: 'My Practices', href: '/my-practices', cssVar: '--c-tab-playbook', requiresAuth: true  },
+  { id: 'create',    label: 'Create',      href: '/practice',  cssVar: '--c-tab-create',    requiresAuth: false },
   { id: 'help',      label: 'Help',        href: '/help',      cssVar: '--c-tab-help',      requiresAuth: false },
   { id: 'profile',   label: 'Profile',     href: '/profile',   cssVar: '--c-tab-profile',   requiresAuth: true  },
 ];
@@ -67,8 +67,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
   const isActive = (path: string) => pathname === path;
 
-  // Share routes are watch-only — no chrome
-  if (pathname.startsWith('/share/')) return null;
+  // The share view is watch-only: no chrome
+  if (pathname.startsWith('/p/')) return null;
 
   // Simplified nav for auth pages
   if (variant === 'simple') {
@@ -136,7 +136,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             {user && (
               <button
                 onClick={handleSignOut}
-                className="text-sm text-white/70 hover:text-white transition-colors"
+                className="inline-flex items-center min-h-[44px] text-sm text-white/70 hover:text-white transition-colors"
               >
                 Sign Out
               </button>
@@ -147,7 +147,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           {!loading && !user && (
             <Link
               href="/register"
-              className="text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
+              className="inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
             >
               Sign up
             </Link>
@@ -155,7 +155,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-white/80 hover:text-white transition-colors shrink-0"
+            className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] text-white/80 hover:text-white transition-colors shrink-0"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -172,7 +172,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             .map((sec) => {
               const active = sec.id === activeId;
               return (
-                <div key={sec.id} className="flex items-center gap-3 min-h-[24px]">
+                <div key={sec.id} className="flex items-center gap-3 min-h-[44px]">
                   <div 
                     className="w-1 self-stretch" 
                     style={{ backgroundColor: `var(${sec.cssVar})` }} 
@@ -190,7 +190,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           
           {/* Mobile Utilities */}
           {userRole === 'admin' && (
-            <div className="flex items-center gap-3 pt-2 border-t border-white/10 min-h-[24px]">
+            <div className="flex items-center gap-3 pt-2 border-t border-white/10 min-h-[44px]">
               <div className="w-1 self-stretch bg-accent-warm" />
               <Link
                 href="/admin"
@@ -202,7 +202,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           )}
 
           {!user && (
-            <div className="flex items-center gap-3 min-h-[24px]">
+            <div className="flex items-center gap-3 min-h-[44px]">
               <div className="w-1 self-stretch bg-white/20" />
               <Link href="/register" className="text-sm text-white/70 hover:text-white transition-colors">
                 Sign up
@@ -211,7 +211,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           )}
 
           {user && (
-            <div className="flex items-center gap-3 min-h-[24px]">
+            <div className="flex items-center gap-3 min-h-[44px]">
               <div className="w-1 self-stretch bg-white/20" />
               <button
                 onClick={handleSignOut}

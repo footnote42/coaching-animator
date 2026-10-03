@@ -66,7 +66,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="/app"
+                href="/practice"
                 className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-text-primary font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors"
               >
                 Start drawing free
@@ -167,7 +167,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/app"
+              href="/practice"
               className="inline-flex items-center justify-center px-8 py-4 bg-accent-warm text-text-primary font-semibold text-lg hover:bg-[var(--color-accent-hover)] transition-colors"
             >
               Start drawing
@@ -183,25 +183,6 @@ export default function HomePage() {
       </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface border-t border-border">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center">
-              <span className="font-heading font-semibold text-text-primary">Coaching Animator</span>
-            </div>
-            <div className="flex items-center gap-6 text-sm text-text-primary/70">
-              <a href="/terms" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="/contact" className="hover:text-primary transition-colors">Contact</a>
-              <a href="/sitemap-page" className="hover:text-primary transition-colors">Site Map</a>
-            </div>
-            <p className="text-sm text-text-primary/50">
-              © {new Date().getFullYear()} Coaching Animator
-            </p>
-          </div>
-        </div>
-      </footer>
     </>
   );
 }

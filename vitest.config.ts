@@ -10,8 +10,8 @@ export default defineConfig({
   test: {
     exclude: [
       'node_modules/**',
-      'archive/**',
       'tests/e2e/**',
+      '.claude/**',
     ],
   },
 });

@@ -21,7 +21,8 @@ export default function ForgotPasswordPage() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error('[Auth] Reset request error:', error);
+      setErrorMessage('We could not send the reset email. Please check the address and try again.');
       setLoading(false);
       return;
     }
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Password</h2>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Password</h1>
       <p className="text-sm text-text-primary/70 mb-6">
         Enter your email and we&apos;ll send you a link to reset your password.
       </p>
@@ -72,7 +73,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {loading ? 'Sending...' : 'Send Reset Link'}
         </button>
@@ -80,7 +81,7 @@ export default function ForgotPasswordPage() {
 
       <div className="mt-6 text-center text-sm text-text-primary/70">
         Remember your password?{' '}
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign in
         </a>
       </div>

@@ -27,9 +27,9 @@ test.describe('User Guide and Help Navigation', () => {
     await expect(page).toHaveURL(/.*\/help/);
   });
 
-  test('footer absent on /app', async ({ page }) => {
+  test('/app redirects to the Practice editor', async ({ page }) => {
     await page.goto('/app');
-    await expect(page.locator('footer')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/practice$/);
   });
 
   test('clicking coaching framework link on /help navigates to /help/coaching', async ({ page }) => {

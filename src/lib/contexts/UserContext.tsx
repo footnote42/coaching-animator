@@ -10,12 +10,8 @@ interface UserProfile {
   id: string;
   display_name: string | null;
   role: UserRole;
-  animation_count: number;
-  max_animations: number;
-  club_name: string | null;
-  primary_strip_color: string | null;
-  secondary_strip_color: string | null;
-  club_badge_url: string | null;
+  /** null = not yet confirmed 18+; undefined = unknown (profile failed to load) */
+  age_confirmed_at?: string | null;
 }
 
 interface UserContextValue {
@@ -44,7 +40,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, display_name, role, animation_count, max_animations, club_name, primary_strip_color, secondary_strip_color, club_badge_url')
+        .select('id, display_name, role, age_confirmed_at')
         .eq('id', userId)
         .single();
 
@@ -63,31 +59,18 @@ export function UserProvider({ children }: UserProviderProps) {
           id: userId,
           display_name: null,
           role: 'user',
-          animation_count: 0,
-          max_animations: 50,
-          club_name: null,
-          primary_strip_color: null,
-          secondary_strip_color: null,
-          club_badge_url: null,
         });
         return;
       }
 
-      console.log('[UserContext] Profile loaded from Supabase:', data);
 
       if (data) {
         const newProfile = {
           id: data.id,
           display_name: data.display_name,
           role: data.role || 'user',
-          animation_count: data.animation_count || 0,
-          max_animations: data.max_animations || 50,
-          club_name: data.club_name || null,
-          primary_strip_color: data.primary_strip_color || null,
-          secondary_strip_color: data.secondary_strip_color || null,
-          club_badge_url: data.club_badge_url || null,
+          age_confirmed_at: data.age_confirmed_at ?? null,
         };
-        console.log('[UserContext] Setting profile state:', newProfile);
         setProfile(newProfile);
       }
     } catch (err) {
@@ -102,19 +85,12 @@ export function UserProvider({ children }: UserProviderProps) {
         id: userId,
         display_name: null,
         role: 'user',
-        animation_count: 0,
-        max_animations: 50,
-        club_name: null,
-        primary_strip_color: null,
-        secondary_strip_color: null,
-        club_badge_url: null,
       });
     }
 
   };
 
   const refreshProfile = async () => {
-    console.log('[UserContext] refreshProfile called, user:', user?.id);
     if (user) {
       await loadProfile(user.id);
     }

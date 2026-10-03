@@ -131,7 +131,7 @@ Before running E2E tests (`npm run e2e`), **always verify**:
 - **SSR Awareness**: Next.js App Router relies on browser/server cookie sync. Always use provided Supabase clients (`lib/supabase/`) to prevent session drift
 - **Auth Resilience**: Use 15s timeout for auth initialization in `UserContext` to account for mobile/network latency
 
-## Constitutional Constraints (v3.4.0)
+## Binding Constraints
 
 **Tiered Architecture** (Cloud-First Model):
 - **Tier 0 (Guest)**: 10-frame local editing, JSON export only, no cloud persistence
@@ -145,9 +145,10 @@ Before running E2E tests (`npm run e2e`), **always verify**:
 - No third-party analytics services
 - No advertising or sponsored content
 - No paywalls for core features
-- OAuth auth providers: Google, Apple, GitHub permitted (Section V.2.3); Facebook/Meta, Twitter/X, LinkedIn, Discord prohibited
+- OAuth auth providers: Google, Apple, GitHub permitted; Facebook/Meta, Twitter/X, LinkedIn, Discord prohibited
+- Any non-essential cookie requires a consent banner before it ships
 
-**Full Governance**: See [docs/authority/constitution.md](docs/authority/constitution.md)
+**Full list**: See [docs/constraints.md](docs/constraints.md)
 
 ## Supabase Join Flattening
 
@@ -166,15 +167,9 @@ const record = Array.isArray(raw) ? raw[0] : raw;
 - `src/features/gallery/README.md` (~1,100 lines)
 
 ## Active Technologies
-- TypeScript 5 · Node 22 (001-fix-share-scaling)
+- TypeScript 5 · Node 22
 
-## Current Feature
-- **017-audit-remediation** — Audit Remediation (Phase 3f)
-- Plan: `specs/017-audit-remediation/plan.md`
-- Spec: `specs/017-audit-remediation/spec.md`
 
-## Recent Changes
-- 016-security-hardening: Rate limiting on 8 routes + diag info-leak fix
 
 ## Design Context
 

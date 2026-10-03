@@ -1,8 +1,10 @@
+import { GalleryClient } from '@/features/practice/components/GalleryClient';
 
-import GalleryPage from './GalleryClient';
+export const metadata = {
+  title: 'Gallery',
+  description: 'Browse rugby coaching Practices shared by Coaches.',
+};
 
-export const dynamic = 'force-dynamic';
-
-export default function Page() {
-    return <GalleryPage />;
+export default function GalleryPage() {
+  return <GalleryClient />;
 }

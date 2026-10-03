@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [confirmAge, setConfirmAge] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -40,12 +41,19 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!confirmAge) {
+      setErrorMessage('You must be 18 or over to create an account');
+      setLoading(false);
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        data: { age_confirmed: true },
       },
     });
 
@@ -87,7 +95,7 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h2>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -170,20 +178,33 @@ export default function RegisterPage() {
           />
           <label htmlFor="terms" className="text-sm text-text-primary/80">
             I agree to the{' '}
-            <a href="/terms" className="text-primary hover:underline">
+            <a href="/terms" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
               Terms of Service
             </a>{' '}
             and{' '}
-            <a href="/privacy" className="text-primary hover:underline">
+            <a href="/privacy" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
               Privacy Policy
             </a>
+          </label>
+        </div>
+
+        <div className="flex items-start gap-2">
+          <input
+            id="age"
+            type="checkbox"
+            checked={confirmAge}
+            onChange={(e) => setConfirmAge(e.target.checked)}
+            className="mt-1"
+          />
+          <label htmlFor="age" className="text-sm text-text-primary/80">
+            I am 18 or over
           </label>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
@@ -192,6 +213,9 @@ export default function RegisterPage() {
       <div className="mt-6 pt-6 border-t border-border">
         <p className="text-sm text-center text-text-secondary mb-4">
           Or continue with
+        </p>
+        <p className="text-xs text-center text-text-primary/60 mb-4">
+          Accounts are for people aged 18 or over. If you sign up with Google, you will be asked to confirm this once after signing in.
         </p>
 
         <button
@@ -236,7 +260,7 @@ export default function RegisterPage() {
 
       <div className="mt-6 text-center text-sm text-text-primary/70">
         Already have an account?{' '}
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign in
         </a>
       </div>

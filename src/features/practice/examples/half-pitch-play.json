@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "title": "Half-pitch play: hands to the overlap",
+  "area": { "template": "half-pitch", "width": 70, "length": 60 },
+  "markers": [
+    { "id": "a9", "kind": "attacker", "label": "9" },
+    { "id": "a10", "kind": "attacker", "label": "10" },
+    { "id": "a12", "kind": "attacker", "label": "12" },
+    { "id": "a13", "kind": "attacker", "label": "13" },
+    { "id": "a14", "kind": "attacker", "label": "14" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "d10", "kind": "defender", "label": "10" },
+    { "id": "d12", "kind": "defender", "label": "12" },
+    { "id": "d13", "kind": "defender", "label": "13" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a9", "cell": { "x": 40, "y": 46 } },
+      { "marker": "a10", "cell": { "x": 33, "y": 50 } },
+      { "marker": "a12", "cell": { "x": 26, "y": 52 } },
+      { "marker": "a13", "cell": { "x": 19, "y": 54 } },
+      { "marker": "a14", "cell": { "x": 10, "y": 56 } },
+      { "marker": "ball", "holder": "a9" },
+      { "marker": "d10", "cell": { "x": 32, "y": 38 } },
+      { "marker": "d12", "cell": { "x": 25, "y": 37 } },
+      { "marker": "d13", "cell": { "x": 18, "y": 36 } }
+    ],
+    "moves": [
+      { "marker": "a10", "waypoints": [{ "x": 31, "y": 46 }] },
+      { "marker": "a12", "waypoints": [{ "x": 24, "y": 45 }], "pace": "sprint", "after": { "pass": "p1" } },
+      { "marker": "a13", "waypoints": [{ "x": 17, "y": 44 }], "pace": "sprint", "after": { "pass": "p2" } },
+      { "marker": "a14", "waypoints": [{ "x": 9, "y": 48 }, { "x": 6, "y": 40 }], "pace": "sprint", "after": { "pass": "p2" } },
+      { "marker": "d10", "waypoints": [{ "x": 31, "y": 43 }], "after": { "pass": "p1" } },
+      { "marker": "d12", "waypoints": [{ "x": 23, "y": 42 }], "after": { "move": "d10" } },
+      { "marker": "d13", "waypoints": [{ "x": 17, "y": 41 }], "after": { "move": "d12" } }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a9", "to": "a10" },
+      { "id": "p2", "from": "a10", "to": "a12" },
+      { "id": "p3", "from": "a12", "to": "a13" },
+      { "id": "p4", "from": "a13", "to": "a14", "at": 0 }
+    ],
+    "commentary": {
+      "points": [
+        "Five attackers against three defenders: move the ball before the defence drifts across",
+        "Each receiver arrives at pace, so pass in front of them",
+        "14 holds width until the last pass, then runs onto it and keeps going"
+      ]
+    }
+  },
+  "progressions": []
+}

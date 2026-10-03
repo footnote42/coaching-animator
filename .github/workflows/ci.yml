@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ main, staging, restart ]
   pull_request:
     branches: [ main, staging ]
 
@@ -127,10 +127,67 @@ jobs:
           path: coverage/
           retention-days: 7
 
+  e2e:
+    name: End-to-end (Guest to Coach to viewer)
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # Applies the repo migrations to a throwaway database; no hosted project is used.
+      - name: Start local Supabase
+        run: |
+          supabase start
+          eval "$(supabase status -o env)"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> "$GITHUB_ENV"
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build against local Supabase
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
+      - name: Run end-to-end spec
+        run: npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
+
   deploy-preview:
     name: Deploy Preview (Vercel)
     runs-on: ubuntu-latest
-    needs: [build, test-migrations, test]
+    needs: [build, test-migrations, test, e2e]
     if: github.event_name == 'pull_request'
 
     steps:
@@ -160,7 +217,7 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: [build, test-migrations, test]
+    needs: [build, test-migrations, test, e2e]
     if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
 
     steps:
@@ -185,7 +242,7 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [build, test-migrations, test]
+    needs: [build, test-migrations, test, e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:

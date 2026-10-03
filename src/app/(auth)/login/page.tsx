@@ -8,7 +8,7 @@ import { getFriendlyErrorMessage } from '@/lib/error-messages';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') ?? '/app';
+  const redirect = searchParams.get('redirect') ?? '/practice';
   const error = searchParams.get('error');
 
   const [email, setEmail] = useState('');
@@ -65,7 +65,7 @@ function LoginForm() {
 
   return (
     <div>
-      <h2 className="text-xl font-heading font-semibold text-text-primary mb-6">Sign In</h2>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Sign In</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -109,7 +109,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           data-testid="login-submit"
         >
           {loading ? 'Signing in...' : 'Sign In'}
@@ -162,14 +162,14 @@ function LoginForm() {
       </div>
 
       <div className="mt-6 text-center text-sm">
-        <a href="/forgot-password" className="text-primary hover:underline">
+        <a href="/forgot-password" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Forgot password?
         </a>
       </div>
 
       <div className="mt-4 text-center text-sm text-text-primary/70">
         Don&apos;t have an account?{' '}
-        <a href="/register" className="text-primary hover:underline">
+        <a href="/register" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign up
         </a>
       </div>

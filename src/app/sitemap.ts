@@ -1,15 +1,18 @@
 import { MetadataRoute } from 'next';
+import { getSiteOrigin } from '@/lib/site-origin';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coaching-animator.vercel.app';
+  const baseUrl = getSiteOrigin();
 
   // Static pages
   const staticPages = [
     '',
+    '/practice',
     '/gallery',
-    '/app',
-    '/login',
-    '/register',
+    '/help',
+    '/help/how-to',
+    '/help/coaching',
+    '/help/progressions',
     '/terms',
     '/privacy',
     '/contact',

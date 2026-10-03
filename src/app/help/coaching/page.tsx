@@ -1,14 +1,15 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Coaching Framework',
+  title: 'Coaching framework',
+  description: 'A simple framework for using animations in rugby coaching: set the picture, show the movement, then check understanding with players.',
 };
 
 export default function CoachingFrameworkPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 text-text-primary">
       <div className="mb-6">
-        <Link href="/help" className="text-primary hover:text-primary/80 font-medium transition-colors">
+        <Link href="/help" className="inline-flex items-center min-h-[44px] text-primary hover:text-primary/80 font-medium transition-colors">
           ← Back to Help
         </Link>
       </div>
@@ -55,7 +56,7 @@ export default function CoachingFrameworkPage() {
           Physical safety is non-negotiable. Ensure correct technique, especially in contact, and match players appropriately by size and skill level.
         </p>
         <p className="p-4 bg-surface-warm border border-border">
-          <strong>In the Animator:</strong> Use tackle bags and shields for contact progressions. Map out safe spacing between groups to prevent accidental collisions during high-intensity drills.
+          <strong>In the Animator:</strong> Use tackle shields for contact Progressions. Map out safe spacing between groups to prevent accidental collisions during high-intensity drills.
         </p>
       </section>
 

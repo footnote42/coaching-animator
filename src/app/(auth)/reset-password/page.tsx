@@ -55,7 +55,8 @@ export default function ResetPasswordPage() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error('[Auth] Password update error:', error);
+      setErrorMessage('We could not update your password. The link may have expired; request a new one.');
       setLoading(false);
       return;
     }
@@ -70,7 +71,7 @@ export default function ResetPasswordPage() {
   if (hasToken === false) {
     return (
       <div>
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Link Required</h2>
+        <h1 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Link Required</h1>
         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-700 text-sm">
           <p className="font-medium mb-2">📧 Password reset link required</p>
           <p>This page requires a password reset link from your email.</p>
@@ -78,12 +79,12 @@ export default function ResetPasswordPage() {
         </div>
         <a
           href="/forgot-password"
-          className="block w-full py-2 px-4 bg-primary text-text-inverse font-medium text-center hover:opacity-90 transition-opacity"
+          className="block w-full py-3 px-4 bg-primary text-text-inverse font-medium text-center hover:opacity-90 transition-opacity"
         >
           Request a New Reset Link
         </a>
         <div className="mt-6 text-center text-sm text-text-primary/70">
-          <a href="/login" className="text-primary hover:underline">
+          <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
             Back to sign in
           </a>
         </div>
@@ -98,7 +99,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">Set New Password</h2>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-2">Set New Password</h1>
       <p className="text-sm text-text-primary/70 mb-6">
         Enter your new password below.
       </p>
@@ -151,14 +152,14 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {loading ? 'Updating...' : 'Update Password'}
         </button>
       </form>
 
       <div className="mt-6 text-center text-sm text-text-primary/70">
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Back to sign in
         </a>
       </div>

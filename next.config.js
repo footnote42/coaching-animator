@@ -1,31 +1,46 @@
-import withSerwistInit from '@serwist/next';
-// Force restart to pick up color palette changes
-
-const withSerwist = withSerwistInit({
-  swSrc: 'src/app/sw.ts',
-  swDest: 'public/sw.js',
-  cacheOnNavigation: false, // Disabled to prevent SW interference with API routes
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV !== 'production',
-});
+const isDev = process.env.NODE_ENV !== 'production';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+
+  // Routes of the retired animation model. Old share and replay ids no longer
+  // exist, so those land on the share view's friendly not-found page.
+  async redirects() {
+    return [
+      { source: '/app', destination: '/practice', permanent: true },
+      { source: '/explore', destination: '/gallery', permanent: true },
+      { source: '/my-gallery', destination: '/my-practices', permanent: true },
+      { source: '/share/:id', destination: '/p/:id', permanent: true },
+      { source: '/replay/:id', destination: '/p/:id', permanent: true },
+    ];
+  },
+
   // Security headers per FR-SEC-01
   async headers() {
-    // CSP directives - allows Supabase, Vercel analytics, inline styles for Konva
+    // CSP directives: Supabase, the Vercel preview toolbar, inline styles.
+    // 'unsafe-eval' is dev only: Next.js uses eval for fast refresh and source
+    // maps. Konva, react-konva and marked need no eval in production.
+    // A local Supabase (e2e, CI) is not under *.supabase.co, so allow its origin too.
+    let localSupabase = '';
+    try {
+      const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '');
+      if (!url.hostname.endsWith('.supabase.co')) {
+        localSupabase = ` ${url.origin} ${url.origin.replace(/^http/, 'ws')}`;
+      }
+    } catch {
+      // unset or invalid: hosted defaults only
+    }
     const cspDirectives = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://vercel.live`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live",
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live${localSupabase}`,
       "frame-ancestors 'none'",
       "form-action 'self'",
       "base-uri 'self'",
-      "worker-src 'self' blob:",
     ].join('; ');
 
     return [
@@ -97,4 +112,4 @@ const nextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+export default nextConfig;

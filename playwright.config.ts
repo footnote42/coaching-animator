@@ -3,14 +3,17 @@ import { config } from 'dotenv'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
 
-// Load local E2E env (BASE_URL=http://localhost:3000 by default)
+// Optional local E2E env overrides; dotenv never overrides variables already set in the shell
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 config({ path: resolve(__dirname, 'tests/e2e/.env.local') })
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 /**
  * Playwright Configuration for coaching-animator E2E Tests
  *
- * Runs Phase 1 tests against staging environment.
+ * Targets http://localhost:3000 (and starts the dev server) unless BASE_URL is set.
+ * Set BASE_URL explicitly to test a deployed environment.
  * Generate HTML reports and JUnit XML for CI/CD integration.
  */
 
@@ -32,7 +35,7 @@ export default defineConfig({
 
   // Base URL for relative navigation
   use: {
-    baseURL: process.env.BASE_URL || 'https://coaching-animator.vercel.app',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -54,10 +57,11 @@ export default defineConfig({
     },
   ],
 
-  // Web server for local testing (skip if testing production)
-  webServer: process.env.BASE_URL?.includes('localhost')
+  // Web server for local testing (skipped when BASE_URL points at a deployed site)
+  webServer: BASE_URL.includes('localhost')
     ? {
-      command: 'npm run dev',
+      // CI builds first and serves the build; locally the dev server is enough
+      command: process.env.CI ? 'npm run start' : 'npm run dev',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
