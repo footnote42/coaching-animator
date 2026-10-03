@@ -52,7 +52,7 @@ function CopyBlock({ label, text }: { label: string; text: string }) {
           <span className="sr-only"> {label}</span>
         </Button>
       </div>
-      <pre className="p-3 bg-white border border-border text-xs text-text-primary whitespace-pre-wrap break-all">
+      <pre className="p-3 bg-surface border border-border text-xs text-text-primary whitespace-pre-wrap break-all">
         <code>{text}</code>
       </pre>
     </div>

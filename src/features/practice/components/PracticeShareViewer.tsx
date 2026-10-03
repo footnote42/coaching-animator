@@ -39,8 +39,8 @@ export const PLAYBACK_SPEEDS = [
 const PLAY_ALL_HOLD_S = 1.5;
 
 /** Every control is at least 44px square. */
-const CONTROL = 'h-11 min-w-11 px-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white';
-const CONTROL_ON = 'bg-white text-black hover:bg-white/90 hover:text-black';
+const CONTROL = 'h-11 min-w-11 px-3 border-border bg-transparent text-text-primary hover:bg-text-primary/10 hover:text-text-primary';
+const CONTROL_ON = 'bg-text-primary text-background hover:bg-text-primary/90 hover:text-background';
 
 type CanvasComponent = ComponentType<{ step: ResolvedStep; time: number }>;
 
@@ -289,12 +289,12 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
     <div
       ref={rootRef}
       style={{ position: 'fixed', inset: 0 }}
-      className="z-50 flex flex-col overflow-hidden bg-black text-white"
+      className="z-50 flex flex-col overflow-hidden bg-background text-text-primary"
     >
-      <header className="flex min-h-12 items-center gap-2 border-b border-white/10 px-3 py-1.5 pt-[max(0.375rem,env(safe-area-inset-top))]">
+      <header className="flex min-h-12 items-center gap-2 border-b border-border/30 px-3 py-1.5 pt-[max(0.375rem,env(safe-area-inset-top))]">
         <Link
           href="/"
-          className="flex shrink-0 items-center justify-center rounded p-1 text-white hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-white"
+          className="flex shrink-0 items-center justify-center rounded p-1 text-text-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-primary"
           aria-label="Coaching Animator home"
           title="Coaching Animator home"
         >
@@ -302,11 +302,11 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <h1 className="truncate font-heading text-sm font-bold sm:text-base md:text-lg">{title}</h1>
-          <p className="truncate text-xs text-white/75" aria-live="polite">
+          <p className="truncate text-xs text-text-muted" aria-live="polite">
             {stepLabel} ({stepIndex + 1}/{steps})
           </p>
           {tags && tags.length > 0 && (
-            <p className="truncate text-xs text-white/75">{tags.join(' · ')}</p>
+            <p className="truncate text-xs text-text-muted">{tags.join(' · ')}</p>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
@@ -357,12 +357,12 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
             {menuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-full z-50 mt-1 w-64 rounded-md border border-white/20 bg-zinc-900 p-2 text-white shadow-xl"
+                className="absolute right-0 top-full z-50 mt-1 w-64 rounded-md border border-border bg-surface p-2 text-text-primary shadow-xl"
               >
                 <button
                   type="button"
                   role="menuitem"
-                  className="flex w-full flex-col items-start gap-1 rounded p-2 text-left hover:bg-white/10 focus:bg-white/10 focus:outline-none"
+                  className="flex w-full flex-col items-start gap-1 rounded p-2 text-left hover:bg-text-primary/10 focus:bg-text-primary/10 focus:outline-none"
                   onClick={async () => {
                     setMenuOpen(false);
                     await copyScript();
@@ -372,7 +372,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
                     <Copy className="h-4 w-4" />
                     Copy script
                   </span>
-                  <span className="text-xs text-white/70">
+                  <span className="text-xs text-text-muted">
                     Copy the Practice Script to adapt or hand to an AI.
                   </span>
                 </button>
@@ -393,13 +393,13 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
         {showCommentary && hasCommentary && (
           <div
             aria-live="polite"
-            className="pointer-events-auto absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded border border-white/20 bg-black/85 p-3 text-sm text-white shadow-lg backdrop-blur-sm sm:max-w-sm"
+            className="pointer-events-auto absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded border border-border bg-surface/95 p-3 text-sm text-text-primary shadow-lg backdrop-blur-sm sm:max-w-sm"
           >
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">{stepLabel}</p>
               <button
                 type="button"
-                className="inline-flex h-7 w-7 items-center justify-center rounded text-white/70 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-1 focus:ring-white"
+                className="inline-flex h-7 w-7 items-center justify-center rounded text-text-muted hover:bg-text-primary/10 hover:text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 aria-label="Close Commentary"
                 title="Close Commentary"
                 onClick={() => updateCommentary(false)}
@@ -408,7 +408,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
               </button>
             </div>
             {step.commentary.points.length > 0 && (
-              <ul className="mt-1.5 list-disc space-y-1 pl-5 text-white/90">
+              <ul className="mt-1.5 list-disc space-y-1 pl-5 text-text-primary">
                 {step.commentary.points.map((point, i) => (
                   <li key={i}>{point}</li>
                 ))}
@@ -423,7 +423,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
           <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
             Watch the original
           </a>
-          {sourceTitle && <span className="text-white/75">: {sourceTitle}</span>}
+          {sourceTitle && <span className="text-text-muted">: {sourceTitle}</span>}
         </p>
       )}
 

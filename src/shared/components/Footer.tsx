@@ -12,7 +12,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border bg-surface mt-auto">
-      <div className="max-w-6xl mx-auto px-4 py-6 flex flex-wrap gap-x-6 gap-y-2 text-xs text-text-primary/50">
+      <div className="max-w-6xl mx-auto px-4 py-6 flex flex-wrap gap-x-6 gap-y-2 text-xs text-text-muted">
         <Link href="/help" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Help</Link>
         <Link href="/help/coaching" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Coaching Guide</Link>
         <Link href="/contact" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Contact</Link>

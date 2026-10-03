@@ -9,14 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[var(--color-accent-warm)] text-white shadow hover:bg-[var(--color-accent-hover)]",
+        default: "border-2 border-[var(--color-border)] bg-[var(--color-accent-warm)] text-[var(--color-on-accent)] shadow-[2px_2px_0_var(--color-border)] hover:bg-[var(--color-accent-hover)] hover:text-white",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-[var(--color-danger)] text-[var(--color-background)] shadow-sm hover:opacity-90",
         outline:
-          "border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm hover:bg-[var(--color-accent-warm)] hover:text-white",
+          "border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm hover:bg-[var(--color-accent-warm)] hover:text-[var(--color-on-accent)]",
         secondary:
-          "bg-[var(--color-surface-warm)] text-[var(--color-text-primary)] shadow-sm hover:bg-[var(--color-accent-warm)] hover:text-white",
-        ghost: "hover:bg-[var(--color-accent-warm)] hover:text-white",
+          "bg-[var(--color-surface-warm)] text-[var(--color-text-primary)] shadow-sm hover:bg-[var(--color-accent-warm)] hover:text-[var(--color-on-accent)]",
+        ghost: "hover:bg-[var(--color-accent-warm)] hover:text-[var(--color-on-accent)]",
         link: "text-[var(--color-accent-warm)] underline-offset-4 hover:underline",
       },
       size: {

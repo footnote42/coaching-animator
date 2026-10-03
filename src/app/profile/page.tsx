@@ -200,14 +200,14 @@ export default function ProfilePage() {
         <div className="bg-surface border border-border p-6">
           <form onSubmit={handleSave} className="space-y-6">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-none">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="p-3 bg-danger-surface border border-danger/40 rounded-none">
+                <p className="text-sm text-danger">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-none">
-                <p className="text-sm text-green-600">{success}</p>
+              <div className="p-3 bg-success-surface border border-success/40 rounded-none">
+                <p className="text-sm text-success">{success}</p>
               </div>
             )}
 
@@ -285,7 +285,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => handleUnlink(googleIdentity.identity_id)}
                       disabled={!canUnlink || saving}
-                      className="px-3 py-1 text-sm border border-border rounded-none text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 text-sm border border-border rounded-none text-danger hover:bg-danger-surface disabled:opacity-50 disabled:cursor-not-allowed"
                       title={!canUnlink ? "Cannot unlink the only login method" : ""}
                     >
                       Unlink
@@ -362,7 +362,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 disabled={deleting}
-                className="px-4 py-2 text-sm border border-red-300 rounded-none text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm border border-danger/60 rounded-none text-danger hover:bg-danger-surface disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {deleting ? 'Deleting...' : 'Delete my account'}
               </button>

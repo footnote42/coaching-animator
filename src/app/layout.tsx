@@ -1,16 +1,30 @@
 import type { Metadata, Viewport } from 'next';
-import { Oswald } from 'next/font/google';
+import { Archivo, Atkinson_Hyperlegible, Caveat } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@/lib/contexts/UserContext';
 import { getSiteOrigin } from '@/lib/site-origin';
+import { THEME_INIT_SCRIPT } from '@/shared/theme';
 import { Navigation } from '@/shared/components/Navigation';
 
-const oswald = Oswald({
+const archivo = Archivo({
   subsets: ['latin'],
-  variable: '--font-oswald',
+  axes: ['wdth'],
+  variable: '--font-archivo',
   display: 'swap',
 });
 
+const atkinson = Atkinson_Hyperlegible({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-atkinson',
+  display: 'swap',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-caveat',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -57,8 +71,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={oswald.variable} suppressHydrationWarning>
+    <html lang="en" className={`${archivo.variable} ${atkinson.variable} ${caveat.variable}`} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
