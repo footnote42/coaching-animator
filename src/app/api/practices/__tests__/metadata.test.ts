@@ -98,3 +98,42 @@ describe('Tag list', () => {
     expect(inSql).toEqual([...PRACTICE_TAGS]);
   });
 });
+
+describe('Source on save and update', () => {
+  beforeEach(() => {
+    written = null;
+  });
+
+  it('POST saves an https Source', async () => {
+    const res = await post({ sourceUrl: 'https://www.youtube.com/watch?v=abc', sourceTitle: 'Original drill' });
+    expect(res.status).toBe(201);
+    expect(written?.source_url).toBe('https://www.youtube.com/watch?v=abc');
+    expect(written?.source_title).toBe('Original drill');
+  });
+
+  it('POST without a Source saves nulls', async () => {
+    const res = await post({});
+    expect(res.status).toBe(201);
+    expect(written?.source_url).toBeNull();
+    expect(written?.source_title).toBeNull();
+  });
+
+  it('POST rejects a non-https Source', async () => {
+    for (const sourceUrl of ['http://example.com/a', 'javascript:alert(1)', 'example.com', 'https://']) {
+      written = null;
+      expect((await post({ sourceUrl })).status).toBe(400);
+      expect(written).toBeNull();
+    }
+  });
+
+  it('PATCH sets and clears a Source', async () => {
+    expect((await patch({ sourceUrl: 'https://example.com/v', sourceTitle: 'V' })).status).toBe(200);
+    expect(written).toEqual({ source_url: 'https://example.com/v', source_title: 'V' });
+    expect((await patch({ sourceUrl: null, sourceTitle: null })).status).toBe(200);
+    expect(written).toEqual({ source_url: null, source_title: null });
+  });
+
+  it('PATCH rejects a non-https Source', async () => {
+    expect((await patch({ sourceUrl: 'http://example.com' })).status).toBe(400);
+  });
+});

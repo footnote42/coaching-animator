@@ -50,6 +50,9 @@ interface PracticeShareViewerProps {
   title: string;
   /** The Practice's Tags, shown under the title. */
   tags?: string[];
+  /** The Source: an https link out, opened in a new tab. Never embedded. */
+  sourceUrl?: string | null;
+  sourceTitle?: string | null;
   /** A validated Practice Script. */
   script: PracticeScript;
 }
@@ -60,7 +63,7 @@ interface PracticeShareViewerProps {
  * brand navigation, sharing, full screen (where available), and overflow menu.
  * Shows a static thumbnail until the canvas has loaded.
  */
-export function PracticeShareViewer({ practiceId, title, tags, script }: PracticeShareViewerProps) {
+export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, sourceTitle, script }: PracticeShareViewerProps) {
   const [reporting, setReporting] = useState(false);
   const steps = stepCount(script);
   const [stepIndex, setStepIndex] = useState(0);
@@ -414,6 +417,15 @@ export function PracticeShareViewer({ practiceId, title, tags, script }: Practic
           </div>
         )}
       </main>
+
+      {sourceUrl && (
+        <p className="truncate px-3 pt-2 text-center text-sm">
+          <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+            Watch the original
+          </a>
+          {sourceTitle && <span className="text-white/75">: {sourceTitle}</span>}
+        </p>
+      )}
 
       <nav
         aria-label="Playback"

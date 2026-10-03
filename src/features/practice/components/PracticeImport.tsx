@@ -93,6 +93,10 @@ export function PracticeImport() {
     setDescription,
     tags,
     setTags,
+    sourceUrl,
+    setSourceUrl,
+    sourceTitle,
+    setSourceTitle,
     tool,
     selection,
     setSelection,
@@ -154,6 +158,10 @@ export function PracticeImport() {
           description={description}
           tags={tags}
           onTagsChange={setTags}
+          sourceUrl={sourceUrl}
+          sourceTitle={sourceTitle}
+          onSourceUrlChange={setSourceUrl}
+          onSourceTitleChange={setSourceTitle}
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}
           onSaved={saved}

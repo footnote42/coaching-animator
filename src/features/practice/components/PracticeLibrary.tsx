@@ -17,6 +17,10 @@ interface Props {
   description: string;
   tags: string[];
   onTagsChange: (tags: string[]) => void;
+  sourceUrl: string;
+  sourceTitle: string;
+  onSourceUrlChange: (url: string) => void;
+  onSourceTitleChange: (title: string) => void;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
   /** Called with the Practice's id after a successful save. */
@@ -39,6 +43,10 @@ export function PracticeLibrary({
   description,
   tags,
   onTagsChange,
+  sourceUrl,
+  sourceTitle,
+  onSourceUrlChange,
+  onSourceTitleChange,
   onTitleChange,
   onDescriptionChange,
   onSaved,
@@ -67,14 +75,15 @@ export function PracticeLibrary({
       toast.error('Fix the script before saving.');
       return;
     }
+    const source = { sourceUrl: sourceUrl.trim() || null, sourceTitle: sourceTitle.trim() || null };
     setSaving(true);
     const res = await fetch(practiceId ? `/api/practices/${practiceId}` : '/api/practices', {
       method: practiceId ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         practiceId
-          ? { title, description: description || null, tags, script }
-          : { title, description: description || null, visibility, tags, script },
+          ? { title, description: description || null, tags, ...source, script }
+          : { title, description: description || null, visibility, tags, ...source, script },
       ),
     }).catch(() => null);
     setSaving(false);
@@ -118,6 +127,25 @@ export function PracticeLibrary({
           className={`${field} h-16 resize-none`}
         />
         <TagPicker value={tags} onChange={onTagsChange} />
+        <input
+          aria-label="Source link"
+          type="url"
+          placeholder="Source link, https only (optional)"
+          maxLength={2000}
+          value={sourceUrl}
+          onChange={(e) => onSourceUrlChange(e.target.value)}
+          onKeyDown={blockEnter}
+          className={field}
+        />
+        <input
+          aria-label="Source title"
+          placeholder="Source title (optional)"
+          maxLength={200}
+          value={sourceTitle}
+          onChange={(e) => onSourceTitleChange(e.target.value)}
+          onKeyDown={blockEnter}
+          className={field}
+        />
         {!practiceId && (
           <select
             aria-label="Visibility"

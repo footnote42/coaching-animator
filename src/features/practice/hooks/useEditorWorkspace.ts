@@ -30,6 +30,8 @@ export function useEditorWorkspace() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [sourceUrl, setSourceUrl] = useState('');
+  const [sourceTitle, setSourceTitle] = useState('');
   const [tool, setTool] = useState<EditorTool>('select');
   const [rawSelection, setSelection] = useState<EditorSelection>(NO_SELECTION);
   const [ghost, setGhost] = useState(false);
@@ -220,6 +222,8 @@ export function useEditorWorkspace() {
       setTitle(practice.title ?? '');
       setDescription(practice.description ?? '');
       setTags(practice.tags ?? []);
+      setSourceUrl(practice.source_url ?? '');
+      setSourceTitle(practice.source_title ?? '');
       openScript(result.script);
     })();
     return () => {
@@ -234,6 +238,8 @@ export function useEditorWorkspace() {
     setTitle('');
     setDescription('');
     setTags([]);
+    setSourceUrl('');
+    setSourceTitle('');
     openScript(emptyScript());
     if (openId) router.replace('/practice');
   };
@@ -273,6 +279,10 @@ export function useEditorWorkspace() {
     setDescription,
     tags,
     setTags,
+    sourceUrl,
+    setSourceUrl,
+    sourceTitle,
+    setSourceTitle,
     tool,
     selection,
     setSelection,

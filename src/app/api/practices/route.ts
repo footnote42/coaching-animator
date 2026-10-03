@@ -9,7 +9,7 @@ import type { Json } from '@/lib/supabase/database.types';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const LIST_COLUMNS = 'id, title, description, visibility, tags, schema_version, created_at, updated_at';
+const LIST_COLUMNS = 'id, title, description, visibility, tags, source_url, source_title, schema_version, created_at, updated_at';
 
 /** GET /api/practices: the signed-in Coach's own Practices, every visibility, newest first. */
 export async function GET() {
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { title, description, visibility, tags, script } = parsed.data;
+    const { title, description, visibility, tags, sourceUrl, sourceTitle, script } = parsed.data;
 
     if (new TextEncoder().encode(JSON.stringify(script ?? null)).length > MAX_SCRIPT_BYTES) {
       return NextResponse.json(
@@ -108,6 +108,8 @@ export async function POST(request: NextRequest) {
         description: description ?? null,
         visibility,
         tags,
+        source_url: sourceUrl ?? null,
+        source_title: sourceTitle ?? null,
         script: script as Json,
         schema_version: result.script.schemaVersion,
       })
