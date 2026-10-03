@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { PracticeImport } from '@/features/practice/components/PracticeImport';
 
 export const metadata = {
-  title: 'Import script',
+  title: 'Practice editor',
 };
 
 export default function PracticePage() {
