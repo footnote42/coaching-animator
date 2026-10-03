@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PublicPracticesQuerySchema } from '@/lib/schemas/practices';
-import { resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
+import { resolveStep, validate, stepCount, type ResolvedStep } from '@/features/practice/engine';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -14,12 +14,25 @@ function toThumbnail(script: unknown): ResolvedStep | null {
   return result.ok ? resolveStep(result.script, 0) : null;
 }
 
-/** GET /api/practices/public?q=&page=: public Practices, newest first. No auth. */
+/** What a Gallery card shows, derived from the stored script. Null counts when the script no longer validates. */
+function toSummary(script: unknown) {
+  const result = validate(script);
+  if (!result.ok) return { playerCount: null, area: null, progressionCount: 0 };
+  const base = resolveStep(result.script, 0);
+  return {
+    playerCount: base.markers.filter((m) => m.kind === 'attacker' || m.kind === 'defender').length,
+    area: { width: base.area.width, length: base.area.length },
+    progressionCount: stepCount(result.script) - 1,
+  };
+}
+
+/** GET /api/practices/public?q=&tag=&page=: public Practices, newest first. No auth. */
 export async function GET(request: NextRequest) {
   try {
     const parsed = PublicPracticesQuerySchema.safeParse({
       q: request.nextUrl.searchParams.get('q') ?? undefined,
       page: request.nextUrl.searchParams.get('page') ?? undefined,
+      tag: request.nextUrl.searchParams.get('tag') ?? undefined,
     });
     if (!parsed.success) {
       return NextResponse.json(
@@ -27,17 +40,19 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { q, page } = parsed.data;
+    const { q, tag, page } = parsed.data;
     const from = (page - 1) * PAGE_SIZE;
 
     const supabase = await createSupabaseServerClient();
     let query = supabase
       .from('practices')
-      .select('id, title, description, created_at, script')
+      .select('id, owner_id, title, description, created_at, script, tags, source_url')
       .eq('visibility', 'public')
       .eq('hidden', false)
       .order('created_at', { ascending: false })
       .range(from, from + PAGE_SIZE); // one extra row tells us whether another page exists
+
+    if (tag) query = query.contains('tags', [tag]);
 
     if (q) {
       const escaped = q.replace(/[\\%_]/g, (c) => `\\${c}`);
@@ -54,17 +69,27 @@ export async function GET(request: NextRequest) {
     }
 
     const rows = data ?? [];
-    const practices = rows.slice(0, PAGE_SIZE).map((row) => {
-      const progressions = (row.script as { progressions?: unknown[] } | null)?.progressions;
-      return {
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        created_at: row.created_at,
-        progressionCount: Array.isArray(progressions) ? progressions.length : 0,
-        thumbnail: toThumbnail(row.script),
-      };
-    });
+    const pageRows = rows.slice(0, PAGE_SIZE);
+
+    // Coach display names (publicly readable); a failed lookup just leaves the name off.
+    const names = new Map<string, string | null>();
+    const ownerIds = [...new Set(pageRows.map((r) => r.owner_id as string))];
+    if (ownerIds.length > 0) {
+      const { data: profiles } = await supabase.from('user_profiles').select('id, display_name').in('id', ownerIds);
+      profiles?.forEach((p) => names.set(p.id, p.display_name));
+    }
+
+    const practices = pageRows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      created_at: row.created_at,
+      tags: (row.tags as string[] | null) ?? [],
+      coachName: names.get(row.owner_id as string) ?? null,
+      hasSource: Boolean(row.source_url),
+      ...toSummary(row.script),
+      thumbnail: toThumbnail(row.script),
+    }));
     return NextResponse.json({ practices, page, hasMore: rows.length > PAGE_SIZE });
   } catch (err) {
     console.error('[Practices API] Fatal public GET Error:', err);
