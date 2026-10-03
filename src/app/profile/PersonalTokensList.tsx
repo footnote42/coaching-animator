@@ -75,8 +75,8 @@ export function PersonalTokensList() {
       setNewPlaintext(data.plaintext);
       setNewName('');
       await fetchTokens(); // refresh list
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setCreating(false);
     }
@@ -97,8 +97,8 @@ export function PersonalTokensList() {
       setDialogOpen(false);
       setRevokingId(null);
       await fetchTokens(); // refresh list
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -130,7 +130,7 @@ export function PersonalTokensList() {
         <div className="mb-8 p-4 border border-green-200 bg-green-50 rounded-none">
           <h3 className="font-semibold text-green-900 mb-2">Token created successfully</h3>
           <p className="text-sm text-green-800 mb-4">
-            Copy this token now. <strong>You won't see it again!</strong>
+            Copy this token now. <strong>You won&apos;t see it again!</strong>
           </p>
           <div className="flex gap-2 items-center bg-white p-2 border border-green-200">
             <code className="text-sm text-green-900 break-all flex-1">{newPlaintext}</code>
@@ -215,7 +215,7 @@ export function PersonalTokensList() {
                       <DialogHeader>
                         <DialogTitle>Revoke AI Connection</DialogTitle>
                         <DialogDescription>
-                          Are you sure you want to revoke access for "{token.name}"? This action cannot be undone, and the token will immediately stop working.
+                          Are you sure you want to revoke access for &quot;{token.name}&quot;? This action cannot be undone, and the token will immediately stop working.
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>

@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } }
 ) {
   const user = await requireAuth();

@@ -8,7 +8,7 @@ import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { createTokenSchema } from '@/lib/schemas/tokens';
 import { randomBytes, createHash } from 'node:crypto';
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const user = await requireAuth();
   if (isAuthError(user)) return user;
 
