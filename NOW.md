@@ -4,8 +4,10 @@
 LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), and #84 the MCP endpoint (live, but the AI flow needs work: see below).
 
 ## Next
-Frontier: rework the AI + MCP flow. First real try (Claude Code, MCP not connected) wrote a JSON file and pointed at localhost with a made-up "Import Practice" button instead of saving to the account. Fix the skill so it uses the MCP tools when present, make setup easier, and look at OAuth so claude.ai connectors work.
+Frontier: #109 skill saves via MCP first (first real try had neither skill nor MCP installed, so the AI wrote a local file and pointed at localhost), then #110 copy-ready MCP setup on /profile.
 Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer tickets: #92, #93.
+- Parked: OAuth on `/api/mcp` so claude.ai and desktop connectors can sign in without a token. Revisit when Coaches outside Claude Code need it.
+- The skill is installed for Claude Code at `~/.claude/skills/coaching-animator` (a junction to `skill/coaching-animator` in the main checkout, so it updates on pull).
 - README needs a refresh (out of date since the restart).
 
 ## Waiting on you
