@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
+import { ReportPracticeDialog } from './ReportPracticeDialog';
 import { GalleryThumbnail, type GalleryThumbnailData } from './GalleryThumbnail';
 
 interface PublicPractice {
@@ -23,6 +24,7 @@ export function ExploreClient() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [reportingId, setReportingId] = useState<string | null>(null);
 
   const load = useCallback(async (query: string, p: number) => {
     setLoading(true);
@@ -93,9 +95,18 @@ export function ExploreClient() {
                 </p>
               </div>
             </Link>
+            <button
+              type="button"
+              onClick={() => setReportingId(p.id)}
+              className="mt-1 min-h-[44px] px-2 text-xs text-text-primary underline"
+            >
+              Report
+            </button>
           </li>
         ))}
       </ul>
+
+      {reportingId && <ReportPracticeDialog practiceId={reportingId} onClose={() => setReportingId(null)} />}
 
       {loading && <p role="status" className="mt-4 text-sm text-text-primary">Loading...</p>}
       {hasMore && !loading && (
