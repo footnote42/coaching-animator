@@ -85,26 +85,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section: what the app is for (needed for Google sign-in verification) */}
-      <section className="py-12 md:py-16 bg-surface" aria-labelledby="about-heading">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 id="about-heading" className="text-2xl md:text-3xl font-heading font-bold text-text-primary mb-4">
-            What is Coaching Animator?
-          </h2>
-          <p className="text-text-primary/80 mb-4">
-            Coaching Animator is a free web app for rugby coaches. You draw a coaching Practice on a pitch, animate the
-            players&apos; runs and passes, and share a link so players and co-coaches can watch it on their phones before
-            training. Anyone can use the editor and browse the public Gallery without an account.
-          </p>
-          <p className="text-text-primary/80">
-            You only need an account to save Practices and publish them. You can sign in with Google or with an email and
-            password. If you choose Google, we use only your name and email address to create your account, and nothing
-            else from your Google account. See our{' '}
-            <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> for details.
-          </p>
-        </div>
-      </section>
-
       {/* Features Section */}
       <section className="py-16 md:py-24 bg-surface-warm">
         <div className="max-w-6xl mx-auto px-4">
@@ -173,6 +153,26 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* About Section: what the app is for (needed for Google sign-in verification) */}
+      <section className="py-12 md:py-16 bg-surface-warm" aria-labelledby="about-heading">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 id="about-heading" className="text-2xl md:text-3xl font-heading font-bold text-text-primary mb-4">
+            What is Coaching Animator?
+          </h2>
+          <p className="text-text-primary/80 mb-4">
+            Coaching Animator is a free web app for rugby coaches. You draw a coaching Practice on a pitch, animate the
+            players&apos; runs and passes, and share a link so players and co-coaches can watch it on their phones before
+            training. Anyone can use the editor and browse the public Gallery without an account.
+          </p>
+          <p className="text-text-primary/80">
+            You only need an account to save Practices and publish them. You can sign in with Google or with an email and
+            password. If you choose Google, we use only your name and email address to create your account, and nothing
+            else from your Google account. See our{' '}
+            <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> for details.
+          </p>
         </div>
       </section>
 

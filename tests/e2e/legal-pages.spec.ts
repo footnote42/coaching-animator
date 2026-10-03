@@ -16,15 +16,11 @@ test.describe('Legal Compliance: Legal Pages', () => {
     const h = (name: RegExp) => page.getByRole('heading', { name });
 
     await expect(h(/Description of Service/)).toBeVisible();
-    await expect(page.getByText('Tiered Access Model')).toBeVisible();
+    await expect(page.getByText(/Guests/).first()).toBeVisible();
     await expect(page.getByText(/CC-BY-SA 4\.0/).first()).toBeVisible();
     await expect(page.getByText(/Creative Commons/).first()).toBeVisible();
-    await expect(page.getByText(/Tier 0/).first()).toBeVisible();
-    await expect(page.getByText(/Tier 1/).first()).toBeVisible();
-    await expect(page.getByText(/50 animations/).first()).toBeVisible();
-    await expect(page.getByText(/10 frames/).first()).toBeVisible();
-    await expect(h(/Remixed Animations/)).toBeVisible();
     await expect(page.getByText(/ShareAlike/).first()).toBeVisible();
+    await expect(h(/Service Limits/)).toBeVisible();
     await expect(h(/Prohibited Content/)).toBeVisible();
   });
 
@@ -45,13 +41,13 @@ test.describe('Legal Compliance: Legal Pages', () => {
     await expect(page.getByText(/Report button/)).toBeVisible();
     await expect(page.getByText(/safeguarding/).first()).toBeVisible();
     await expect(page.getByText(/We aim to reply within 14 days/)).toBeVisible();
-    await expect(page.getByRole('link', { name: 'contact form' })).toHaveAttribute('href', '/contact');
+    await expect(page.getByRole('link', { name: 'hello@waynetellis.com' }).first()).toHaveAttribute('href', 'mailto:hello@waynetellis.com');
   });
 
   test('ToS describes content ownership clearly', async ({ page }) => {
     await page.goto('http://localhost:3000/terms');
 
-    await expect(page.getByRole('heading', { name: 'Private Animations' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your Practices' })).toBeVisible();
     await expect(page.getByText(/You retain full ownership/)).toBeVisible();
   });
 
