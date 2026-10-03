@@ -18,13 +18,17 @@ function toThumbnail(script: unknown) {
   const s = (script ?? {}) as {
     area?: { width: number; length: number };
     markers?: Array<{ id: string; kind: string; team?: string }>;
-    base?: { placements?: Array<{ marker: string; cell: { x: number; y: number } }> };
+    base?: { placements?: Array<{ marker: string; cell?: { x: number; y: number }; holder?: string }> };
   };
   const byId = new Map((s.markers ?? []).map((m) => [m.id, m]));
   const markers: ThumbnailMarker[] = [];
-  for (const p of s.base?.placements ?? []) {
+  const placements = s.base?.placements ?? [];
+  const cellOf = new Map(placements.filter((p) => p.cell).map((p) => [p.marker, p.cell!]));
+  for (const p of placements) {
     const m = byId.get(p.marker);
-    if (m) markers.push({ kind: m.kind, team: m.team, cell: p.cell });
+    // The ball has a holder instead of a cell and sits on its holder.
+    const cell = p.cell ?? (p.holder ? cellOf.get(p.holder) : undefined);
+    if (m && cell) markers.push({ kind: m.kind, team: m.team, cell });
   }
   return { area: s.area ?? { width: 1, length: 1 }, markers };
 }
