@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
+import { ThemeToggle } from './ThemeToggle';
 import { useTabOrder, SectionId } from '@/shared/hooks/useTabOrder';
 
 type NavigationSectionId = SectionId;
@@ -152,6 +153,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               Sign in
             </Link>
           )}
+
+          <ThemeToggle />
 
           {/* Mobile hamburger */}
           <button
