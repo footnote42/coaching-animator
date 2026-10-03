@@ -155,7 +155,7 @@ export function PracticeImport() {
       <section className="flex min-w-0 flex-col gap-3 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
-          <Button variant="outline" className={cn(TOOL_BUTTON, 'hidden md:inline-flex')} onClick={newPractice}>
+          <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
             <FilePlus /> New
           </Button>
         </div>
@@ -178,17 +178,12 @@ export function PracticeImport() {
           onOpen={(id) => router.push(`/practice?id=${id}`)}
           hideListOnMobile
         />
-        <div className="hidden md:block">
+        <div>
           <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
         </div>
 
         <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
-
-        <div className="rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-text-primary md:hidden">
-          Only drag, delete, label and Commentary edits are offered on a phone. Bigger changes go through a tablet, desktop or your AI.
-        </div>
-
-        <div className="hidden flex-col gap-3 md:flex">
+        <div className="flex flex-col gap-3">
           <PracticeScriptActions text={scriptText} isGuest={isGuest} />
           <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
           <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
@@ -252,7 +247,7 @@ export function PracticeImport() {
               </Button>
             );
           })}
-          <div className="hidden md:block">
+          <div>
             <AddProgressionButton
               script={script}
               onAdd={(next) => commit(next) && playStep(next.progressions.length)}
@@ -261,7 +256,7 @@ export function PracticeImport() {
         </div>
 
         <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1">
-          <div className="hidden flex-wrap items-center gap-1 md:flex">
+          <div className="flex flex-wrap items-center gap-1">
             {(
               [
                 { id: 'select', name: 'Select and drag', icon: <MousePointer2 /> },
@@ -281,7 +276,7 @@ export function PracticeImport() {
                 {icon}
               </Button>
             ))}
-            <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
+            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
             {PALETTE.map(({ kind, name }) => (
               <Button
                 key={kind}
@@ -300,7 +295,7 @@ export function PracticeImport() {
                 <span className="hidden lg:inline">{name}</span>
               </Button>
             ))}
-            <span className="mx-1 h-8 w-px bg-[var(--color-border)]" aria-hidden />
+            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
           </div>
           <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
             <Undo2 />
