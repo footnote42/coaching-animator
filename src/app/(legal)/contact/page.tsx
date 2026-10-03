@@ -152,8 +152,8 @@ export default function ContactPage() {
         <h2 className="text-lg font-heading font-semibold text-text-primary mb-4">Other Ways to Reach Us</h2>
         <p className="text-text-primary/70">
           For urgent matters or if the form isn&apos;t working, you can email us directly at{' '}
-          <a href="mailto:support@coachinganimator.com" className="text-primary hover:underline">
-            support@coachinganimator.com
+          <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">
+            hello@waynetellis.com
           </a>
         </p>
       </div>
