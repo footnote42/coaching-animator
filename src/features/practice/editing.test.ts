@@ -296,6 +296,24 @@ describe('Progressions: editing inside a Step', () => {
     expect(validate(script).ok).toBe(true);
   });
 
+  it('records a catch on the run in a Progression as setPass with its waypoint', () => {
+    const script = stepEdits(
+      addProgression(base, 'time'),
+      1,
+      { type: 'addWaypoint', marker: 'a2', at: at(8, 4) },
+      { type: 'addWaypoint', marker: 'a2', at: at(8, 8) },
+      { type: 'setCatch', id: 'p1', at: 0 },
+    );
+    expect(script.progressions[0].changes).toEqual([
+      { type: 'setMove', marker: 'a2', waypoints: [{ x: 8, y: 4 }, { x: 8, y: 8 }] },
+      { type: 'setPass', id: 'p1', from: 'a1', to: 'a2', at: 0 },
+    ]);
+    expect(script.base.passes).toEqual(base.base.passes);
+    expect(validate(script).ok).toBe(true);
+    const back = stepEdits(script, 1, { type: 'setCatch', id: 'p1', at: null });
+    expect(back.progressions[0].changes).toEqual([script.progressions[0].changes[0]]);
+  });
+
   it('a no-op edit in a Progression returns the same script', () => {
     const script = addProgression(base, 'people');
     expect(applyStepEdit(script, 1, { type: 'moveMarker', marker: 'a2', at: at(8, 1) })).toBe(script);

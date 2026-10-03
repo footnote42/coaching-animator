@@ -528,7 +528,7 @@ export function PracticeImport() {
               <span>Passes:</span>
               {passes.map((pass) => {
                 const name = (id: string) => script.markers.find((m) => m.id === id)?.label ?? id;
-                const run = script.base.moves.find((m) => m.marker === pass.to);
+                const run = step?.moves.find((m) => m.marker === pass.to);
                 return (
                   <span key={pass.id} className="flex items-center gap-1">
                     <Button
