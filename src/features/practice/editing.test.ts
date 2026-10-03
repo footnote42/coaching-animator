@@ -469,3 +469,93 @@ describe('Progressions: reorder, delete, Lever and Commentary', () => {
     expect(state.script.progressions[0].changes).toHaveLength(1);
   });
 });
+
+describe('applyEdit: more than one ball', () => {
+  const two = edits(
+    emptyScript(),
+    { type: 'addMarker', kind: 'attacker', at: at(1, 1) },
+    { type: 'addMarker', kind: 'attacker', at: at(8, 1) },
+    { type: 'addMarker', kind: 'attacker', at: at(15, 1) },
+    { type: 'addMarker', kind: 'ball', at: at(1, 1) },
+    { type: 'addBall', holder: 'a2' },
+  );
+
+  it('adds a second and third ball to players without one, up to the limit', () => {
+    expect(two.markers.filter((m) => m.kind === 'ball').map((m) => m.id)).toEqual(['ball', 'ball1']);
+    expect(two.base.placements.filter((p) => p.holder).map((p) => p.holder)).toEqual(['a1', 'a2']);
+    expect(typeof applyEdit(two, { type: 'addBall', holder: 'a1' })).toBe('string');
+    const three = edits(two, { type: 'addBall', holder: 'a3' });
+    expect(validate(three).ok).toBe(true);
+    const four = edits(three, { type: 'addMarker', kind: 'attacker', at: at(3, 3) });
+    expect(typeof applyEdit(four, { type: 'addBall', holder: 'a4' })).toBe('string');
+  });
+
+  it('keeps the first ball as the default and writes ball only for the others', () => {
+    const script = edits(
+      two,
+      { type: 'addPass', from: 'a1', to: 'a3' },
+      { type: 'addPass', from: 'a2', to: 'a1', ball: 'ball1' },
+    );
+    expect(script.base.passes).toEqual([
+      { id: 'p1', from: 'a1', to: 'a3' },
+      { id: 'p2', from: 'a2', to: 'a1', ball: 'ball1' },
+    ]);
+    expect(validate(script).ok).toBe(true);
+    expect(typeof applyEdit(two, { type: 'addPass', from: 'a1', to: 'a3', ball: 'ball1' })).toBe('string');
+    expect(typeof applyEdit(two, { type: 'addPass', from: 'a1', to: 'a3', ball: 'nope' })).toBe('string');
+  });
+
+  it('chains passes per ball', () => {
+    const script = edits(
+      two,
+      { type: 'addPass', from: 'a1', to: 'a3' },
+      { type: 'addPass', from: 'a2', to: 'a1', ball: 'ball1' },
+      { type: 'addPass', from: 'a3', to: 'a2' },
+    );
+    expect(script.base.passes.map((p) => [p.from, p.to, p.ball])).toEqual([
+      ['a1', 'a3', undefined],
+      ['a2', 'a1', 'ball1'],
+      ['a3', 'a2', undefined],
+    ]);
+  });
+
+  it('changes the ball a pass moves, or refuses when the chain would break', () => {
+    const passed = edits(two, { type: 'addPass', from: 'a2', to: 'a3', ball: 'ball1' });
+    expect(typeof applyEdit(passed, { type: 'setPassBall', id: 'p1', ball: 'ball' })).toBe('string');
+    const fromFirst = edits(two, { type: 'addPass', from: 'a1', to: 'a3' });
+    expect(typeof applyEdit(fromFirst, { type: 'setPassBall', id: 'p1', ball: 'ball1' })).toBe('string');
+    expect(applyEdit(fromFirst, { type: 'setPassBall', id: 'p1', ball: 'ball' })).toBe(fromFirst);
+  });
+
+  it('removing a ball removes only its passes', () => {
+    const script = edits(
+      two,
+      { type: 'addPass', from: 'a1', to: 'a3' },
+      { type: 'addPass', from: 'a2', to: 'a3', ball: 'ball1' },
+    );
+    const noSecond = edits(script, { type: 'removeMarker', marker: 'ball1' });
+    expect(noSecond.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a3' }]);
+    const noFirst = edits(script, { type: 'removeMarker', marker: 'ball' });
+    expect(noFirst.base.passes).toEqual([{ id: 'p2', from: 'a2', to: 'a3', ball: 'ball1' }]);
+    expect(validate(noFirst).ok).toBe(true);
+  });
+
+  it('a removed holder hands its ball to a free player, never one who has a ball', () => {
+    const next = edits(two, { type: 'removeMarker', marker: 'a2' });
+    const holders = next.base.placements.filter((p) => p.holder).map((p) => p.holder);
+    expect(holders).toEqual(['a1', 'a3']);
+    expect(validate(next).ok).toBe(true);
+  });
+
+  it('moving a ball never lands it on another ball’s holder', () => {
+    const moved = edits(two, { type: 'moveMarker', marker: 'ball1', at: at(2, 1) });
+    expect(moved.base.placements.find((p) => p.marker === 'ball1')?.holder).toBe('a2');
+  });
+
+  it('works inside a Progression', () => {
+    const withStep = ok({ ...two, progressions: [{ lever: 'people', commentary: { points: [] }, changes: [] }] }) as PracticeScript;
+    const next = stepEdits(withStep, 1, { type: 'addPass', from: 'a2', to: 'a3', ball: 'ball1' });
+    expect(resolveStep(next, 1).passes).toEqual([{ id: 'p1', from: 'a2', to: 'a3', ball: 'ball1' }]);
+    expect(validate(next).ok).toBe(true);
+  });
+});
