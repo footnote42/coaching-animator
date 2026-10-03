@@ -48,6 +48,11 @@ export const THEME_TOKENS = {
         pitch: '#1A3D1A',
         onPitch: '#F8F9FA',
         amber: '#D97706',
+        inkSoft: '#4A524C',
+        danger: '#B42318',
+        dangerBg: '#FDECEA',
+        success: '#1F6B36',
+        successBg: '#E6F2E3',
         navCover: '#18120A',
     },
     dark: {
@@ -59,6 +64,11 @@ export const THEME_TOKENS = {
         pitch: '#9CC795',
         onPitch: '#131A15',
         amber: '#F0A030',
+        inkSoft: '#AEB2A4',
+        danger: '#F28B82',
+        dangerBg: '#3A1C1C',
+        success: '#8FD19E',
+        successBg: '#1C3324',
         navCover: '#0A0D0B',
     },
 } as const;

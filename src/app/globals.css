@@ -12,6 +12,13 @@
     --color-text-inverse: var(--on-pitch);
     --color-accent-warm: var(--amber);
     --color-accent-hover: oklch(50% 0.14 60);
+    --color-on-accent: var(--on-amber);
+    --color-text-muted: var(--ink-soft);
+    --color-danger: var(--danger);
+    --color-danger-surface: var(--danger-bg);
+    --color-success: var(--success);
+    --color-success-surface: var(--success-bg);
+    --color-scrim: var(--scrim);
 
     /* Typography tokens (fonts are loaded in layout.tsx via next/font) */
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -49,6 +56,13 @@
   --pitch: #1A3D1A;
   --on-pitch: #F8F9FA;
   --amber: #D97706;
+  --on-amber: #1F1505;
+  --ink-soft: #4A524C;
+  --danger: #B42318;
+  --danger-bg: #FDECEA;
+  --success: #1F6B36;
+  --success-bg: #E6F2E3;
+  --scrim: rgba(28, 36, 32, 0.6);
 }
 
 :root[data-theme="dark"] {
@@ -61,6 +75,14 @@
   --pitch: #9CC795;
   --on-pitch: #131A15;
   --amber: #F0A030;
+  --on-amber: #1F1505;
+  --ink-soft: #AEB2A4;
+  --c-nav-cover: #0A0D0B;
+  --danger: #F28B82;
+  --danger-bg: #3A1C1C;
+  --success: #8FD19E;
+  --success-bg: #1C3324;
+  --scrim: rgba(0, 0, 0, 0.7);
 }
 
 /* Additional Tailwind utilities for tactical mono colors */
@@ -85,6 +107,14 @@ body {
 
 .font-hand {
   font-family: var(--font-hand);
+}
+
+h1, h2 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-stretch: 80%;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 /* Focus styles for accessibility */
