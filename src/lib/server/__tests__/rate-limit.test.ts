@@ -48,8 +48,8 @@ describe('checkRateLimit (Postgres-backed)', () => {
 
   it('uses the default config for the endpoint', async () => {
     hit(1);
-    const result = await checkRateLimit('a', 'upvote');
-    expect(result.remaining).toBe(29);
+    const result = await checkRateLimit('a', 'practice_save');
+    expect(result.remaining).toBe(19);
   });
 
   it('fails open and logs when the rpc returns an error', async () => {

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import passingSquare from '@/features/practice/examples/passing-square.json';
+import passingSquareProgressions from '@/features/practice/examples/passing-square-progressions.json';
 
 const mocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
@@ -223,10 +224,10 @@ describe('GET /api/practices/public', () => {
     title: 'T',
     description: null,
     created_at: '2026-01-01',
-    script: { ...passingSquare, progressions: [{}, {}] },
+    script: passingSquareProgressions,
   });
 
-  it('needs no auth and lists public rows newest first with thumbnail data', async () => {
+  it('needs no auth and lists public rows newest first with the base Step as thumbnail', async () => {
     mocks.requireAuth.mockResolvedValue(unauthorized());
     const b = builder({ data: [row('a')], error: null });
     mocks.from.mockReturnValue(b);
@@ -237,10 +238,21 @@ describe('GET /api/practices/public', () => {
     expect(b.eq).toHaveBeenCalledWith('visibility', 'public');
     expect(b.order).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(body.practices[0]).toMatchObject({ id: 'a', progressionCount: 2 });
-    expect(body.practices[0].thumbnail.area).toEqual(passingSquare.area);
-    expect(body.practices[0].thumbnail.markers.length).toBe(passingSquare.base.placements.length);
+    expect(body.practices[0].thumbnail.index).toBe(0);
+    expect(body.practices[0].thumbnail.area).toEqual(passingSquareProgressions.area);
+    expect(body.practices[0].thumbnail.markers.length).toBe(passingSquareProgressions.base.placements.length);
     expect(body.practices[0].script).toBeUndefined();
     expect(body.hasMore).toBe(false);
+  });
+
+  it('gives a null thumbnail for a stored script that no longer validates', async () => {
+    const b = builder({ data: [{ ...row('a'), script: { schemaVersion: 99 } }], error: null });
+    mocks.from.mockReturnValue(b);
+    const res = await GET_PUBLIC(get());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.practices[0].thumbnail).toBeNull();
+    expect(body.practices[0].progressionCount).toBe(0);
   });
 
   it('searches titles and paginates', async () => {

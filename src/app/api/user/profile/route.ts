@@ -16,7 +16,7 @@ export async function GET(_request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     const { data: profile, error } = await supabase
       .from('user_profiles')
-      .select('id, display_name, animation_count, role, created_at, max_animations, club_name, primary_strip_color, secondary_strip_color, club_badge_url')
+      .select('id, display_name, role, created_at')
       .eq('id', user.id)
       .single();
 
@@ -84,10 +84,6 @@ export async function PUT(request: NextRequest) {
       updated_at: new Date().toISOString(),
     };
     if (parsed.data.display_name !== undefined) updateData.display_name = parsed.data.display_name;
-    if (parsed.data.club_name !== undefined) updateData.club_name = parsed.data.club_name;
-    if (parsed.data.primary_strip_color !== undefined) updateData.primary_strip_color = parsed.data.primary_strip_color;
-    if (parsed.data.secondary_strip_color !== undefined) updateData.secondary_strip_color = parsed.data.secondary_strip_color;
-    if (parsed.data.club_badge_url !== undefined) updateData.club_badge_url = parsed.data.club_badge_url;
 
     const { data: updated, error } = await supabase
       .from('user_profiles')

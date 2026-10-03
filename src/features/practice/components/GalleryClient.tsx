@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 import { ReportPracticeDialog } from './ReportPracticeDialog';
-import { GalleryThumbnail, type GalleryThumbnailData } from './GalleryThumbnail';
+import { PracticeThumbnail } from './PracticeThumbnail';
+import type { ResolvedStep } from '@/features/practice/engine';
 
 interface PublicPractice {
   id: string;
@@ -12,11 +13,12 @@ interface PublicPractice {
   description: string | null;
   created_at: string;
   progressionCount: number;
-  thumbnail: GalleryThumbnailData;
+  /** The base Step, or null if the script could not be read. */
+  thumbnail: ResolvedStep | null;
 }
 
-/** Public Practices, newest first, with title search. */
-export function ExploreClient() {
+/** The Gallery: public Practices, newest first, with title search. */
+export function GalleryClient() {
   const [input, setInput] = useState('');
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
@@ -56,7 +58,7 @@ export function ExploreClient() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <h1 className="mb-4 text-2xl font-semibold text-text-primary">Explore Practices</h1>
+      <h1 className="mb-4 text-2xl font-semibold text-text-primary">Gallery</h1>
       <form onSubmit={search} className="mb-6 flex gap-2" role="search">
         <input
           type="search"
@@ -86,7 +88,11 @@ export function ExploreClient() {
               className="block border border-[var(--color-border)] bg-[var(--color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <div className="aspect-[4/3] w-full overflow-hidden">
-                <GalleryThumbnail {...p.thumbnail} />
+                {p.thumbnail ? (
+                  <PracticeThumbnail step={p.thumbnail} showMoves={false} className="h-full w-full" />
+                ) : (
+                  <div className="h-full w-full bg-primary" />
+                )}
               </div>
               <div className="p-3">
                 <h2 className="truncate text-sm font-medium text-text-primary">{p.title}</h2>

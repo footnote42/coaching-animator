@@ -8,7 +8,7 @@ import { getFriendlyErrorMessage } from '@/lib/error-messages';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') ?? '/app';
+  const redirect = searchParams.get('redirect') ?? '/practice';
   const error = searchParams.get('error');
 
   const [email, setEmail] = useState('');

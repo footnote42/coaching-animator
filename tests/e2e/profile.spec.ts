@@ -80,11 +80,6 @@ test.describe('Profile Page (Coach Identity)', () => {
     expect(overflow).toBe(false);
   });
 
-  test('animation count visible', async ({ page }) => {
-    await page.goto('/profile');
-    await expect(page.locator('text=/\\d+ \\/ 50/')).toBeVisible({ timeout: 10000 });
-  });
-
   test('quick links visible', async ({ page }) => {
     await page.goto('/profile');
     
@@ -94,7 +89,7 @@ test.describe('Profile Page (Coach Identity)', () => {
     const quickLinksHeader = page.locator('text=Quick Links');
     await expect(quickLinksHeader).toBeVisible({ timeout: 10000 });
     
-    await expect(page.locator('a[href="/my-gallery"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('a[href="/my-practices"]')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('a[href="/gallery"]')).toBeVisible({ timeout: 10000 });
   });
 });

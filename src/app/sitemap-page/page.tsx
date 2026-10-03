@@ -15,184 +15,35 @@ interface RouteNode {
 }
 
 const siteStructure: RouteNode[] = [
+    { path: '/', name: 'Home', description: 'Landing page', auth: 'public', status: 'working' },
     {
-        path: '/',
-        name: 'Home / Landing Page',
-        description: 'Main landing page with feature overview and CTAs',
+        path: '/practice',
+        name: 'Practice editor',
+        description: 'Draw a Practice and its Progressions. Guests can try it without signing in.',
         auth: 'public',
         status: 'working'
     },
+    { path: '/gallery', name: 'Gallery', description: 'Practices that Coaches have published', auth: 'public', status: 'working' },
+    { path: '/my-practices', name: 'My Practices', description: 'Your saved Practices', auth: 'protected', status: 'working' },
+    { path: '/p/[id]', name: 'Share view', description: 'Watch a shared Practice', auth: 'public', status: 'working' },
+    { path: '/practice-script/v1/guide', name: 'Practice Script guide', description: 'How to write a Practice Script, for Coaches and agents', auth: 'public', status: 'working' },
+    { path: '/profile', name: 'Profile', description: 'Your name, password and account', auth: 'protected', status: 'working' },
+    { path: '/login', name: 'Login', description: 'Sign in', auth: 'public', status: 'working' },
+    { path: '/register', name: 'Register', description: 'Create an account', auth: 'public', status: 'working' },
+    { path: '/forgot-password', name: 'Forgot Password', description: 'Request a password reset', auth: 'public', status: 'working' },
+    { path: '/reset-password', name: 'Reset Password', description: 'Complete a password reset', auth: 'public', status: 'working' },
+    { path: '/admin', name: 'Admin Dashboard', description: 'Practice reports and bans', auth: 'admin', status: 'working' },
     {
-        path: '/app',
-        name: 'Animation Editor',
-        description: 'Main canvas editor for creating animations',
-        auth: 'public',
-        status: 'working',
-        children: [
-            {
-                path: '/app?mode=guest',
-                name: 'Guest Mode',
-                description: '10-frame limit, no save to cloud',
-                auth: 'public'
-            }
-        ]
-    },
-    {
-        path: '/gallery',
-        name: 'Public Gallery',
-        description: 'Browse all published animations from the community (links to /replay/[id])',
+        path: '/help',
+        name: 'Help',
+        description: 'How-to and coaching guides',
         auth: 'public',
         status: 'working'
     },
-    {
-        path: '/my-gallery',
-        name: 'My Playbook',
-        description: 'Personal saved animations (cloud storage)',
-        auth: 'protected',
-        status: 'working'
-    },
-    {
-        path: '/replay/[id]',
-        name: 'Replay Viewer',
-        description: 'View shared animation replays',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/profile',
-        name: 'User Profile',
-        description: 'View and edit user profile',
-        auth: 'protected',
-        status: 'working'
-    },
-    {
-        path: '/login',
-        name: 'Login',
-        description: 'User authentication',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/register',
-        name: 'Register',
-        description: 'Create new account',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/forgot-password',
-        name: 'Forgot Password',
-        description: 'Request password reset',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/reset-password',
-        name: 'Reset Password',
-        description: 'Complete password reset',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/admin',
-        name: 'Admin Dashboard',
-        description: 'Moderation and analytics',
-        auth: 'admin',
-        status: 'working',
-        children: [
-            {
-                path: '/admin/reports',
-                name: 'Reports Queue',
-                description: 'Review flagged content',
-                auth: 'admin'
-            },
-            {
-                path: '/admin/animations',
-                name: 'All Animations',
-                description: 'Manage all animations',
-                auth: 'admin'
-            },
-            {
-                path: '/admin/users',
-                name: 'User Management',
-                description: 'View and manage users',
-                auth: 'admin'
-            }
-        ]
-    },
-    {
-        path: '/terms',
-        name: 'Terms of Service',
-        description: 'Legal terms and conditions',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/privacy',
-        name: 'Privacy Policy',
-        description: 'Data privacy and usage policy',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/contact',
-        name: 'Contact',
-        description: 'Contact form and support',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/offline',
-        name: 'Offline Fallback',
-        description: 'Offline mode page',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/sitemap-page',
-        name: 'Site Map',
-        description: 'This page - complete site navigation structure',
-        auth: 'public',
-        status: 'working'
-    },
-    {
-        path: '/api',
-        name: 'API Routes',
-        description: 'Backend endpoints',
-        auth: 'public',
-        children: [
-            {
-                path: '/api/animations',
-                name: 'Animations API',
-                description: 'CRUD operations for animations',
-                auth: 'protected'
-            },
-            {
-                path: '/api/gallery',
-                name: 'Gallery API',
-                description: 'Fetch public gallery items',
-                auth: 'public'
-            },
-            {
-                path: '/api/upvote',
-                name: 'Upvote API',
-                description: 'Handle animation upvotes',
-                auth: 'protected'
-            },
-            {
-                path: '/api/report',
-                name: 'Report API',
-                description: 'Submit content reports',
-                auth: 'protected'
-            },
-            {
-                path: '/api/admin',
-                name: 'Admin API',
-                description: 'Admin operations',
-                auth: 'admin'
-            }
-        ]
-    }
+    { path: '/terms', name: 'Terms of Service', description: 'Legal terms and conditions', auth: 'public', status: 'working' },
+    { path: '/privacy', name: 'Privacy Policy', description: 'Data privacy and usage policy', auth: 'public', status: 'working' },
+    { path: '/contact', name: 'Contact', description: 'Contact form and support', auth: 'public', status: 'working' },
+    { path: '/sitemap-page', name: 'Site Map', description: 'This page', auth: 'public', status: 'working' },
 ];
 
 function RouteIcon({ auth }: { auth?: string }) {

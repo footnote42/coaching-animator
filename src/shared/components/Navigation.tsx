@@ -21,8 +21,8 @@ interface TabSection {
 const TAB_SECTIONS: TabSection[] = [
   { id: 'home',      label: 'Home',        href: '/',          cssVar: '--c-tab-home',      requiresAuth: false },
   { id: 'gallery',   label: 'Gallery',     href: '/gallery',   cssVar: '--c-tab-gallery',   requiresAuth: false },
-  { id: 'playbook',  label: 'My Playbook', href: '/my-gallery', cssVar: '--c-tab-playbook', requiresAuth: true  },
-  { id: 'create',    label: 'Create',      href: '/app',       cssVar: '--c-tab-create',    requiresAuth: false },
+  { id: 'playbook',  label: 'My Practices', href: '/my-practices', cssVar: '--c-tab-playbook', requiresAuth: true  },
+  { id: 'create',    label: 'Create',      href: '/practice',  cssVar: '--c-tab-create',    requiresAuth: false },
   { id: 'help',      label: 'Help',        href: '/help',      cssVar: '--c-tab-help',      requiresAuth: false },
   { id: 'profile',   label: 'Profile',     href: '/profile',   cssVar: '--c-tab-profile',   requiresAuth: true  },
 ];
@@ -67,8 +67,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
   const isActive = (path: string) => pathname === path;
 
-  // Share routes are watch-only — no chrome
-  if (pathname.startsWith('/share/') || pathname.startsWith('/p/')) return null;
+  // The share view is watch-only: no chrome
+  if (pathname.startsWith('/p/')) return null;
 
   // Simplified nav for auth pages
   if (variant === 'simple') {

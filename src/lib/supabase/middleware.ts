@@ -44,7 +44,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.user;
 
   // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ['/my-gallery', '/admin'];
+  const protectedPaths = ['/my-practices', '/admin'];
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
