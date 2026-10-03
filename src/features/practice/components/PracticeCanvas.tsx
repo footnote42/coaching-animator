@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, type ReactNode } from 'react';
+import React, { useMemo, useRef, type ReactNode } from 'react';
 import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
 import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
