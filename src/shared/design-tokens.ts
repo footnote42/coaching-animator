@@ -32,3 +32,33 @@ export const DESIGN_TOKENS = {
         borderWidth: 1,
     },
 } as const;
+
+/**
+ * Theme colours. Light is the default; dark applies under html[data-theme="dark"].
+ * The values are applied through CSS variables in src/app/globals.css (keep the two in step).
+ * Area / pitch colours are deliberately not here: they are the same in both themes.
+ */
+export const THEME_TOKENS = {
+    light: {
+        paper: '#F1EFE6',
+        card: '#FBFAF4',
+        cardWarm: '#EDE9DA',
+        ink: '#1C2420',
+        line: '#1C2420',
+        pitch: '#1A3D1A',
+        onPitch: '#F8F9FA',
+        amber: '#D97706',
+        navCover: '#18120A',
+    },
+    dark: {
+        paper: '#131A15',
+        card: '#1B241E',
+        cardWarm: '#222D26',
+        ink: '#E9E6D8',
+        line: '#8C9888',
+        pitch: '#9CC795',
+        onPitch: '#131A15',
+        amber: '#F0A030',
+        navCover: '#0A0D0B',
+    },
+} as const;
