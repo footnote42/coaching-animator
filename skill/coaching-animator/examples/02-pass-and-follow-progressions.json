@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "title": "Pass and follow, with Progressions",
+  "area": { "width": 20, "length": 12 },
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "a3", "kind": "attacker", "label": "3" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "d1", "kind": "defender", "label": "D" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 2, "y": 6 } },
+      { "marker": "a2", "cell": { "x": 8, "y": 8 } },
+      { "marker": "a3", "cell": { "x": 14, "y": 6 } },
+      { "marker": "ball", "holder": "a1" }
+    ],
+    "moves": [
+      { "marker": "a2", "waypoints": [{ "x": 10, "y": 6 }], "pace": "walk" },
+      { "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "walk", "after": { "pass": "p1" } }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a1", "to": "a2" },
+      { "id": "p2", "from": "a2", "to": "a3" }
+    ],
+    "commentary": {
+      "points": [
+        "Walk it first: pass, then follow your pass",
+        "Receivers show a target before the ball arrives"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "time",
+      "commentary": {
+        "points": [
+          "Everyone sprints, so the pass has to be quicker and still accurate",
+          "Catch on the run and keep your feet moving"
+        ]
+      },
+      "changes": [
+        { "type": "setMove", "marker": "a2", "waypoints": [{ "x": 10, "y": 6 }], "pace": "sprint" },
+        { "type": "setMove", "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "sprint", "after": { "pass": "p1" } },
+        { "type": "setPass", "id": "p2", "from": "a2", "to": "a3", "at": 0 }
+      ]
+    },
+    {
+      "lever": "people",
+      "commentary": {
+        "points": [
+          "A defender drifts across, so the last pass has to be decided, not assumed",
+          "Look up before you release the ball"
+        ]
+      },
+      "changes": [
+        { "type": "addMarker", "marker": "d1", "cell": { "x": 13, "y": 2 } },
+        { "type": "setMove", "marker": "d1", "waypoints": [{ "x": 16, "y": 4 }], "pace": "jog" }
+      ]
+    }
+  ]
+}

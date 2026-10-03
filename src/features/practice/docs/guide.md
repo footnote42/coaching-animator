@@ -228,3 +228,15 @@ should get harder in each Progression.]
 ```
 
 If the assistant cannot open links, paste this guide in with the prompt.
+
+## Install the Coaching Animator skill
+
+The skill is a short set of instructions that teaches an AI to write a valid Practice Script, turn a video or page into a Practice with its Source credited, and suggest Tags from the fixed list. It points at this guide and the schema, so it stays current. It is one public file:
+
+https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator/SKILL.md
+
+- **Claude:** download the `skill/coaching-animator` folder from the repository and add it under Settings, Capabilities, Skills (zip the folder first). In Claude Code, put the folder in `~/.claude/skills/`.
+- **ChatGPT or any other AI:** start the chat with "Read this skill and follow it: " followed by the link above. If the AI cannot open links, paste the contents of SKILL.md into the chat or into the assistant's custom instructions.
+- **Any AI, one-off:** use the prompt template above instead.
+
+Either way, the AI gives you a script to paste into the Practice Script box on {{ORIGIN}}/practice. In the editor, "Ask your AI to change this" copies your current Practice with a ready-made prompt that points at the skill.
