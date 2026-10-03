@@ -143,13 +143,13 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             )}
           </div>
 
-          {/* Sign up CTA for guests */}
+          {/* Sign in CTA for guests */}
           {!loading && !user && (
             <Link
-              href="/register"
+              href="/login"
               className="inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
             >
-              Sign up
+              Sign in
             </Link>
           )}
 
@@ -204,8 +204,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           {!user && (
             <div className="flex items-center gap-3 min-h-[44px]">
               <div className="w-1 self-stretch bg-white/20" />
-              <Link href="/register" className="text-sm text-white/70 hover:text-white transition-colors">
-                Sign up
+              <Link href="/login" className="text-sm text-white/70 hover:text-white transition-colors">
+                Sign in
               </Link>
             </div>
           )}
