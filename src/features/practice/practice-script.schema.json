@@ -16,6 +16,17 @@
     "area": {
       "type": "object",
       "properties": {
+        "template": {
+          "description": "Template the Area started from: square, horizontal or vertical rectangle (open grass), half-pitch or full-pitch (drawn with pitch markings, which stretch to the width and length). Leave out for open grass.",
+          "type": "string",
+          "enum": [
+            "square",
+            "horizontal",
+            "vertical",
+            "half-pitch",
+            "full-pitch"
+          ]
+        },
         "width": {
           "type": "integer",
           "minimum": 1,
@@ -574,6 +585,45 @@
                   ],
                   "additionalProperties": false,
                   "description": "Remove a pass."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "setArea"
+                    },
+                    "template": {
+                      "description": "Template the Area started from: square, horizontal or vertical rectangle (open grass), half-pitch or full-pitch (drawn with pitch markings, which stretch to the width and length). Leave out for open grass.",
+                      "type": "string",
+                      "enum": [
+                        "square",
+                        "horizontal",
+                        "vertical",
+                        "half-pitch",
+                        "full-pitch"
+                      ]
+                    },
+                    "width": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 150,
+                      "description": "Width in whole metres, drawn left to right (the x axis)."
+                    },
+                    "length": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 150,
+                      "description": "Length in whole metres, drawn top to bottom (the y axis)."
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "width",
+                    "length"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Replace the Area (its template, width and length) from this Step onward. Only in a Progression that pulls the Space lever. Every cell used from this Step on must fit the new Area."
                 }
               ],
               "description": "One change over the previous Step. Changes apply in order."

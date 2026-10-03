@@ -2,13 +2,10 @@ import React from 'react';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
+import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 
-/** Marker radius as a fraction of one cell. */
-const MARKER_RADIUS_CELLS = 0.4;
-/** Smallest marker radius as a fraction of the Area's longer side, so big Areas stay readable. */
-const MIN_MARKER_RADIUS_FRACTION = 0.012;
-/** Above this many cells on a side the grid lines are too dense to draw. */
-const MAX_GRID_CELLS = 40;
+/** Above this many grid lines on a side they are too dense to draw. */
+const MAX_GRID_LINES = 40;
 
 interface PracticeThumbnailProps {
   step: ResolvedStep;
@@ -27,8 +24,11 @@ interface PracticeThumbnailProps {
 export function PracticeThumbnail({ step, showMoves = true, title, className }: PracticeThumbnailProps) {
   const { width: w, length: l } = step.area;
   const { positions } = positionsAt(step, 0);
-  const r = Math.max(MARKER_RADIUS_CELLS, Math.max(w, l) * MIN_MARKER_RADIUS_FRACTION);
+  // The SVG is in metres; its on-screen size is unknown here, so no pixel minimum.
+  const r = markerRadius(step.area, 1, 0);
   const stroke = r * 0.12;
+  const spacing = gridSpacing(step.area);
+  const grid = (side: number) => Array.from({ length: Math.ceil(side / spacing) - 1 }, (_, i) => (i + 1) * spacing);
 
   return (
     <svg
@@ -40,13 +40,21 @@ export function PracticeThumbnail({ step, showMoves = true, title, className }: 
       aria-hidden={title ? undefined : true}
     >
       <rect width={w} height={l} fill={DESIGN_TOKENS.colours.primary} />
-      {w <= MAX_GRID_CELLS && l <= MAX_GRID_CELLS && (
-        <g stroke="rgba(255,255,255,0.12)" strokeWidth={0.04}>
-          {Array.from({ length: w - 1 }, (_, i) => (
-            <line key={`x${i}`} x1={i + 1} y1={0} x2={i + 1} y2={l} />
+      {Math.max(w, l) / spacing <= MAX_GRID_LINES && (
+        <g stroke="rgba(255,255,255,0.12)" strokeWidth={spacing * 0.04}>
+          {grid(w).map((x) => (
+            <line key={`x${x}`} x1={x} y1={0} x2={x} y2={l} />
           ))}
-          {Array.from({ length: l - 1 }, (_, j) => (
-            <line key={`y${j}`} x1={0} y1={j + 1} x2={w} y2={j + 1} />
+          {grid(l).map((y) => (
+            <line key={`y${y}`} x1={0} y1={y} x2={w} y2={y} />
+          ))}
+        </g>
+      )}
+      {isPitch(step.area) && (
+        <g stroke="rgba(255,255,255,0.75)" strokeWidth={stroke * 2} fill="none">
+          <rect width={w} height={l} />
+          {pitchLines(step.area).map(({ y, dashed }) => (
+            <line key={y} x1={0} y1={y} x2={w} y2={y} strokeDasharray={dashed ? `${r * 2} ${r * 1.5}` : undefined} />
           ))}
         </g>
       )}

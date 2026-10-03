@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
 import { positionsAt, resolveStep, stepCount, type ResolvedMarker } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
+import { markerRadius } from '@/features/practice/area';
 import { loadPractice } from './loadPractice';
 
 export const runtime = 'nodejs';
@@ -76,7 +77,7 @@ export default async function Image({ params }: { params: { id: string } }) {
   const { positions } = positionsAt(step, 0);
   const { width: w, length: l } = step.area;
   const cell = Math.min(AREA_BOX.width / w, AREA_BOX.height / l);
-  const r = Math.max(cell * 0.4, 6);
+  const r = markerRadius(step.area, cell);
   const steps = stepCount(script);
 
   return new ImageResponse(
