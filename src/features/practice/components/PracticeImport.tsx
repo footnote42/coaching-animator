@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -73,6 +74,11 @@ export function PracticeImport() {
   const router = useRouter();
   const workspace = useEditorWorkspace();
 
+  const [labelDraft, setLabelDraft] = useState<string | null>(null);
+  useEffect(() => {
+    setLabelDraft(null);
+  }, [workspace.selectedMarker?.id]);
+
   const {
     editor,
     script,
@@ -138,18 +144,19 @@ export function PracticeImport() {
           </Button>
         </div>
         
-        <div className="hidden flex-col gap-3 md:flex">
-          <PracticeLibrary
-            key={libraryKey}
-            scriptText={scriptText}
-            practiceId={practiceId}
-            title={title}
-            description={description}
-            onTitleChange={setTitle}
-            onDescriptionChange={setDescription}
-            onSaved={saved}
-            onOpen={(id) => router.push(`/practice?id=${id}`)}
-          />
+        <PracticeLibrary
+          key={libraryKey}
+          scriptText={scriptText}
+          practiceId={practiceId}
+          title={title}
+          description={description}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          onSaved={saved}
+          onOpen={(id) => router.push(`/practice?id=${id}`)}
+          hideListOnMobile
+        />
+        <div className="hidden md:block">
           <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
         </div>
 
@@ -312,8 +319,16 @@ export function PracticeImport() {
                 id="marker-label"
                 type="text"
                 placeholder={selectedMarker.id}
-                value={selectedMarker.label ?? ''}
-                onChange={(e) => edit({ type: 'setLabel', marker: selectedMarker.id, label: e.target.value })}
+                value={labelDraft ?? selectedMarker.label ?? ''}
+                onChange={(e) => setLabelDraft(e.target.value)}
+                onBlur={() => {
+                  if (labelDraft !== null && labelDraft !== (selectedMarker.label ?? '')) {
+                    edit({ type: 'setLabel', marker: selectedMarker.id, label: labelDraft });
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                }}
                 maxLength={4}
                 className="h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-center text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               />

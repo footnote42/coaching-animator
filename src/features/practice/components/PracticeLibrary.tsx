@@ -19,6 +19,8 @@ interface Props {
   /** Called with the Practice's id after a successful save. */
   onSaved: (id: string) => void;
   onOpen: (id: string) => void;
+  /** Hide the library list on mobile (since it takes a lot of space) */
+  hideListOnMobile?: boolean;
 }
 
 /** Enter in a single-line field must never submit or trigger anything. */
@@ -36,6 +38,7 @@ export function PracticeLibrary({
   onDescriptionChange,
   onSaved,
   onOpen,
+  hideListOnMobile,
 }: Props) {
   const { user, loading } = useUser();
   const [visibility, setVisibility] = useState<Visibility>('private');
@@ -131,7 +134,7 @@ export function PracticeLibrary({
         </Button>
       </div>
 
-      <div>
+      <div className={hideListOnMobile ? 'hidden md:block' : undefined}>
         <h2 className="mb-1 text-sm font-medium text-text-primary">My Practices</h2>
         <MyPracticesList refreshKey={refreshKey} onOpen={onOpen} />
       </div>

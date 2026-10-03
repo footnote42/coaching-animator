@@ -374,9 +374,10 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
 
     case 'setLabel': {
       const marker = script.markers.find((m) => m.id === edit.marker);
-      if (!marker || marker.label === edit.label) return script;
-      if (edit.label && edit.label.trim().length === 0) edit.label = undefined;
-      const next = { ...marker, label: edit.label };
+      if (!marker) return script;
+      const label = edit.label && edit.label.trim().length > 0 ? edit.label : undefined;
+      if (marker.label === label) return script;
+      const next = { ...marker, label };
       if (!next.label) delete next.label;
       return { ...script, markers: script.markers.map((m) => (m.id === edit.marker ? next : m)) };
     }
