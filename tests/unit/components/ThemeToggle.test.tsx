@@ -77,4 +77,18 @@ describe('theme init script (no flash)', () => {
     new Function(THEME_INIT_SCRIPT)();
     expect(root.dataset.theme).toBe('light');
   });
+
+  it('follows a dark system setting when nothing is stored', () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((q: string) => ({ matches: q.includes('dark') })) as unknown as typeof window.matchMedia;
+    try {
+      new Function(THEME_INIT_SCRIPT)();
+      expect(root.dataset.theme).toBe('dark');
+      delete root.dataset.theme;
+      render(<ThemeToggle />);
+      expect(root.dataset.theme).toBe('dark');
+    } finally {
+      window.matchMedia = original;
+    }
+  });
 });

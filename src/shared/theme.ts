@@ -2,13 +2,21 @@ export type Theme = 'light' | 'dark';
 
 export const THEME_STORAGE_KEY = 'ca-theme';
 
-/** Light unless the visitor chose dark. Anything unreadable or unrecognised means light. */
+function systemTheme(): Theme {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
+/** The visitor's saved choice; with none (or storage blocked) the system setting; light if that is unknown. */
 export function readStoredTheme(): Theme {
   try {
-    return window.localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') return stored;
   } catch {
-    return 'light';
+    // Storage blocked: fall through to the system setting.
   }
+  return systemTheme();
 }
 
 export function storeTheme(theme: Theme): void {
@@ -24,4 +32,4 @@ export function applyTheme(theme: Theme): void {
 }
 
 /** Runs in <head> before first paint so the page never flashes the wrong theme. Mirrors readStoredTheme. */
-export const THEME_INIT_SCRIPT = `(function(){var t='light';try{if(localStorage.getItem('${THEME_STORAGE_KEY}')==='dark')t='dark';}catch(e){}document.documentElement.dataset.theme=t;})();`;
+export const THEME_INIT_SCRIPT = `(function(){var t=null;try{t=localStorage.getItem('${THEME_STORAGE_KEY}');}catch(e){}if(t!=='dark'&&t!=='light')t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;})();`;
