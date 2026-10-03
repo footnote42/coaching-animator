@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
+import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, resolveStep, stepCount, type ResolvedMarker } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
 import { markerRadius } from '@/features/practice/area';

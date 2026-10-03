@@ -2,8 +2,8 @@
 
 import { useMemo, useRef, type ReactNode } from 'react';
 import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
-import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
-import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
+import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
+import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
