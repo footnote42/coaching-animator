@@ -1,15 +1,10 @@
+import { GalleryClient } from '@/features/practice/components/GalleryClient';
 
-import GalleryPage from './GalleryClient';
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Gallery',
-  description: 'Browse rugby plays and drills shared by coaches. Watch animations, upvote the best and remix ideas for your own team.',
+  description: 'Browse rugby coaching Practices shared by Coaches.',
 };
 
-export const dynamic = 'force-dynamic';
-
-export default function Page() {
-    return <GalleryPage />;
+export default function GalleryPage() {
+  return <GalleryClient />;
 }

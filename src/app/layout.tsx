@@ -47,7 +47,6 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-import { OfflineIndicator } from '@/shared/components/OfflineIndicator';
 import { Toaster } from 'sonner';
 import { Footer } from '@/shared/components/Footer';
 import { AgeConfirmationDialog } from '@/shared/components/AgeConfirmationDialog';
@@ -68,7 +67,6 @@ export default function RootLayout({
           <Navigation variant="full" />
           {children}
           <Footer />
-          <OfflineIndicator />
           <AgeConfirmationDialog />
         </UserProvider>
         <Toaster position="bottom-left" />

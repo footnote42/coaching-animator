@@ -56,7 +56,7 @@ export default function CoachingFrameworkPage() {
           Physical safety is non-negotiable. Ensure correct technique, especially in contact, and match players appropriately by size and skill level.
         </p>
         <p className="p-4 bg-surface-warm border border-border">
-          <strong>In the Animator:</strong> Use tackle bags and shields for contact progressions. Map out safe spacing between groups to prevent accidental collisions during high-intensity drills.
+          <strong>In the Animator:</strong> Use tackle shields for contact Progressions. Map out safe spacing between groups to prevent accidental collisions during high-intensity drills.
         </p>
       </section>
 

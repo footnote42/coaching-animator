@@ -20,13 +20,12 @@ export async function DELETE() {
   const supabase = await createSupabaseServerClient();
 
   // Delete all user data (cascades via foreign keys)
-  // The user_profiles, saved_animations, upvotes, etc. will be deleted via CASCADE
 
   // First, delete the user from Supabase Auth
   // Note: This requires the service role key, which we may not have access to here
   // In a production setup, this would typically be done via a server action or admin API
 
-  // For now, we'll delete the profile which will cascade to animations
+  // For now, we'll delete the profile row
   const { error: profileError } = await supabase
     .from('user_profiles')
     .delete()

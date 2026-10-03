@@ -1,36 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PublicPracticesQuerySchema } from '@/lib/schemas/practices';
+import { resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 const PAGE_SIZE = 12;
 
-interface ThumbnailMarker {
-  kind: string;
-  team?: string;
-  cell: { x: number; y: number };
-}
-
-/** Pulls just what the card thumbnail needs from a stored script, tolerating odd shapes. */
-function toThumbnail(script: unknown) {
-  const s = (script ?? {}) as {
-    area?: { width: number; length: number };
-    markers?: Array<{ id: string; kind: string; team?: string }>;
-    base?: { placements?: Array<{ marker: string; cell?: { x: number; y: number }; holder?: string }> };
-  };
-  const byId = new Map((s.markers ?? []).map((m) => [m.id, m]));
-  const markers: ThumbnailMarker[] = [];
-  const placements = s.base?.placements ?? [];
-  const cellOf = new Map(placements.filter((p) => p.cell).map((p) => [p.marker, p.cell!]));
-  for (const p of placements) {
-    const m = byId.get(p.marker);
-    // The ball has a holder instead of a cell and sits on its holder.
-    const cell = p.cell ?? (p.holder ? cellOf.get(p.holder) : undefined);
-    if (m && cell) markers.push({ kind: m.kind, team: m.team, cell });
-  }
-  return { area: s.area ?? { width: 1, length: 1 }, markers };
+/** The base Step resolved for the card thumbnail, or null if the stored script no longer validates. */
+function toThumbnail(script: unknown): ResolvedStep | null {
+  const result = validate(script);
+  return result.ok ? resolveStep(result.script, 0) : null;
 }
 
 /** GET /api/practices/public?q=&page=: public Practices, newest first. No auth. */

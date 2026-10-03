@@ -1,21 +1,26 @@
-import { EntityColors } from '@/features/animation/services/entityColors';
+import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import type { ResolvedMarker } from '@/features/practice/engine';
 
-/** Fill colour for a marker, from EntityColors. Shared by every Practice renderer. */
+const { attack, defense, neutral } = DESIGN_TOKENS.colours;
+
+/** Coaches stand out from both teams and from the equipment colours. */
+const COACH_COLOUR = '#EAB308';
+
+/** Fill colour for a marker. The single source of marker colours for every Practice renderer. */
 export function markerColour(marker: Pick<ResolvedMarker, 'kind' | 'team'>): string {
   switch (marker.kind) {
     case 'attacker':
     case 'defender': {
       const team = marker.team ?? (marker.kind === 'attacker' ? 'attack' : 'defence');
-      return EntityColors.getDefault('player', team === 'attack' ? 'attack' : 'defense');
+      return team === 'attack' ? attack[0] : defense[0];
     }
     case 'coach':
-      return EntityColors.getDefault('player', 'other');
+      return COACH_COLOUR;
     case 'ball':
-      return EntityColors.getDefault('ball');
+      return neutral[0];
     case 'cone':
-      return EntityColors.getDefault('cone');
+      return neutral[2];
     case 'tackle-shield':
-      return EntityColors.getDefault('tackle-shield');
+      return defense[0];
   }
 }

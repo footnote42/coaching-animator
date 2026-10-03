@@ -1,5 +1,5 @@
 import React from 'react';
-import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
+import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
