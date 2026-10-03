@@ -20,11 +20,14 @@
       { "marker": "c4", "cell": { "x": 1, "y": 10 } },
       { "marker": "a1", "cell": { "x": 1, "y": 10 } },
       { "marker": "a2", "cell": { "x": 10, "y": 10 } },
-      { "marker": "ball", "cell": { "x": 2, "y": 10 } }
+      { "marker": "ball", "holder": "a1" }
     ],
     "moves": [
       { "marker": "a1", "waypoints": [{ "x": 1, "y": 1 }] },
       { "marker": "a2", "waypoints": [{ "x": 10, "y": 1 }] }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a1", "to": "a2" }
     ],
     "commentary": {
       "points": [
@@ -57,7 +60,8 @@
       },
       "changes": [
         { "type": "addMarker", "marker": "d1", "cell": { "x": 6, "y": 1 } },
-        { "type": "setMove", "marker": "d1", "waypoints": [{ "x": 6, "y": 5 }] }
+        { "type": "setMove", "marker": "d1", "waypoints": [{ "x": 6, "y": 5 }], "pace": "walk" },
+        { "type": "setPass", "id": "p2", "from": "a2", "to": "a1" }
       ]
     }
   ]
