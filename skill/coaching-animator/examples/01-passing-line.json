@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "title": "Pass and move in a line",
+  "area": { "width": 20, "length": 10 },
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "a3", "kind": "attacker", "label": "3" },
+    { "id": "ball", "kind": "ball" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 3, "y": 5 } },
+      { "marker": "a2", "cell": { "x": 9, "y": 5 } },
+      { "marker": "a3", "cell": { "x": 15, "y": 5 } },
+      { "marker": "ball", "holder": "a1" }
+    ],
+    "moves": [
+      { "marker": "a2", "waypoints": [{ "x": 10, "y": 5 }] },
+      { "marker": "a3", "waypoints": [{ "x": 16, "y": 5 }] }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a1", "to": "a2" },
+      { "id": "p2", "from": "a2", "to": "a3" }
+    ],
+    "commentary": {
+      "points": [
+        "Hands up early to show a target",
+        "Pass in front of the receiver so they run onto the ball"
+      ]
+    }
+  },
+  "progressions": []
+}

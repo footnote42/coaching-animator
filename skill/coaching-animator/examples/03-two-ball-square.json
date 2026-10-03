@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "title": "Two-ball square passing",
+  "area": { "width": 14, "length": 14 },
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "a3", "kind": "attacker", "label": "3" },
+    { "id": "a4", "kind": "attacker", "label": "4" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "ball2", "kind": "ball" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 2, "y": 2 } },
+      { "marker": "a2", "cell": { "x": 11, "y": 2 } },
+      { "marker": "a3", "cell": { "x": 11, "y": 11 } },
+      { "marker": "a4", "cell": { "x": 2, "y": 11 } },
+      { "marker": "ball", "holder": "a1" },
+      { "marker": "ball2", "holder": "a3" }
+    ],
+    "passes": [
+      { "id": "p1", "ball": "ball", "from": "a1", "to": "a2" },
+      { "id": "p2", "ball": "ball2", "from": "a3", "to": "a4" },
+      { "id": "p3", "ball": "ball", "from": "a2", "to": "a3" },
+      { "id": "p4", "ball": "ball2", "from": "a4", "to": "a1" }
+    ],
+    "commentary": {
+      "points": [
+        "Two balls at once: pass on before the next ball reaches you",
+        "Call the name of the receiver every pass"
+      ]
+    }
+  },
+  "progressions": []
+}

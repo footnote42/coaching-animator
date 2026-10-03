@@ -5,11 +5,20 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { useUser } from '@/lib/contexts/UserContext';
 import { validate, formatError } from '@/features/practice/engine';
+import { buildAskAiPrompt } from '@/features/practice/askAi';
 import {
   clearDevicePractice,
   readDevicePractice,
   titleFor,
 } from '@/features/practice/hooks/useGuestPractice';
+
+function isEmptyPractice(text: string): boolean {
+  try {
+    return (JSON.parse(text)?.markers ?? []).length === 0;
+  } catch {
+    return false;
+  }
+}
 
 /** Copy script (everyone) plus disabled Share/Publish with a reason (Guests). */
 export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest: boolean }) {
@@ -27,10 +36,29 @@ export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest
     }
   };
 
+  const askAi = async () => {
+    const result = validate(text);
+    if (!result.ok && isEmptyPractice(text)) {
+      toast.error('Add some players first, or ask your AI to write a new Practice (see How to write a script).');
+      return;
+    }
+    if (!result.ok) {
+      toast.error(`Fix the script first: ${formatError(result.errors[0])}`);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(buildAskAiPrompt(JSON.stringify(result.script, null, 2)));
+      toast.success('Prompt and script copied. Paste them into your AI, say what to change, then paste its script back here.');
+    } catch {
+      toast.error("Couldn't copy the prompt. Use Copy script and paste it into your AI by hand.");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={copy} disabled={!text.trim()}>Copy script</Button>
+        <Button variant="outline" onClick={askAi} disabled={!text.trim()}>Ask your AI to change this</Button>
         {isGuest && (
           <>
             <Button variant="outline" disabled>Share</Button>
