@@ -53,6 +53,9 @@ export default function HelpPage() {
         <p className="mb-2">
           The link looks like <code>/p/[id]</code> and opens the share view on a phone in messaging apps like WhatsApp, so players can watch every Step without an account.
         </p>
+        <p className="mb-2">
+          In <strong>My Practices</strong>, the <strong>Share</strong> button on a link-shared or public Practice shares or copies its link; private Practices have no Share button.
+        </p>
         <p>
           In the share view, <strong>Play all</strong> runs every Step in order, <strong>Previous Step</strong> and <strong>Next Step</strong> move between them, and <strong>Speed</strong> slows the play down. Open <strong>Commentary</strong> to see the coaching points, and use <strong>Share</strong> to send the link on. Anyone can use <strong>Report</strong> if a Practice should not be there.
         </p>

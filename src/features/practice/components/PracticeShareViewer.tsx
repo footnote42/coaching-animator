@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { sharePracticeLink } from '@/shared/share';
 import { Button } from '@/shared/ui/button';
 import { BrandIcon } from '@/shared/components/BrandIcon';
 import { positionsAt, resolveStep, stepCount, type ResolvedStep } from '@/features/practice/engine';
@@ -246,30 +247,9 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
 
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-      try {
-        await navigator.share({
-          title,
-          text: `Watch ${title} on Coaching Animator`,
-          url,
-        });
-        return;
-      } catch (err: unknown) {
-        if ((err as Error)?.name === 'AbortError') {
-          return;
-        }
-      }
-    }
-    try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        toast.success('Link copied.');
-      } else {
-        toast.error("Couldn't copy link.");
-      }
-    } catch {
-      toast.error("Couldn't copy link.");
-    }
+    const result = await sharePracticeLink(url, title);
+    if (result === 'copied') toast.success('Link copied.');
+    else if (result === 'failed') toast.error("Couldn't copy link.");
   };
 
   /** Copy the Practice Script, e.g. to adapt it in Import script or hand it to an AI. */
