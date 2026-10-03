@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
+import { ThemeToggle } from './ThemeToggle';
 import { useTabOrder, SectionId } from '@/shared/hooks/useTabOrder';
 
 type NavigationSectionId = SectionId;
@@ -153,6 +154,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
             </Link>
           )}
 
+          <ThemeToggle />
+
           {/* Mobile hamburger */}
           <button
             className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] text-white/80 hover:text-white transition-colors shrink-0"
@@ -166,7 +169,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border/30 bg-[#18120A] px-4 py-3 flex flex-col gap-3">
+        <div className="md:hidden border-t border-border/30 bg-[var(--c-nav-cover)] px-4 py-3 flex flex-col gap-3">
           {TAB_SECTIONS
             .filter(sec => !sec.requiresAuth || user)
             .map((sec) => {

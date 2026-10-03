@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
     return (
       <div>
         <h1 className="text-xl font-heading font-semibold text-text-primary mb-2">Reset Link Required</h1>
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-700 text-sm">
+        <div className="mb-4 p-4 bg-surface-warm border border-border text-text-primary text-sm">
           <p className="font-medium mb-2">📧 Password reset link required</p>
           <p>This page requires a password reset link from your email.</p>
           <p className="mt-2">If you haven&apos;t requested a password reset yet, click the button below.</p>
@@ -105,13 +105,13 @@ export default function ResetPasswordPage() {
       </p>
 
       {errorMessage && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 p-3 bg-danger-surface border border-danger/40 text-danger text-sm">
           {errorMessage}
         </div>
       )}
 
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm">
+        <div className="mb-4 p-3 bg-success-surface border border-success/40 text-success text-sm">
           {successMessage}
         </div>
       )}
