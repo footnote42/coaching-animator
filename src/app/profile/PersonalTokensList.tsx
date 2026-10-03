@@ -13,6 +13,7 @@ import {
 } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
 import { Copy } from 'lucide-react';
+import { McpSetup } from './McpSetup';
 
 interface Token {
   id: string;
@@ -153,7 +154,9 @@ export function PersonalTokensList() {
         </div>
       )}
 
-      <form onSubmit={handleCreate} className="mb-8 flex gap-4 items-end">
+      <McpSetup token={newPlaintext} />
+
+      <form onSubmit={handleCreate} className="mb-8 flex flex-col sm:flex-row gap-4 sm:items-end">
         <div className="flex-1">
           <label htmlFor="tokenName" className="block text-sm font-medium text-text-primary mb-1">
             New connection name
