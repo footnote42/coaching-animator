@@ -1,0 +1,3 @@
+# AI stays outside the app
+
+Coaches will mostly build Practices with their own AI, and an "Amend with AI" button inside the editor was the obvious design. We chose to run no model in the app: Coaches' AIs reach it through a public skill (which writes a Practice Script to paste) and an MCP endpoint authorised by a personal token the Coach can revoke, which may create, read, update and list that Coach's own Practices but never delete or publish them. An in-app model would mean either paying for every Coach's usage or storing their API keys, and neither fits a free tool with no funding. Revisit if funding arrives and an in-app assistant would remove real friction.

@@ -4,8 +4,7 @@
 LIVE (2026-10-03). The Practice restart is merged to `main` and deployed at coaching-animator.waynetellis.com. The production DB was reset: tables are practices, practice_reports, user_profiles, rate_limits and moderation_blocklist, and all 7 accounts were kept.
 
 ## Next
-1. #68: missing Practices return HTTP 200 instead of 404.
-2. Seed the Gallery with a few good Practices: write them with Claude using the guide at /practice-script/v1/guide (ADR 0001 plan).
+Iteration 2, spec #72, tickets #73-#93. Frontier (no blockers): #73, #74, #75, #77, #78, #79, #83, #85, plus #68 and #71. Maintainer tickets: #76, #86, #92, #93.
 
 ## Waiting on you
 - Delete the `club-badges` storage bucket (Dashboard → Storage).

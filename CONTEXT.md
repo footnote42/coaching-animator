@@ -47,3 +47,11 @@ _Avoid_: anonymous user, trial user
 **Gallery**:
 The public place where anyone can find Practices their Coaches have chosen to publish.
 _Avoid_: library (RAM's term), community, feed
+
+**Source**:
+The video or page a Practice is based on, credited and linked so a viewer can watch the original. Optional; a Practice the Coach invented has none.
+_Avoid_: reference, origin, inspiration
+
+**Tag**:
+A topic a Coach picks for a Practice from a fixed list drawn from the Trojans Player (Skills, Knowledge, Behaviours) and the Principles of Play, so viewers can find Practices in the Gallery. Up to five per Practice; never free text.
+_Avoid_: label, category, keyword
