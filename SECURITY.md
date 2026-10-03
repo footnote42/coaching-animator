@@ -49,6 +49,13 @@ Every table has RLS enabled. For the Practice tables:
 - Anyone, signed in or not, can insert a submission (through `POST /api/feedback`, rate limited). The policy forces `read_at` to null.
 - Only admins can read submissions and mark them read, through `is_admin()`.
 
+`personal_tokens` (`20260603000000_personal_tokens.sql`)
+
+- Holds hashed tokens for MCP API access. The plaintext token is never stored and only returned once upon creation.
+- Owners can select their own rows, and insert/update their own rows.
+- The `guard_personal_token_update` trigger ensures that only `last_used_at` and `revoked_at` can be modified after creation.
+- No one (including the owner) can retrieve the `token_hash` from the client; it's omitted from the API output.
+
 The legacy tables (`saved_animations`, `content_reports`, `upvotes`, `collections`, `collection_items`, `animation_versions`) and the `club-badges` storage policies are dropped by `20260601000000_restart_reset.sql`.
 
 ## Authentication and authorisation
