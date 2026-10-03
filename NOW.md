@@ -1,13 +1,12 @@
 # NOW — coaching-animator
 
 ## Status
-LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed.
+LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, and the full editor on phones (#107).
 
 ## Next
-Frontier (no blockers):
-- #80 Gallery cards show more and filter by Tag.
-- #82 the Coaching Animator skill (then #84 MCP endpoint, which uses the personal tokens from #83).
+Frontier: #84 MCP endpoint (uses the personal tokens from #83).
 Then #81 card previews, #86 light/dark prototype (maintainer). Maintainer tickets: #92, #93.
+- README needs a refresh (out of date since the restart).
 
 ## Waiting on you
 - #76: sign up once on production with an email address and confirm the confirmation email arrives, then close #76.
