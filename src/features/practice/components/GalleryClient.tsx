@@ -78,7 +78,7 @@ export function GalleryClient() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <h1 className="mb-4 text-2xl font-semibold text-text-primary">Gallery</h1>
+      <h1 className="mb-4 text-4xl text-text-primary">Gallery</h1>
       <form onSubmit={search} className="mb-6 flex gap-2" role="search">
         <input
           type="search"
@@ -87,7 +87,7 @@ export function GalleryClient() {
           maxLength={100}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="min-h-[44px] min-w-0 flex-1 border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="min-h-[44px] min-w-0 flex-1 border-2 border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
         <Button type="submit" className="min-h-[44px]">Search</Button>
       </form>
@@ -97,7 +97,7 @@ export function GalleryClient() {
           id="gallery-tag"
           value={tag ?? ''}
           onChange={(e) => chooseTag(e.target.value)}
-          className="min-h-[44px] min-w-0 flex-1 border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:max-w-xs sm:flex-none"
+          className="min-h-[44px] min-w-0 flex-1 border-2 border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:max-w-xs sm:flex-none"
         >
           <option value="">All Tags</option>
           {PRACTICE_TAGS.map((t) => (
@@ -117,7 +117,7 @@ export function GalleryClient() {
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {practices.map((p) => (
           <li key={p.id}>
-            <div className="border border-[var(--color-border)] bg-[var(--color-surface)]">
+            <div className="border-2 border-[var(--color-border)] bg-[var(--color-surface)] transition-transform duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--color-border)] motion-reduce:transition-none">
               {p.thumbnail ? (
                 <GalleryCardPreview
                   step={p.thumbnail}
@@ -127,14 +127,14 @@ export function GalleryClient() {
                   onOpen={() => router.push(`/p/${p.id}`)}
                 />
               ) : (
-                <div className="aspect-[4/3] w-full bg-primary" />
+                <div className="aspect-[4/3] w-full bg-[#1A3D1A]" />
               )}
               <Link
                 href={`/p/${p.id}`}
                 className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="p-3">
-                  <h2 className="truncate text-sm font-medium text-text-primary">{p.title}</h2>
+                  <h2 className="truncate font-heading text-base font-bold text-text-primary">{p.title}</h2>
                   <p className="text-xs text-text-primary">
                     {[
                       p.playerCount !== null && `${p.playerCount} ${p.playerCount === 1 ? 'player' : 'players'}`,
@@ -148,7 +148,7 @@ export function GalleryClient() {
                   {(p.tags.length > 0 || p.hasSource) && (
                     <ul className="mt-2 flex flex-wrap gap-1">
                       {p.tags.map((t) => (
-                        <li key={t} className="border border-[var(--color-border)] px-1.5 py-0.5 text-xs text-text-primary">
+                        <li key={t} className="border border-dashed border-[var(--color-border)] px-1.5 py-0.5 text-xs text-text-primary">
                           {t}
                         </li>
                       ))}

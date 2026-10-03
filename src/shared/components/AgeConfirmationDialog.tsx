@@ -36,7 +36,7 @@ export function AgeConfirmationDialog() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-scrim p-4">
       <div
         role="dialog"
         aria-modal="true"
@@ -62,7 +62,7 @@ export function AgeConfirmationDialog() {
             I am 18 or over
           </label>
         </div>
-        {error && <p className="mb-4 text-sm text-red-700" role="alert">{error}</p>}
+        {error && <p className="mb-4 text-sm text-danger" role="alert">{error}</p>}
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
