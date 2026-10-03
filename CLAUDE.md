@@ -1,7 +1,7 @@
 # coaching-animator
 
 ## Purpose
-Next.js animation editor for rugby coaching — coaches create, save, and share animated play diagrams on a Konva canvas, with Supabase for auth and cloud storage.
+Next.js editor for rugby coaching Practices: coaches draw, animate, save and share a Practice and its Progressions on a Konva canvas, with Supabase for auth and storage.
 
 ## Status
 Active. Phase 2 complete; working through the audit DevPlan (see `NOW.md` for current state and next action).
@@ -11,9 +11,7 @@ Active. Phase 2 complete; working through the audit DevPlan (see `NOW.md` for cu
 
 ## Key Paths
 - Session state: `NOW.md` (repo root — single source of truth, updated via `/park`)
-- Editor: `src/features/animation/components/Editor.tsx`
-- Stores: `src/core/stores/projectStore.ts`, `uiStore.ts`
-- Canvas: `src/features/animation/components/Canvas/`
+- Practice model: `src/features/practice/` (engine, schema, editing, components)
 - API routes: `src/app/api/`
 - Binding constraints: `docs/constraints.md`
 - Domain glossary: `CONTEXT.md`; decisions: `docs/adr/`
@@ -44,66 +42,40 @@ Everything else (dev server, unit tests, E2E, build) is in the `dev-commands` sk
 
 ```typescript
 // ✅ Correct
-import { useProjectStore } from '@/core/stores/projectStore';
+import { validate } from '@/features/practice/engine';
 import { Editor } from '@/features/animation/components/Editor';
 import { Button } from '@/shared/ui/button';
 
 // ❌ Wrong — never use relative imports across features
-import { useProjectStore } from '../../core/stores/projectStore';
+import { validate } from '../../features/practice/engine';
 ```
 
-## Architecture
+## Architecture: the Practice model
 
-### State: Two Zustand Stores
+Vocabulary is in `CONTEXT.md`; the decision is ADR 0002. A **Practice** is one row in `practices` holding a **Practice Script** (JSON): an Area in metres, markers on grid cells, moves along waypoints at a Pace, passes triggered by arrival, and Progressions stored as changes over the previous Step.
 
-All editor state lives in two stores at `src/core/stores/`:
-
-- **`projectStore`** — the animation data itself: `Project`, frames, entities, annotations, playback state. Serialised to localStorage and cloud. This is the source of truth for the canvas.
-- **`uiStore`** — editor UI state only: selected entity, drawing mode, snap-to-grid, export dialog, ghost mode. Never persisted.
-
-Both use Zustand `devtools` middleware. Components should subscribe to the narrowest slice they need.
-
-### Canvas Rendering
-
-The canvas is a **Konva/react-konva** stage (`Stage → Field → EntityLayer → AnnotationLayer → GhostLayer`). Key facts:
-
-- **Internal coordinate system is 0–2000 × 0–2000** for both x and y. Entity positions in `projectStore` are in these units. Konva scales them to CSS pixels via the `useEditorCanvasSize` / `useShareCanvasSize` hooks (ResizeObserver).
-- The `Editor` component is **dynamically imported with `ssr: false`** in `AnimationToolClient.tsx`. The canvas never renders on the server.
-- Frame-to-frame entity movement uses **linear interpolation** (`src/core/utils/interpolation.ts`). The animation loop drives `playbackPosition` in `projectStore`, and `EntityLayer` reads it to lerp entity positions between keyframes.
-
-### Share Payload Pipeline
-
-Saved animations use two payload formats (both handled transparently):
-
-| Format | Version field | Description |
-|--------|--------------|-------------|
-| V1 | `version: 1` | Legacy — entities + per-frame updates only |
-| V2 | `version: 2` | Current — adds sport, annotations, colour, orientation, layering |
-
-`serializeForShare(project)` → `SharePayloadV2` (stored in Supabase `payload` column)  
-`hydrateSharePayload(payload)` → full `Project` (used by ShareViewer / ReplayViewer)  
-`loadProject(data)` in `projectStore` validates and hydrates cloud payloads into store state.
+- **Engine** (`src/features/practice/`): `schema.ts` (Zod schema, the source of `practice-script.schema.json`), `engine.ts` (`validate`, `resolveStep`, `positionsAt`), `area.ts` (templates, grid, pitch lines), `editing.ts` (pure edit operations), `markerColour.ts` (the single source of marker colours, from `src/shared/design-tokens.ts`).
+- **Editor** `/practice` (`components/PracticeImport.tsx`): Konva canvas (`PracticeCanvas`, `PracticeEditLayer`), Step controls, script box, save form and My Practices list (`PracticeLibrary`, `MyPracticesList`). Guests keep work on their device (`hooks/useGuestPractice.ts`). `/practice?id=` opens a saved Practice.
+- **Share view** `/p/[id]` (`PracticeShareViewer`): full-screen, plays each Step, no chrome. Link-shared rows are read one at a time through `get_shared_practice`.
+- **Gallery** `/gallery` (`GalleryClient`, `/api/practices/public`): public, non-hidden Practices with `PracticeThumbnail` cards. **My Practices** `/my-practices`.
+- **Moderation**: anyone can report (`/api/practices/[id]/report`); admins hide, delete, dismiss or ban from `/admin` (`PracticeReportsTab`, `/api/admin/practice-reports`).
+- **Guide**: `/practice-script/v1/guide` (+ `guide.md`, `schema.json`) for Coaches and agents (ADR 0001).
+- Old routes redirect in `next.config.js`: `/app`, `/explore`, `/my-gallery`, `/share/:id`, `/replay/:id`.
 
 ### Authentication Flow
 
-1. **Middleware** (`src/middleware.ts`) calls `updateSession` on every request — refreshes Supabase cookies server-side.
-2. **`UserContext`** (`src/lib/contexts/UserContext.tsx`) — client-side singleton. Exposes `user`, `profile`, `loading`, `isAdmin`, `signOut`. Wrap every auth-aware component with `useUser()`.
-3. **API routes** call `requireAuth()` from `src/lib/server/auth.ts` — returns the Supabase user or a `401` `NextResponse`. Always use server client (`createSupabaseServerClient`) in route handlers, never the browser client.
-4. **Guest mode** is fully supported. `isAuthenticated` prop flows into `Editor`; guest state is detected by `!user` in `AnimationToolClient`.
+1. **Middleware** (`src/middleware.ts`) calls `updateSession` on every request and guards `/my-practices` and `/admin`.
+2. **`UserContext`** (`src/lib/contexts/UserContext.tsx`) exposes `user`, `profile`, `loading`, `isAdmin`, `signOut`.
+3. **API routes** use `requireAuth()`, `requireNotBanned()` and `requireAdmin()` from `src/lib/server/auth.ts`, always with the server Supabase client.
+4. **Guest mode**: the editor works signed out; saving needs an account.
 
 ### Supabase Client Rules
 
 | Context | Use |
 |---------|-----|
-| Client components | `createSupabaseBrowserClient()` — singleton, PKCE flow |
+| Client components | `createSupabaseBrowserClient()` |
 | Server components / API routes | `createSupabaseServerClient()` |
 | Server components that only read | `createSupabaseServerClientReadOnly()` |
-
-Foreign-key joins may return `object | object[] | null`. Always flatten:
-```typescript
-const raw = animation.remixed_from; // RemixedFrom | RemixedFrom[] | null
-const record = Array.isArray(raw) ? raw[0] : raw;
-```
 
 ### API Routes
 
@@ -111,61 +83,10 @@ All routes live under `src/app/api/`. Conventions:
 - Export `export const dynamic = 'force-dynamic'` and `export const runtime = 'nodejs'` at the top.
 - Validate inputs with Zod schemas from `src/lib/schemas/`.
 - Check rate limits via `checkRateLimit()` (`src/lib/server/rate-limit.ts`).
-- Guard with `requireAuth()` for authenticated endpoints; use `requireNotBanned()` for write actions.
-
-### Tier Architecture
-
-- **Tier 0 (Guest):** 10-frame local editing, local storage only (`VALIDATION.PROJECT.GUEST_MAX_FRAMES = 10`)
-- **Tier 1 (Auth):** Cloud storage, gallery, up to 50 animations (`max_animations` on `user_profiles`)
-- **Tier 2 (Public):** Link sharing (`/share/[id]`), gallery browsing, upvoting
-- **Tier 3 (Admin):** Moderation — `isAdmin` from `UserContext`
 
 ## Branding & Assets
 
-The `BrandIcon` component (`src/shared/components/BrandIcon.tsx`) is the **single source of truth** for the site logo. Use it for all brand representations.
-
-## Entity Color Service (Mandatory)
-
-**`EntityColors`** at `src/features/animation/services/entityColors.ts` is the mandatory single source of truth for all entity colours. Never hardcode hex values in entity logic.
-
-```typescript
-import { EntityColors } from '@/features/animation';
-
-const color = EntityColors.getDefault('cone');         // '#E6EA0C'
-const color = EntityColors.getDefault('player', 'attack'); // from DESIGN_TOKENS
-const resolved = EntityColors.resolve(entity.color, entity.type, entity.team); // handles empty string
-```
-
-**Dependency rule:** `Entities → EntityColors → DESIGN_TOKENS` (never reverse)
-
-Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key is canonical; `colors` is a backwards-compat alias — use `colours` for new code.
-
-**Domain assumptions:**
-- Ball → White (`neutral[0]`)
-- Cone → High-Vis Yellow (`neutral[2]`)
-- Players → team colour arrays (`attack[]`, `defense[]`)
-- Empty string on `entity.color` means "no colour set" — treat as default
-
-## Critical File Locations
-
-### Entity Creation
-- `src/features/animation/components/Editor.tsx` — `handleAddCone()`, `handleAddPlayer()`, etc.
-
-### Shared Canvas Components
-**These are shared between Editor, ReplayViewer, and ShareViewer.** When modifying, test all three routes:
-
-- `src/features/animation/components/Canvas/Stage.tsx`
-- `src/features/animation/components/Canvas/Field.tsx`
-- `src/features/animation/components/Canvas/PlayerToken.tsx`
-- `src/features/animation/components/Canvas/EntityLayer.tsx`
-- `src/features/animation/components/Canvas/AnnotationLayer.tsx`
-- `src/features/animation/components/Canvas/FloatingRemote.tsx` (share route only)
-
-### ShareViewer Layout
-`/share/[id]` is full-screen, no-scroll, mobile-first:
-- `ShareViewer` uses `position: fixed; inset: 0` — **do not** change to `h-screen` or `h-full`
-- Canvas sized by `useShareCanvasSize` (ResizeObserver, fits 4:3 to available space)
-- `FloatingRemote` is positioned relative to the canvas div, not the viewport
+The `BrandIcon` component (`src/shared/components/BrandIcon.tsx`) is the **single source of truth** for the site logo. Design tokens live at `src/shared/design-tokens.ts`.
 
 ## Quality Guardrails
 
@@ -185,13 +106,6 @@ Design tokens live at `src/core/constants/design-tokens.ts`. The `colours` key i
 - Any non-essential cookie requires a consent banner before it ships
 
 **Full list:** `docs/constraints.md`
-
-## Large Files (do not read in full)
-
-- `src/features/animation/README.md` (~3,800 lines)
-- `src/core/README.md` (~2,900 lines)
-- `src/shared/README.md` (~1,900 lines)
-- `src/features/gallery/README.md` (~1,100 lines)
 
 ## Design Context
 

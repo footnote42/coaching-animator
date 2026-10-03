@@ -10,14 +10,11 @@ Use the contact form at `/contact`. The form has no dedicated security subject, 
 
 Security headers are set for every route in `next.config.js` (`headers()`): a Content Security Policy, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a `Permissions-Policy` that disables camera, microphone and geolocation. The CSP also sets `frame-ancestors 'none'`, `form-action 'self'`, `base-uri 'self'`, and limits images and network connections to this origin and Supabase (`*.supabase.co`).
 
-### Trade-off: `unsafe-eval` and `unsafe-inline`
+### Trade-off: `unsafe-inline`
 
-`script-src` currently includes `'unsafe-eval'` and `'unsafe-inline'` (plus `https://vercel.live`). This weakens the protection a CSP gives against injected scripts. They are present because:
+In production `script-src` is `'self' 'unsafe-inline' https://vercel.live`. `'unsafe-eval'` is added only in development, where Next.js uses eval for fast refresh and source maps; Konva, react-konva and marked need no eval. `'unsafe-inline'` stays because Next.js injects inline bootstrap scripts, and removing it needs a nonce-based CSP through middleware, which makes pages dynamically rendered. That has not been done.
 
-- Konva (the canvas library used by the legacy editor) and the GIF worker rely on dynamic code and workers, and Next.js injects inline bootstrap scripts.
-- Removing them needs a nonce-based CSP through middleware, which makes pages dynamically rendered. That has not been done.
-
-Mitigations: all user content is rendered through React (escaped by default), inputs are validated with Zod schemas, and the app accepts no user-supplied HTML. When the legacy Konva editor is removed at the restart cutover, `unsafe-eval` should be re-tested and dropped if nothing else needs it. `style-src` keeps `'unsafe-inline'` for inline styles.
+Mitigations: all user content is rendered through React (escaped by default), inputs are validated with Zod schemas, and the app accepts no user-supplied HTML. `style-src` keeps `'unsafe-inline'` for inline styles.
 
 ## Rate limiting
 
@@ -47,7 +44,7 @@ Every table has RLS enabled. For the Practice tables:
 - Anyone, signed in or not, can insert a report. The policy forces `status = 'open'`, no resolution fields, and `reporter_id` either null or the caller's own id.
 - Only admins can read and resolve reports, through `is_admin()`.
 
-The legacy tables (`saved_animations`, `content_reports` and related) are scheduled for deletion at the restart cutover. Their policies are not described here.
+The legacy tables (`saved_animations`, `content_reports`, `upvotes`, `collections`, `collection_items`, `animation_versions`) and the `club-badges` storage policies are dropped by `20260601000000_restart_reset.sql`.
 
 ## Authentication and authorisation
 

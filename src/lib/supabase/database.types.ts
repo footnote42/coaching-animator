@@ -14,160 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      animation_versions: {
-        Row: {
-          animation_id: string
-          created_at: string
-          created_by: string | null
-          id: string
-          major_version: number
-          minor_version: number
-          payload: Json
-          version_number: string
-        }
-        Insert: {
-          animation_id: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          major_version: number
-          minor_version: number
-          payload: Json
-          version_number: string
-        }
-        Update: {
-          animation_id?: string
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          major_version?: number
-          minor_version?: number
-          payload?: Json
-          version_number?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "animation_versions_animation_id_fkey"
-            columns: ["animation_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      collection_items: {
-        Row: {
-          added_at: string
-          animation_id: string
-          collection_id: string
-          id: string
-        }
-        Insert: {
-          added_at?: string
-          animation_id: string
-          collection_id: string
-          id?: string
-        }
-        Update: {
-          added_at?: string
-          animation_id?: string
-          collection_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "collection_items_animation_id_fkey"
-            columns: ["animation_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collection_items_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      collections: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          updated_at: string
-          user_id: string
-          visibility: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          updated_at?: string
-          user_id: string
-          visibility?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          updated_at?: string
-          user_id?: string
-          visibility?: string
-        }
-        Relationships: []
-      }
-      content_reports: {
-        Row: {
-          action_taken: string | null
-          animation_id: string
-          created_at: string | null
-          details: string | null
-          id: string
-          reason: string
-          reporter_id: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string
-        }
-        Insert: {
-          action_taken?: string | null
-          animation_id: string
-          created_at?: string | null
-          details?: string | null
-          id?: string
-          reason: string
-          reporter_id: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-        }
-        Update: {
-          action_taken?: string | null
-          animation_id?: string
-          created_at?: string | null
-          details?: string | null
-          id?: string
-          reason?: string
-          reporter_id?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "content_reports_animation_id_fkey"
-            columns: ["animation_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       moderation_blocklist: {
         Row: {
           created_at: string
@@ -296,194 +142,35 @@ export type Database = {
         }
         Relationships: []
       }
-      saved_animations: {
-        Row: {
-          animation_type: string
-          coaching_notes: string | null
-          created_at: string | null
-          current_version: string
-          description: string | null
-          duration_ms: number
-          endorsed_by: string | null
-          frame_count: number
-          hidden_at: string | null
-          hidden_reason: string | null
-          id: string
-          is_progression: boolean
-          parent_animation_id: string | null
-          payload: Json
-          preview_entities: Json | null
-          progression_count: number
-          progression_order: number | null
-          remix_count: number
-          remixed_from_id: string | null
-          tags: string[] | null
-          thumbnail_url: string | null
-          title: string
-          updated_at: string | null
-          upvote_count: number | null
-          user_id: string
-          video_url: string | null
-          view_count: number | null
-          visibility: string
-        }
-        Insert: {
-          animation_type?: string
-          coaching_notes?: string | null
-          created_at?: string | null
-          current_version?: string
-          description?: string | null
-          duration_ms: number
-          endorsed_by?: string | null
-          frame_count: number
-          hidden_at?: string | null
-          hidden_reason?: string | null
-          id?: string
-          is_progression?: boolean
-          parent_animation_id?: string | null
-          payload: Json
-          preview_entities?: Json | null
-          progression_count?: number
-          progression_order?: number | null
-          remix_count?: number
-          remixed_from_id?: string | null
-          tags?: string[] | null
-          thumbnail_url?: string | null
-          title: string
-          updated_at?: string | null
-          upvote_count?: number | null
-          user_id: string
-          video_url?: string | null
-          view_count?: number | null
-          visibility?: string
-        }
-        Update: {
-          animation_type?: string
-          coaching_notes?: string | null
-          created_at?: string | null
-          current_version?: string
-          description?: string | null
-          duration_ms?: number
-          endorsed_by?: string | null
-          frame_count?: number
-          hidden_at?: string | null
-          hidden_reason?: string | null
-          id?: string
-          is_progression?: boolean
-          parent_animation_id?: string | null
-          payload?: Json
-          preview_entities?: Json | null
-          progression_count?: number
-          progression_order?: number | null
-          remix_count?: number
-          remixed_from_id?: string | null
-          tags?: string[] | null
-          thumbnail_url?: string | null
-          title?: string
-          updated_at?: string | null
-          upvote_count?: number | null
-          user_id?: string
-          video_url?: string | null
-          view_count?: number | null
-          visibility?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "saved_animations_parent_animation_id_fkey"
-            columns: ["parent_animation_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "saved_animations_remixed_from_id_fkey"
-            columns: ["remixed_from_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "saved_animations_user_id_fkey_profiles"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      upvotes: {
-        Row: {
-          animation_id: string
-          created_at: string | null
-          user_id: string
-        }
-        Insert: {
-          animation_id: string
-          created_at?: string | null
-          user_id: string
-        }
-        Update: {
-          animation_id?: string
-          created_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "upvotes_animation_id_fkey"
-            columns: ["animation_id"]
-            isOneToOne: false
-            referencedRelation: "saved_animations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_profiles: {
         Row: {
           age_confirmed_at: string | null
-          animation_count: number | null
           ban_reason: string | null
           banned_at: string | null
-          club_badge_url: string | null
-          club_name: string | null
           created_at: string | null
           display_name: string | null
           id: string
-          max_animations: number
-          primary_strip_color: string | null
           role: string | null
-          secondary_strip_color: string | null
           updated_at: string | null
         }
         Insert: {
           age_confirmed_at?: string | null
-          animation_count?: number | null
           ban_reason?: string | null
           banned_at?: string | null
-          club_badge_url?: string | null
-          club_name?: string | null
           created_at?: string | null
           display_name?: string | null
           id: string
-          max_animations?: number
-          primary_strip_color?: string | null
           role?: string | null
-          secondary_strip_color?: string | null
           updated_at?: string | null
         }
         Update: {
           age_confirmed_at?: string | null
-          animation_count?: number | null
           ban_reason?: string | null
           banned_at?: string | null
-          club_badge_url?: string | null
-          club_name?: string | null
           created_at?: string | null
           display_name?: string | null
           id?: string
-          max_animations?: number
-          primary_strip_color?: string | null
           role?: string | null
-          secondary_strip_color?: string | null
           updated_at?: string | null
         }
         Relationships: []
