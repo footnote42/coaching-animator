@@ -189,7 +189,7 @@ After the changes apply, the Step must still follow every rule above: the ball h
 
 ## How to check a script
 
-Open {{ORIGIN}}/practice, paste the script into the Import script box and press Load. A valid script plays straight away, with a Step strip for its Progressions. An invalid one lists every problem with the path to the field at fault, for example `progressions[1].changes[2].from: marker "a2" does not hold the ball when this pass fires; "a1" does`. Fix each listed problem and load again.
+Open {{ORIGIN}}/practice, open the Practice Script section, paste the script into its box and press Apply script. A valid script plays straight away, with a Step strip for its Progressions. An invalid one lists every problem with the path to the field at fault, for example `progressions[1].changes[2].from: marker "a2" does not hold the ball when this pass fires; "a1" does`. Fix each listed problem and apply it again.
 
 You can also validate against the JSON Schema above. The schema checks the shape of the script; the Import box also checks the rules that span fields (ids exist, the ball holder, pass order, cells inside the Area, no loops).
 
