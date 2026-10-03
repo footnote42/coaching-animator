@@ -12,6 +12,14 @@ import {
   titleFor,
 } from '@/features/practice/hooks/useGuestPractice';
 
+function isEmptyPractice(text: string): boolean {
+  try {
+    return (JSON.parse(text)?.markers ?? []).length === 0;
+  } catch {
+    return false;
+  }
+}
+
 /** Copy script (everyone) plus disabled Share/Publish with a reason (Guests). */
 export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest: boolean }) {
   const copy = async () => {
@@ -30,6 +38,10 @@ export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest
 
   const askAi = async () => {
     const result = validate(text);
+    if (!result.ok && isEmptyPractice(text)) {
+      toast.error('Add some players first, or ask your AI to write a new Practice (see How to write a script).');
+      return;
+    }
     if (!result.ok) {
       toast.error(`Fix the script first: ${formatError(result.errors[0])}`);
       return;
