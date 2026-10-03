@@ -4,9 +4,8 @@
 LIVE (2026-10-03). The Practice restart is merged to `main` and deployed at coaching-animator.waynetellis.com. The production DB was reset: tables are practices, practice_reports, user_profiles, rate_limits and moderation_blocklist, and all 7 accounts were kept.
 
 ## Next
-1. #38: Lighthouse baseline against the live `/p/[id]` (publish one Practice first).
-2. #68: missing Practices return HTTP 200 instead of 404.
-3. Seed the Gallery with a few good Practices: write them with Claude using the guide at /practice-script/v1/guide (ADR 0001 plan).
+1. #68: missing Practices return HTTP 200 instead of 404.
+2. Seed the Gallery with a few good Practices: write them with Claude using the guide at /practice-script/v1/guide (ADR 0001 plan).
 
 ## Waiting on you
 - Delete the `club-badges` storage bucket (Dashboard → Storage).
@@ -25,4 +24,4 @@ LIVE (2026-10-03). The Practice restart is merged to `main` and deployed at coac
 None.
 
 ## Last session
-2026-10-03: production cutover. Repaired the migration history, merged `restart` into `main`; CI applied the migrations and Vercel deployed. Closed #65 and #46. CI's deploy jobs now only migrate.
+2026-10-03: Recorded Lighthouse 13.5.0 mobile baseline across production routes (/, /practice, /p/[id], /gallery). Documented in `docs/testing/lighthouse-mobile-baseline.md` and vault, closed #38. Earlier: production cutover, repaired migration history, merged `restart` into `main`, closed #65 and #46.
