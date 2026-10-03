@@ -127,7 +127,7 @@ export default function HomePage() {
           </div>
 
           {step && (
-            <div className="relative min-w-0 pb-4 lg:rotate-[1.2deg] lg:pb-0">
+            <div className="relative mx-auto w-full min-w-0 max-w-xl pb-4 lg:max-w-none lg:rotate-[1.2deg] lg:pb-0">
               <div className={TAPE}>
                 <HeroPractice step={step} title="3 v 2 overlap" />
               </div>
