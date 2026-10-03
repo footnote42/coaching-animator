@@ -62,7 +62,7 @@ export function FeedbackTab() {
       <h2 className="text-lg font-semibold text-text-primary mb-4">Feedback ({total})</h2>
 
       {error && (
-        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-100 text-sm text-red-600 rounded">{error}</div>
+        <div className="mb-4 px-4 py-3 bg-danger-surface border border-danger/40 text-sm text-danger rounded">{error}</div>
       )}
 
       {loading ? (
@@ -77,7 +77,7 @@ export function FeedbackTab() {
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{f.area}</span>
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{f.rating}</span>
                 <span className="text-sm text-text-primary/60">{new Date(f.created_at).toLocaleString()}</span>
-                {!f.read_at && <span className="text-xs font-medium text-red-600">New</span>}
+                {!f.read_at && <span className="text-xs font-medium text-danger">New</span>}
               </div>
               <p className="font-medium text-text-primary">
                 {f.name}

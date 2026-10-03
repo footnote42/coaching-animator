@@ -15,7 +15,7 @@ export default function PrivacyPage() {
 
       <p className="text-text-primary/70 mb-8">Last updated: 3 October 2026</p>
 
-      <section className="mb-8 p-4 bg-blue-50 border-l-4 border-primary">
+      <section className="mb-8 p-4 bg-surface-warm border-l-4 border-primary">
         <h2 className="text-lg font-heading font-semibold text-text-primary mb-2">No Telemetry, Analytics, or Tracking</h2>
         <p className="text-text-primary/80">
           <strong>We do not collect telemetry data, usage analytics, or advertising tracking.</strong> We do not monitor

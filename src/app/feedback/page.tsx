@@ -41,8 +41,8 @@ export default function FeedbackPage() {
   if (submitted) {
     return (
       <div className="max-w-lg mx-auto px-4 py-16 text-center text-text-primary">
-        <div className="w-16 h-16 bg-green-100 flex items-center justify-center mx-auto mb-6">
-          <Check className="w-8 h-8 text-green-600" />
+        <div className="w-16 h-16 bg-success-surface flex items-center justify-center mx-auto mb-6">
+          <Check className="w-8 h-8 text-success" />
         </div>
         <h1 className="text-3xl font-heading font-bold mb-4">Feedback received</h1>
         <p className="text-text-primary/70 mb-8">
@@ -83,7 +83,7 @@ export default function FeedbackPage() {
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
-            Email <span className="font-normal text-text-primary/50">(optional — for follow-up)</span>
+            Email <span className="font-normal text-text-muted">(optional — for follow-up)</span>
           </label>
           <input
             type="email"
@@ -142,7 +142,7 @@ export default function FeedbackPage() {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+          <div className="mb-4 p-3 bg-danger-surface border border-danger/40 text-danger text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
           </div>
