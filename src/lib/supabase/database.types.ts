@@ -145,6 +145,7 @@ export type Database = {
           owner_id: string
           schema_version: number
           script: Json
+          tags: string[]
           title: string
           updated_at: string
           visibility: string
@@ -157,6 +158,7 @@ export type Database = {
           owner_id: string
           schema_version: number
           script: Json
+          tags?: string[]
           title: string
           updated_at?: string
           visibility?: string
@@ -169,6 +171,7 @@ export type Database = {
           owner_id?: string
           schema_version?: number
           script?: Json
+          tags?: string[]
           title?: string
           updated_at?: string
           visibility?: string
