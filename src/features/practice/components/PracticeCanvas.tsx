@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
 import { useShareCanvasSize } from '@/core/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/core/constants/design-tokens';
@@ -16,7 +16,7 @@ const MIN_GRID_PX = 6;
 /** Colour of run lines and pass arrows. */
 const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
-function MarkerShape({ marker, x, y, r }: { marker: ResolvedMarker; x: number; y: number; r: number }) {
+export function MarkerShape({ marker, x, y, r }: { marker: ResolvedMarker; x: number; y: number; r: number }) {
   const fill = markerColour(marker);
   switch (marker.kind) {
     case 'ball':
@@ -52,12 +52,24 @@ interface PracticeCanvasProps {
   step: ResolvedStep;
   /** Seconds into the Step. */
   time: number;
+  /** Extra Konva layers drawn on top (editing handles, ghosts), given the canvas geometry. */
+  overlay?: (geometry: CanvasGeometry) => ReactNode;
+}
+
+/** How cells map to canvas pixels, for layers drawn over the Practice. */
+export interface CanvasGeometry {
+  width: number;
+  height: number;
+  /** Pixels per cell. */
+  cellPx: number;
+  /** Marker radius in pixels. */
+  radius: number;
 }
 
 /**
  * Konva renderer for a Practice Step. Fits the Area's aspect ratio to its container.
  */
-export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
+export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: areaW, length: areaL } = step.area;
   const { width, height } = useShareCanvasSize(containerRef, areaW / areaL);
@@ -117,6 +129,7 @@ export function PracticeCanvas({ step, time }: PracticeCanvasProps) {
             return <MarkerShape key={marker.id} marker={marker} x={px(p.x)} y={px(p.y)} r={radius} />;
           })}
         </Layer>
+        {overlay?.({ width, height, cellPx, radius })}
       </Stage>
     </div>
   );
