@@ -181,7 +181,14 @@ export default function HomePage() {
             </p>
             <ul className="grid max-w-[46ch] gap-1.5 pl-5 text-text-primary/80 [list-style:square]">
               <li>
-                The skill is in the project repository under <code className="text-sm">skill/coaching-animator</code>.
+                Get the skill from{' '}
+                <a
+                  href="https://github.com/footnote42/coaching-animator/tree/main/skill/coaching-animator"
+                  className="underline hover:text-text-primary"
+                >
+                  the project repository
+                </a>
+                .
               </li>
               <li>
                 The MCP endpoint is <code className="text-sm">/api/mcp</code>. Create a personal token on your profile and
