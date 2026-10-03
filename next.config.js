@@ -21,13 +21,23 @@ const nextConfig = {
     // CSP directives: Supabase, the Vercel preview toolbar, inline styles.
     // 'unsafe-eval' is dev only: Next.js uses eval for fast refresh and source
     // maps. Konva, react-konva and marked need no eval in production.
+    // A local Supabase (e2e, CI) is not under *.supabase.co, so allow its origin too.
+    let localSupabase = '';
+    try {
+      const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '');
+      if (!url.hostname.endsWith('.supabase.co')) {
+        localSupabase = ` ${url.origin} ${url.origin.replace(/^http/, 'ws')}`;
+      }
+    } catch {
+      // unset or invalid: hosted defaults only
+    }
     const cspDirectives = [
       "default-src 'self'",
       `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://vercel.live`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live",
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live${localSupabase}`,
       "frame-ancestors 'none'",
       "form-action 'self'",
       "base-uri 'self'",
