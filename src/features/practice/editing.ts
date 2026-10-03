@@ -44,7 +44,8 @@ export type Edit =
   | { type: 'addPass'; from: string; to: string }
   | { type: 'removePass'; id: string }
   /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
-  | { type: 'setCatch'; id: string; at: number | null };
+  | { type: 'setCatch'; id: string; at: number | null }
+  | { type: 'setLabel'; marker: string; label: string | undefined };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
 export type EditorTool = 'select' | 'run' | 'pass' | MarkerKind;
@@ -369,6 +370,16 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       }
       const next = edit.at === null ? rest : { ...rest, at: edit.at };
       return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
+    }
+
+    case 'setLabel': {
+      const marker = script.markers.find((m) => m.id === edit.marker);
+      if (!marker) return script;
+      const label = edit.label && edit.label.trim().length > 0 ? edit.label : undefined;
+      if (marker.label === label) return script;
+      const next = { ...marker, label };
+      if (!next.label) delete next.label;
+      return { ...script, markers: script.markers.map((m) => (m.id === edit.marker ? next : m)) };
     }
   }
 }

@@ -101,6 +101,35 @@ describe('applyEdit: markers', () => {
     expect(script.base.passes).toEqual([]);
     expect(validate(script).ok).toBe(true);
   });
+
+  it('setLabel sets, clears, trims and ignores unknown markers', () => {
+    let script = edits(emptyScript(), { type: 'addMarker', kind: 'attacker', at: at(5, 5) });
+    expect(script.markers[0].label).toBe('A1');
+
+    // set
+    script = edits(script, { type: 'setLabel', marker: 'a1', label: '10' });
+    expect(script.markers[0].label).toBe('10');
+    expect(validate(script).ok).toBe(true);
+
+    // set whitespace-only clears it (and truncates undefined)
+    script = edits(script, { type: 'setLabel', marker: 'a1', label: '   ' });
+    expect(script.markers[0].label).toBeUndefined();
+    expect(validate(script).ok).toBe(true);
+
+    // explicit undefined clears
+    script = edits(script, { type: 'setLabel', marker: 'a1', label: 'X' });
+    script = edits(script, { type: 'setLabel', marker: 'a1', label: undefined });
+    expect(script.markers[0].label).toBeUndefined();
+
+    // >4 chars rejected by validate
+    script = edits(script, { type: 'setLabel', marker: 'a1', label: '12345' });
+    expect(validate(script).ok).toBe(false);
+
+    // unknown marker no-op
+    script = edits(script, { type: 'setLabel', marker: 'unknown', label: 'Y' });
+    expect(script.markers.length).toBe(1);
+    expect(script.markers[0].label).toBe('12345');
+  });
 });
 
 describe('applyEdit: runs and passes', () => {
