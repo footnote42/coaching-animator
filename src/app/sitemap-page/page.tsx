@@ -99,12 +99,16 @@ function RouteItem({ route, level = 0 }: { route: RouteNode; level?: number }) {
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <Link
-                            href={route.path}
-                            className="font-mono text-sm font-medium text-primary hover:text-text-primary hover:underline"
-                        >
-                            {route.path}
-                        </Link>
+                        {route.path.includes('[') ? (
+                            <span className="font-mono text-sm font-medium text-text-muted">{route.path}</span>
+                        ) : (
+                            <Link
+                                href={route.path}
+                                className="font-mono text-sm font-medium text-primary hover:text-text-primary hover:underline"
+                            >
+                                {route.path}
+                            </Link>
+                        )}
                         <StatusBadge status={route.status} />
                     </div>
 
