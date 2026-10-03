@@ -1,13 +1,11 @@
 # Illegal content risk assessment (Online Safety Act 2023)
 
-**DRAFT. Pending review and dating by the maintainer. Not yet in force.**
-
 Service: Coaching Animator, a user-to-user service for rugby coaches to draw, animate and optionally publish Practices.
 Structured to follow Ofcom's illegal content risk assessment guidance for small, low-risk user-to-user services.
 
 - Responsible person: the maintainer
-- Date of assessment: ____________ (maintainer to complete)
-- Next review date: ____________ (maintainer to complete)
+- Date of assessment: 2026-10-03 (approved by maintainer)
+- Next review date: 2027-10-03 (or on revisit trigger)
 
 ## 1. What the service is
 
@@ -87,7 +85,7 @@ Overall level for the service: **low**. Reasoning common to most rows: no way fo
 
 | Review date | Reviewer | Outcome |
 |---|---|---|
-| ____________ | the maintainer | |
+| 2026-10-03 | maintainer | Approved; baseline low risk |
 
 **Revisit triggers (re-run this assessment before the change ships):**
 
