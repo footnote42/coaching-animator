@@ -131,6 +131,23 @@ describe('applyEdit: runs and passes', () => {
     const removed = edits(script, { type: 'removePass', id: 'p1' });
     expect(removed.base.passes).toEqual([]);
   });
+
+  it('sets a catch on the run, and drops it when the run no longer reaches it', () => {
+    const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
+    expect(typeof applyEdit(passed, { type: 'setCatch', id: 'p1', at: 0 })).toBe('string');
+    let script = edits(
+      passed,
+      { type: 'addWaypoint', marker: 'a2', at: at(8, 5) },
+      { type: 'addWaypoint', marker: 'a2', at: at(8, 9) },
+      { type: 'setCatch', id: 'p1', at: 1 },
+    );
+    expect(script.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2', at: 1 }]);
+    expect(validate(script).ok).toBe(true);
+    expect(edits(script, { type: 'setCatch', id: 'p1', at: null }).base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2' }]);
+    script = edits(script, { type: 'removeWaypoint', marker: 'a2', index: 1 });
+    expect(script.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2' }]);
+    expect(validate(script).ok).toBe(true);
+  });
 });
 
 describe('editorReducer: undo and redo', () => {

@@ -98,14 +98,25 @@ A move's duration is the straight-line length of its path (start cell to each wa
 
 ## Passes
 
-A pass is `{ "id", "from", "to" }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
+A pass is `{ "id", "from", "to", "at"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
 - The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it.
 - `from` and `to` are different attackers, defenders or coaches on the Area.
-- Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at the end of its move, or straight away if it has no move.
-- The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell.
-- A receiver with a move must finish that move before it catches. It therefore cannot run again after catching in the same Step: a move that waits for the pass to its own marker is a loop and is rejected. To show a run with the ball, give the run to the player who holds the ball at the start, or show it in a Progression.
+- Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move.
+- The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell, or for a catch on the run to the point on the receiver's run where they meet the ball.
+
+### `at`: catch on the run
+
+In rugby the receiver usually runs onto the ball and keeps going. Give the pass `at`: the index, counted from `0`, of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, the ball is passed in front of them, and they catch it on the run and carry it through the rest of their move. A later pass from that receiver can then fire while they are still running.
+
+```json
+{ "id": "p2", "from": "a10", "to": "a12", "at": 0 }
+```
+
+- Leave `at` out to fire the pass at the end of the receiver's move (the receiver stops, then catches).
+- `at` must name a waypoint of the receiver's move: from `0` to the number of waypoints minus 1. A receiver with no move cannot have `at`.
+- The receiver's move must not wait for the pass to its own marker: that is a loop and is rejected. To show a catch followed by a run, put both in one move and use `at`.
 
 ## `after`: chaining moves
 
@@ -141,9 +152,11 @@ Change types (each is an object with a `type`):
 | `placeMarker` | `marker`, `cell` or (ball) `holder` | Change where a marker starts, or who holds the ball. Its move is kept and runs from the new cell. |
 | `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. |
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
-| `setPass` | `id`, `from`, `to` | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
+| `setPass` | `id`, `from`, `to`, `at`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
 | `removePass` | `id` | Remove a pass. It must exist in the previous Step. |
 | `setArea` | `width`, `length`, `template`? | Replace the Area from this Step on. Only allowed when `lever` is `space`. Every cell used from this Step on, including cells carried forward, must fit the new Area. |
+
+When a Space Progression narrows the Area, markers and waypoints carried forward from the previous Step are not moved for you. Re-place every marker that would fall outside the new Area with `placeMarker`, and change or remove any move that runs outside it with `setMove` or `removeMove`, in the same Progression; validation reports each one left outside at the `setArea` change.
 
 After the changes apply, the Step must still follow every rule above: the ball holder, the pass order, `after` references and no loops.
 
@@ -172,7 +185,7 @@ A 12 x 12 m open-grass square with a cone at each corner. Step 0: two attackers 
 
 ## Worked example 2: a half-pitch play
 
-A half pitch, attacking the try line at the top. The 9 passes to the 10; each back outside the 10 sprints onto the ball after the previous pass, and the defenders come up one after another using `after`. The play ends with the 14 catching in space.
+A half pitch, attacking the try line at the top. The 9 passes to the 10; each back outside the 10 sprints onto the ball after the previous pass, and the defenders come up one after another using `after`. The play ends with the 14 catching on the run (`"at": 0`) and carrying on up the touchline.
 
 ```json
 {{example:half-pitch-play}}

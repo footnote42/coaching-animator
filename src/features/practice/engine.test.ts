@@ -562,6 +562,75 @@ describe('Motion: Pace, ball and passes', () => {
     expect(errorsOf(loop)[0]).toMatch(/^progressions\[0\]\.changes\[0\]\.after: moves and passes wait on each other in a loop/);
   });
 
+  describe('catch on the run', () => {
+    /** a2 runs down from (10, 0) through (10, 4) to (10, 12) at jog; a1 passes to it. */
+    const runOn = (pass: Record<string, unknown> = {}, passes: unknown[] = []) =>
+      drill({
+        moves: [{ marker: 'a2', waypoints: [{ x: 10, y: 4 }, { x: 10, y: 12 }] }],
+        passes: [{ id: 'p1', from: 'a1', to: 'a2', ...pass }, ...passes],
+      });
+
+    it('fires the pass when the receiver reaches the catch waypoint and leads the runner', () => {
+      const script = runOn({ at: 0 });
+      const { passes, duration } = at(script, 0);
+      const [p1] = passes;
+      expect(p1.fire).toBeCloseTo(4 / jog);
+      expect(p1.end.x).toBeCloseTo(10);
+      expect(p1.end.y).toBeGreaterThan(4);
+      // The ball meets the receiver where it is when the ball lands.
+      expect(at(script, p1.land).positions.a2.y).toBeCloseTo(p1.end.y);
+      expect(p1.land - p1.fire).toBeCloseTo(Math.hypot(p1.end.x, p1.end.y) / PASS_SPEED_MPS);
+      // The receiver keeps running: the Step lasts as long as its whole move.
+      expect(duration).toBeCloseTo(12 / jog);
+    });
+
+    it('carries the ball with the receiver for the rest of its move', () => {
+      const script = runOn({ at: 0 });
+      const { passes, duration } = at(script, 0);
+      for (const t of [passes[0].land + 0.01, (passes[0].land + duration) / 2, duration, 99]) {
+        const { positions } = at(script, t);
+        expect(positions.ball.x).toBeCloseTo(positions.a2.x);
+        expect(positions.ball.y).toBeCloseTo(positions.a2.y);
+      }
+      expect(at(script, 99).positions.ball).toEqual({ x: 10, y: 12 });
+    });
+
+    it('lets the receiver pass on while still running', () => {
+      const script = runOn({ at: 0 }, [{ id: 'p2', from: 'a2', to: 'a3' }]);
+      const { passes } = at(script, 0);
+      const [p1, p2] = passes;
+      expect(p2.fire).toBeCloseTo(p1.land);
+      // Thrown from where a2 has run to, not from its start or its final cell.
+      expect(p2.start.y).toBeCloseTo(p1.end.y);
+      expect(p2.end).toEqual({ x: 20, y: 0 });
+      const end = at(script, 99).positions;
+      expect(end.ball).toEqual({ x: 20, y: 0 });
+      expect(end.a2).toEqual({ x: 10, y: 12 });
+    });
+
+    it('keeps the default: with no catch waypoint the pass fires at the end of the move', () => {
+      const { passes } = at(runOn(), 0);
+      expect(passes[0].fire).toBeCloseTo(12 / jog);
+      expect(passes[0].end).toEqual({ x: 10, y: 12 });
+    });
+
+    it('rejects a catch waypoint outside the move, or for a receiver with no move', () => {
+      expect(errorsOf(runOn({ at: 2 }))).toEqual([
+        'base.passes[0].at: waypoint 2 is outside the move of "a2", which has 2 waypoints (0-1)',
+      ]);
+      expect(errorsOf(drill({ passes: [{ id: 'p1', from: 'a1', to: 'a3', at: 0 }] }))).toEqual([
+        'base.passes[0].at: marker "a3" has no move in this Step, so there is nothing to catch on the run; leave out "at" or give "a3" a move',
+      ]);
+      expect(errorsOf(runOn({ at: -1 }))[0]).toMatch(/^base\.passes\[0\]\.at: /);
+      const shortened = drill({ passes: [{ id: 'p1', from: 'a1', to: 'a2' }] }, [
+        { lever: 'time', changes: [{ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', at: 1 }] },
+      ]);
+      expect(errorsOf(shortened)).toEqual([
+        'progressions[0].changes[0].at: marker "a2" has no move in this Step, so there is nothing to catch on the run; leave out "at" or give "a2" a move',
+      ]);
+    });
+  });
+
   it('plays both examples with the ball ending on the last receiver', () => {
     for (const example of [passingSquare, withProgressions]) {
       const result = validate(example);
