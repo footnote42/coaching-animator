@@ -22,17 +22,8 @@ You are continuing work on github.com/footnote42/coaching-animator (local path `
 
 ## Work, in order
 
-1. **#64 is done** (merged into `restart`). Skip it.
-2. **#66: end-to-end test, Guest to Coach to viewer**, in Playwright against localhost (`playwright.config.ts` already defaults to it).
-   - Guest: import an example script, play it, Copy script, sign in, and keep the Practice.
-   - Coach: add a Progression with a Lever, then share it.
-   - Viewer at a phone viewport on `/p/[id]`: step to the last Progression, toggle Commentary, and change speed.
-   - Delete the old core-loop and share-and-replay specs. Use role- and label-based selectors.
-3. **#43: CI gate.**
-   - Decision: CI runs a local Supabase (`supabase start` applies the repo migrations). `.github/workflows/ci.yml` already has a `test-migrations` job that does this.
-   - Add an e2e job that builds, starts the app against the local Supabase, runs the #66 spec, and uploads the Playwright report.
-   - Make the deploy jobs depend on it.
-4. **#38: Lighthouse baseline.** Only after the maintainer has cut over to production. Otherwise leave it.
+1. **#64, #66 and #43 are done** (on `restart`). Skip them. The E2E spec is `tests/e2e/guest-coach-viewer.spec.ts`; CI runs it in the `e2e` job against a local Supabase. See `NOW.md` for how to run it locally.
+2. **#38: Lighthouse baseline.** Only after the maintainer has cut over to production. Otherwise leave it.
 
 ## When you stop
 
