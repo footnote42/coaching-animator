@@ -1,21 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-    /* Constitution IV Design Tokens - Warm Tactical Professionalism */
-    --color-primary: #1A3D1A;
-    --color-background: #F2ECD8;
-    --color-surface: #FDFAF5;
-    --color-surface-warm: #EDE6D0;
-    --color-border: #1A3D1A;
-    --color-text-primary: #111827;
-    --color-text-inverse: #F8F9FA;
-    --color-accent-warm: #D97706;
+    /* Colour names are stable; their values come from the theme variables below
+       (light by default, dark under [data-theme="dark"]). */
+    --color-primary: var(--pitch);
+    --color-background: var(--paper);
+    --color-surface: var(--card);
+    --color-surface-warm: var(--card-warm);
+    --color-border: var(--line);
+    --color-text-primary: var(--ink);
+    --color-text-inverse: var(--on-pitch);
+    --color-accent-warm: var(--amber);
     --color-accent-hover: oklch(50% 0.14 60);
+    --color-on-accent: var(--on-amber);
+    --color-text-muted: var(--ink-soft);
+    --color-danger: var(--danger);
+    --color-danger-surface: var(--danger-bg);
+    --color-success: var(--success);
+    --color-success-surface: var(--success-bg);
+    --color-scrim: var(--scrim);
 
-    /* Typography tokens */
+    /* Typography tokens (fonts are loaded in layout.tsx via next/font) */
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    --font-heading: var(--font-oswald), 'Helvetica Neue', sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-heading: var(--font-archivo), 'Arial Narrow', 'Helvetica Neue', sans-serif;
+    --font-body: var(--font-atkinson), 'Segoe UI', system-ui, sans-serif;
+    --font-hand: var(--font-caveat), 'Segoe Print', cursive;
 
     /* Layout tokens */
     --border-radius: 0px;
@@ -28,10 +37,52 @@
     --radius-default: 0px;
     --border-width-default: 1px;
     --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    --font-family-heading: var(--font-oswald), 'Helvetica Neue', sans-serif;
-    --font-family-body: 'Inter', system-ui, sans-serif;
+    --font-family-heading: var(--font-heading);
+    --font-family-body: var(--font-body);
 
     --animate-spin-slow: spin 3s linear infinite;
+}
+
+/* Theme variables. Light is the default; the inline script in layout.tsx sets
+   data-theme on <html> before paint. Mirrored in THEME_TOKENS (design-tokens.ts).
+   Area / pitch colours are not themed. */
+:root {
+  color-scheme: light;
+  --paper: #F1EFE6;
+  --card: #FBFAF4;
+  --card-warm: #EDE9DA;
+  --ink: #1C2420;
+  --line: #1C2420;
+  --pitch: #1A3D1A;
+  --on-pitch: #F8F9FA;
+  --amber: #D97706;
+  --on-amber: #1F1505;
+  --ink-soft: #4A524C;
+  --danger: #B42318;
+  --danger-bg: #FDECEA;
+  --success: #1F6B36;
+  --success-bg: #E6F2E3;
+  --scrim: rgba(28, 36, 32, 0.6);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #131A15;
+  --card: #1B241E;
+  --card-warm: #222D26;
+  --ink: #E9E6D8;
+  --line: #8C9888;
+  --pitch: #9CC795;
+  --on-pitch: #131A15;
+  --amber: #F0A030;
+  --on-amber: #1F1505;
+  --ink-soft: #AEB2A4;
+  --c-nav-cover: #0A0D0B;
+  --danger: #F28B82;
+  --danger-bg: #3A1C1C;
+  --success: #8FD19E;
+  --success-bg: #1C3324;
+  --scrim: rgba(0, 0, 0, 0.7);
 }
 
 /* Additional Tailwind utilities for tactical mono colors */
@@ -52,6 +103,18 @@ body {
   font-family: var(--font-body);
   background-color: var(--color-background);
   color: var(--color-text-primary);
+}
+
+.font-hand {
+  font-family: var(--font-hand);
+}
+
+h1, h2 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-stretch: 80%;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 /* Focus styles for accessibility */

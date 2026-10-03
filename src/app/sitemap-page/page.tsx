@@ -47,18 +47,18 @@ const siteStructure: RouteNode[] = [
 ];
 
 function RouteIcon({ auth }: { auth?: string }) {
-    if (auth === 'admin') return <Shield className="w-4 h-4 text-red-500" />;
-    if (auth === 'protected') return <Lock className="w-4 h-4 text-yellow-500" />;
-    return <Home className="w-4 h-4 text-green-500" />;
+    if (auth === 'admin') return <Shield className="w-4 h-4 text-danger" />;
+    if (auth === 'protected') return <Lock className="w-4 h-4 text-accent-warm" />;
+    return <Home className="w-4 h-4 text-success" />;
 }
 
 function StatusBadge({ status }: { status?: string }) {
     if (!status) return null;
 
     const styles = {
-        working: 'bg-green-100 text-green-800 border-green-300',
-        slow: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-        broken: 'bg-red-100 text-red-800 border-red-300'
+        working: 'bg-success-surface text-success border-success/40',
+        slow: 'bg-surface-warm text-text-primary border-accent-warm',
+        broken: 'bg-danger-surface text-danger border-danger/40'
     };
 
     const labels = {
@@ -99,12 +99,16 @@ function RouteItem({ route, level = 0 }: { route: RouteNode; level?: number }) {
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <Link
-                            href={route.path}
-                            className="font-mono text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                            {route.path}
-                        </Link>
+                        {route.path.includes('[') ? (
+                            <span className="font-mono text-sm font-medium text-text-muted">{route.path}</span>
+                        ) : (
+                            <Link
+                                href={route.path}
+                                className="font-mono text-sm font-medium text-primary hover:text-text-primary hover:underline"
+                            >
+                                {route.path}
+                            </Link>
+                        )}
                         <StatusBadge status={route.status} />
                     </div>
 
@@ -182,23 +186,23 @@ export default function SitemapPage() {
                             <div className="text-xs text-text-primary/60">Total Routes</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-green-600">{stats.public}</div>
+                            <div className="text-2xl font-bold text-success">{stats.public}</div>
                             <div className="text-xs text-text-primary/60">Public</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-yellow-600">{stats.protected}</div>
+                            <div className="text-2xl font-bold text-accent-warm">{stats.protected}</div>
                             <div className="text-xs text-text-primary/60">Protected</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-red-600">{stats.admin}</div>
+                            <div className="text-2xl font-bold text-danger">{stats.admin}</div>
                             <div className="text-xs text-text-primary/60">Admin</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-red-600">{stats.broken}</div>
+                            <div className="text-2xl font-bold text-danger">{stats.broken}</div>
                             <div className="text-xs text-text-primary/60">Broken</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-yellow-600">{stats.slow}</div>
+                            <div className="text-2xl font-bold text-accent-warm">{stats.slow}</div>
                             <div className="text-xs text-text-primary/60">Slow</div>
                         </div>
                     </div>
@@ -212,7 +216,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('all')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'all'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-primary text-text-inverse'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >
@@ -221,7 +225,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('broken')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'broken'
-                                ? 'bg-red-600 text-white'
+                                ? 'bg-danger text-background'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >
@@ -230,7 +234,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('slow')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'slow'
-                                ? 'bg-yellow-600 text-white'
+                                ? 'bg-accent-warm text-on-accent'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >
@@ -239,7 +243,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('public')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'public'
-                                ? 'bg-green-600 text-white'
+                                ? 'bg-success text-background'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >
@@ -248,7 +252,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('protected')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'protected'
-                                ? 'bg-yellow-600 text-white'
+                                ? 'bg-accent-warm text-on-accent'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >
@@ -257,7 +261,7 @@ export default function SitemapPage() {
                         <button
                             onClick={() => setFilter('admin')}
                             className={`px-4 py-2 text-sm font-medium ${filter === 'admin'
-                                ? 'bg-red-600 text-white'
+                                ? 'bg-danger text-background'
                                 : 'bg-surface-warm text-text-primary hover:bg-surface-warm'
                                 }`}
                         >

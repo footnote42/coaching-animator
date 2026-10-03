@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
+import { sharePracticeLink } from '@/shared/share';
 
 export type Visibility = 'private' | 'link' | 'public';
 
@@ -58,6 +60,12 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
     }
   };
 
+  const share = async (p: PracticeSummary) => {
+    const result = await sharePracticeLink(`${window.location.origin}/p/${p.id}`, p.title);
+    if (result === 'copied') toast.success('Link copied.');
+    else if (result === 'failed') toast.error("Couldn't copy link.");
+  };
+
   const pickVisibility = (id: string, next: Visibility) => {
     if (next === 'public') setPublishing(id);
     else void changeVisibility(id, next);
@@ -92,6 +100,12 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
                 <option value="link">Anyone with the link</option>
                 <option value="public">Public</option>
               </select>
+              {p.visibility !== 'private' && (
+                <Button variant="outline" size="sm" className="min-h-[44px] gap-1.5" onClick={() => share(p)} aria-label={`Share ${p.title}`}>
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+              )}
               <Button variant="outline" size="sm" onClick={() => remove(p.id)} aria-label={`Delete ${p.title}`}>
                 Delete
               </Button>
