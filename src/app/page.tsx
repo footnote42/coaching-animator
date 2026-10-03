@@ -32,7 +32,7 @@ import HeroBackground from './_components/HeroBackground';
 const FEATURES = [
   {
     title: 'Draw plays in motion',
-    description: 'Place players on the pitch, add frames, and show how the play unfolds. Drag, move, repeat until it looks right.',
+    description: 'Place players, cones and a ball, then give them runs and passes. Add Progressions to make the Practice harder, step by step.',
   },
   {
     title: 'Share a link with your squad',
@@ -82,6 +82,26 @@ export default function HomePage() {
               Free to use. Nothing to install.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* About Section: what the app is for (needed for Google sign-in verification) */}
+      <section className="py-12 md:py-16 bg-surface" aria-labelledby="about-heading">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 id="about-heading" className="text-2xl md:text-3xl font-heading font-bold text-text-primary mb-4">
+            What is Coaching Animator?
+          </h2>
+          <p className="text-text-primary/80 mb-4">
+            Coaching Animator is a free web app for rugby coaches. You draw a coaching Practice on a pitch, animate the
+            players&apos; runs and passes, and share a link so players and co-coaches can watch it on their phones before
+            training. Anyone can use the editor and browse the public Gallery without an account.
+          </p>
+          <p className="text-text-primary/80">
+            You only need an account to save Practices and publish them. You can sign in with Google or with an email and
+            password. If you choose Google, we use only your name and email address to create your account, and nothing
+            else from your Google account. See our{' '}
+            <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> for details.
+          </p>
         </div>
       </section>
 
@@ -140,7 +160,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-heading font-semibold mb-2">Build the movement</h3>
               <p className="text-sm text-text-primary/70">
-                Add frames and reposition players to show how the play develops. Draw arrows for passing or running lines.
+                Give players their runs and passes, then add Progressions that change space, time, equipment or people.
               </p>
             </div>
             <div className="text-center">

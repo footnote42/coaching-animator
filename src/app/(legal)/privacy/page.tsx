@@ -1,184 +1,205 @@
 export const metadata = {
   title: 'Privacy policy',
-  description: 'Privacy policy for Coaching Animator, the rugby play visualisation tool: what data we store, why, and how you can control it.',
+  description: 'Privacy policy for Coaching Animator, the rugby coaching tool: what data we store, why, and how you can control it.',
 };
+
+const P = 'text-text-primary/80 mb-4';
+const H2 = 'text-xl font-heading font-semibold text-text-primary mb-4';
+const H3 = 'text-lg font-semibold text-text-primary mb-2';
+const UL = 'list-disc pl-6 text-text-primary/80 space-y-2 mb-4';
 
 export default function PrivacyPage() {
   return (
     <article className="prose prose-slate max-w-none">
       <h1 className="text-3xl font-heading font-bold text-text-primary mb-8">Privacy Policy</h1>
 
-      <p className="text-text-primary/70 mb-8">Last updated: May 2026</p>
+      <p className="text-text-primary/70 mb-8">Last updated: 3 October 2026</p>
 
       <section className="mb-8 p-4 bg-blue-50 border-l-4 border-primary">
         <h2 className="text-lg font-heading font-semibold text-text-primary mb-2">No Telemetry, Analytics, or Tracking</h2>
         <p className="text-text-primary/80">
-          <strong>We do not collect telemetry data, usage analytics, or advertising tracking.</strong> Your use of Coaching Animator
-          is private. We do not monitor which plays you create, how long you use the service, or share your usage data with third parties.
+          <strong>We do not collect telemetry data, usage analytics, or advertising tracking.</strong> We do not monitor
+          which Practices you create or view, or how long you use the service, and we do not share usage data with anyone.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">1. What Personal Data We Collect</h2>
-        <p className="text-text-primary/80 mb-4">We collect only the minimum data necessary to provide the Service:</p>
+        <h2 className={H2}>1. Who We Are</h2>
+        <p className={P}>
+          Coaching Animator (<a href="https://coaching-animator.waynetellis.com" className="text-primary hover:underline">coaching-animator.waynetellis.com</a>)
+          is a free tool for rugby coaches to draw, animate and share coaching Practices. It is run by Wayne Ellis, an
+          individual based in the United Kingdom, who is the data controller for the personal data described here.
+          Contact: <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
+        </p>
+      </section>
 
-        <h3 className="text-lg font-semibold text-text-primary mb-2">Information you provide:</h3>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
-          <li>Email address (when you create an account)</li>
-          <li>Display name (optional; for public gallery attribution)</li>
+      <section className="mb-8">
+        <h2 className={H2}>2. What Personal Data We Collect</h2>
+        <p className={P}>We collect only what is needed to run the service.</p>
+        <h3 className={H3}>When you create an account</h3>
+        <ul className={UL}>
+          <li>Email address</li>
+          <li>Your name, shown as your display name on Practices you publish (you can change it)</li>
+          <li>A password, if you sign up with email (stored only as a secure hash by our authentication provider)</li>
           <li>The date you confirmed you are 18 or over</li>
-          <li>Animation content you create and save</li>
         </ul>
-
-        <h3 className="text-lg font-semibold text-text-primary mb-2">Technical information (for service operation only):</h3>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
-          <li>IP address (for rate limiting and abuse prevention; not logged long-term)</li>
-          <li>Session authentication tokens (managed by Supabase, not stored locally by us)</li>
+        <h3 className={H3}>What you create</h3>
+        <ul className={UL}>
+          <li>The Practices you save, with their titles, descriptions, Tags and Source links</li>
+          <li>Reports you make about a Practice, and feedback you send through the feedback form</li>
         </ul>
-
-        <p className="text-text-primary/80 mb-4">
-          <strong>What we explicitly do NOT collect:</strong>
+        <h3 className={H3}>Technical information</h3>
+        <ul className={UL}>
+          <li>Your IP address, used only to limit request rates and prevent abuse; it is not kept long-term</li>
+          <li>Session cookies that keep you signed in (see section 9)</li>
+        </ul>
+        <p className={P}>
+          <strong>What we explicitly do NOT collect:</strong> usage analytics, device or browser fingerprints, behavioural
+          tracking, or advertising cookies.
         </p>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li>Usage analytics (which animations you view, which features you use)</li>
-          <li>Device information (browser type, operating system, screen size)</li>
-          <li>Behavioral tracking or user journey data</li>
-          <li>Cookies for advertising or analytics purposes</li>
-        </ul>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">2. OAuth Authentication</h2>
-        <p className="text-text-primary/80 mb-4">
-          We offer optional sign-in with Google as an alternative to email/password authentication.
+        <h2 className={H2}>3. Signing In with Google</h2>
+        <p className={P}>
+          You can sign in with your Google account instead of an email and password. If you do, Google shares the
+          following with us, and only after you agree on Google&apos;s consent screen:
         </p>
-        <h3 className="text-lg font-semibold text-text-primary mb-2">What We Receive:</h3>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2 mb-4">
+        <ul className={UL}>
           <li>Your email address</li>
-          <li>Your display name</li>
-          <li>Your profile picture URL (optional)</li>
+          <li>Your name</li>
+          <li>A link to your Google profile picture</li>
         </ul>
-        <p className="text-text-primary/80 mb-4">
-          We do NOT receive your Google password, calendar, contacts, or any other private data.
-          We do NOT share your usage data with Google.
+        <p className={P}>
+          <strong>How we use it:</strong> your email address identifies your account and lets us contact you about it;
+          your name becomes your display name; your profile picture link is stored by our authentication provider with
+          your account. We use this data only to sign you in and run your account.
+        </p>
+        <p className={P}>
+          We do not request access to your Gmail, Google Drive, Calendar, Contacts or any other Google data, and we never
+          receive your Google password. We do not sell Google user data, use it for advertising, share it with anyone
+          except our service providers listed below, or use it to train AI models.
+        </p>
+        <p className={P}>
+          Coaching Animator&apos;s use and transfer of information received from Google APIs adheres to the{' '}
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy"
+            className="text-primary hover:underline"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Google API Services User Data Policy
+          </a>
+          , including the Limited Use requirements.
+        </p>
+        <p className={P}>
+          You can remove Coaching Animator&apos;s access at any time from your{' '}
+          <a href="https://myaccount.google.com/permissions" className="text-primary hover:underline" rel="noopener noreferrer" target="_blank">
+            Google account permissions
+          </a>
+          . Deleting your Coaching Animator account deletes the Google data we hold (see section 7).
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">2. How We Use Your Information</h2>
-        <p className="text-text-primary/80 mb-4">We use your information to:</p>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li>Provide and improve the Service</li>
-          <li>Save and sync your animations across devices</li>
-          <li>Display public content in the gallery</li>
-          <li>Send important service updates</li>
-          <li>Enforce our Terms of Service</li>
-          <li>Protect against fraud and abuse</li>
+        <h2 className={H2}>4. How We Use Your Information</h2>
+        <ul className={UL}>
+          <li>To create and run your account and keep you signed in</li>
+          <li>To save your Practices and show them to you on any device</li>
+          <li>To show Practices you choose to publish in the public Gallery, with your display name</li>
+          <li>To send emails about your account, such as confirming your address or resetting your password</li>
+          <li>To review reports and feedback, enforce our Terms of Service and protect against abuse</li>
         </ul>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">3. Data Storage & Residency</h2>
-        <p className="text-text-primary/80 mb-4">
-          <strong>Cloud Storage (Registered Users):</strong> Your data is stored on Supabase, which uses PostgreSQL databases
-          hosted on cloud infrastructure in the <strong>US (us-east-1 region)</strong>. Data is encrypted in transit (TLS) and at rest.
-        </p>
-        <p className="text-text-primary/80 mb-4">
-          <strong>Browser Storage (Guest Users):</strong> Guest users&apos; (Tier 0) animations are stored entirely in your browser&apos;s localStorage.
-          This data is not transmitted to our servers unless you explicitly choose to save animations to the cloud by registering an account.
-        </p>
-        <p className="text-text-primary/80">
-          <strong>Data Processors:</strong> Supabase is our primary data processor. We do not share your data with third-party analytics
-          or marketing vendors.
+        <p className={P}>
+          Our lawful bases under UK GDPR are performance of our agreement with you (running your account) and our
+          legitimate interest in keeping the service safe.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">4. Data Sharing & Sales</h2>
-        <p className="text-text-primary/80 mb-4">
-          <strong>We do not sell, rent, or trade your personal data.</strong> We do not sell your data to advertisers, data brokers, or any third parties.
+        <h2 className={H2}>5. Data Storage &amp; Residency</h2>
+        <p className={P}>
+          <strong>Accounts:</strong> your account and Practices are stored by Supabase in the European Union
+          (Frankfurt, Germany), encrypted in transit and at rest.
         </p>
-        <p className="text-text-primary/80 mb-4">We may share data only in these limited circumstances:</p>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li><strong>Service providers:</strong> Supabase (database and authentication hosting); they are contractually bound not to use your data for their own purposes</li>
-          <li><strong>Law enforcement:</strong> Only if required by law, with a valid legal order</li>
-          <li><strong>Public content:</strong> Your public gallery animations are visible to all users and licensed under CC-BY-SA 4.0</li>
+        <p className={P}>
+          <strong>Guests:</strong> if you use the editor without signing in, your work stays in your browser and is not sent
+          to us unless you sign in and save it.
+        </p>
+        <h3 className={H3}>Service providers</h3>
+        <ul className={UL}>
+          <li><strong>Supabase</strong>: database and sign-in</li>
+          <li><strong>Vercel</strong>: hosts the website</li>
+          <li><strong>Cloudflare</strong>: domain and network security</li>
+          <li><strong>Resend</strong>: sends account emails (your email address only)</li>
         </ul>
+        <p className={P}>Each processes data only to provide its service to us.</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">5. Your Rights</h2>
-        <p className="text-text-primary/80 mb-4">You have the right to:</p>
-        <ul className="list-disc pl-6 text-text-primary/80 space-y-2">
-          <li>Access your personal data</li>
-          <li>Correct inaccurate data</li>
-          <li>Delete your account and associated data</li>
-          <li>Export your animation data</li>
-          <li>Withdraw consent for data processing</li>
-        </ul>
-        <p className="text-text-primary/80 mt-4">
-          To exercise these rights, visit your account settings or <a href="/contact" className="text-primary hover:underline">contact us</a>.
+        <h2 className={H2}>6. Data Sharing &amp; Sales</h2>
+        <p className={P}>
+          <strong>We do not sell, rent, or trade your personal data.</strong> We share it only with the service providers
+          above, when required by law, and as public content: Practices you publish are visible to everyone.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">6. Data Retention</h2>
-        <p className="text-text-primary/80 mb-4">
-          We retain your data for as long as your account is active. When you delete your account,
-          we will delete your personal data within 30 days, except where we are required to retain
-          it for legal purposes.
+        <h2 className={H2}>7. Data Retention &amp; Deletion</h2>
+        <p className={P}>
+          We keep your data while your account is active. You can delete your account from your profile page, or ask us
+          to by email. We then delete your personal data, including any data received from Google, within 30 days,
+          except where the law requires us to keep it.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">7. Cookies & Browser Storage</h2>
-        <p className="text-text-primary/80 mb-4">
+        <h2 className={H2}>8. Your Rights</h2>
+        <p className={P}>
+          You can access, correct, export or delete your data, and object to or restrict how we use it. Use your profile
+          page or email <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
+          You can also complain to the UK Information Commissioner&apos;s Office (ico.org.uk).
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className={H2}>9. Cookies &amp; Browser Storage</h2>
+        <p className={P}>
           We only set cookies and use on-device storage that the Service needs to work. Nothing else is set.
         </p>
-        <h3 className="text-lg font-semibold text-text-primary mb-2">Cookies set when you sign in</h3>
-        <p className="text-text-primary/80 mb-4">
+        <h3 className={H3}>Cookies set when you sign in</h3>
+        <p className={P}>
           Signing in sets Supabase session cookies, whose names start with <code>sb-</code>. They keep you signed in
           between page loads and are removed when you sign out or they expire. They are not set for Guests.
         </p>
-        <h3 className="text-lg font-semibold text-text-primary mb-2">On-device storage for Guests</h3>
-        <p className="text-text-primary/80 mb-4">
+        <h3 className={H3}>On-device storage for Guests</h3>
+        <p className={P}>
           If you use the editor without signing in, your work is kept in your browser&apos;s localStorage under the key{' '}
           <code>practice.device</code>. It stays on your device and is not sent to us. You can clear it at any time
           from your browser settings.
         </p>
-        <h3 className="text-lg font-semibold text-text-primary mb-2">No consent banner</h3>
-        <p className="text-text-primary/80 mb-4">
+        <h3 className={H3}>No consent banner</h3>
+        <p className={P}>
           We do not show a cookie consent banner because we set no non-essential cookies: no analytics, advertising or tracking.
           Strictly necessary cookies are exempt from the consent requirement in the Privacy and Electronic Communications
           Regulations (PECR). If that ever changes, we will ask for your consent first.
         </p>
-        <p className="text-text-primary/80">
-          See our <a href="/terms" className="text-primary hover:underline">Terms of Service</a> for details on how your data is stored and managed.
-        </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">8. Children&apos;s Privacy</h2>
-        <p className="text-text-primary/80 mb-4">
+        <h2 className={H2}>10. Children&apos;s Privacy</h2>
+        <p className={P}>
           Accounts are for people aged 18 or over, and we ask you to confirm this when you sign up.
           We do not knowingly collect personal information from anyone under 18. Players under 18 can use the editor as a Guest,
-          where their work stays on their own device. If you believe a child has an account, please
-          <a href="/contact" className="text-primary hover:underline"> contact us</a>.
+          where their work stays on their own device. If you believe a child has an account, please email{' '}
+          <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">9. Changes to This Policy</h2>
-        <p className="text-text-primary/80 mb-4">
-          We may update this Privacy Policy from time to time. We will notify you of significant
-          changes by email or through the Service.
-        </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-4">10. Contact</h2>
-        <p className="text-text-primary/80">
-          If you have questions about this Privacy Policy, please <a href="/contact" className="text-primary hover:underline">contact us</a>.
+        <h2 className={H2}>11. Changes to This Policy</h2>
+        <p className={P}>
+          We will update the date above when this policy changes, and tell account holders by email about significant changes.
         </p>
       </section>
     </article>
