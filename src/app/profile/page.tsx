@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
-import { putWithRetry } from '@/lib/api-client';
+import { putWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getInitials } from './profileUtils';
 
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, profile, loading: authLoading, refreshProfile } = useUser();
+  const { user, profile, loading: authLoading, refreshProfile, signOut } = useUser();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLinking, setIsLinking] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Sync local display name with profile once loaded
   useEffect(() => {
@@ -130,6 +131,19 @@ export default function ProfilePage() {
       setConfirmPassword('');
     }
     setSaving(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Delete your account? This permanently deletes your Practices and personal data and cannot be undone.')) return;
+    setDeleting(true);
+    setError(null);
+    const { ok } = await deleteWithRetry('/api/user/account');
+    if (!ok) {
+      setError('We could not delete your account. Please try again.');
+      setDeleting(false);
+      return;
+    }
+    await signOut(); // clears local session and returns to the home page
   };
 
   // Helper to check if user has a password set (email provider exists)
@@ -323,6 +337,21 @@ export default function ProfilePage() {
               </form>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 bg-surface border border-border p-6">
+          <h2 className="text-sm uppercase tracking-widest text-text-primary/60 mb-4">Delete Account</h2>
+          <p className="text-sm text-text-primary/60 mb-4">
+            Permanently delete your account, your Practices and your personal data. This cannot be undone.
+          </p>
+          <button
+            type="button"
+            onClick={handleDeleteAccount}
+            disabled={deleting}
+            className="px-4 py-2 text-sm border border-red-300 rounded-none text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {deleting ? 'Deleting...' : 'Delete my account'}
+          </button>
         </div>
 
         <div className="mt-6 bg-surface border border-border p-6">
