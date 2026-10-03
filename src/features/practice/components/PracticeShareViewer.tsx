@@ -48,6 +48,8 @@ interface PracticeShareViewerProps {
   /** Practice id; when set, the header shows a Report button. */
   practiceId?: string;
   title: string;
+  /** The Practice's Tags, shown under the title. */
+  tags?: string[];
   /** A validated Practice Script. */
   script: PracticeScript;
 }
@@ -58,7 +60,7 @@ interface PracticeShareViewerProps {
  * brand navigation, sharing, full screen (where available), and overflow menu.
  * Shows a static thumbnail until the canvas has loaded.
  */
-export function PracticeShareViewer({ practiceId, title, script }: PracticeShareViewerProps) {
+export function PracticeShareViewer({ practiceId, title, tags, script }: PracticeShareViewerProps) {
   const [reporting, setReporting] = useState(false);
   const steps = stepCount(script);
   const [stepIndex, setStepIndex] = useState(0);
@@ -300,6 +302,9 @@ export function PracticeShareViewer({ practiceId, title, script }: PracticeShare
           <p className="truncate text-xs text-white/75" aria-live="polite">
             {stepLabel} ({stepIndex + 1}/{steps})
           </p>
+          {tags && tags.length > 0 && (
+            <p className="truncate text-xs text-white/75">{tags.join(' · ')}</p>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <Button

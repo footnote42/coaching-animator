@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -136,6 +136,36 @@ export type Database = {
           },
         ]
       }
+      personal_tokens: {
+        Row: {
+          id: string
+          owner_id: string
+          name: string
+          token_hash: string
+          created_at: string
+          last_used_at: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          name: string
+          token_hash: string
+          created_at?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          name?: string
+          token_hash?: string
+          created_at?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
       practices: {
         Row: {
           created_at: string
@@ -145,6 +175,7 @@ export type Database = {
           owner_id: string
           schema_version: number
           script: Json
+          tags: string[]
           title: string
           updated_at: string
           visibility: string
@@ -157,6 +188,7 @@ export type Database = {
           owner_id: string
           schema_version: number
           script: Json
+          tags?: string[]
           title: string
           updated_at?: string
           visibility?: string
@@ -169,6 +201,7 @@ export type Database = {
           owner_id?: string
           schema_version?: number
           script?: Json
+          tags?: string[]
           title?: string
           updated_at?: string
           visibility?: string
@@ -214,6 +247,10 @@ export type Database = {
     }
     Functions: {
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      verify_personal_token: {
+        Args: { p_hash: string }
+        Returns: string | null
+      }
       rate_limit_hit: {
         Args: { p_key: string; p_window_seconds: number }
         Returns: { hit_count: number; window_start: string }[]

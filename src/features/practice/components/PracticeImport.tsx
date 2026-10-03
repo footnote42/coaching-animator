@@ -91,6 +91,8 @@ export function PracticeImport() {
     setTitle,
     description,
     setDescription,
+    tags,
+    setTags,
     tool,
     selection,
     setSelection,
@@ -150,6 +152,8 @@ export function PracticeImport() {
           practiceId={practiceId}
           title={title}
           description={description}
+          tags={tags}
+          onTagsChange={setTags}
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}
           onSaved={saved}

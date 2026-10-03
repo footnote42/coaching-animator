@@ -6,6 +6,7 @@ import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getInitials } from './profileUtils';
+import { PersonalTokensList } from './PersonalTokensList';
 
 
 export default function ProfilePage() {
@@ -338,6 +339,8 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        <PersonalTokensList />
 
         <div className="mt-6 bg-surface border border-border p-6">
           <h2 className="text-sm uppercase tracking-widest text-text-primary/60 mb-4">Delete Account</h2>

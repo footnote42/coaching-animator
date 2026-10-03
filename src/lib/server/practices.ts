@@ -6,6 +6,7 @@ export interface SharedPractice {
   title: string;
   description: string | null;
   visibility: 'private' | 'link' | 'public';
+  tags: string[];
   script: unknown;
   schema_version: number;
   created_at: string;
