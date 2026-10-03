@@ -321,7 +321,6 @@
             "description": "The words shown over a Step as it plays. The viewer can toggle it."
           },
           "changes": {
-            "minItems": 1,
             "type": "array",
             "items": {
               "oneOf": [
@@ -628,7 +627,7 @@
               ],
               "description": "One change over the previous Step. Changes apply in order."
             },
-            "description": "What this Step changes over the previous Step, applied in order."
+            "description": "What this Step changes over the previous Step, applied in order. Empty while a Progression is being built."
           }
         },
         "required": [
