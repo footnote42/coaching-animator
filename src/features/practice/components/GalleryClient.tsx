@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/shared/ui/button';
 import { ReportPracticeDialog } from './ReportPracticeDialog';
-import { PracticeThumbnail } from './PracticeThumbnail';
+import { GalleryCardPreview } from './GalleryCardPreview';
 import type { ResolvedStep } from '@/features/practice/engine';
 import { PRACTICE_TAGS, type PracticeTag } from '@/lib/practice-tags';
 
@@ -39,6 +39,8 @@ export function GalleryClient() {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [reportingId, setReportingId] = useState<string | null>(null);
+  /** The one card whose preview is playing. */
+  const [playingId, setPlayingId] = useState<string | null>(null);
 
   const load = useCallback(async (query: string, tagFilter: PracticeTag | null, p: number) => {
     setLoading(true);
@@ -115,45 +117,51 @@ export function GalleryClient() {
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {practices.map((p) => (
           <li key={p.id}>
-            <Link
-              href={`/p/${p.id}`}
-              className="block border border-[var(--color-border)] bg-[var(--color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <div className="aspect-[4/3] w-full overflow-hidden">
-                {p.thumbnail ? (
-                  <PracticeThumbnail step={p.thumbnail} showMoves={false} className="h-full w-full" />
-                ) : (
-                  <div className="h-full w-full bg-primary" />
-                )}
-              </div>
-              <div className="p-3">
-                <h2 className="truncate text-sm font-medium text-text-primary">{p.title}</h2>
-                <p className="text-xs text-text-primary">
-                  {[
-                    p.playerCount !== null && `${p.playerCount} ${p.playerCount === 1 ? 'player' : 'players'}`,
-                    p.area && `${p.area.width} x ${p.area.length} m`,
-                    `${p.progressionCount} ${p.progressionCount === 1 ? 'Progression' : 'Progressions'}`,
-                  ]
-                    .filter(Boolean)
-                    .join(' \u00b7 ')}
-                </p>
-                {p.coachName && <p className="truncate text-xs text-text-primary">By {p.coachName}</p>}
-                {(p.tags.length > 0 || p.hasSource) && (
-                  <ul className="mt-2 flex flex-wrap gap-1">
-                    {p.tags.map((t) => (
-                      <li key={t} className="border border-[var(--color-border)] px-1.5 py-0.5 text-xs text-text-primary">
-                        {t}
-                      </li>
-                    ))}
-                    {p.hasSource && (
-                      <li className="border border-[var(--color-border)] px-1.5 py-0.5 text-xs font-medium text-text-primary">
-                        Source
-                      </li>
-                    )}
-                  </ul>
-                )}
-              </div>
-            </Link>
+            <div className="border border-[var(--color-border)] bg-[var(--color-surface)]">
+              {p.thumbnail ? (
+                <GalleryCardPreview
+                  step={p.thumbnail}
+                  title={p.title}
+                  playing={playingId === p.id}
+                  onPlayingChange={(on) => setPlayingId((cur) => (on ? p.id : cur === p.id ? null : cur))}
+                  onOpen={() => router.push(`/p/${p.id}`)}
+                />
+              ) : (
+                <div className="aspect-[4/3] w-full bg-primary" />
+              )}
+              <Link
+                href={`/p/${p.id}`}
+                className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <div className="p-3">
+                  <h2 className="truncate text-sm font-medium text-text-primary">{p.title}</h2>
+                  <p className="text-xs text-text-primary">
+                    {[
+                      p.playerCount !== null && `${p.playerCount} ${p.playerCount === 1 ? 'player' : 'players'}`,
+                      p.area && `${p.area.width} x ${p.area.length} m`,
+                      `${p.progressionCount} ${p.progressionCount === 1 ? 'Progression' : 'Progressions'}`,
+                    ]
+                      .filter(Boolean)
+                      .join(' \u00b7 ')}
+                  </p>
+                  {p.coachName && <p className="truncate text-xs text-text-primary">By {p.coachName}</p>}
+                  {(p.tags.length > 0 || p.hasSource) && (
+                    <ul className="mt-2 flex flex-wrap gap-1">
+                      {p.tags.map((t) => (
+                        <li key={t} className="border border-[var(--color-border)] px-1.5 py-0.5 text-xs text-text-primary">
+                          {t}
+                        </li>
+                      ))}
+                      {p.hasSource && (
+                        <li className="border border-[var(--color-border)] px-1.5 py-0.5 text-xs font-medium text-text-primary">
+                          Source
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+              </Link>
+            </div>
             <button
               type="button"
               onClick={() => setReportingId(p.id)}
