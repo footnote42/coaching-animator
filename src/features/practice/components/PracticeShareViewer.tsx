@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, ListVideo, MessageSquare, Flag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, ListVideo, MessageSquare, Flag, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { positionsAt, resolveStep, stepCount, type ResolvedStep } from '@/features/practice/engine';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
@@ -115,6 +116,16 @@ export function PracticeShareViewer({ practiceId, title, script }: PracticeShare
     setPlaying(true);
   };
 
+  /** Copy the Practice Script, e.g. to adapt it in Import script or hand it to an AI. */
+  const copyScript = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(script, null, 2));
+      toast.success('Script copied.');
+    } catch {
+      toast.error("Couldn't copy the script.");
+    }
+  };
+
   const hasCommentary = Boolean(step.lever) || step.commentary.points.length > 0;
   const stepLabel = step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : 'Base Step';
 
@@ -125,6 +136,9 @@ export function PracticeShareViewer({ practiceId, title, script }: PracticeShare
         <p className="shrink-0 text-xs text-white/75 md:text-sm" aria-live="polite">
           {stepLabel} ({stepIndex + 1}/{steps})
         </p>
+        <Button variant="outline" className={CONTROL} aria-label="Copy script" title="Copy script" onClick={copyScript}>
+          <Copy />
+        </Button>
         {practiceId && (
           <Button variant="outline" className={CONTROL} aria-label="Report this Practice" onClick={() => setReporting(true)}>
             <Flag />

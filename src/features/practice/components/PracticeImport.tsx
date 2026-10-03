@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Play, Pause, RotateCcw, MessageSquare } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
@@ -137,6 +138,7 @@ export function PracticeImport() {
         <label htmlFor="practice-script" className="text-sm text-text-primary">
           Paste a Practice Script (JSON).
         </label>
+        <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write one, or have an AI write it</Link>
         <textarea
           id="practice-script"
           value={text}

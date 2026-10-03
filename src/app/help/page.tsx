@@ -53,6 +53,16 @@ export default function HelpPage() {
       </section>
 
       <section className="mb-10">
+        <h2 className="text-2xl font-heading font-bold mb-4">Writing a Practice Script</h2>
+        <p className="mb-4">
+          A Practice Script is the written form of a Practice. Write one by hand or have any AI assistant write it from your description, then paste it into Import script. The guide has the rules, worked examples and a prompt you can copy.
+        </p>
+        <Link href="/practice-script/v1/guide" className="text-primary hover:text-primary/80 font-medium underline transition-colors">
+          Read the Practice Script guide
+        </Link>
+      </section>
+
+      <section className="mb-10">
         <h2 className="text-2xl font-heading font-bold mb-4">Coaching framework</h2>
         <p className="mb-4">
           Learn how to design effective, engaging sessions using our grassroots-focused approach.
