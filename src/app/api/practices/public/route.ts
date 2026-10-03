@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
       .from('practices')
       .select('id, title, description, created_at, script')
       .eq('visibility', 'public')
+      .eq('hidden', false)
       .order('created_at', { ascending: false })
       .range(from, from + PAGE_SIZE); // one extra row tells us whether another page exists
 

@@ -22,3 +22,21 @@ export const PublicPracticesQuerySchema = z.object({
   q: z.string().trim().max(100).optional(),
   page: z.coerce.number().int().min(1).max(1000).default(1),
 });
+
+export const PRACTICE_REPORT_REASONS = ['inappropriate', 'spam', 'copyright', 'safeguarding', 'other'] as const;
+
+export const PracticeReportSchema = z.object({
+  reason: z.enum(PRACTICE_REPORT_REASONS),
+  details: z.string().trim().max(500).optional(),
+});
+
+export const AdminPracticeReportsQuerySchema = z.object({
+  status: z.enum(['open', 'dismissed', 'actioned']).default('open'),
+  limit: z.coerce.number().min(1).max(50).default(20),
+  offset: z.coerce.number().min(0).default(0),
+});
+
+export const PracticeReportActionSchema = z.object({
+  action: z.enum(['dismiss', 'hide', 'unhide', 'delete', 'ban_user']),
+  reason: z.string().trim().max(500).optional(),
+});

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { PracticeReportsTab } from '@/app/admin/PracticeReportsTab';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,7 +38,7 @@ interface AdminAnimation {
 }
 
 type ReportAction = 'dismiss' | 'hide' | 'delete' | 'warn_user' | 'ban_user';
-type AdminTab = 'reports' | 'animations';
+type AdminTab = 'reports' | 'practices' | 'animations';
 
 // ---------------------------------------------------------------------------
 // AnimationsTab
@@ -522,7 +523,7 @@ export default function AdminPage() {
           {/* Tab bar */}
           <div className="border-b border-border px-6">
             <div className="flex gap-0">
-              {(['reports', 'animations'] as const).map(tab => (
+              {(['reports', 'practices', 'animations'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -532,7 +533,7 @@ export default function AdminPage() {
                       : 'border-transparent text-text-primary/60 hover:text-text-primary'
                   }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab === 'practices' ? 'Practice reports' : tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
             </div>
@@ -669,6 +670,8 @@ export default function AdminPage() {
                 )}
               </>
             )}
+
+            {activeTab === 'practices' && <PracticeReportsTab />}
 
             {/* Animations tab */}
             {activeTab === 'animations' && <AnimationsTab />}

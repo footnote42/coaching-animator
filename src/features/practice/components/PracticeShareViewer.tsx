@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, ListVideo, MessageSquare } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, ListVideo, MessageSquare, Flag } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { positionsAt, resolveStep, stepCount, type ResolvedStep } from '@/features/practice/engine';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
+import { ReportPracticeDialog } from '@/features/practice/components/ReportPracticeDialog';
 import type { PracticeScript } from '@/features/practice/schema';
 
 const LEVER_NAMES = { space: 'Space', time: 'Time', equipment: 'Equipment', people: 'People' } as const;
@@ -25,6 +26,8 @@ const CONTROL_ON = 'bg-white text-black hover:bg-white/90 hover:text-black';
 type CanvasComponent = ComponentType<{ step: ResolvedStep; time: number }>;
 
 interface PracticeShareViewerProps {
+  /** Practice id; when set, the header shows a Report button. */
+  practiceId?: string;
   title: string;
   /** A validated Practice Script. */
   script: PracticeScript;
@@ -35,7 +38,8 @@ interface PracticeShareViewerProps {
  * Step 0 with previous/next Step, play/pause, "play all", speed and a
  * Commentary toggle. Shows a static thumbnail until the canvas has loaded.
  */
-export function PracticeShareViewer({ title, script }: PracticeShareViewerProps) {
+export function PracticeShareViewer({ practiceId, title, script }: PracticeShareViewerProps) {
+  const [reporting, setReporting] = useState(false);
   const steps = stepCount(script);
   const [stepIndex, setStepIndex] = useState(0);
   const [time, setTime] = useState(0);
@@ -121,6 +125,11 @@ export function PracticeShareViewer({ title, script }: PracticeShareViewerProps)
         <p className="shrink-0 text-xs text-white/75 md:text-sm" aria-live="polite">
           {stepLabel} ({stepIndex + 1}/{steps})
         </p>
+        {practiceId && (
+          <Button variant="outline" className={CONTROL} aria-label="Report this Practice" onClick={() => setReporting(true)}>
+            <Flag />
+          </Button>
+        )}
       </header>
 
       <main className="relative min-h-0 flex-1">
@@ -206,6 +215,7 @@ export function PracticeShareViewer({ title, script }: PracticeShareViewerProps)
           ))}
         </div>
       </nav>
+      {reporting && practiceId && <ReportPracticeDialog practiceId={practiceId} onClose={() => setReporting(false)} />}
     </div>
   );
 }

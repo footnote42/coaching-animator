@@ -213,10 +213,55 @@ export type Database = {
         }
         Relationships: []
       }
+      practice_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          practice_id: string
+          reason: string
+          reporter_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          practice_id: string
+          reason: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          practice_id?: string
+          reason?: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_reports_practice_id_fkey"
+            columns: ["practice_id"]
+            isOneToOne: false
+            referencedRelation: "practices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       practices: {
         Row: {
           created_at: string
           description: string | null
+          hidden: boolean
           id: string
           owner_id: string
           schema_version: number
@@ -228,6 +273,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          hidden?: boolean
           id?: string
           owner_id: string
           schema_version: number
@@ -239,6 +285,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          hidden?: boolean
           id?: string
           owner_id?: string
           schema_version?: number
