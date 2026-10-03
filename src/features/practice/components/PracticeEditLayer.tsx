@@ -14,7 +14,7 @@ const HIGHLIGHT = '#FACC15';
 const isPlaceTool = (tool: EditorTool) => tool !== 'select' && tool !== 'run' && tool !== 'pass';
 
 interface EditLayerProps {
-  /** The base Step, resolved, at time zero. */
+  /** The Step being edited (base or Progression), resolved, at time zero. */
   step: ResolvedStep;
   geometry: CanvasGeometry;
   tool: EditorTool;

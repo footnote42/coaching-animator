@@ -1,22 +1,27 @@
 /**
- * Hand editing of a Practice Script: pure edits over the base Step plus an
- * undo/redo history of whole-script snapshots. The editor writes the same
- * Practice Script an agent writes (ADR 0002), so every edit keeps the script
- * shaped by the schema and snaps positions to grid cells.
+ * Hand editing of a Practice Script: pure edits over the base Step and inside
+ * Progressions, plus an undo/redo history of whole-script snapshots. The
+ * editor writes the same Practice Script an agent writes (ADR 0002), so every
+ * edit keeps the script shaped by the schema and snaps positions to grid cells.
  */
+import { formatError, resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
 import {
   BALL_CARRIER_KINDS,
+  MAX_COACHING_POINTS,
   MAX_MARKERS,
   MAX_PASSES,
   MAX_WAYPOINTS,
   SCHEMA_VERSION,
   type Area,
   type Cell,
+  type Change,
+  type Lever,
   type Marker,
   type MarkerKind,
   type Move,
   type Pace,
   type Pass,
+  type Placement,
   type PracticeScript,
 } from '@/features/practice/schema';
 
@@ -356,6 +361,236 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
     }
   }
+}
+
+/**
+ * Refuse an edit that turns a valid script into an invalid one (typically by
+ * breaking a change in a later Progression). Emptying the script is allowed:
+ * that is a fresh start, not a broken Practice.
+ */
+function keepValid(before: PracticeScript, after: PracticeScript | string, refusal: string): PracticeScript | string {
+  if (typeof after === 'string' || after === before || after.markers.length === 0) return after;
+  const result = validate(after);
+  if (result.ok || !validate(before).ok) return after;
+  return `${refusal}: ${formatError(result.errors[0])}`;
+}
+
+/** Drop declared markers that no Step places any more (e.g. added then removed in one Progression). */
+function pruneMarkers(script: PracticeScript): PracticeScript {
+  const placed = new Set(script.base.placements.map((p) => p.marker));
+  for (const progression of script.progressions) {
+    for (const change of progression.changes) if (change.type === 'addMarker') placed.add(change.marker);
+  }
+  const markers = script.markers.filter((m) => placed.has(m.id));
+  return markers.length === script.markers.length ? script : { ...script, markers };
+}
+
+/** A resolved Step written as a base-only script, so base edits can run on it. */
+function stepAsBase(script: PracticeScript, step: ResolvedStep): PracticeScript {
+  return {
+    ...script,
+    area: step.area,
+    base: {
+      placements: step.markers.map((m): Placement =>
+        m.holder !== undefined ? { marker: m.id, holder: m.holder } : { marker: m.id, cell: m.cell },
+      ),
+      moves: step.moves,
+      passes: step.passes,
+      commentary: step.commentary,
+    },
+    progressions: [],
+  };
+}
+
+/** JSON with undefined fields dropped and keys sorted, for comparing values. */
+const canon = (value: unknown) =>
+  JSON.stringify(value, (_, v: unknown) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(
+          Object.entries(v)
+            .filter(([, x]) => x !== undefined)
+            .sort(([a], [b]) => (a < b ? -1 : 1)),
+        )
+      : v,
+  );
+const same = (a: unknown, b: unknown) => canon(a) === canon(b);
+
+function startOf(placement: Placement): { cell: Cell } | { holder: string } {
+  return placement.holder !== undefined ? { holder: placement.holder } : { cell: placement.cell! };
+}
+
+function moveChange(move: Move): Change {
+  return {
+    type: 'setMove',
+    marker: move.marker,
+    waypoints: move.waypoints,
+    ...(move.pace !== undefined && { pace: move.pace }),
+    ...(move.after !== undefined && { after: move.after }),
+  };
+}
+
+/**
+ * The changes that turn one Step (as a base-only script) into another. Each
+ * marker, move and pass gets at most one change, so repeated edits coalesce.
+ * Pass order is kept: a pass that has to move to the end is removed and re-set.
+ */
+function diffSteps(prev: PracticeScript, next: PracticeScript): Change[] {
+  const changes: Change[] = [];
+  if (!same(prev.area, next.area)) {
+    const { template, width, length } = next.area;
+    changes.push({ type: 'setArea', ...(template !== undefined && { template }), width, length });
+  }
+
+  const before = new Map(prev.base.placements.map((p) => [p.marker, p]));
+  const after = new Map(next.base.placements.map((p) => [p.marker, p]));
+  for (const id of before.keys()) if (!after.has(id)) changes.push({ type: 'removeMarker', marker: id });
+  for (const [id, placement] of after) {
+    const old = before.get(id);
+    if (!old) changes.push({ type: 'addMarker', marker: id, ...startOf(placement) });
+    else if (!same(startOf(old), startOf(placement))) changes.push({ type: 'placeMarker', marker: id, ...startOf(placement) });
+  }
+
+  const oldMoves = new Map(prev.base.moves.map((m) => [m.marker, m]));
+  const newMoves = new Map(next.base.moves.map((m) => [m.marker, m]));
+  for (const id of oldMoves.keys()) {
+    if (!newMoves.has(id) && after.has(id)) changes.push({ type: 'removeMove', marker: id });
+  }
+  for (const [id, move] of newMoves) {
+    const old = before.has(id) ? oldMoves.get(id) : undefined;
+    if (!old || !same(old, move)) changes.push(moveChange(move));
+  }
+
+  const nextIds = new Set(next.base.passes.map((p) => p.id));
+  for (const pass of prev.base.passes) if (!nextIds.has(pass.id)) changes.push({ type: 'removePass', id: pass.id });
+  const kept = prev.base.passes.filter((p) => nextIds.has(p.id));
+  let i = 0;
+  for (; i < next.base.passes.length && i < kept.length && kept[i].id === next.base.passes[i].id; i++) {
+    const pass = next.base.passes[i];
+    if (!same(kept[i], pass)) changes.push({ type: 'setPass', ...pass });
+  }
+  const tail = next.base.passes.slice(i);
+  for (const pass of tail) if (kept.some((p) => p.id === pass.id)) changes.push({ type: 'removePass', id: pass.id });
+  for (const pass of tail) changes.push({ type: 'setPass', ...pass });
+  return changes;
+}
+
+const stepMissing = (n: number) => `There is no Step ${n}.`;
+const BREAKS_LATER_STEP = 'That would break a later Step';
+
+/**
+ * Rewrite Progression n (Step n, n >= 1) by editing its resolved state, then
+ * storing the difference from Step n - 1 as its changes. The base and earlier
+ * Steps are untouched; later Steps carry the result forward.
+ */
+function editProgression(
+  script: PracticeScript,
+  n: number,
+  edit: (step: PracticeScript) => PracticeScript | string,
+): PracticeScript | string {
+  if (!script.progressions[n - 1]) return stepMissing(n);
+  let prev: PracticeScript;
+  let current: PracticeScript;
+  try {
+    prev = stepAsBase(script, resolveStep(script, n - 1));
+    current = stepAsBase(script, resolveStep(script, n));
+  } catch {
+    return `Step ${n} can’t be edited until the script is fixed.`;
+  }
+  const edited = edit(current);
+  if (typeof edited === 'string') return edited;
+  if (edited === current) return script;
+  const declared = new Set(script.markers.map((m) => m.id));
+  const next = pruneMarkers({
+    ...script,
+    markers: [...script.markers, ...edited.markers.filter((m) => !declared.has(m.id))],
+    progressions: script.progressions.map((p, i) => (i === n - 1 ? { ...p, changes: diffSteps(prev, edited) } : p)),
+  });
+  return keepValid(script, next, BREAKS_LATER_STEP);
+}
+
+/**
+ * Apply one edit to Step n: the base Step (n = 0) directly, or a Progression by
+ * recording the edit as that Progression's changes. Refuses an edit that would
+ * break a later Step. Returns the new script, the same script for a no-op, or
+ * a message saying why it cannot be made.
+ */
+export function applyStepEdit(script: PracticeScript, n: number, edit: Edit): PracticeScript | string {
+  if (n === 0) return keepValid(script, applyEdit(script, edit), BREAKS_LATER_STEP);
+  return editProgression(script, n, (step) => applyEdit(step, edit));
+}
+
+/**
+ * Set the Area of Step n. For the base it is the Practice's Area; in a
+ * Progression it becomes a setArea change, which needs the Space lever.
+ */
+export function applyStepArea(script: PracticeScript, n: number, area: Area): PracticeScript | string {
+  if (n === 0) {
+    if (same(script.area, area)) return script;
+    return keepValid(script, { ...script, area }, 'The Area can’t change like that');
+  }
+  const progression = script.progressions[n - 1];
+  if (!progression) return stepMissing(n);
+  if (progression.lever !== 'space') {
+    return 'Only a Progression that pulls the Space lever can change the Area. Set its Lever to Space first.';
+  }
+  return editProgression(script, n, (step) => (same(step.area, area) ? step : { ...step, area }));
+}
+
+/** Add an empty Progression after the last Step. */
+export function addProgression(script: PracticeScript, lever: Lever): PracticeScript {
+  return { ...script, progressions: [...script.progressions, { lever, commentary: { points: [] }, changes: [] }] };
+}
+
+/**
+ * Move Progression n (Step n) one place earlier (-1) or later (+1). The chain
+ * re-resolves in the new order; a move that would break a change is refused.
+ */
+export function moveProgression(script: PracticeScript, n: number, by: -1 | 1): PracticeScript | string {
+  const from = n - 1;
+  const to = from + by;
+  if (!script.progressions[from]) return stepMissing(n);
+  if (to < 0 || to >= script.progressions.length) return script;
+  const progressions = [...script.progressions];
+  [progressions[from], progressions[to]] = [progressions[to], progressions[from]];
+  return keepValid(script, { ...script, progressions }, 'That Step can’t move there');
+}
+
+/** Delete Progression n (Step n). Refused if a later Step depends on its changes. */
+export function removeProgression(script: PracticeScript, n: number): PracticeScript | string {
+  if (!script.progressions[n - 1]) return stepMissing(n);
+  const next = pruneMarkers({ ...script, progressions: script.progressions.filter((_, i) => i !== n - 1) });
+  return keepValid(script, next, 'That Step can’t be deleted');
+}
+
+/** Change the Lever of Progression n (Step n). */
+export function setLever(script: PracticeScript, n: number, lever: Lever): PracticeScript | string {
+  const progression = script.progressions[n - 1];
+  if (!progression) return stepMissing(n);
+  if (progression.lever === lever) return script;
+  const progressions = script.progressions.map((p, i) => (i === n - 1 ? { ...p, lever } : p));
+  return keepValid(script, { ...script, progressions }, 'That Lever doesn’t fit this Step');
+}
+
+/** Most characters in one coaching point. */
+export const MAX_POINT_LENGTH = 200;
+
+/**
+ * Replace the coaching points of Step n (base or Progression). Points are
+ * trimmed and blank ones dropped, so clearing a point removes it.
+ */
+export function setCommentary(script: PracticeScript, n: number, points: string[]): PracticeScript | string {
+  const cleaned = points.map((p) => p.trim()).filter((p) => p.length > 0);
+  if (cleaned.length > MAX_COACHING_POINTS) return `A Step holds at most ${MAX_COACHING_POINTS} coaching points.`;
+  if (cleaned.some((p) => p.length > MAX_POINT_LENGTH)) return `A coaching point is at most ${MAX_POINT_LENGTH} characters.`;
+  if (n === 0) {
+    if (same(script.base.commentary.points, cleaned)) return script;
+    return withBase(script, { commentary: { points: cleaned } });
+  }
+  const progression = script.progressions[n - 1];
+  if (!progression) return stepMissing(n);
+  if (same(progression.commentary.points, cleaned)) return script;
+  const progressions = script.progressions.map((p, i) => (i === n - 1 ? { ...p, commentary: { points: cleaned } } : p));
+  return { ...script, progressions };
 }
 
 /** Most snapshots kept for undo. */

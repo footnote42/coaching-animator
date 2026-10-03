@@ -22,8 +22,8 @@ import {
 import { Button } from '@/shared/ui/button';
 import { validate, resolveStep, positionsAt, formatError, stepCount } from '@/features/practice/engine';
 import {
-  applyEdit,
-  ballHolder,
+  applyStepArea,
+  applyStepEdit,
   editorReducer,
   emptyScript,
   initialEditorState,
@@ -36,6 +36,7 @@ import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/
 import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import { AreaControl } from '@/features/practice/components/AreaControl';
+import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
 import { markerColour } from '@/features/practice/markerColour';
 import { PACES, type Area, type MarkerKind, type Pace, type PracticeScript } from '@/features/practice/schema';
 import { cn } from '@/lib/utils';
@@ -54,8 +55,6 @@ const PracticeGhostLayer = dynamic(
   () => import('@/features/practice/components/PracticeEditLayer').then((m) => m.PracticeGhostLayer),
   { ssr: false },
 );
-
-const LEVER_NAMES = { space: 'Space', time: 'Time', equipment: 'Equipment', people: 'People' } as const;
 
 const PALETTE: Array<{ kind: MarkerKind; name: string }> = [
   { kind: 'attacker', name: 'Attacker' },
@@ -123,10 +122,11 @@ export function PracticeImport() {
   }, [script]);
 
   const selection: EditorSelection =
-    rawSelection.marker && script.markers.some((m) => m.id === rawSelection.marker) ? rawSelection : NO_SELECTION;
-  const selectedMarker = script.markers.find((m) => m.id === selection.marker);
-  const selectedMove = script.base.moves.find((m) => m.marker === selection.marker);
-  const editing = shownStep === 0 && !playing && time === 0;
+    rawSelection.marker && step?.markers.some((m) => m.id === rawSelection.marker) ? rawSelection : NO_SELECTION;
+  const selectedMarker = step?.markers.find((m) => m.id === selection.marker);
+  const selectedMove = step?.moves.find((m) => m.marker === selection.marker);
+  const passes = step?.passes ?? [];
+  const editing = step !== null && !playing && time === 0;
 
   useEffect(() => {
     if (!playing) return;
@@ -153,8 +153,8 @@ export function PracticeImport() {
     setTime(0);
   };
 
-  const edit = (change: Edit): boolean => {
-    const result = applyEdit(script, change);
+  /** Commit an edit result as one undoable step, or show why it was refused. */
+  const commit = (result: PracticeScript | string): boolean => {
     if (typeof result === 'string') {
       toast.error(result);
       return false;
@@ -164,9 +164,11 @@ export function PracticeImport() {
     return true;
   };
 
+  /** Edit the shown Step: the base directly, a Progression as its changes. */
+  const edit = (change: Edit): boolean => commit(applyStepEdit(script, shownStep, change));
+
   const pickTool = (next: EditorTool) => {
     setTool(next);
-    setStepIndex(0);
     stopPlayback();
     if (next !== 'select' && next !== 'run' && next !== 'pass') setSelection(NO_SELECTION);
   };
@@ -242,8 +244,8 @@ export function PracticeImport() {
     stopPlayback();
   };
 
-  /** Set the base Area as one undoable edit. */
-  const setArea = (area: Area) => applyText(JSON.stringify({ ...script, area }));
+  /** Set the shown Step's Area as one undoable edit (a setArea change in a Progression). */
+  const setArea = (area: Area) => commit(applyStepArea(script, shownStep, area));
   const [libraryKey, setLibraryKey] = useState(0);
   // A Guest's device slot holds the script once there is something in it.
   const deviceText = script.markers.length > 0 || text !== scriptText ? text : '';
@@ -314,14 +316,15 @@ export function PracticeImport() {
     setStepIndex(n);
     setSelection(NO_SELECTION);
     setTime(0);
-    setPlaying(n > 0);
+    setPlaying(false);
   };
 
   const placeKind = PALETTE.find((p) => p.kind === tool);
-  const hint = shownStep > 0
-    ? 'Editing works on the Base Step. Pick a tool to go back to it.'
-    : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
-  const holdsBall = selectedMarker && ballHolder(script) === selectedMarker.id;
+  const toolHint = TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
+  const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
+  const ball = step?.markers.find((m) => m.kind === 'ball');
+  const holdsBall = selectedMarker && ball?.holder === selectedMarker.id;
+  const stepArea = step?.area ?? script.area;
 
   return (
     <div className="flex flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
@@ -343,7 +346,8 @@ export function PracticeImport() {
           onSaved={saved}
           onOpen={(id) => router.push(`/practice?id=${id}`)}
         />
-        <AreaControl key={`${script.area.template}-${script.area.width}x${script.area.length}`} area={script.area} onChange={setArea} />
+        <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
+        <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
         <PracticeScriptActions text={scriptText} isGuest={isGuest} />
         <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
         <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
@@ -391,24 +395,26 @@ export function PracticeImport() {
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
-        {stepCount(script) > 1 && (
-          <div role="group" aria-label="Steps" className="flex flex-wrap gap-2">
-            {Array.from({ length: stepCount(script) }, (_, n) => {
-              const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
-              return (
-                <Button
-                  key={n}
-                  className="h-11"
-                  variant={n === shownStep ? 'default' : 'outline'}
-                  aria-pressed={n === shownStep}
-                  onClick={() => playStep(n)}
-                >
-                  {lever ? `${n}. ${LEVER_NAMES[lever]}` : 'Base'}
-                </Button>
-              );
-            })}
-          </div>
-        )}
+        <div role="group" aria-label="Steps" className="flex flex-wrap gap-2">
+          {Array.from({ length: stepCount(script) }, (_, n) => {
+            const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
+            return (
+              <Button
+                key={n}
+                className="h-11"
+                variant={n === shownStep ? 'default' : 'outline'}
+                aria-pressed={n === shownStep}
+                onClick={() => playStep(n)}
+              >
+                {lever ? `${n}. ${LEVER_NAMES[lever]}` : 'Base'}
+              </Button>
+            );
+          })}
+          <AddProgressionButton
+            script={script}
+            onAdd={(next) => commit(next) && playStep(next.progressions.length)}
+          />
+        </div>
 
         <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1">
           {(
@@ -509,10 +515,7 @@ export function PracticeImport() {
                 <Button
                   variant="outline"
                   className="h-11"
-                  onClick={() => {
-                    const ball = script.markers.find((m) => m.kind === 'ball');
-                    if (ball) edit({ type: 'removeMarker', marker: ball.id });
-                  }}
+                  onClick={() => ball && edit({ type: 'removeMarker', marker: ball.id })}
                 >
                   Remove ball
                 </Button>
@@ -520,12 +523,12 @@ export function PracticeImport() {
             </>
           )}
   
-          {editing && script.base.passes.length > 0 && (
+          {editing && passes.length > 0 && (
             <div role="group" aria-label="Passes" className="flex flex-wrap items-center gap-2">
               <span>Passes:</span>
-              {script.base.passes.map((pass) => {
+              {passes.map((pass) => {
                 const name = (id: string) => script.markers.find((m) => m.id === id)?.label ?? id;
-                const run = script.base.moves.find((m) => m.marker === pass.to);
+                const run = step?.moves.find((m) => m.marker === pass.to);
                 return (
                   <span key={pass.id} className="flex items-center gap-1">
                     <Button
