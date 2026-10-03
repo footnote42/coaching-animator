@@ -38,7 +38,7 @@ export default function HowToPage() {
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">4. Save</h3>
-              <p>Sign up or sign in (top right), give the Practice a title and save it. It appears in <strong>My Practices</strong>.</p>
+              <p>Sign in (top right), give the Practice a title and save it. It appears in <strong>My Practices</strong>.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">5. Share a link</h3>
