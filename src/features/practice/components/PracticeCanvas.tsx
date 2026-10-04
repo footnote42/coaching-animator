@@ -12,6 +12,8 @@ import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/pract
 const MIN_GRID_PX = 6;
 /** Colour of pitch markings. */
 const PITCH_LINE_COLOUR = 'rgba(255,255,255,0.75)';
+/** Colour of a forward pass arrow in the editor. */
+const FORWARD_PASS_COLOUR = DESIGN_TOKENS.colours.accentWarm;
 /** Colour of run lines and pass arrows. */
 const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
@@ -53,6 +55,8 @@ interface PracticeCanvasProps {
   time: number;
   /** Extra Konva layers drawn on top (editing handles, ghosts), given the canvas geometry. */
   overlay?: (geometry: CanvasGeometry) => ReactNode;
+  /** Ids of passes to mark amber (forward passes, in the editor only). */
+  forwardPasses?: ReadonlySet<string>;
 }
 
 /** How cells map to canvas pixels, for layers drawn over the Practice. */
@@ -68,7 +72,7 @@ export interface CanvasGeometry {
 /**
  * Konva renderer for a Practice Step. Fits the Area's aspect ratio to its container.
  */
-export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
+export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: areaW, length: areaL } = step.area;
   const { width, height, measured } = useShareCanvasSize(containerRef, areaW / areaL);
@@ -123,17 +127,20 @@ export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
               />
             );
           })}
-          {passes.map((pass) => (
-            <Arrow
-              key={`pass-${pass.id}`}
-              points={[px(pass.start.x), px(pass.start.y), px(pass.end.x), px(pass.end.y)]}
-              stroke={LINE_COLOUR}
-              fill={LINE_COLOUR}
-              strokeWidth={2}
-              pointerLength={8}
-              pointerWidth={8}
-            />
-          ))}
+          {passes.map((pass) => {
+            const colour = forwardPasses?.has(pass.id) ? FORWARD_PASS_COLOUR : LINE_COLOUR;
+            return (
+              <Arrow
+                key={`pass-${pass.id}`}
+                points={[px(pass.start.x), px(pass.start.y), px(pass.end.x), px(pass.end.y)]}
+                stroke={colour}
+                fill={colour}
+                strokeWidth={forwardPasses?.has(pass.id) ? 3 : 2}
+                pointerLength={8}
+                pointerWidth={8}
+              />
+            );
+          })}
         </Layer>
         <Layer listening={false}>
           {markers.map((marker) => {

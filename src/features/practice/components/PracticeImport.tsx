@@ -111,6 +111,8 @@ export function PracticeImport() {
     step,
     duration,
     problems,
+    setDirection,
+    forwardPasses,
     selectedMarker,
     selectedMove,
     passes,
@@ -152,6 +154,7 @@ export function PracticeImport() {
   const ballName = (id: string) => `Ball ${balls.findIndex((b) => b.id === id) + 1}`;
   const ballSelect = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm';
   const stepArea = step?.area ?? script.area;
+  const forwardIds = new Set(forwardPasses.map((w) => w.pass));
 
   return (
     <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
@@ -182,7 +185,7 @@ export function PracticeImport() {
           hideListOnMobile
         />
         <div>
-          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} />
+          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
         </div>
 
         <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
@@ -457,6 +460,13 @@ export function PracticeImport() {
               })}
             </div>
           )}
+          {editing && forwardPasses.length > 0 && (
+            <ul role="status" className="border-l-4 border-[var(--color-accent-warm)] pl-2 text-sm text-text-primary">
+              {forwardPasses.map((w) => (
+                <li key={w.pass}>{w.message}</li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="relative h-[60dvh] min-h-64 md:h-auto md:min-h-0 md:flex-1">
@@ -465,6 +475,7 @@ export function PracticeImport() {
               <PracticeCanvas
                 step={step}
                 time={time}
+                forwardPasses={forwardIds}
                 overlay={(geometry) => (
                   <>
                     {ghost && <PracticeGhostLayer step={step} time={time} geometry={geometry} />}

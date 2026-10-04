@@ -19,6 +19,7 @@ import {
   type Cell,
   type Change,
   type Commentary,
+  type Direction,
   type Lever,
   type Marker,
   type MarkerKind,
@@ -57,6 +58,15 @@ export interface ValidationError {
 export type ValidationResult =
   | { ok: true; script: PracticeScript }
   | { ok: false; errors: ValidationError[] };
+
+/** A problem that does not stop a script being saved or played. */
+export interface ValidationWarning {
+  /** Index of the Step the warning is about (0 is the base Step). */
+  step: number;
+  /** Id of the pass concerned. */
+  pass: string;
+  message: string;
+}
 
 export interface ResolvedMarker extends Marker {
   /** Starting cell. For the ball, the starting cell of its holder. */
@@ -864,6 +874,53 @@ function heldTwice(flights: PassFlight[], startHolders: Map<string, string>): St
     }
   }
   return null;
+}
+
+/** A pass caught further ahead than this, in metres, goes forward. */
+export const FORWARD_PASS_TOLERANCE_M = 0.5;
+
+/** Metres a point moves in the Direction of attack (negative is backward). */
+function gainAlong(direction: Direction, from: Point, to: Point): number {
+  switch (direction) {
+    case 'up': return from.y - to.y;
+    case 'down': return to.y - from.y;
+    case 'left': return from.x - to.x;
+    case 'right': return to.x - from.x;
+    default: return 0;
+  }
+}
+
+/** Whether a ball thrown from `from` and caught at `to` goes forward in the direction of attack. */
+export function isForwardPass(direction: Direction | undefined, from: Point, to: Point): boolean {
+  if (!direction || direction === 'none') return false;
+  return gainAlong(direction, from, to) > FORWARD_PASS_TOLERANCE_M + 1e-9;
+}
+
+/**
+ * Warnings for a validated script: a pass is forward when it is caught more than
+ * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
+ * the real throw and catch points (the ball leads a receiver on the run).
+ * Never blocks saving. A script without a direction, or with none, has no warnings.
+ */
+export function warnings(script: PracticeScript): ValidationWarning[] {
+  if (!script.direction || script.direction === 'none') return [];
+  const found: ValidationWarning[] = [];
+  for (let n = 0; n < stepCount(script); n++) {
+    const step = resolveStep(script, n);
+    const flights = positionsAt(step, 0).passes;
+    step.passes.forEach((pass, i) => {
+      const flight = flights.find((f) => f.id === pass.id);
+      if (flight && isForwardPass(script.direction, flight.start, flight.end)) {
+        found.push({ step: n, pass: pass.id, message: `Pass ${i + 1} goes forward` });
+      }
+    });
+  }
+  return found;
+}
+
+/** Plain-language line for a warning, naming the Step when it is not the first. */
+export function formatWarning(warning: ValidationWarning): string {
+  return warning.step === 0 ? warning.message : `Step ${warning.step + 1}: ${warning.message}`;
 }
 
 /** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */

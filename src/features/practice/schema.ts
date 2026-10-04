@@ -53,6 +53,9 @@ export const MARKER_KINDS = [
 
 export const TEAMS = ['attack', 'defence'] as const;
 
+/** Directions of attack. Up is toward row 0 (the top of the Area), down toward the last row. */
+export const DIRECTIONS = ['up', 'down', 'left', 'right', 'none'] as const;
+
 export const CellSchema = z
   .strictObject({
     x: z
@@ -285,6 +288,12 @@ export const PracticeScriptSchema = z
     schemaVersion: z.literal(SCHEMA_VERSION).describe('Version of this format. Always 1.'),
     title: z.string().max(120).optional().describe('Short name for the Practice.'),
     area: AreaSchema,
+    direction: z
+      .enum(DIRECTIONS)
+      .optional()
+      .describe(
+        'Direction of attack for the whole Practice: up (toward row 0, the top edge, where a pitch template draws its try line), down, left, right, or none. When set, any pass caught more than 0.5 m ahead of where it was thrown in that direction raises a warning. Set it for directional drills; leave out or none for drills with no try line.',
+      ),
     markers: z
       .array(MarkerSchema)
       .min(1)
@@ -303,6 +312,7 @@ export type Area = z.infer<typeof AreaSchema>;
 export type AreaTemplate = (typeof AREA_TEMPLATES)[number];
 export type MarkerKind = (typeof MARKER_KINDS)[number];
 export type Team = (typeof TEAMS)[number];
+export type Direction = (typeof DIRECTIONS)[number];
 export type Marker = z.infer<typeof MarkerSchema>;
 export type Placement = z.infer<typeof PlacementSchema>;
 export type Move = z.infer<typeof MoveSchema>;

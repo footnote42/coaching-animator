@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { validate, resolveStep, positionsAt, formatError, stepCount } from '@/features/practice/engine';
+import { validate, warnings, resolveStep, positionsAt, formatError, stepCount } from '@/features/practice/engine';
 import {
+  applyDirection,
   applyStepArea,
   applyStepEdit,
   editorReducer,
@@ -14,7 +15,8 @@ import {
   type EditorTool,
 } from '@/features/practice/editing';
 import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
-import { type Area, type PracticeScript } from '@/features/practice/schema';
+import { areaTemplate, defaultDirection } from '@/features/practice/area';
+import { type Area, type Direction, type PracticeScript } from '@/features/practice/schema';
 
 export function useEditorWorkspace() {
   const router = useRouter();
@@ -60,6 +62,15 @@ export function useEditorWorkspace() {
     const result = validate(script);
     return result.ok ? [] : result.errors.map(formatError);
   }, [script]);
+
+  /** Pass ids in the shown Step that go forward, in the Direction of attack. Never blocks saving. */
+  const forwardPasses = useMemo(() => {
+    try {
+      return warnings(script).filter((w) => w.step === shownStep);
+    } catch {
+      return [];
+    }
+  }, [script, shownStep]);
 
   const selection: EditorSelection =
     rawSelection.marker && step?.markers.some((m) => m.id === rawSelection.marker) ? rawSelection : NO_SELECTION;
@@ -199,7 +210,15 @@ export function useEditorWorkspace() {
   };
 
   /** Set the shown Step's Area as one undoable edit (a setArea change in a Progression). */
-  const setArea = (area: Area) => commit(applyStepArea(script, shownStep, area));
+  const setArea = (area: Area) => {
+    const result = applyStepArea(script, shownStep, area);
+    // Picking a different template for the base Step also resets the Direction of attack.
+    const newTemplate = shownStep === 0 && typeof result !== 'string' && areaTemplate(result.area) !== areaTemplate(script.area);
+    return commit(newTemplate ? applyDirection(result as PracticeScript, defaultDirection(area)) : result);
+  };
+
+  /** Set the Direction of attack as one undoable edit. */
+  const setDirection = (direction: Direction) => commit(applyDirection(script, direction));
   const [libraryKey, setLibraryKey] = useState(0);
 
   // A Guest's device slot holds the script once there is something in it.
@@ -334,6 +353,8 @@ export function useEditorWorkspace() {
     openScript,
     applyText,
     setArea,
+    setDirection,
+    forwardPasses,
     libraryKey,
     setLibraryKey,
     isGuest,

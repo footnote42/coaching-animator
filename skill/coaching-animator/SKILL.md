@@ -65,7 +65,9 @@ Pick the ones the Practice mainly trains. Fewer, well chosen, is better than fiv
 
 Before replying, check the script against the schema and the guide's rules: every id exists, the first pass comes from the ball holder, each pass comes from the previous receiver (per ball), cells are inside the Area, `after` waits form no loop, and limits are respected. If you can run code, validate against the JSON Schema. If the Coach reports errors, fix every listed problem (each error names the field path) and send the whole corrected script again.
 
-Then check the rugby, which the validator cannot: in any Practice with a try line or a direction of attack, every pass must travel level or backwards. Two traps make passes go forward:
+Set `"direction"` at the top level of the script for any directional drill (`"up"` is toward row 0, the top edge; pitch templates draw their try line there, so attackers start at larger y and run toward smaller y). Use `"none"` or leave it out for drills with no try line. With a direction set, the app and the MCP tools warn about any pass caught more than 0.5 m ahead of where it was thrown ("Pass 2 goes forward"). Treat a warning as something to fix: change the script and save again until there are none.
+
+Then check the rugby yourself too: in any Practice with a try line or a direction of attack, every pass must travel level or backwards. Two traps make passes go forward:
 
 - **The ball leads a receiver on the run.** With `at`, the catch lands where the receiver will be when the ball arrives, a metre or more past the waypoint. Put the catch waypoint a few metres behind the passer.
 - **A receiver who sets off at time zero arrives early.** If the receiver passes the `at` waypoint before the passer has the ball, the catch moves further up the run, often to its end. Hold the receiver with `after: { "pass": "<previous pass>" }` so it times its run onto the ball. `examples/04-attack-v-defence.json` shows both.
@@ -94,7 +96,7 @@ Tools (from the coaching-animator MCP server):
 - `update_practice` `{id, script?, title?, tags?, source?}`: change one of their Practices. Send the whole changed script, not a patch.
 - `list_my_practices` `{limit?}`: the Coach's Practices, newest first. Use it to find one when the Coach does not give a link.
 
-If a script is not valid, the tool returns the problems, each naming its field path. Fix every one and call again.
+If a script is not valid, the tool returns the problems, each naming its field path. Fix every one and call again. A saved script can still return `warnings` (for example "Pass 2 goes forward"): fix them with `update_practice` before giving the Coach the link.
 
 Rules: everything you create is private; you cannot publish, share or delete. You only see this Coach's own Practices. After saving, give the editor link from the result and mention any Source and Tags you set.
 

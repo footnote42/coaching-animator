@@ -6,7 +6,7 @@ import { requireNotBanned } from '@/lib/server/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { PracticeTagsSchema, SourceUrlSchema, SourceTitleSchema } from '@/lib/schemas/practices';
 import { PRACTICE_TAGS } from '@/lib/practice-tags';
-import { validate, formatError, MAX_SCRIPT_BYTES } from '@/features/practice/engine';
+import { validate, warnings, formatError, formatWarning, MAX_SCRIPT_BYTES } from '@/features/practice/engine';
 import { getSiteOrigin } from '@/lib/site-origin';
 import type { Json } from '@/lib/supabase/database.types';
 
@@ -99,7 +99,7 @@ const TOOLS = [
   {
     name: 'create_practice',
     description:
-      "Save a new Practice Script to the Coach's account. It is always created private; the Coach publishes it from the editor. Returns the id and the editor link to give the Coach.",
+      "Save a new Practice Script to the Coach's account. It is always created private; the Coach publishes it from the editor. Returns the id, the editor link to give the Coach, and any warnings (for example a forward pass in a Practice with a direction): treat a warning as something to fix with update_practice.",
     inputSchema: {
       type: 'object',
       properties: {
@@ -125,7 +125,7 @@ const TOOLS = [
   {
     name: 'update_practice',
     description:
-      "Change one of the Coach's own Practices: any of script, title, tags, source. Never changes visibility. Send the whole script, not a patch.",
+      "Change one of the Coach's own Practices: any of script, title, tags, source. Never changes visibility. Send the whole script, not a patch. Returns any warnings for the script, which are things to fix.",
     inputSchema: {
       type: 'object',
       properties: {
@@ -161,7 +161,12 @@ function checkScript(script: unknown) {
   if (!result.ok) {
     return { ok: false as const, text: ['The Practice Script is not valid:', ...result.errors.map(formatError)].join('\n') };
   }
-  return { ok: true as const, schemaVersion: result.script.schemaVersion, title: result.script.title };
+  return {
+    ok: true as const,
+    schemaVersion: result.script.schemaVersion,
+    title: result.script.title,
+    warnings: warnings(result.script).map(formatWarning),
+  };
 }
 
 const PRACTICE_COLUMNS = 'id, title, tags, source_url, source_title, visibility, schema_version, updated_at';
@@ -192,7 +197,7 @@ async function callTool(name: string, args: unknown, ownerId: string, db: Admin)
         console.error('[MCP API] Insert error:', error);
         return toolText('Failed to save the Practice', true);
       }
-      return toolJson({ id: data.id, visibility: 'private', link: editorLink(data.id) });
+      return toolJson({ id: data.id, visibility: 'private', link: editorLink(data.id), warnings: checked.warnings });
     }
 
     case 'get_practice': {
@@ -234,9 +239,11 @@ async function callTool(name: string, args: unknown, ownerId: string, db: Admin)
         if (p.data.source.url !== undefined) update.source_url = p.data.source.url;
         if (p.data.source.title !== undefined) update.source_title = p.data.source.title;
       }
+      let scriptWarnings: string[] = [];
       if (p.data.script !== undefined) {
         const checked = checkScript(p.data.script);
         if (!checked.ok) return toolText(checked.text, true);
+        scriptWarnings = checked.warnings;
         update.script = p.data.script as Json;
         update.schema_version = checked.schemaVersion;
       }
@@ -252,7 +259,7 @@ async function callTool(name: string, args: unknown, ownerId: string, db: Admin)
         return toolText('Failed to update the Practice', true);
       }
       if (!data || data.length === 0) return toolText('Practice not found', true);
-      return toolJson({ id, updated: Object.keys(update).filter((k) => k !== 'schema_version'), link: editorLink(id) });
+      return toolJson({ id, updated: Object.keys(update).filter((k) => k !== 'schema_version'), link: editorLink(id), warnings: scriptWarnings });
     }
 
     case 'list_my_practices': {
