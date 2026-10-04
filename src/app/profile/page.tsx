@@ -224,7 +224,7 @@ export default function ProfilePage() {
                 placeholder="Enter your name"
                 className="w-full px-3 py-2 border border-border rounded-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
-              <p className="mt-1 text-xs text-text-primary/60">
+              <p className="mt-1 text-xs text-text-primary/70">
                 Your name as Coach.
               </p>
             </div>
@@ -243,7 +243,7 @@ export default function ProfilePage() {
 
         {/* Account Settings Section */}
         <div className="mt-8 bg-surface border border-border p-6">
-          <h2 className="text-sm uppercase tracking-widest text-text-primary/60 mb-6">Account Settings</h2>
+          <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-6">Account Settings</h2>
 
           <div className="space-y-8">
             {/* Read-only Email */}
@@ -257,9 +257,9 @@ export default function ProfilePage() {
                 value={user.email || ''}
                 disabled
                 placeholder="Email address"
-                className="w-full px-3 py-2 border border-border rounded-none bg-surface-warm text-text-primary/60 cursor-not-allowed"
+                className="w-full px-3 py-2 border border-border rounded-none bg-surface-warm text-text-primary/70 cursor-not-allowed"
               />
-              <p className="mt-1 text-xs text-text-primary/40 italic">Email cannot be changed</p>
+              <p className="mt-1 text-xs text-text-primary/70 italic">Email cannot be changed</p>
             </div>
 
             {/* Connected Accounts */}
@@ -277,7 +277,7 @@ export default function ProfilePage() {
                     </svg>
                     <div>
                       <p className="font-medium text-text-primary">Google</p>
-                      {googleIdentity && <p className="text-xs text-text-primary/60">Connected</p>}
+                      {googleIdentity && <p className="text-xs text-text-primary/70">Connected</p>}
                     </div>
                   </div>
 
@@ -308,7 +308,7 @@ export default function ProfilePage() {
               <h3 className="text-base font-medium text-text-primary mb-2">
                 {hasEmailProvider ? 'Change Password' : 'Set Password'}
               </h3>
-              <p className="text-sm text-text-primary/60 mb-4">
+              <p className="text-sm text-text-primary/70 mb-4">
                 {hasEmailProvider
                   ? 'Update your password associated with your email address.'
                   : 'Set a password to log in with your email address as a backup.'}
@@ -353,8 +353,8 @@ export default function ProfilePage() {
         <PersonalTokensList />
 
         <div className="mt-6 bg-surface border border-border p-6">
-          <h2 className="text-sm uppercase tracking-widest text-text-primary/60 mb-4">Delete Account</h2>
-          <p className="text-sm text-text-primary/60 mb-4">
+          <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-4">Delete Account</h2>
+          <p className="text-sm text-text-primary/70 mb-4">
             Permanently delete your account, your Practices and your personal data. This cannot be undone.
           </p>
           <Dialog>

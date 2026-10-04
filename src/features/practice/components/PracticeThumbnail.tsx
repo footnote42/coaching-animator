@@ -16,6 +16,8 @@ interface PracticeThumbnailProps {
   className?: string;
   /** Seconds into the Step to draw. Defaults to 0, the resting positions. */
   time?: number;
+  /** Draw each marker's label. Defaults to true; off where the thumbnail sits inside a labelled button. */
+  showLabels?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ interface PracticeThumbnailProps {
  * on the server and in Gallery cards. Scales to its box, keeping the Area's
  * aspect ratio.
  */
-export function PracticeThumbnail({ step, showMoves = true, title, className, time = 0 }: PracticeThumbnailProps) {
+export function PracticeThumbnail({ step, showMoves = true, title, className, time = 0, showLabels = true }: PracticeThumbnailProps) {
   const { width: w, length: l } = step.area;
   const start0 = positionsAt(step, 0).positions;
   const { positions } = time > 0 ? positionsAt(step, time) : { positions: start0 };
@@ -97,7 +99,7 @@ export function PracticeThumbnail({ step, showMoves = true, title, className, ti
             return (
               <g key={marker.id}>
                 <circle cx={x} cy={y} r={r} fill={fill} stroke="#FFFFFF" strokeWidth={stroke * 1.5} />
-                {marker.label && (
+                {showLabels && marker.label && (
                   <text
                     x={x}
                     y={y}

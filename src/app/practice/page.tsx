@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function PracticePage() {
   return (
-    <Suspense>
+    <Suspense fallback={<main aria-busy="true" className="min-h-[calc(100dvh-57px)]" />}>
       <PracticeImport />
     </Suspense>
   );

@@ -183,27 +183,27 @@ export default function SitemapPage() {
                     <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                         <div className="text-center">
                             <div className="text-2xl font-bold text-text-primary">{stats.total}</div>
-                            <div className="text-xs text-text-primary/60">Total Routes</div>
+                            <div className="text-xs text-text-primary/70">Total Routes</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-success">{stats.public}</div>
-                            <div className="text-xs text-text-primary/60">Public</div>
+                            <div className="text-xs text-text-primary/70">Public</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-accent-warm">{stats.protected}</div>
-                            <div className="text-xs text-text-primary/60">Protected</div>
+                            <div className="text-xs text-text-primary/70">Protected</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-danger">{stats.admin}</div>
-                            <div className="text-xs text-text-primary/60">Admin</div>
+                            <div className="text-xs text-text-primary/70">Admin</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-danger">{stats.broken}</div>
-                            <div className="text-xs text-text-primary/60">Broken</div>
+                            <div className="text-xs text-text-primary/70">Broken</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-accent-warm">{stats.slow}</div>
-                            <div className="text-xs text-text-primary/60">Slow</div>
+                            <div className="text-xs text-text-primary/70">Slow</div>
                         </div>
                     </div>
                 </div>
@@ -284,7 +284,7 @@ export default function SitemapPage() {
                         </div>
 
                         {filteredRoutes.length === 0 && (
-                            <div className="text-center py-12 text-text-primary/60">
+                            <div className="text-center py-12 text-text-primary/70">
                                 No routes match the selected filter
                             </div>
                         )}

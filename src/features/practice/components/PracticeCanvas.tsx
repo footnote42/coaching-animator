@@ -71,7 +71,7 @@ export interface CanvasGeometry {
 export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: areaW, length: areaL } = step.area;
-  const { width, height } = useShareCanvasSize(containerRef, areaW / areaL);
+  const { width, height, measured } = useShareCanvasSize(containerRef, areaW / areaL);
   const cellPx = width / areaW;
   const radius = markerRadius(step.area, cellPx);
   const { positions, passes } = positionsAt(step, time);
@@ -92,7 +92,7 @@ export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
 
   return (
     <div ref={containerRef} className="flex h-full w-full items-center justify-center overflow-hidden">
-      <Stage width={width} height={height}>
+      {measured && <Stage width={width} height={height}>
         <Layer listening={false}>
           <Rect width={width} height={height} fill={DESIGN_TOKENS.colours.primary} />
           {gridLines.map((points, i) => (
@@ -142,7 +142,7 @@ export function PracticeCanvas({ step, time, overlay }: PracticeCanvasProps) {
           })}
         </Layer>
         {overlay?.({ width, height, cellPx, radius })}
-      </Stage>
+      </Stage>}
     </div>
   );
 }

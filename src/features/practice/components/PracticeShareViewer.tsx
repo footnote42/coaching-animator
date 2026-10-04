@@ -31,9 +31,9 @@ const LEVER_NAMES = { space: 'Space', time: 'Time', equipment: 'Equipment', peop
 const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
 
 export const PLAYBACK_SPEEDS = [
-  { value: 0.5, label: '½×', name: 'Half speed' },
-  { value: 1, label: '1×', name: 'Normal speed' },
-  { value: 2, label: '2×', name: 'Double speed' },
+  { value: 0.5, label: '½×', name: '½× speed' },
+  { value: 1, label: '1×', name: '1× speed' },
+  { value: 2, label: '2×', name: '2× speed' },
 ] as const;
 
 /** Seconds "play all" rests on a finished Step before moving to the next. */

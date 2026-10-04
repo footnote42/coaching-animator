@@ -108,16 +108,16 @@ export function PracticeReportsTab() {
       )}
 
       {loading ? (
-        <p className="py-12 text-center text-text-primary/60">Loading reports...</p>
+        <p className="py-12 text-center text-text-primary/70">Loading reports...</p>
       ) : reports.length === 0 ? (
-        <p className="py-12 text-center text-text-primary/60">No {status} reports found.</p>
+        <p className="py-12 text-center text-text-primary/70">No {status} reports found.</p>
       ) : (
         <div className="divide-y divide-border">
           {reports.map((r) => (
             <div key={r.id} className="py-4">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{r.reason}</span>
-                <span className="text-sm text-text-primary/60">{new Date(r.created_at).toLocaleString()}</span>
+                <span className="text-sm text-text-primary/70">{new Date(r.created_at).toLocaleString()}</span>
                 {r.practice?.hidden && <span className="text-xs font-medium text-danger">Hidden</span>}
               </div>
               <p className="font-medium text-text-primary">
@@ -129,14 +129,14 @@ export function PracticeReportsTab() {
                   'Deleted Practice'
                 )}
                 {r.practice && (
-                  <span className="font-normal text-text-primary/60">
+                  <span className="font-normal text-text-primary/70">
                     {' '}
                     by {r.practice.owner_display_name || 'Anonymous'}
                   </span>
                 )}
               </p>
               {r.details && <p className="mt-1 text-sm text-text-primary/70">&quot;{r.details}&quot;</p>}
-              <p className="mt-1 text-xs text-text-primary/60">
+              <p className="mt-1 text-xs text-text-primary/70">
                 Reported by: {r.reporter ? r.reporter.display_name || 'Anonymous User' : 'Signed-out viewer'}
               </p>
               {r.practice && (

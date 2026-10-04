@@ -151,7 +151,7 @@ export function PracticeImport() {
   const stepArea = step?.area ?? script.area;
 
   return (
-    <div className="flex flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
+    <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
       <section className="flex min-w-0 flex-col gap-3 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
@@ -525,6 +525,6 @@ export function PracticeImport() {
           </div>
         )}
       </section>
-    </div>
+    </main>
   );
 }

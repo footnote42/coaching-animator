@@ -66,9 +66,9 @@ export function FeedbackTab() {
       )}
 
       {loading ? (
-        <p className="py-12 text-center text-text-primary/60">Loading feedback...</p>
+        <p className="py-12 text-center text-text-primary/70">Loading feedback...</p>
       ) : items.length === 0 ? (
-        <p className="py-12 text-center text-text-primary/60">No feedback yet.</p>
+        <p className="py-12 text-center text-text-primary/70">No feedback yet.</p>
       ) : (
         <div className="divide-y divide-border">
           {items.map((f) => (
@@ -76,13 +76,13 @@ export function FeedbackTab() {
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{f.area}</span>
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{f.rating}</span>
-                <span className="text-sm text-text-primary/60">{new Date(f.created_at).toLocaleString()}</span>
+                <span className="text-sm text-text-primary/70">{new Date(f.created_at).toLocaleString()}</span>
                 {!f.read_at && <span className="text-xs font-medium text-danger">New</span>}
               </div>
               <p className="font-medium text-text-primary">
                 {f.name}
                 {f.email && (
-                  <a href={`mailto:${f.email}`} className="ml-2 font-normal underline text-text-primary/60">
+                  <a href={`mailto:${f.email}`} className="ml-2 font-normal underline text-text-primary/70">
                     {f.email}
                   </a>
                 )}
