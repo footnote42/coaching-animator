@@ -65,6 +65,11 @@ Pick the ones the Practice mainly trains. Fewer, well chosen, is better than fiv
 
 Before replying, check the script against the schema and the guide's rules: every id exists, the first pass comes from the ball holder, each pass comes from the previous receiver (per ball), cells are inside the Area, `after` waits form no loop, and limits are respected. If you can run code, validate against the JSON Schema. If the Coach reports errors, fix every listed problem (each error names the field path) and send the whole corrected script again.
 
+Then check the rugby, which the validator cannot: in any Practice with a try line or a direction of attack, every pass must travel level or backwards. Two traps make passes go forward:
+
+- **The ball leads a receiver on the run.** With `at`, the catch lands where the receiver will be when the ball arrives, a metre or more past the waypoint. Put the catch waypoint a few metres behind the passer.
+- **A receiver who sets off at time zero arrives early.** If the receiver passes the `at` waypoint before the passer has the ball, the catch moves further up the run, often to its end. Hold the receiver with `after: { "pass": "<previous pass>" }` so it times its run onto the ball. `examples/04-attack-v-defence.json` shows both.
+
 ## 5. Paste route (only when you have no `create_practice` tool)
 
 Reply with, in this order:

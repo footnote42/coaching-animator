@@ -25,7 +25,8 @@ const HERO_SCRIPT = {
     moves: [
       { marker: 'a1', waypoints: [{ x: 12, y: 12 }], pace: 'jog' },
       { marker: 'a2', waypoints: [{ x: 17, y: 13 }], pace: 'jog' },
-      { marker: 'a3', waypoints: [{ x: 22, y: 13 }, { x: 24, y: 4 }], pace: 'sprint' },
+      // Sets off on the first catch, then sprints on to its catch point; the ball leads it, so the catch lands just behind 2 (a legal pass).
+      { marker: 'a3', waypoints: [{ x: 22, y: 17 }, { x: 24, y: 4 }], pace: 'sprint', after: { pass: 'p1' } },
       { marker: 'd1', waypoints: [{ x: 13, y: 11 }], pace: 'jog' },
       { marker: 'd2', waypoints: [{ x: 18, y: 11 }], pace: 'jog' },
     ],
