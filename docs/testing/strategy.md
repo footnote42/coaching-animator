@@ -458,6 +458,8 @@ page.click('[data-testid="save-cloud"]')
 - **API Contracts**: `docs/architecture/api-contracts.md`
 - **Architecture**: `docs/architecture/auth-patterns.md`, `docs/constraints.md`
 - **E2E Guide**: `docs/testing/e2e-guide.md`
+- **Manual Test Script**: `docs/testing/MANUAL-TEST-SCRIPT.md` (human-guided full-system verification)
+- **Mobile Test Checklist**: `docs/testing/mobile-test-checklist.md` (device and interaction coverage for mobile/tablet)
 
 ---
 
