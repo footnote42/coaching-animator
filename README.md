@@ -6,9 +6,9 @@ A Next.js web editor for rugby coaches to draw, animate and share their Practice
 
 - **Practice Editor** (`/practice`): Draw markers on a grid, set movement along waypoints at a Pace, trigger passes on arrival, and define Progressions that layer changes (Space, Time, Equipment, People) over the previous Step.
 - **Share View** (`/p/[id]`): Full-screen, link-shared Practice that plays each Step with optional Commentary overlay. No login required.
-- **Gallery** (`/gallery`): Browse and discover Practices coaches have published. Filter by Tags (Skills, Knowledge, Behaviours, Principles).
-- **My Practices** (`/my-practices`): Coaches manage their own Practices, publish to Gallery, or report inappropriate content.
-- **Tags and Source**: Coaches tag Practices from a fixed list for discoverability; optional Source link credits a video or page the Practice is based on.
+- **Gallery** (`/gallery`): Browse and discover Practices coaches have published. Search by title, filter by Tag, and preview a card before opening it.
+- **My Practices** (`/my-practices`): Coaches open, edit and share their own Practices and choose who sees each one (private, anyone with the link, or the Gallery).
+- **Tags and Source**: Coaches pick up to 5 Tags from a fixed list of 28; optional Source link credits a video or page the Practice is based on.
 - **AI Route**: An MCP endpoint (`/api/mcp`) lets agents create and edit Practice Scripts programmatically. Coaches generate a personal token from their Profile (`/profile`) and use the guide at `/practice-script/v1/guide` to learn the Practice Script format. The coaching-animator skill (`skill/coaching-animator/`) shows usage.
 
 ## Stack
@@ -51,6 +51,6 @@ Hosted on Vercel. On every push to `main`, CI runs migrations against production
 ## Documentation
 
 - `CONTEXT.md` — Domain vocabulary (Practice, Step, Progression, Pace, etc.)
-- `docs/adr/` — Architecture decisions (Practices with chained Progressions, AI outside the app, 18+ accounts)
+- `docs/adr/` — Architecture decisions (agents may author Practices, the Practice Script with chained Progressions, 18+ accounts, AI stays outside the app)
 - `docs/constraints.md` — Binding rules (no telemetry, no ads, privacy first)
 - `docs/testing/` — Testing approach and guides
