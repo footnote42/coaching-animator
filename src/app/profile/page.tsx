@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { getInitials } from './profileUtils';
 import { PersonalTokensList } from './PersonalTokensList';
 import {
@@ -85,6 +86,9 @@ export default function ProfilePage() {
     }
   };
 
+  // Fallback only (no NEXT_PUBLIC_GOOGLE_CLIENT_ID): the redirect flow.
+  // With a client ID, GoogleSignInButton links through linkIdentity with an ID
+  // token instead (supported by the installed supabase-js).
   const handleLinkGoogle = async () => {
     setIsLinking(true);
     const supabase = createSupabaseBrowserClient();
@@ -291,13 +295,21 @@ export default function ProfilePage() {
                       Unlink
                     </button>
                   ) : (
-                    <button
-                      onClick={handleLinkGoogle}
-                      disabled={isLinking}
-                      className="px-3 py-1 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm"
-                    >
-                      Connect
-                    </button>
+                    <GoogleSignInButton
+                      mode="link"
+                      text="continue_with"
+                      onSuccess={() => window.location.reload()}
+                      onError={setError}
+                      fallback={
+                        <button
+                          onClick={handleLinkGoogle}
+                          disabled={isLinking}
+                          className="px-3 py-1 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm"
+                        >
+                          Connect
+                        </button>
+                      }
+                    />
                   )}
                 </div>
               </div>
