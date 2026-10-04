@@ -266,6 +266,22 @@
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 49
+              },
+              "after": {
+                "description": "Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.",
+                "type": "object",
+                "properties": {
+                  "move": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "description": "Fire when the move of this marker has finished."
+                  }
+                },
+                "required": [
+                  "move"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
@@ -274,7 +290,7 @@
               "to"
             ],
             "additionalProperties": false,
-            "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time."
+            "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in \"after\" has finished (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time."
           }
         },
         "commentary": {
@@ -590,6 +606,22 @@
                       "type": "integer",
                       "minimum": 0,
                       "maximum": 49
+                    },
+                    "after": {
+                      "description": "Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.",
+                      "type": "object",
+                      "properties": {
+                        "move": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32,
+                          "description": "Fire when the move of this marker has finished."
+                        }
+                      },
+                      "required": [
+                        "move"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "required": [

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { validate, warnings, formatError } from '@/features/practice/engine';
+import { HERO_SCRIPT } from '@/app/_components/heroScript';
 import { PRACTICE_TAGS } from '@/lib/practice-tags';
 
 const SKILL_DIR = path.join(process.cwd(), 'skill', 'coaching-animator');
@@ -23,6 +24,13 @@ describe('skill worked examples', () => {
     const result = validate(readFileSync(path.join(EXAMPLES_DIR, '04-attack-v-defence.json'), 'utf8'));
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
     expect(result.script.direction).toBe('up');
+    expect(warnings(result.script)).toEqual([]);
+  });
+
+  it('the landing 3 v 2 attacks up, passes on D2 arriving, and raises no warning', () => {
+    const result = validate(HERO_SCRIPT);
+    if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
+    expect(result.script.base.passes[1].after).toEqual({ move: 'd2' });
     expect(warnings(result.script)).toEqual([]);
   });
 });

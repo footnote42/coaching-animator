@@ -174,6 +174,17 @@ describe('applyEdit: runs and passes', () => {
     expect(removed.base.passes).toEqual([]);
   });
 
+  it('sets a wait on a run for a pass, and drops it when the run goes', () => {
+    const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
+    expect(typeof applyEdit(passed, { type: 'setPassWait', id: 'p1', move: 'a1' })).toBe('string');
+    let script = edits(passed, { type: 'addWaypoint', marker: 'a1', at: at(1, 5) }, { type: 'setPassWait', id: 'p1', move: 'a1' });
+    expect(script.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2', after: { move: 'a1' } }]);
+    expect(validate(script).ok).toBe(true);
+    expect(edits(script, { type: 'setPassWait', id: 'p1', move: null }).base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2' }]);
+    script = edits(script, { type: 'removeMove', marker: 'a1' });
+    expect(script.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2' }]);
+  });
+
   it('sets a catch on the run, and drops it when the run no longer reaches it', () => {
     const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
     expect(typeof applyEdit(passed, { type: 'setCatch', id: 'p1', at: 0 })).toBe('string');

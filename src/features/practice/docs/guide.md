@@ -99,12 +99,12 @@ A move's duration is the straight-line length of its path (start cell to each wa
 
 ## Passes
 
-A pass is `{ "id", "from", "to", "ball"?, "at"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
+A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
 - The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
 - `from` and `to` are different attackers, defenders or coaches on the Area.
-- Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move.
+- Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move. If the pass has `after`, it also waits for that Run to finish.
 - The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell, or for a catch on the run to the point on the receiver's run where they meet the ball.
 
 A Practice with a `direction` checks its passes: a pass caught more than 0.5 m ahead of where it was thrown, measured in that direction, raises a warning ("Pass 2 goes forward"). A warning does not stop the script saving, but it is a mistake to fix: make the pass level or backward, for example by moving the catch waypoint behind the passer or holding the receiver with `after: { "pass": ... }`. The check uses the real throw and catch points, and the ball leads a receiver on the run.
@@ -120,6 +120,18 @@ In rugby the receiver usually runs onto the ball and keeps going. Give the pass 
 - Leave `at` out to fire the pass at the end of the receiver's move (the receiver stops, then catches).
 - `at` must name a waypoint of the receiver's move: from `0` to the number of waypoints minus 1. A receiver with no move cannot have `at`.
 - A receiver whose move waits (`after`) on this very pass, directly or through other passes and moves, has not set off yet, so `at` is rejected for that pass. See "Receive, pass, run, receive again".
+
+### `after`: pass when a Run finishes (draw and pass)
+
+To show draw and pass, give the pass `"after": { "move": "<marker>" }`: it waits for that marker's Run to finish. The defender's Run ends at the carrier, then the ball goes.
+
+```json
+{ "id": "p2", "from": "a2", "to": "a3", "at": 0, "after": { "move": "d2" } }
+```
+
+- The pass fires once the previous pass is caught, the receiver is at the catch point (`at`, or the end of its Run) and the named Run has finished.
+- The named marker must have a Run in the Step. Waits may not loop, for example a Run that waits on this very pass.
+- Only `move` is allowed. A Progression's `setPass` carries `after` too.
 
 ### Receive, pass, run, receive again
 
@@ -173,7 +185,7 @@ Change types (each is an object with a `type`):
 | `placeMarker` | `marker`, `cell` or (ball) `holder` | Change where a marker starts, or who holds the ball. Its move is kept and runs from the new cell. |
 | `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. |
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
-| `setPass` | `id`, `from`, `to`, `at`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
+| `setPass` | `id`, `from`, `to`, `ball`?, `at`?, `after`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
 | `removePass` | `id` | Remove a pass. It must exist in the previous Step. |
 | `setArea` | `width`, `length`, `template`? | Replace the Area from this Step on. Only allowed when `lever` is `space`. Every cell used from this Step on, including cells carried forward, must fit the new Area. |
 

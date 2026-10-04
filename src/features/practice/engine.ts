@@ -302,6 +302,9 @@ function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
     lastOfBall.set(pass.ball, pass.id);
   }
   for (const pass of passes) {
+    if (pass.after) edges.get(`pass:${pass.id}`)!.push(`move:${pass.after.move}`);
+  }
+  for (const pass of passes) {
     if (moves.has(pass.to)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.to}`);
   }
   // A receiver that waits on its own pass, directly or not, would make a loop.
@@ -444,6 +447,9 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
       issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold ${which} when this pass fires; "${holder}" does` });
     }
     holders.set(ball, pass.to);
+    if (pass.after && !state.moves.has(pass.after.move)) {
+      issues.push({ target, field: 'after.move', message: `marker "${pass.after.move}" has no move in this Step` });
+    }
     if (pass.at !== undefined) {
       const move = state.moves.get(pass.to);
       if (!move) {
@@ -825,7 +831,7 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     const caught = previous >= 0 ? flight(previous).land : 0;
     const receiver = moves.get(pass.to);
     const waits = receiver !== undefined && !inPlace.has(pass.id);
-    const fire = Math.max(caught, waits ? endOf(pass.to, pass.at) : 0);
+    const fire = Math.max(caught, waits ? endOf(pass.to, pass.at) : 0, pass.after ? endOf(pass.after.move) : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
     const start =

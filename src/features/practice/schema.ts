@@ -154,6 +154,12 @@ export const MoveSchema = z
     'A run by one marker from its starting cell. Duration comes from distance and Pace, never typed. The ball cannot move on its own.',
   );
 
+export const PassAfterSchema = z
+  .strictObject({
+    move: MarkerIdSchema.describe('Fire when the move of this marker has finished.'),
+  })
+  .describe('A run the pass waits for, to show draw and pass: the defender run ends at the carrier, then the ball goes.');
+
 export const PassSchema = z
   .strictObject({
     id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
@@ -171,9 +177,12 @@ export const PassSchema = z
       .describe(
         "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
       ),
+    after: PassAfterSchema.optional().describe(
+      'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
+    ),
   })
   .describe(
-    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time.',
+    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in "after" has finished (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time.',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;
