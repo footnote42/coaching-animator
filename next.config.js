@@ -33,11 +33,12 @@ const nextConfig = {
     }
     const cspDirectives = [
       "default-src 'self'",
-      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://vercel.live`,
-      "style-src 'self' 'unsafe-inline'",
+      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://vercel.live https://accounts.google.com/gsi/client`,
+      "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
       "img-src 'self' data: blob: https://*.supabase.co",
       "font-src 'self' data:",
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live${localSupabase}`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live https://accounts.google.com/gsi/${localSupabase}`,
+      "frame-src 'self' https://accounts.google.com/gsi/",
       "frame-ancestors 'none'",
       "form-action 'self'",
       "base-uri 'self'",
