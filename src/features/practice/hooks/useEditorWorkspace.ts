@@ -16,7 +16,7 @@ import {
 } from '@/features/practice/editing';
 import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
 import { areaTemplate, defaultDirection } from '@/features/practice/area';
-import { type Area, type Direction, type PracticeScript } from '@/features/practice/schema';
+import { type Area, type ConeColour, type Direction, type PracticeScript } from '@/features/practice/schema';
 
 export function useEditorWorkspace() {
   const router = useRouter();
@@ -36,6 +36,8 @@ export function useEditorWorkspace() {
   const [sourceTitle, setSourceTitle] = useState('');
   const [tool, setTool] = useState<EditorTool>('select');
   const [rawSelection, setSelection] = useState<EditorSelection>(NO_SELECTION);
+  /** Colour the next placed cone gets: the last one the Coach picked. */
+  const [coneColour, setConeColour] = useState<ConeColour>('yellow');
   const [passBall, setPassBall] = useState<string | null>(null);
   /** A pass was just added to a receiver with a Run: the next tap on that Run picks the catch point. */
   const [pendingCatch, setPendingCatch] = useState<{ count: number; to: string } | null>(null);
@@ -130,7 +132,11 @@ export function useEditorWorkspace() {
   };
 
   /** Edit the shown Step: the base directly, a Progression as its changes. */
-  const edit = (change: Edit): boolean => commit(applyStepEdit(script, shownStep, change));
+  const edit = (change: Edit): boolean => {
+    if (change.type === 'setColour') setConeColour(change.colour);
+    const withColour = change.type === 'addMarker' && change.kind === 'cone' ? { ...change, colour: coneColour } : change;
+    return commit(applyStepEdit(script, shownStep, withColour));
+  };
 
   const pickTool = (next: EditorTool) => {
     setTool(next);

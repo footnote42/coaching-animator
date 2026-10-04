@@ -16,6 +16,7 @@ import {
   type Area,
   type Cell,
   type Change,
+  type ConeColour,
   type Direction,
   type Lever,
   type Marker,
@@ -35,7 +36,8 @@ export interface CellPoint {
 
 /** One hand edit of the base Step. Positions are snapped to the nearest cell. */
 export type Edit =
-  | { type: 'addMarker'; kind: MarkerKind; at: CellPoint }
+  /** `colour` applies to cones only; yellow (the default) is stored as nothing. */
+  | { type: 'addMarker'; kind: MarkerKind; at: CellPoint; colour?: ConeColour }
   | { type: 'moveMarker'; marker: string; at: CellPoint }
   | { type: 'removeMarker'; marker: string }
   | { type: 'addWaypoint'; marker: string; at: CellPoint }
@@ -58,7 +60,9 @@ export type Edit =
   | { type: 'addCatchPoint'; id: string; at: CellPoint }
   /** Start a marker's run once pass `pass` is caught; null starts it at the beginning of the Step. */
   | { type: 'startAfterPass'; marker: string; pass: string | null }
-  | { type: 'setLabel'; marker: string; label: string | undefined };
+  | { type: 'setLabel'; marker: string; label: string | undefined }
+  /** Colour a cone; yellow clears it. Other kinds are left alone. */
+  | { type: 'setColour'; marker: string; colour: ConeColour };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
 export type EditorTool = 'select' | 'run' | 'pass' | MarkerKind;
@@ -275,6 +279,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const marker: Marker = { id: `${prefix}${n}`, kind: edit.kind };
       const label = LABEL_PREFIX[edit.kind];
       if (label) marker.label = `${label}${n}`.slice(0, 4);
+      if (edit.kind === 'cone' && edit.colour && edit.colour !== 'yellow') marker.colour = edit.colour;
       return {
         ...script,
         markers: [...script.markers, marker],
@@ -512,6 +517,16 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (marker.label === label) return script;
       const next = { ...marker, label };
       if (!next.label) delete next.label;
+      return { ...script, markers: script.markers.map((m) => (m.id === edit.marker ? next : m)) };
+    }
+
+    case 'setColour': {
+      const marker = script.markers.find((m) => m.id === edit.marker);
+      if (!marker || marker.kind !== 'cone') return script;
+      const colour = edit.colour === 'yellow' ? undefined : edit.colour;
+      if (marker.colour === colour) return script;
+      const next = { ...marker, colour };
+      if (!next.colour) delete next.colour;
       return { ...script, markers: script.markers.map((m) => (m.id === edit.marker ? next : m)) };
     }
   }

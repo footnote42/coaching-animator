@@ -1,7 +1,7 @@
 import React from 'react';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
-import { markerColour } from '@/features/practice/markerColour';
+import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 
 /** Above this many grid lines on a side they are too dense to draw. */
@@ -91,7 +91,7 @@ export function PracticeThumbnail({ step, showMoves = true, title, className, ti
           case 'cone': {
             const s = r * 0.6;
             const points = `${x},${y - s} ${x + s * 0.866},${y + s / 2} ${x - s * 0.866},${y + s / 2}`;
-            return <polygon key={marker.id} points={points} fill={fill} stroke="#111827" strokeWidth={stroke} />;
+            return <polygon key={marker.id} points={points} fill={fill} stroke={CONE_OUTLINE} strokeWidth={stroke * 1.5} />;
           }
           case 'tackle-shield':
             return <rect key={marker.id} x={x - r * 0.6} y={y - r} width={r * 1.2} height={r * 2} fill={fill} stroke="#111827" strokeWidth={stroke} />;

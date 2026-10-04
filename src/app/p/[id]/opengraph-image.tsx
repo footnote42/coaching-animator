@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, resolveStep, stepCount, type ResolvedMarker } from '@/features/practice/engine';
-import { markerColour } from '@/features/practice/markerColour';
+import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { markerRadius } from '@/features/practice/area';
 import { loadPractice } from './loadPractice';
 
@@ -22,7 +22,7 @@ function markerStyle(marker: ResolvedMarker, x: number, y: number, r: number) {
     case 'ball':
       return { ...box(r * 1.4, r * 0.9), borderRadius: '50%', backgroundColor: fill, border: '1px solid #111827' };
     case 'cone':
-      return { ...box(r * 1.1, r * 1.1), borderRadius: '50%', backgroundColor: fill, border: '1px solid #111827' };
+      return { ...box(r * 1.1, r * 1.1), borderRadius: '50%', backgroundColor: fill, border: `2px solid ${CONE_OUTLINE}` };
     case 'tackle-shield':
       return { ...box(r * 1.2, r * 2), backgroundColor: fill, border: '1px solid #111827' };
     default:

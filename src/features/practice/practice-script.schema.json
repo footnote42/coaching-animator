@@ -95,6 +95,18 @@
             "description": "Short role or number shown on the marker, e.g. \"9\" or \"SH\". Never a player name.",
             "type": "string",
             "maxLength": 4
+          },
+          "colour": {
+            "description": "Colour of a cone only, e.g. red, amber and green to mark zones. Defaults to yellow.",
+            "type": "string",
+            "enum": [
+              "yellow",
+              "red",
+              "amber",
+              "green",
+              "white",
+              "blue"
+            ]
           }
         },
         "required": [

@@ -18,6 +18,18 @@ export const DESIGN_TOKENS = {
         defense: ['#DC2626', '#EA580C', '#D97706', '#DB2777'], // Vibrant Red, Safety Orange, Amber, Pink
         neutral: ['#FFFFFF', '#78350F', '#E6EA0C', '#FB923C'], // White, Deep Brown (Ball), High-Vis Yellow (Cone), Bright Orange
 
+        // Cone colours (kit-bag hues; the dark outline keeps green and white visible on the Area)
+        cone: {
+            yellow: '#E6EA0C',
+            red: '#DC2626',
+            amber: '#F59E0B',
+            green: '#16A34A',
+            white: '#FFFFFF',
+            blue: '#2563EB',
+        },
+        /** Outline drawn round every cone. */
+        coneOutline: '#111827',
+
         // Annotation colour (tactical yellow - high visibility)
         annotation: '#E6EA0C',
     },

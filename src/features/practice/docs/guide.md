@@ -64,6 +64,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 - `kind`: one of `attacker`, `defender`, `ball`, `cone`, `tackle-shield`, `coach`.
 - `team`: `attack` or `defence`. Defaults to `attack` for attackers and `defence` for defenders; usually leave it out.
 - `label`: at most 4 characters, shown on the marker.
+- `colour`: cones only: `yellow`, `red`, `amber`, `green`, `white` or `blue`. Defaults to yellow. Use it to mark out zones, for example red, amber and green cones for a traffic-light grid. Any other kind with a `colour` is rejected.
 - At most {{MAX_BALLS}} markers of kind `ball` per script (see "More than one ball"), and at most {{MAX_MARKERS}} markers in all.
 - Only attackers, defenders and coaches can hold, pass and receive the ball.
 
