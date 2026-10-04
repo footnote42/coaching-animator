@@ -105,7 +105,7 @@ export default function FeedbackPage() {
           >
             <option value="">Select an area</option>
             <option value="general">General</option>
-            <option value="editor">Animation Editor</option>
+            <option value="editor">Practice editor</option>
             <option value="save-share">Save &amp; Share</option>
             <option value="gallery">Gallery</option>
             <option value="mobile">Mobile Layout</option>

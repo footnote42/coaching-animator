@@ -26,23 +26,23 @@ export default function HowToPage() {
           <ol className="space-y-6">
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">1. Draw the base Step</h3>
-              <p>Go to <strong>Create</strong>. Choose an <strong>Area</strong> template, then place attackers, defenders, the ball and cones. Use <strong>Select and drag</strong> to move them; they snap to the grid.</p>
+              <p>Go to <strong>Create</strong>. Choose an <strong>Area</strong> template, then pick a marker (attacker, defender, ball, cone, tackle shield or coach) and tap the Area to place it. Use <strong>Select and drag</strong> to move markers; they snap to the grid. <strong>Undo</strong> and <strong>Redo</strong> are in the toolbar.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">2. Draw runs and passes</h3>
-              <p>Use <strong>Draw a run</strong> to give a player a path and set its <strong>Pace</strong>. Use <strong>Add a pass</strong> to pass the ball when the receiver arrives. Press play to watch it.</p>
+              <p>Use <strong>Draw a run</strong>: tap a player, then tap cells to draw the path. Select the player to set its <strong>Pace</strong> (walk, jog or sprint). Use <strong>Add a pass</strong>: tap the player with the ball, then the receiver, and the pass fires when the receiver arrives. Press Play under the Area to watch it, and turn on <strong>Ghost mode</strong> to see where markers started.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">3. Add a Progression</h3>
-              <p>Choose <strong>Add a Progression</strong> and pick the STEP lever it pulls: Space, Time, Equipment or People. Then change the Step. Edits to an earlier Step carry forward.</p>
+              <p>Choose <strong>Add Progression</strong> and pick the STEP lever it pulls: Space, Time, Equipment or People. Then change the Step and add a coaching point saying why it is harder. Edits to an earlier Step carry forward.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">4. Save</h3>
-              <p>Sign in (top right), give the Practice a title and save it. It appears in <strong>My Practices</strong>.</p>
+              <p>Sign in, give the Practice a title, pick up to five <strong>Tags</strong> and add a <strong>Source</strong> link if it came from a video or page, then choose <strong>Save</strong>. When you open a saved Practice the button reads <strong>Save changes</strong>. It appears in <strong>My Practices</strong>. Until you sign in, your work is kept on this device.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">5. Share a link</h3>
-              <p>Set the Practice to <strong>Anyone with the link</strong> or <strong>Public</strong> and send the link. It opens a full-screen view that plays each Step, with no account needed for the viewer.</p>
+              <p>Set the Practice to <strong>Anyone with the link</strong> or <strong>Public</strong> and send the link. It opens the share view, with no account needed for the viewer: <strong>Play all</strong> runs every Step, <strong>Previous Step</strong> and <strong>Next Step</strong> move between them, <strong>Speed</strong> slows it down and <strong>Commentary</strong> shows your coaching points. Public Practices also appear in the Gallery, where <strong>Share</strong> sends the link on.</p>
             </li>
           </ol>
         </section>
@@ -68,11 +68,12 @@ export default function HowToPage() {
           <h2 className="text-2xl font-heading font-bold mb-4">Where everything lives</h2>
           <ul className="space-y-2">
             <li><strong>Home</strong> — landing page</li>
-            <li><strong>Gallery</strong> — browse Practices that Coaches have published</li>
+            <li><strong>Gallery</strong> — browse Practices that Coaches have published, search by title and filter by Tag</li>
             <li><strong>My Practices</strong> — your saved Practices (requires sign-in)</li>
             <li><strong>Create</strong> — the Practice editor</li>
             <li><strong>Help</strong> — this section</li>
-            <li><strong>Profile</strong> — your display name, password and account (requires sign-in)</li>
+            <li><strong>Feedback</strong> — tell us what you noticed</li>
+            <li><strong>Profile</strong> — your account and your AI connections (requires sign-in)</li>
           </ul>
         </section>
 
