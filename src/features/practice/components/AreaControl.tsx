@@ -1,13 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { AREA_TEMPLATES, MAX_AREA_SIDE_M, type Area, type AreaTemplate } from '@/features/practice/schema';
+import { AREA_TEMPLATES, DIRECTIONS, MAX_AREA_SIDE_M, type Area, type AreaTemplate, type Direction } from '@/features/practice/schema';
 import { AREA_TEMPLATE_NAMES, areaFromTemplate, areaTemplate } from '@/features/practice/area';
 
 interface AreaControlProps {
   area: Area;
   onChange: (area: Area) => void;
+  /** Direction of attack of the Practice; undefined shows as none. */
+  direction?: Direction;
+  onDirectionChange?: (direction: Direction) => void;
 }
+
+const DIRECTION_NAMES = {
+  up: 'Up',
+  down: 'Down',
+  left: 'Left',
+  right: 'Right',
+  none: 'None',
+} as const satisfies Record<Direction, string>;
 
 const inputClass =
   'h-8 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
@@ -17,7 +28,7 @@ const inputClass =
  * Picking a template resets the size to the template's; sizes commit on blur or Enter.
  * Give it a key from the Area's size so it resets when the script changes.
  */
-export function AreaControl({ area, onChange }: AreaControlProps) {
+export function AreaControl({ area, onChange, direction, onDirectionChange }: AreaControlProps) {
   const [width, setWidth] = useState(String(area.width));
   const [length, setLength] = useState(String(area.length));
 
@@ -72,6 +83,22 @@ export function AreaControl({ area, onChange }: AreaControlProps) {
           />
         </label>
       ))}
+      {onDirectionChange && (
+        <label className="flex flex-col gap-1">
+          <span>Direction of attack</span>
+          <select
+            value={direction ?? 'none'}
+            onChange={(e) => onDirectionChange(e.target.value as Direction)}
+            className="h-8 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            {DIRECTIONS.map((d) => (
+              <option key={d} value={d}>
+                {DIRECTION_NAMES[d]}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
     </fieldset>
   );
 }

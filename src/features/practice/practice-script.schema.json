@@ -47,6 +47,17 @@
       "additionalProperties": false,
       "description": "The space the Practice happens in. The grid has one 1 m cell per square metre."
     },
+    "direction": {
+      "description": "Direction of attack for the whole Practice: up (toward row 0, the top edge, where a pitch template draws its try line), down, left, right, or none. When set, any pass caught more than 0.5 m ahead of where it was thrown in that direction raises a warning. Set it for directional drills; leave out or none for drills with no try line.",
+      "type": "string",
+      "enum": [
+        "up",
+        "down",
+        "left",
+        "right",
+        "none"
+      ]
+    },
     "markers": {
       "minItems": 1,
       "maxItems": 60,

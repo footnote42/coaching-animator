@@ -24,6 +24,7 @@ This guide is written for an AI model (or a person) writing a script from a Coac
 | `schemaVersion` | yes | Always `1`. |
 | `title` | no | Short name, at most 120 characters. |
 | `area` | yes | The Area the Practice happens in. |
+| `direction` | no | Direction of attack: `up` (toward row 0, the top edge, where a pitch template draws its try line), `down`, `left`, `right` or `none`. Set it for directional drills; leave it out or use `none` when there is no try line. |
 | `markers` | yes | Every marker used in any Step, declared once. |
 | `base` | yes | Step 0: placements, moves, passes, Commentary. |
 | `progressions` | no | Progressions in order. Progression i is Step i + 1 and builds on Step i. |
@@ -105,6 +106,8 @@ A pass is `{ "id", "from", "to", "ball"?, "at"? }`. `base.passes` lists the pass
 - `from` and `to` are different attackers, defenders or coaches on the Area.
 - Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move.
 - The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell, or for a catch on the run to the point on the receiver's run where they meet the ball.
+
+A Practice with a `direction` checks its passes: a pass caught more than 0.5 m ahead of where it was thrown, measured in that direction, raises a warning ("Pass 2 goes forward"). A warning does not stop the script saving, but it is a mistake to fix: make the pass level or backward, for example by moving the catch waypoint behind the passer or holding the receiver with `after: { "pass": ... }`. The check uses the real throw and catch points, and the ball leads a receiver on the run.
 
 ### `at`: catch on the run
 
@@ -190,6 +193,8 @@ After the changes apply, the Step must still follow every rule above: the ball h
 ## How to check a script
 
 Open {{ORIGIN}}/practice, open the Practice Script section, paste the script into its box and press Apply script. A valid script plays straight away, with a Step strip for its Progressions. An invalid one lists every problem with the path to the field at fault, for example `progressions[1].changes[2].from: marker "a2" does not hold the ball when this pass fires; "a1" does`. Fix each listed problem and apply it again.
+
+The Import box and the `create_practice` and `update_practice` tools also report warnings, such as a forward pass. Fix them and apply again.
 
 You can also validate against the JSON Schema above. The schema checks the shape of the script; the Import box also checks the rules that span fields (ids exist, the ball holder, pass order, cells inside the Area, no loops).
 

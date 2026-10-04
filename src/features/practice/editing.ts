@@ -16,6 +16,7 @@ import {
   type Area,
   type Cell,
   type Change,
+  type Direction,
   type Lever,
   type Marker,
   type MarkerKind,
@@ -655,6 +656,11 @@ export function applyStepArea(script: PracticeScript, n: number, area: Area): Pr
     return 'Only a Progression that pulls the Space lever can change the Area. Set its Lever to Space first.';
   }
   return editProgression(script, n, (step) => (same(step.area, area) ? step : { ...step, area }));
+}
+
+/** Set the Direction of attack of the whole Practice. */
+export function applyDirection(script: PracticeScript, direction: Direction): PracticeScript {
+  return script.direction === direction ? script : { ...script, direction };
 }
 
 /** Add an empty Progression after the last Step. */

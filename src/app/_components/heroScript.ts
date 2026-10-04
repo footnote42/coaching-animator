@@ -5,6 +5,7 @@ const HERO_SCRIPT = {
   schemaVersion: 1,
   title: '3 v 2 overlap',
   area: { width: 30, length: 20 },
+  direction: 'up',
   markers: [
     { id: 'a1', kind: 'attacker', label: '1' },
     { id: 'a2', kind: 'attacker', label: '2' },

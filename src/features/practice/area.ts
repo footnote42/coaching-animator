@@ -4,7 +4,7 @@
  *
  * All lengths are in metres (one cell is one metre) unless a name says px.
  */
-import type { Area, AreaTemplate } from './schema';
+import type { Area, AreaTemplate, Direction } from './schema';
 
 /** Width of the generic full-size pitch, touch line to touch line. */
 export const PITCH_WIDTH_M = 70;
@@ -52,6 +52,11 @@ export function areaTemplate(area: Area): AreaTemplate {
 
 export function isPitch(area: Area): boolean {
   return area.template === 'half-pitch' || area.template === 'full-pitch';
+}
+
+/** Direction of attack a template starts with: pitch templates attack up the screen (toward the try line), grass has none. */
+export function defaultDirection(area: Area): Direction {
+  return isPitch(area) ? 'up' : 'none';
 }
 
 /**
