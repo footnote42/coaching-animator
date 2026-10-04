@@ -54,6 +54,8 @@ export type Edit =
   | { type: 'setCatch'; id: string; at: number | null }
   /** Catch on the run at the point of the receiver's run nearest `at`: reuse a waypoint within a cell, else add one there. */
   | { type: 'addCatchPoint'; id: string; at: CellPoint }
+  /** Start a marker's run once pass `pass` is caught; null starts it at the beginning of the Step. */
+  | { type: 'startAfterPass'; marker: string; pass: string | null }
   | { type: 'setLabel'; marker: string; label: string | undefined };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
@@ -355,6 +357,16 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const move = script.base.moves.find((m) => m.marker === edit.marker);
       if (!move || (move.pace ?? 'jog') === edit.pace) return script;
       return mapMove(script, edit.marker, (m) => ({ ...m, pace: edit.pace }));
+    }
+
+    case 'startAfterPass': {
+      const move = script.base.moves.find((m) => m.marker === edit.marker);
+      if (!move) return 'That player has no run.';
+      if (edit.pass !== null && !script.base.passes.some((p) => p.id === edit.pass)) return 'That pass is not in this Practice.';
+      return mapMove(script, edit.marker, ({ after: _old, ...rest }) => {
+        void _old;
+        return edit.pass === null ? rest : { ...rest, after: { pass: edit.pass } };
+      });
     }
 
     case 'removeMove':

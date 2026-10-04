@@ -65,7 +65,11 @@ export interface ValidationWarning {
   step: number;
   /** Id of the pass concerned. */
   pass: string;
+  /** `forward`: caught ahead of the thrower. `early`: the receiver reaches the catch point before the passer has the ball. */
+  kind: 'forward' | 'early';
   message: string;
+  /** For `early`: starting the receiver's Run after this earlier pass of the ball clears it. */
+  fix?: { marker: string; afterPass: string };
 }
 
 export interface ResolvedMarker extends Marker {
@@ -900,18 +904,33 @@ export function isForwardPass(direction: Direction | undefined, from: Point, to:
  * Warnings for a validated script: a pass is forward when it is caught more than
  * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
  * the real throw and catch points (the ball leads a receiver on the run).
- * Never blocks saving. A script without a direction, or with none, has no warnings.
+ * Also an early catch: the receiver reaches its catch point before the passer has the ball.
+ * Never blocks saving. Forward passes need a Direction of attack; early catches do not.
  */
 export function warnings(script: PracticeScript): ValidationWarning[] {
-  if (!script.direction || script.direction === 'none') return [];
   const found: ValidationWarning[] = [];
   for (let n = 0; n < stepCount(script); n++) {
     const step = resolveStep(script, n);
-    const flights = positionsAt(step, 0).passes;
+    const { flights, endOf } = stepTimeline(step);
+    const label = (id: string) => step.markers.find((m) => m.id === id)?.label ?? id;
     step.passes.forEach((pass, i) => {
       const flight = flights.find((f) => f.id === pass.id);
-      if (flight && isForwardPass(script.direction, flight.start, flight.end)) {
-        found.push({ step: n, pass: pass.id, message: `Pass ${i + 1} goes forward` });
+      if (!flight) return;
+      if (isForwardPass(script.direction, flight.start, flight.end)) {
+        found.push({ step: n, pass: pass.id, kind: 'forward', message: `Pass ${i + 1} goes forward` });
+      }
+      // A catch on the run slides later when the receiver passes waypoint `at` before the passer has the ball.
+      if (pass.at === undefined || !step.moves.some((m) => m.marker === pass.to)) return;
+      const sameBall = flights.filter((f) => f.ball === flight.ball);
+      const previous = sameBall[sameBall.indexOf(flight) - 1];
+      if (previous && endOf(pass.to, pass.at) < previous.land - 1e-9) {
+        found.push({
+          step: n,
+          pass: pass.id,
+          kind: 'early',
+          message: `${label(pass.to)} reaches the catch point before ${label(pass.from)} has the ball`,
+          fix: { marker: pass.to, afterPass: previous.id },
+        });
       }
     });
   }
@@ -923,11 +942,16 @@ export function formatWarning(warning: ValidationWarning): string {
   return warning.step === 0 ? warning.message : `Step ${warning.step + 1}: ${warning.message}`;
 }
 
-/** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */
-export function positionsAt(step: ResolvedStep, t: number): StepPositions {
+/** The timeline of a resolved Step, with each pass on its ball. */
+function stepTimeline(step: ResolvedStep) {
   const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
   const defaultBall = step.markers.find((m) => m.holder !== undefined)?.id;
-  const { flights, endOf, pointAt } = timeline(cells, step.moves, step.passes.map((p) => ({ ...p, ball: p.ball ?? defaultBall! })));
+  return timeline(cells, step.moves, step.passes.map((p) => ({ ...p, ball: p.ball ?? defaultBall! })));
+}
+
+/** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */
+export function positionsAt(step: ResolvedStep, t: number): StepPositions {
+  const { flights, endOf, pointAt } = stepTimeline(step);
   const time = Math.max(0, t);
   let duration = Math.max(0, ...flights.map((f) => f.land));
   for (const move of step.moves) duration = Math.max(duration, endOf(move.marker));

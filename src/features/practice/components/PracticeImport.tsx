@@ -112,7 +112,7 @@ export function PracticeImport() {
     duration,
     problems,
     setDirection,
-    forwardPasses,
+    stepWarnings,
     selectedMarker,
     selectedMove,
     passes,
@@ -154,7 +154,7 @@ export function PracticeImport() {
   const ballName = (id: string) => `Ball ${balls.findIndex((b) => b.id === id) + 1}`;
   const ballSelect = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm';
   const stepArea = step?.area ?? script.area;
-  const forwardIds = new Set(forwardPasses.map((w) => w.pass));
+  const forwardIds = new Set(stepWarnings.filter((w) => w.kind === 'forward').map((w) => w.pass));
 
   return (
     <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
@@ -460,10 +460,21 @@ export function PracticeImport() {
               })}
             </div>
           )}
-          {editing && forwardPasses.length > 0 && (
+          {editing && stepWarnings.length > 0 && (
             <ul role="status" className="border-l-4 border-[var(--color-accent-warm)] pl-2 text-sm text-text-primary">
-              {forwardPasses.map((w) => (
-                <li key={w.pass}>{w.message}</li>
+              {stepWarnings.map((w) => (
+                <li key={`${w.kind}-${w.pass}`} className="flex flex-wrap items-center gap-2">
+                  {w.message}
+                  {w.fix && (
+                    <Button
+                      variant="outline"
+                      className="h-11"
+                      onClick={() => edit({ type: 'startAfterPass', marker: w.fix!.marker, pass: w.fix!.afterPass })}
+                    >
+                      Start the run after the pass
+                    </Button>
+                  )}
+                </li>
               ))}
             </ul>
           )}

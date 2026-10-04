@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validate, warnings, formatWarning, isForwardPass, formatError } from './engine';
+import { applyEdit } from './editing';
 import type { Direction } from './schema';
 
 /** a1 at (10,10) holds the ball and passes to a2, who stands at `to`. */
@@ -44,7 +45,7 @@ describe('forward pass warnings', () => {
 
   it('warns on a forward pass', () => {
     const found = warnings(script({ x: 10, y: 8 }, 'up'));
-    expect(found).toEqual([{ step: 0, pass: 'p1', message: 'Pass 1 goes forward' }]);
+    expect(found).toEqual([{ step: 0, pass: 'p1', kind: 'forward', message: 'Pass 1 goes forward' }]);
     expect(formatWarning(found[0])).toBe('Pass 1 goes forward');
   });
 
@@ -111,7 +112,72 @@ describe('forward pass warnings', () => {
     const result = validate(withProgression);
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
     const found = warnings(result.script);
-    expect(found).toEqual([{ step: 1, pass: 'p1', message: 'Pass 1 goes forward' }]);
+    expect(found).toEqual([{ step: 1, pass: 'p1', kind: 'forward', message: 'Pass 1 goes forward' }]);
     expect(formatWarning(found[0])).toBe('Step 2: Pass 1 goes forward');
+  });
+});
+
+/** The 3 v 2 overlap: 3 sprints to a catch point on its run while 2 is still waiting for the ball. */
+function overlap(after?: { pass: string }) {
+  const result = validate({
+    schemaVersion: 1,
+    area: { width: 30, length: 20 },
+    direction: 'up',
+    markers: [
+      { id: 'a1', kind: 'attacker', label: '1' },
+      { id: 'a2', kind: 'attacker', label: '2' },
+      { id: 'a3', kind: 'attacker', label: '3' },
+      { id: 'ball', kind: 'ball' },
+    ],
+    base: {
+      placements: [
+        { marker: 'a1', cell: { x: 12, y: 17 } },
+        { marker: 'a2', cell: { x: 17, y: 18 } },
+        { marker: 'a3', cell: { x: 22, y: 19 } },
+        { marker: 'ball', holder: 'a1' },
+      ],
+      moves: [
+        { marker: 'a1', waypoints: [{ x: 12, y: 12 }], pace: 'jog' },
+        { marker: 'a2', waypoints: [{ x: 17, y: 13 }], pace: 'jog' },
+        { marker: 'a3', waypoints: [{ x: 22, y: 12 }, { x: 24, y: 4 }], pace: 'sprint', ...(after ? { after } : {}) },
+      ],
+      passes: [
+        { id: 'p1', from: 'a1', to: 'a2' },
+        { id: 'p2', from: 'a2', to: 'a3', at: 0 },
+      ],
+    },
+  });
+  if (!result.ok) throw new Error(result.errors.map(formatError).join(String.fromCharCode(10)));
+  return result.script;
+}
+
+describe('early receiver warnings', () => {
+  it('warns when the receiver reaches the catch point before the passer has the ball', () => {
+    const early = warnings(overlap()).filter((w) => w.kind === 'early');
+    expect(early).toEqual([
+      {
+        step: 0,
+        pass: 'p2',
+        kind: 'early',
+        message: '3 reaches the catch point before 2 has the ball',
+        fix: { marker: 'a3', afterPass: 'p1' },
+      },
+    ]);
+    expect(formatWarning(early[0])).toBe('3 reaches the catch point before 2 has the ball');
+  });
+
+  it('does not warn when the receiver starts after the previous pass', () => {
+    expect(warnings(overlap({ pass: 'p1' })).filter((w) => w.kind === 'early')).toEqual([]);
+  });
+
+  it('is cleared by starting the run after the previous pass', () => {
+    const fixed = applyEdit(overlap(), { type: 'startAfterPass', marker: 'a3', pass: 'p1' });
+    if (typeof fixed === 'string') throw new Error(fixed);
+    expect(fixed.base.moves.find((m) => m.marker === 'a3')?.after).toEqual({ pass: 'p1' });
+    expect(warnings(fixed).filter((w) => w.kind === 'early')).toEqual([]);
+  });
+
+  it('never warns for the first pass of a ball', () => {
+    expect(warnings(overlap()).filter((w) => w.pass === 'p1')).toEqual([]);
   });
 });
