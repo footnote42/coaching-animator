@@ -63,8 +63,8 @@ export function useEditorWorkspace() {
     return result.ok ? [] : result.errors.map(formatError);
   }, [script]);
 
-  /** Pass ids in the shown Step that go forward, in the Direction of attack. Never blocks saving. */
-  const forwardPasses = useMemo(() => {
+  /** Warnings for the shown Step: forward passes and early receivers. Never blocks saving. */
+  const stepWarnings = useMemo(() => {
     try {
       return warnings(script).filter((w) => w.step === shownStep);
     } catch {
@@ -354,7 +354,7 @@ export function useEditorWorkspace() {
     applyText,
     setArea,
     setDirection,
-    forwardPasses,
+    stepWarnings,
     libraryKey,
     setLibraryKey,
     isGuest,
