@@ -504,6 +504,9 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     } else {
       kinds.set(marker.id, marker.kind);
     }
+    if (marker.colour !== undefined && marker.kind !== 'cone') {
+      errors.push({ path: `markers[${i}].colour`, message: `only a cone has a colour; marker "${marker.id}" is a ${marker.kind}` });
+    }
     if (marker.kind === 'ball') {
       balls += 1;
       if (balls > MAX_BALLS) errors.push({ path: `markers[${i}].kind`, message: `a Practice has at most ${MAX_BALLS} balls` });

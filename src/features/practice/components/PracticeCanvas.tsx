@@ -5,7 +5,7 @@ import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text,
 import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
-import { markerColour } from '@/features/practice/markerColour';
+import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 
 /** Below this many pixels between grid lines they are too dense to draw. */
@@ -23,7 +23,7 @@ export function MarkerShape({ marker, x, y, r }: { marker: ResolvedMarker; x: nu
     case 'ball':
       return <Ellipse x={x} y={y} radiusX={r * 0.7} radiusY={r * 0.45} fill={fill} stroke="#111827" strokeWidth={1} />;
     case 'cone':
-      return <RegularPolygon x={x} y={y} sides={3} radius={r * 0.6} fill={fill} stroke="#111827" strokeWidth={1} />;
+      return <RegularPolygon x={x} y={y} sides={3} radius={r * 0.6} fill={fill} stroke={CONE_OUTLINE} strokeWidth={1.5} />;
     case 'tackle-shield':
       return <Rect x={x - r * 0.6} y={y - r} width={r * 1.2} height={r * 2} fill={fill} stroke="#111827" strokeWidth={1} />;
     default:

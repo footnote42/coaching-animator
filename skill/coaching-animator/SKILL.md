@@ -41,6 +41,7 @@ Do not work from memory or from copies. If you cannot open links, ask the Coach 
    - Whole-number cells inside the Area; the ball has a `holder`, not a cell.
    - Never write durations; use `pace` (`walk`, `jog`, `sprint`).
    - Labels are roles or shirt numbers, never player names.
+   - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
 3. Add Progressions (each pulls one Lever: space, time, equipment or people, with a first coaching point saying why it is harder) unless the Practice is a match play.
 4. Check it (step 3 below) before you hand it over.
 

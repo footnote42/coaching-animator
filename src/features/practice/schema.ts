@@ -42,6 +42,9 @@ export const PACES = ['walk', 'jog', 'sprint'] as const;
 /** Marker kinds that can hold, pass and receive the ball. */
 export const BALL_CARRIER_KINDS = ['attacker', 'defender', 'coach'] as const;
 
+/** Cone colours, as in a normal kit bag. A cone with none is yellow. */
+export const CONE_COLOURS = ['yellow', 'red', 'amber', 'green', 'white', 'blue'] as const;
+
 export const MARKER_KINDS = [
   'attacker',
   'defender',
@@ -113,6 +116,10 @@ export const MarkerSchema = z
       .max(4)
       .optional()
       .describe('Short role or number shown on the marker, e.g. "9" or "SH". Never a player name.'),
+    colour: z
+      .enum(CONE_COLOURS)
+      .optional()
+      .describe('Colour of a cone only, e.g. red, amber and green to mark zones. Defaults to yellow.'),
   })
   .describe('Something drawn in the Area: a player, the ball or equipment.');
 
@@ -320,6 +327,7 @@ export type Cell = z.infer<typeof CellSchema>;
 export type Area = z.infer<typeof AreaSchema>;
 export type AreaTemplate = (typeof AREA_TEMPLATES)[number];
 export type MarkerKind = (typeof MARKER_KINDS)[number];
+export type ConeColour = (typeof CONE_COLOURS)[number];
 export type Team = (typeof TEAMS)[number];
 export type Direction = (typeof DIRECTIONS)[number];
 export type Marker = z.infer<typeof MarkerSchema>;

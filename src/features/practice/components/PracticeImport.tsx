@@ -25,8 +25,8 @@ import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
-import { markerColour } from '@/features/practice/markerColour';
-import { BALL_CARRIER_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
+import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
+import { BALL_CARRIER_KINDS, CONE_COLOURS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
 
@@ -355,6 +355,30 @@ export function PracticeImport() {
                 maxLength={4}
                 className="h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-center text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               />
+              {selectedMarker.kind === 'cone' && (
+                <div role="group" aria-label="Cone colour" className="flex items-center gap-1">
+                  {CONE_COLOURS.map((colour) => {
+                    const current = (selectedMarker.colour ?? 'yellow') === colour;
+                    const name = `${colour[0].toUpperCase()}${colour.slice(1)} cone`;
+                    return (
+                      <button
+                        key={colour}
+                        type="button"
+                        aria-label={name}
+                        title={name}
+                        aria-pressed={current}
+                        onClick={() => edit({ type: 'setColour', marker: selectedMarker.id, colour })}
+                        className={cn('h-11 w-11 flex items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring', current && 'bg-[var(--color-surface)]')}
+                      >
+                        <span
+                          className={cn('inline-block h-6 w-6 rounded-full border-2', current && 'ring-2 ring-offset-1 ring-black')}
+                          style={{ backgroundColor: markerColour({ kind: 'cone', colour }), borderColor: CONE_OUTLINE }}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               {selectedMove ? (
                 <>
                   <label htmlFor="run-pace">Pace</label>
