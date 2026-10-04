@@ -36,6 +36,22 @@ _Avoid_: canvas, field, grid (grid is the cells inside an Area)
 How fast a marker moves: steady by default, slower than real time so viewers can follow the idea, and changed per move (walk, jog, sprint) when the Practice needs it. Durations come from distance and Pace, never typed by hand.
 _Avoid_: speed, tempo, duration
 
+**Run**:
+A marker's path across the Area through waypoints at a Pace. It starts straight away or after another Run or Pass finishes.
+_Avoid_: move (in anything a Coach reads), path, route
+
+**Pass**:
+The ball travelling from the marker holding it to another marker. It is thrown once the previous Pass of that ball is caught and the receiver reaches the catch point. The ball flies to where the receiver will be when it arrives.
+_Avoid_: throw, ball movement
+
+**Catch on the run**:
+A Pass caught at a point part way along the receiver's Run instead of at its end. The receiver carries on running with the ball.
+_Avoid_: mid-run pass, early catch
+
+**Direction of attack**:
+The way the attack is going in a Practice: up, down, left or right on the Area, or none for drills without a try line. A Pass is forward when it is caught ahead of where it was thrown, measured in this direction; only a Practice with a direction can have one.
+_Avoid_: orientation, attacking end
+
 **Coach**:
 A signed-in person who creates and owns Practices. Not the same as a viewer: anyone reading a shared link or browsing the Gallery is a viewer.
 _Avoid_: user, author, creator
