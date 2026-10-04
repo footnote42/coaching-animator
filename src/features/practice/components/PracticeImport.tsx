@@ -440,6 +440,17 @@ export function PracticeImport() {
                         ))}
                       </select>
                     )}
+                    <select
+                      aria-label={`Pass ${name(pass.from)} to ${name(pass.to)} when this player arrives`}
+                      value={pass.after?.move ?? ''}
+                      onChange={(e) => edit({ type: 'setPassWait', id: pass.id, move: e.target.value === '' ? null : e.target.value })}
+                      className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
+                    >
+                      <option value="">Pass when no one arrives</option>
+                      {step?.moves.map((m) => (
+                        <option key={m.marker} value={m.marker}>Pass when {name(m.marker)} arrives</option>
+                      ))}
+                    </select>
                     {run && run.waypoints.length > 1 && (
                       <select
                         aria-label={`Where ${name(pass.to)} catches`}

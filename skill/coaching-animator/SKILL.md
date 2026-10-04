@@ -31,7 +31,7 @@ Do not work from memory or from copies. If you cannot open links, ask the Coach 
 - `examples/01-passing-line.json`: simple passing Practice, no Progressions.
 - `examples/02-pass-and-follow-progressions.json`: a Practice with a Time and a People Progression.
 - `examples/03-two-ball-square.json`: two balls, each with its own chain of passes.
-- `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, a Progression adding a defender.
+- `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a Progression adding a defender.
 
 ## 1. Describe a drill, get a Practice Script
 
@@ -70,6 +70,7 @@ Set `"direction"` at the top level of the script for any directional drill (`"up
 Then check the rugby yourself too: in any Practice with a try line or a direction of attack, every pass must travel level or backwards. Two traps make passes go forward:
 
 - **The ball leads a receiver on the run.** With `at`, the catch lands where the receiver will be when the ball arrives, a metre or more past the waypoint. Put the catch waypoint a few metres behind the passer.
+- **Draw and pass.** To show the defender being drawn, end the defender's Run at the carrier and give the pass `"after": { "move": "<defender>" }`: the ball goes when that Run finishes (as well as the catch point). Keep the pass level or backward.
 - **A receiver who sets off at time zero arrives early.** If the receiver passes the `at` waypoint before the passer has the ball, the catch moves further up the run, often to its end. Hold the receiver with `after: { "pass": "<previous pass>" }` so it times its run onto the ball. `examples/04-attack-v-defence.json` shows both.
 
 ## 5. Paste route (only when you have no `create_practice` tool)

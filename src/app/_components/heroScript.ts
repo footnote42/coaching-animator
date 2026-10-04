@@ -1,7 +1,7 @@
 import { resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
 
 /** The landing page's example Practice: the skill's "3 v 2 overlap" example, base Step only. */
-const HERO_SCRIPT = {
+export const HERO_SCRIPT = {
   schemaVersion: 1,
   title: '3 v 2 overlap',
   area: { width: 30, length: 20 },
@@ -29,11 +29,12 @@ const HERO_SCRIPT = {
       // Sets off on the first catch, then sprints on to its catch point; the ball leads it, so the catch lands just behind 2 (a legal pass).
       { marker: 'a3', waypoints: [{ x: 22, y: 17 }, { x: 24, y: 4 }], pace: 'sprint', after: { pass: 'p1' } },
       { marker: 'd1', waypoints: [{ x: 13, y: 11 }], pace: 'jog' },
-      { marker: 'd2', waypoints: [{ x: 18, y: 11 }], pace: 'jog' },
+      // Draws 2: runs in to the carrier, and the ball goes when D2 arrives (draw and pass).
+      { marker: 'd2', waypoints: [{ x: 18, y: 12 }], pace: 'jog' },
     ],
     passes: [
       { id: 'p1', from: 'a1', to: 'a2' },
-      { id: 'p2', from: 'a2', to: 'a3', at: 0 },
+      { id: 'p2', from: 'a2', to: 'a3', at: 0, after: { move: 'd2' } },
     ],
     commentary: { points: ['Draw the defender, then pass, so the overlap runs into space'] },
   },

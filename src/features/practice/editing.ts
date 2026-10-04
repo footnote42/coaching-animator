@@ -52,6 +52,8 @@ export type Edit =
   | { type: 'removePass'; id: string }
   /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
   | { type: 'setCatch'; id: string; at: number | null }
+  /** Make a pass also wait for the run of marker `move` to finish (draw and pass); null waits for nothing extra. */
+  | { type: 'setPassWait'; id: string; move: string | null }
   /** Catch on the run at the point of the receiver's run nearest `at`: reuse a waypoint within a cell, else add one there. */
   | { type: 'addCatchPoint'; id: string; at: CellPoint }
   /** Start a marker's run once pass `pass` is caught; null starts it at the beginning of the Step. */
@@ -238,7 +240,15 @@ function cleanWaits(input: PracticeScript): PracticeScript {
     void _dropped;
     return rest;
   });
-  return changed ? withBase(script, { moves }) : script;
+  let passesChanged = false;
+  const passes = script.base.passes.map((pass) => {
+    if (!pass.after || moved.has(pass.after.move)) return pass;
+    passesChanged = true;
+    const { after: _dropped, ...rest } = pass;
+    void _dropped;
+    return rest;
+  });
+  return changed || passesChanged ? withBase(script, { moves: changed ? moves : script.base.moves, passes: passesChanged ? passes : script.base.passes }) : script;
 }
 
 /**
@@ -434,6 +444,16 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
         if (edit.at < 0 || edit.at >= move.waypoints.length) return 'That point is not on the receiver’s run.';
       }
       const next = edit.at === null ? rest : { ...rest, at: edit.at };
+      return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
+    }
+
+    case 'setPassWait': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass || (pass.after?.move ?? null) === edit.move) return script;
+      const { after: _old, ...rest } = pass;
+      void _old;
+      if (edit.move !== null && !script.base.moves.some((m) => m.marker === edit.move)) return 'That player has no run to wait for.';
+      const next = edit.move === null ? rest : { ...rest, after: { move: edit.move } };
       return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
     }
 

@@ -643,4 +643,50 @@ describe('Motion: Pace, ball and passes', () => {
       }
     }
   });
+
+  describe('pass waits for a run (draw and pass)', () => {
+    const a3Runs = { marker: 'a3', waypoints: [{ x: 20, y: 10 }] };
+    const wait = { after: { move: 'a3' } };
+
+    it('fires when the named run has finished, not before', () => {
+      const script = drill({ moves: [a3Runs], passes: [{ id: 'p1', from: 'a1', to: 'a2', ...wait }] });
+      const [p1] = at(script, 0).passes;
+      expect(p1.fire).toBeCloseTo(10 / jog);
+      expect(at(script, 10 / jog - 0.01).positions.ball).toEqual({ x: 0, y: 0 });
+      expect(at(script, 99).positions.ball).toEqual({ x: 10, y: 0 });
+      // Without the wait the pass goes at once.
+      const free = drill({ moves: [a3Runs], passes: [{ id: 'p1', from: 'a1', to: 'a2' }] });
+      expect(at(free, 0).passes[0].fire).toBe(0);
+    });
+
+    it('combines with a catch on the run: waits for both', () => {
+      const moves = [a3Runs, { marker: 'a2', waypoints: [{ x: 10, y: 4 }, { x: 10, y: 12 }] }];
+      const early = drill({ moves, passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }] });
+      // a2 reaches its catch waypoint (4 cells) before a3 finishes (10 cells).
+      expect(at(early, 0).passes[0].fire).toBeCloseTo(10 / jog);
+      const slow = drill({
+        moves: [{ marker: 'a3', waypoints: [{ x: 20, y: 2 }] }, moves[1]],
+        passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }],
+      });
+      expect(at(slow, 0).passes[0].fire).toBeCloseTo(4 / jog);
+    });
+
+    it('rejects a wait on a marker with no run, and loops', () => {
+      expect(errorsOf(drill({ passes: [{ id: 'p1', from: 'a1', to: 'a2', ...wait }] }))).toEqual([
+        'base.passes[0].after.move: marker "a3" has no move in this Step',
+      ]);
+      const loop = drill({
+        moves: [{ ...a3Runs, after: { pass: 'p1' } }],
+        passes: [{ id: 'p1', from: 'a1', to: 'a2', ...wait }],
+      });
+      expect(errorsOf(loop)[0]).toMatch(/^base\.moves\[0\]\.after: moves and passes wait on each other in a loop/);
+    });
+
+    it('is carried by a Progression setPass change', () => {
+      const script = drill({ moves: [a3Runs] }, [
+        { lever: 'time', changes: [{ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', ...wait }] },
+      ]);
+      expect(at(script, 0, 1).passes[0].fire).toBeCloseTo(10 / jog);
+    });
+  });
 });
