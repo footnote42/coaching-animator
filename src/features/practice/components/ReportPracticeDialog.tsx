@@ -51,7 +51,7 @@ export function ReportPracticeDialog({ practiceId, onClose }: ReportPracticeDial
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="report-practice-title" className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+    <div role="dialog" aria-modal="true" aria-labelledby="report-practice-title" className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim">
       <div className="mx-4 w-full max-w-md border border-[var(--color-border)] bg-[var(--color-surface)] text-text-primary shadow-xl">
         <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
           <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export function ReportPracticeDialog({ practiceId, onClose }: ReportPracticeDial
               className="w-full resize-none border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm"
             />
 
-            {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
+            {error && <p role="alert" className="mt-3 text-sm text-danger">{error}</p>}
 
             <div className="mt-4 flex gap-2">
               <button type="button" onClick={onClose} className="min-h-11 flex-1 border border-[var(--color-border)]">
@@ -103,7 +103,7 @@ export function ReportPracticeDialog({ practiceId, onClose }: ReportPracticeDial
               <button
                 type="submit"
                 disabled={!reason || submitting}
-                className="min-h-11 flex-1 bg-red-600 font-medium text-white disabled:opacity-50"
+                className="min-h-11 flex-1 bg-danger font-medium text-background disabled:opacity-50"
               >
                 {submitting ? 'Submitting...' : 'Submit report'}
               </button>

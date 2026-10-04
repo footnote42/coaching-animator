@@ -104,7 +104,7 @@ export function PracticeReportsTab() {
       </div>
 
       {error && (
-        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-100 text-sm text-red-600 rounded">{error}</div>
+        <div className="mb-4 px-4 py-3 bg-danger-surface border border-danger/40 text-sm text-danger rounded">{error}</div>
       )}
 
       {loading ? (
@@ -118,7 +118,7 @@ export function PracticeReportsTab() {
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-warm">{r.reason}</span>
                 <span className="text-sm text-text-primary/60">{new Date(r.created_at).toLocaleString()}</span>
-                {r.practice?.hidden && <span className="text-xs font-medium text-red-600">Hidden</span>}
+                {r.practice?.hidden && <span className="text-xs font-medium text-danger">Hidden</span>}
               </div>
               <p className="font-medium text-text-primary">
                 {r.practice ? (

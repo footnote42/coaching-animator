@@ -169,7 +169,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border/30 bg-[#18120A] px-4 py-3 flex flex-col gap-3">
+        <div className="md:hidden border-t border-border/30 bg-[var(--c-nav-cover)] px-4 py-3 flex flex-col gap-3">
           {TAB_SECTIONS
             .filter(sec => !sec.requiresAuth || user)
             .map((sec) => {

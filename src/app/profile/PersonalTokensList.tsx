@@ -122,19 +122,19 @@ export function PersonalTokensList() {
       </p>
 
       {error && (
-        <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-none">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="mb-6 p-3 bg-danger-surface border border-danger/40 rounded-none">
+          <p className="text-sm text-danger">{error}</p>
         </div>
       )}
 
       {newPlaintext && (
-        <div className="mb-8 p-4 border border-green-200 bg-green-50 rounded-none">
-          <h3 className="font-semibold text-green-900 mb-2">Token created successfully</h3>
-          <p className="text-sm text-green-800 mb-4">
+        <div className="mb-8 p-4 border border-success/40 bg-success-surface rounded-none">
+          <h3 className="font-semibold text-success mb-2">Token created successfully</h3>
+          <p className="text-sm text-success mb-4">
             Copy this token now. <strong>You won&apos;t see it again!</strong>
           </p>
-          <div className="flex gap-2 items-center bg-white p-2 border border-green-200">
-            <code className="text-sm text-green-900 break-all flex-1">{newPlaintext}</code>
+          <div className="flex gap-2 items-center bg-surface p-2 border border-success/40">
+            <code className="text-sm text-success break-all flex-1">{newPlaintext}</code>
             <Button
               type="button"
               variant="outline"
@@ -208,7 +208,7 @@ export function PersonalTokensList() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                        className="text-danger hover:bg-danger-surface hover:text-danger"
                         onClick={() => setRevokingId(token.id)}
                       >
                         Revoke
