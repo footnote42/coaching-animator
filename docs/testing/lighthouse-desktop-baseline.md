@@ -36,3 +36,25 @@ Act only on a score under 90 or a drop of more than 5 points from this baseline.
 ```bash
 npx -y lighthouse@13.5.0 https://coaching-animator.waynetellis.com/ --preset=desktop --output=json --output-path=home.json --chrome-flags="--headless=new"
 ```
+
+## Re-run 2026-10-04 (new look, before the #122 fixes)
+
+Production after the new look (#88, #89), Lighthouse 13.5.0, `--preset=desktop`, performance and accessibility only, one route at a time. The headless run rendered the dark theme.
+
+| Route | Performance | Accessibility | CLS | LCP |
+|---|:---:|:---:|---|---|
+| `/` | 97 | 100 | 0.009 | 0.7s |
+| `/practice` | 90 | 99 | 0.171 | 1.2s |
+| `/p/[id]` | 99 | 100 | 0.027 | 0.7s |
+| `/gallery` | 97 | 100 | 0.088 | 1.0s |
+
+Still failing before the fixes: no `<main>` on `/practice`; editor CLS 0.171 (footer pushed down 0.10 when the editor replaced the empty Suspense fallback, then the canvas resized 0.058); visible text not in the accessible name on `/p/[id]` (speed buttons "1×") and `/gallery` (preview buttons, marker labels in the thumbnail). Colour contrast and links-in-text now pass in dark on all four routes.
+
+The #122 PR fixes:
+
+- `/practice`: the editor root is a `<main>`, and the Suspense fallback is a `<main>` of the editor's height, so the footer no longer jumps. The canvas Stage renders only after the container is measured, so it no longer resizes.
+- Speed buttons are named "½× speed", "1× speed", "2× speed" (start with the visible label).
+- Gallery card thumbnails drop the marker labels (`showLabels={false}`), because the preview button's name cannot contain them.
+- Light-theme contrast: `text-text-primary/60` and `/40` become `/70` (4.07:1 on paper at /60, 5.50:1 at /70).
+
+Not re-measured until deployed. Light theme was not run in Lighthouse; check both themes on the next re-run.

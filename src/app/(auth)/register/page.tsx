@@ -198,7 +198,7 @@ export default function RegisterPage() {
             className="w-full px-3 py-2 border border-border bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="••••••••"
           />
-          <p className="text-xs text-text-primary/60 mt-1">Minimum 8 characters</p>
+          <p className="text-xs text-text-primary/70 mt-1">Minimum 8 characters</p>
         </div>
 
         <div>

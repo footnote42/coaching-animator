@@ -100,7 +100,7 @@ export function GalleryCardPreview({ step, title, playing, onPlayingChange, onOp
       }}
       className="block aspect-[4/3] w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <PracticeThumbnail step={step} showMoves={false} time={time} className="h-full w-full" />
+      <PracticeThumbnail step={step} showMoves={false} showLabels={false} time={time} className="h-full w-full" />
     </button>
   );
 }

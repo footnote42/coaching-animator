@@ -138,9 +138,9 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
 
   // Speed.
   const speed = viewer.getByRole('group', { name: 'Speed' })
-  await speed.getByRole('button', { name: 'Double speed' }).click()
-  await expect(speed.getByRole('button', { name: 'Double speed' })).toHaveAttribute('aria-pressed', 'true')
-  await expect(speed.getByRole('button', { name: 'Normal speed' })).toHaveAttribute('aria-pressed', 'false')
+  await speed.getByRole('button', { name: '2× speed' }).click()
+  await expect(speed.getByRole('button', { name: '2× speed' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(speed.getByRole('button', { name: '1× speed' })).toHaveAttribute('aria-pressed', 'false')
 
   await phone.close()
 

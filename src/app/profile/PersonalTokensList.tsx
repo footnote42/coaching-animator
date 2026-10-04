@@ -116,7 +116,7 @@ export function PersonalTokensList() {
 
   return (
     <div className="mt-8 bg-surface border border-border p-6">
-      <h2 className="text-sm uppercase tracking-widest text-text-primary/60 mb-6">AI Connections</h2>
+      <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-6">AI Connections</h2>
       <p className="text-sm text-text-primary/80 mb-6">
         Personal tokens let your AI (like Claude or ChatGPT) access your Practices via the MCP endpoint.
       </p>
@@ -181,19 +181,19 @@ export function PersonalTokensList() {
       </form>
 
       {loading ? (
-        <div className="text-sm text-text-primary/60">Loading connections...</div>
+        <div className="text-sm text-text-primary/70">Loading connections...</div>
       ) : (
         <div className="space-y-4">
           <h3 className="font-medium text-text-primary">Active Connections ({activeTokens.length}/10)</h3>
           {activeTokens.length === 0 ? (
-            <p className="text-sm text-text-primary/60">No active AI connections.</p>
+            <p className="text-sm text-text-primary/70">No active AI connections.</p>
           ) : (
             <ul className="space-y-3">
               {activeTokens.map((token) => (
                 <li key={token.id} className="flex justify-between items-center p-3 border border-border bg-background">
                   <div>
                     <p className="font-medium">{token.name}</p>
-                    <p className="text-xs text-text-primary/60 mt-1">
+                    <p className="text-xs text-text-primary/70 mt-1">
                       Created: {new Date(token.created_at).toLocaleDateString()}
                       {' • '}
                       Last used: {token.last_used_at ? new Date(token.last_used_at).toLocaleDateString() : 'Never'}
@@ -247,7 +247,7 @@ export function PersonalTokensList() {
                   <li key={token.id} className="flex justify-between items-center p-3 border border-border bg-surface-warm opacity-70">
                     <div>
                       <p className="font-medium line-through">{token.name}</p>
-                      <p className="text-xs text-text-primary/60 mt-1">
+                      <p className="text-xs text-text-primary/70 mt-1">
                         Revoked: {new Date(token.revoked_at!).toLocaleDateString()}
                       </p>
                     </div>

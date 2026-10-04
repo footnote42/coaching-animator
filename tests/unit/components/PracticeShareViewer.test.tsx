@@ -228,11 +228,11 @@ describe('PracticeShareViewer', () => {
 
   it('offers half, normal and double speed', () => {
     render(<PracticeShareViewer title="Passing square" script={script} />);
-    const half = screen.getByRole('button', { name: 'Half speed' });
-    expect(screen.getByRole('button', { name: 'Normal speed' }).getAttribute('aria-pressed')).toBe('true');
+    const half = screen.getByRole('button', { name: '½× speed' });
+    expect(screen.getByRole('button', { name: '1× speed' }).getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(half);
     expect(half.getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Double speed' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '2× speed' })).toBeTruthy();
   });
 
   it('play all restarts from Step 0', () => {

@@ -3,6 +3,8 @@ import { useState, useEffect, RefObject } from 'react';
 interface CanvasSize {
   width: number;
   height: number;
+  /** True once the container has been measured. Before that the size is a guess. */
+  measured: boolean;
 }
 
 /**
@@ -21,12 +23,12 @@ export function useShareCanvasSize(
   aspectRatio = 4 / 3,
 ): CanvasSize {
   const [size, setSize] = useState<CanvasSize>(() => {
-    if (typeof window === 'undefined') return { width: 800, height: 600 };
+    if (typeof window === 'undefined') return { width: 800, height: 600, measured: false };
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const byWidth = { w: vw, h: vw / aspectRatio };
     const use = byWidth.h <= vh ? byWidth : { w: vh * aspectRatio, h: vh };
-    return { width: Math.floor(use.w), height: Math.floor(use.h) };
+    return { width: Math.floor(use.w), height: Math.floor(use.h), measured: false };
   });
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export function useShareCanvasSize(
       const byWidth = { w: vw, h: vw / aspectRatio };
       const use = byWidth.h <= vh ? byWidth : { w: vh * aspectRatio, h: vh };
 
-      setSize({ width: Math.floor(use.w), height: Math.floor(use.h) });
+      setSize({ width: Math.floor(use.w), height: Math.floor(use.h), measured: true });
     });
 
     observer.observe(el);
