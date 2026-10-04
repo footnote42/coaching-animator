@@ -904,7 +904,8 @@ export function isForwardPass(direction: Direction | undefined, from: Point, to:
  * Warnings for a validated script: a pass is forward when it is caught more than
  * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
  * the real throw and catch points (the ball leads a receiver on the run).
- * Never blocks saving. A script without a direction, or with none, has no warnings.
+ * Also an early catch: the receiver reaches its catch point before the passer has the ball.
+ * Never blocks saving. Forward passes need a Direction of attack; early catches do not.
  */
 export function warnings(script: PracticeScript): ValidationWarning[] {
   const found: ValidationWarning[] = [];
