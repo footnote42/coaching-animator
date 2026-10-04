@@ -44,6 +44,10 @@ _Avoid_: move (in anything a Coach reads), path, route
 The ball travelling from the marker holding it to another marker. It is thrown once the previous Pass of that ball is caught and the receiver reaches the catch point. The ball flies to where the receiver will be when it arrives.
 _Avoid_: throw, ball movement
 
+**Kick**:
+The ball kicked from the marker holding it to a receiver, through the air, slower and higher than a Pass. A Kick is never a forward pass; after a Kick to the other team, that team attacks the opposite way.
+_Avoid_: punt, kick pass (as a separate thing)
+
 **Catch on the run**:
 A Pass caught at a point part way along the receiver's Run instead of at its end. The receiver carries on running with the ball.
 _Avoid_: mid-run pass, early catch

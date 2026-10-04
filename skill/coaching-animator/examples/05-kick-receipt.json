@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "title": "Kick receipt and counter-attack",
+  "area": { "width": 30, "length": 40 },
+  "direction": "up",
+  "markers": [
+    { "id": "k1", "kind": "attacker", "label": "10" },
+    { "id": "c1", "kind": "attacker", "label": "11" },
+    { "id": "c2", "kind": "attacker", "label": "14" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "b1", "kind": "defender", "label": "11" },
+    { "id": "b2", "kind": "defender", "label": "15" },
+    { "id": "b3", "kind": "defender", "label": "14" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "k1", "cell": { "x": 15, "y": 30 } },
+      { "marker": "c1", "cell": { "x": 8, "y": 31 } },
+      { "marker": "c2", "cell": { "x": 22, "y": 31 } },
+      { "marker": "ball", "holder": "k1" },
+      { "marker": "b1", "cell": { "x": 10, "y": 9 } },
+      { "marker": "b2", "cell": { "x": 15, "y": 10 } },
+      { "marker": "b3", "cell": { "x": 5, "y": 8 } }
+    ],
+    "moves": [
+      { "marker": "c1", "waypoints": [{ "x": 9, "y": 14 }], "pace": "jog" },
+      { "marker": "c2", "waypoints": [{ "x": 21, "y": 14 }], "pace": "jog" }
+    ],
+    "passes": [
+      { "id": "p1", "from": "k1", "to": "b2", "kick": true },
+      { "id": "p2", "from": "b2", "to": "b1" },
+      { "id": "p3", "from": "b1", "to": "b3" }
+    ],
+    "commentary": {
+      "points": [
+        "Kick to the back three and chase in a line",
+        "Catch, then counter-attack: the receiving team attacks the other way, so its passes go backward",
+        "Look for the space on the far side as the chase arrives"
+      ]
+    }
+  },
+  "progressions": []
+}

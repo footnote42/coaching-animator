@@ -27,6 +27,14 @@ describe('skill worked examples', () => {
     expect(warnings(result.script)).toEqual([]);
   });
 
+  it('05-kick-receipt.json kicks to the other team, who counter-attack backward, with no warning', () => {
+    const result = validate(readFileSync(path.join(EXAMPLES_DIR, '05-kick-receipt.json'), 'utf8'));
+    if (!result.ok) throw new Error(result.errors.map(formatError).join(', '));
+    expect(result.script.base.passes[0].kick).toBe(true);
+    expect(result.script.direction).toBe('up');
+    expect(warnings(result.script)).toEqual([]);
+  });
+
   it('the landing 3 v 2 attacks up, passes on D2 arriving, and raises no warning', () => {
     const result = validate(HERO_SCRIPT);
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));

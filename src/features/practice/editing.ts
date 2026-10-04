@@ -47,6 +47,8 @@ export type Edit =
   | { type: 'removeMove'; marker: string }
   /** `ball` is the ball passed; left out, it is the first ball. */
   | { type: 'addPass'; from: string; to: string; ball?: string }
+  /** Make a pass a kick (slower, through the air) or an ordinary pass again. */
+  | { type: 'setKick'; id: string; kick: boolean }
   /** Change which ball a pass moves. */
   | { type: 'setPassBall'; id: string; ball: string }
   /** Add another ball (up to the limit), held by a player who has none. */
@@ -449,6 +451,15 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
         if (edit.at < 0 || edit.at >= move.waypoints.length) return 'That point is not on the receiver’s run.';
       }
       const next = edit.at === null ? rest : { ...rest, at: edit.at };
+      return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
+    }
+
+    case 'setKick': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass || (pass.kick ?? false) === edit.kick) return script;
+      const { kick: _old, ...rest } = pass;
+      void _old;
+      const next = edit.kick ? { ...rest, kick: true } : rest;
       return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
     }
 

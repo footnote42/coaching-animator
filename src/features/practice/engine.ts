@@ -48,6 +48,8 @@ export const DEFAULT_PACE: Pace = 'jog';
 
 /** Speed of the ball on a pass, in metres per second. Also slower than real time. */
 export const PASS_SPEED_MPS = 8;
+/** Speed of the ball on a kick, in metres per second: half a pass, as a kick hangs in the air. */
+export const KICK_SPEED_MPS = 4;
 
 export interface ValidationError {
   /** Field path, e.g. `base.moves[2].marker`. Empty string means the whole script. */
@@ -116,6 +118,8 @@ export interface PassFlight {
   start: Point;
   /** Where the ball is caught: the receiver's cell, or a point on its run for a catch on the run. */
   end: Point;
+  /** True when the pass is a kick: slower, arched in flight, never forward. */
+  kick?: boolean;
   /** Seconds into the Step the pass is thrown. */
   fire: number;
   /** Seconds into the Step the pass is caught. */
@@ -843,17 +847,18 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
         : { x: fromCell.x, y: fromCell.y };
     const rest = waits ? receiver.waypoints[receiver.waypoints.length - 1] : cells.get(pass.to)!;
     let end = { x: rest.x, y: rest.y };
-    let land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+    const speed = pass.kick ? KICK_SPEED_MPS : PASS_SPEED_MPS;
+    let land = fire + (distance(start, end) * CELL_SIZE_M) / speed;
     if (pass.at !== undefined && waits) {
       // Catch on the run: lead the receiver. Every Pace is slower than the ball,
       // so aiming at where the receiver will be when the ball lands converges.
       end = pointAt(pass.to, fire);
       for (let k = 0; k < 40; k++) {
-        land = fire + (distance(start, end) * CELL_SIZE_M) / PASS_SPEED_MPS;
+        land = fire + (distance(start, end) * CELL_SIZE_M) / speed;
         end = pointAt(pass.to, land);
       }
     }
-    return (flights[i] = { id: pass.id, ball: pass.ball, from: pass.from, to: pass.to, start, end, fire, land });
+    return (flights[i] = { id: pass.id, ball: pass.ball, from: pass.from, to: pass.to, start, end, ...(pass.kick && { kick: true }), fire, land });
   };
 
   passes.forEach((_, i) => flight(i));
@@ -909,6 +914,13 @@ export function isForwardPass(direction: Direction | undefined, from: Point, to:
   return gainAlong(direction, from, to) > FORWARD_PASS_TOLERANCE_M + 1e-9;
 }
 
+const OPPOSITE: Record<Direction, Direction> = { up: 'down', down: 'up', left: 'right', right: 'left', none: 'none' };
+
+/** Team a marker plays for: its own, else attack for attackers and coaches, defence for defenders. */
+function teamOf(marker: ResolvedMarker | undefined): 'attack' | 'defence' {
+  return marker?.team ?? (marker?.kind === 'defender' ? 'defence' : 'attack');
+}
+
 /**
  * Warnings for a validated script: a pass is forward when it is caught more than
  * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
@@ -922,10 +934,14 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
     const step = resolveStep(script, n);
     const { flights, endOf } = stepTimeline(step);
     const label = (id: string) => step.markers.find((m) => m.id === id)?.label ?? id;
+    const marker = (id: string) => step.markers.find((m) => m.id === id);
+    /** The Direction of attack belongs to the team holding each ball at the start. */
+    const startTeam = (ball: string) => teamOf(marker(marker(ball)?.holder ?? ''));
     step.passes.forEach((pass, i) => {
       const flight = flights.find((f) => f.id === pass.id);
       if (!flight) return;
-      if (isForwardPass(script.direction, flight.start, flight.end)) {
+      const direction = script.direction && teamOf(marker(pass.from)) !== startTeam(flight.ball) ? OPPOSITE[script.direction] : script.direction;
+      if (!pass.kick && isForwardPass(direction, flight.start, flight.end)) {
         found.push({ step: n, pass: pass.id, kind: 'forward', message: `Pass ${i + 1} goes forward` });
       }
       // A catch on the run slides later when the receiver passes waypoint `at` before the passer has the ball.

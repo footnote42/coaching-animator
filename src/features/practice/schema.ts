@@ -187,6 +187,12 @@ export const PassSchema = z
     after: PassAfterSchema.optional().describe(
       'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
     ),
+    kick: z
+      .boolean()
+      .optional()
+      .describe(
+        'true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.',
+      ),
   })
   .describe(
     'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in "after" has finished (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time.',
