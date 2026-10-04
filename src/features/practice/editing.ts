@@ -51,6 +51,8 @@ export type Edit =
   | { type: 'removePass'; id: string }
   /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
   | { type: 'setCatch'; id: string; at: number | null }
+  /** Catch on the run at the point of the receiver's run nearest `at`: reuse a waypoint within a cell, else add one there. */
+  | { type: 'addCatchPoint'; id: string; at: CellPoint }
   | { type: 'setLabel'; marker: string; label: string | undefined };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
@@ -96,6 +98,9 @@ const LABEL_PREFIX: Partial<Record<MarkerKind, string>> = { attacker: 'A', defen
 
 const isCarrier = (kind: MarkerKind | undefined) =>
   kind !== undefined && (BALL_CARRIER_KINDS as readonly string[]).includes(kind);
+
+/** A catch tap this close (in cells) to a waypoint uses it instead of adding one. */
+const CATCH_SNAP_CELLS = 1;
 
 const sameCell = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y;
 
@@ -417,6 +422,54 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       }
       const next = edit.at === null ? rest : { ...rest, at: edit.at };
       return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
+    }
+
+    case 'addCatchPoint': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass) return script;
+      const move = script.base.moves.find((m) => m.marker === pass.to);
+      const start = startCell(script, pass.to);
+      if (!move || !start) return 'The receiver has no run: draw one to catch on the run.';
+      const path = [start, ...move.waypoints];
+      // Nearest point on the run: project onto each leg, keep the closest.
+      let best = { dist: Infinity, leg: 0, x: start.x, y: start.y };
+      for (let i = 0; i + 1 < path.length; i++) {
+        const a = path[i];
+        const b = path[i + 1];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len2 = dx * dx + dy * dy;
+        const t = len2 === 0 ? 0 : Math.min(Math.max(((edit.at.x - a.x) * dx + (edit.at.y - a.y) * dy) / len2, 0), 1);
+        const x = a.x + t * dx;
+        const y = a.y + t * dy;
+        const dist = Math.hypot(edit.at.x - x, edit.at.y - y);
+        if (dist < best.dist) best = { dist, leg: i, x, y };
+      }
+      // Close to a waypoint: catch there instead of adding another.
+      let near = -1;
+      let nearDist = CATCH_SNAP_CELLS;
+      move.waypoints.forEach((w, i) => {
+        const d = Math.hypot(best.x - w.x, best.y - w.y);
+        if (d <= nearDist) {
+          near = i;
+          nearDist = d;
+        }
+      });
+      if (near === move.waypoints.length - 1) return applyEdit(script, { type: 'setCatch', id: edit.id, at: null });
+      if (near >= 0) return applyEdit(script, { type: 'setCatch', id: edit.id, at: near });
+      const cell = snapCell({ x: best.x, y: best.y }, area);
+      if (sameCell(cell, start)) return 'Tap further along the run to catch there.';
+      if (move.waypoints.length >= MAX_WAYPOINTS) return `A run holds at most ${MAX_WAYPOINTS} waypoints.`;
+      // The new waypoint sits at index `leg`; later waypoints, and catches at them, shift up one.
+      const index = best.leg;
+      const moves = script.base.moves.map((m) =>
+        m === move ? { ...m, waypoints: [...m.waypoints.slice(0, index), cell, ...m.waypoints.slice(index)] } : m,
+      );
+      const passes = script.base.passes.map((p) => {
+        if (p.id === edit.id) return { ...p, at: index };
+        return p.to === pass.to && p.at !== undefined && p.at >= index ? { ...p, at: p.at + 1 } : p;
+      });
+      return withBase(script, { moves, passes });
     }
 
     case 'setLabel': {
