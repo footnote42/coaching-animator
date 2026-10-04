@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validate, warnings, formatWarning, isForwardPass, formatError } from './engine';
+import { validate, warnings, formatWarning, isForwardPass, formatError, positionsAt, resolveStep, KICK_SPEED_MPS } from './engine';
 import { applyEdit } from './editing';
 import type { Direction } from './schema';
 
@@ -179,5 +179,72 @@ describe('early receiver warnings', () => {
 
   it('never warns for the first pass of a ball', () => {
     expect(warnings(overlap()).filter((w) => w.pass === 'p1')).toEqual([]);
+  });
+});
+
+describe('kicks', () => {
+  /** a1 holds the ball at (10,20) and passes or kicks 16 m up to defender d1 at (10,4), who then passes to d2. */
+  function kickScript(kick: boolean, d2: { x: number; y: number }) {
+    const input = {
+      schemaVersion: 1,
+      area: { width: 30, length: 30 },
+      direction: 'up',
+      markers: [
+        { id: 'a1', kind: 'attacker' },
+        { id: 'd1', kind: 'defender' },
+        { id: 'd2', kind: 'defender' },
+        { id: 'ball', kind: 'ball' },
+      ],
+      base: {
+        placements: [
+          { marker: 'a1', cell: { x: 10, y: 20 } },
+          { marker: 'd1', cell: { x: 10, y: 4 } },
+          { marker: 'd2', cell: d2 },
+          { marker: 'ball', holder: 'a1' },
+        ],
+        passes: [
+          { id: 'p1', from: 'a1', to: 'd1', ...(kick && { kick: true }) },
+          { id: 'p2', from: 'd1', to: 'd2' },
+        ],
+      },
+    };
+    const result = validate(input);
+    if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
+    return result.script;
+  }
+
+  it('flies slower than a pass of the same length', () => {
+    const flightOf = (kick: boolean) => positionsAt(resolveStep(kickScript(kick, { x: 5, y: 4 }), 0), 0).passes[0];
+    const pass = flightOf(false);
+    const kick = flightOf(true);
+    expect(kick.kick).toBe(true);
+    expect(pass.kick).toBeUndefined();
+    expect(kick.land - kick.fire).toBeCloseTo(16 / KICK_SPEED_MPS);
+    expect(kick.land - kick.fire).toBeGreaterThan(pass.land - pass.fire);
+  });
+
+  it('is never a forward pass', () => {
+    expect(warnings(kickScript(false, { x: 5, y: 4 })).map((w) => w.pass)).toEqual(['p1']);
+    expect(warnings(kickScript(true, { x: 5, y: 4 }))).toEqual([]);
+  });
+
+  it('checks the receiving team in the opposite direction', () => {
+    // Attack is up, so the defenders attack down: a pass to y 8 is forward for them, y 1 is backward.
+    expect(warnings(kickScript(true, { x: 5, y: 1 }))).toEqual([]);
+    expect(warnings(kickScript(true, { x: 5, y: 8 })).map((w) => w.pass)).toEqual(['p2']);
+  });
+
+  it('leaves scripts without kicks unchanged', () => {
+    expect(warnings(script({ x: 10, y: 8 }, 'up')).map((w) => w.pass)).toEqual(['p1']);
+  });
+
+  it('is switched on and off by setKick', () => {
+    const base = script({ x: 10, y: 14 });
+    const kicked = applyEdit(base, { type: 'setKick', id: 'p1', kick: true });
+    if (typeof kicked === 'string') throw new Error(kicked);
+    expect(kicked.base.passes[0].kick).toBe(true);
+    const plain = applyEdit(kicked, { type: 'setKick', id: 'p1', kick: false });
+    if (typeof plain === 'string') throw new Error(plain);
+    expect(plain.base.passes[0]).toEqual({ id: 'p1', from: 'a1', to: 'a2' });
   });
 });

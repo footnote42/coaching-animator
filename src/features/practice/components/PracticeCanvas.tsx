@@ -17,11 +17,14 @@ const FORWARD_PASS_COLOUR = DESIGN_TOKENS.colours.accentWarm;
 /** Colour of run lines and pass arrows. */
 const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
-export function MarkerShape({ marker, x, y, r }: { marker: ResolvedMarker; x: number; y: number; r: number }) {
+/** How much bigger the ball looks at the top of a kick. */
+const KICK_LIFT = 0.6;
+
+export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMarker; x: number; y: number; r: number; scale?: number }) {
   const fill = markerColour(marker);
   switch (marker.kind) {
     case 'ball':
-      return <Ellipse x={x} y={y} radiusX={r * 0.7} radiusY={r * 0.45} fill={fill} stroke="#111827" strokeWidth={1} />;
+      return <Ellipse x={x} y={y} radiusX={r * 0.7 * scale} radiusY={r * 0.45 * scale} fill={fill} stroke="#111827" strokeWidth={1} />;
     case 'cone':
       return <RegularPolygon x={x} y={y} sides={3} radius={r * 0.6} fill={fill} stroke={CONE_OUTLINE} strokeWidth={1.5} />;
     case 'tackle-shield':
@@ -129,10 +132,18 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
           })}
           {passes.map((pass) => {
             const colour = forwardPasses?.has(pass.id) ? FORWARD_PASS_COLOUR : LINE_COLOUR;
+            const [x1, y1, x2, y2] = [px(pass.start.x), px(pass.start.y), px(pass.end.x), px(pass.end.y)];
+            // A kick arches: the middle control point is lifted off the straight line, to the left of the flight.
+            const arch = Math.hypot(x2 - x1, y2 - y1) * 0.25;
+            const [dx, dy] = [x2 - x1, y2 - y1];
+            const len = Math.hypot(dx, dy) || 1;
+            const mid = [(x1 + x2) / 2 + (dy / len) * arch, (y1 + y2) / 2 - (dx / len) * arch];
             return (
               <Arrow
                 key={`pass-${pass.id}`}
-                points={[px(pass.start.x), px(pass.start.y), px(pass.end.x), px(pass.end.y)]}
+                points={pass.kick ? [x1, y1, mid[0], mid[1], x2, y2] : [x1, y1, x2, y2]}
+                tension={pass.kick ? 0.5 : 0}
+                dash={pass.kick ? [8, 6] : undefined}
                 stroke={colour}
                 fill={colour}
                 strokeWidth={forwardPasses?.has(pass.id) ? 3 : 2}
@@ -145,7 +156,10 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
         <Layer listening={false}>
           {markers.map((marker) => {
             const p = positions[marker.id];
-            return <MarkerShape key={marker.id} marker={marker} x={px(p.x)} y={px(p.y)} r={radius} />;
+            // The ball grows then shrinks over a kick to suggest height.
+            const kick = passes.find((f) => f.kick && f.ball === marker.id && time >= f.fire && time < f.land);
+            const scale = kick ? 1 + KICK_LIFT * Math.sin(Math.PI * ((time - kick.fire) / (kick.land - kick.fire))) : 1;
+            return <MarkerShape key={marker.id} marker={marker} x={px(p.x)} y={px(p.y)} r={radius} scale={scale} />;
           })}
         </Layer>
         {overlay?.({ width, height, cellPx, radius })}

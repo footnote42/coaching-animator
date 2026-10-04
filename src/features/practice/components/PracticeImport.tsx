@@ -464,6 +464,15 @@ export function PracticeImport() {
                         ))}
                       </select>
                     )}
+                    <label className="flex h-11 items-center gap-1 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={pass.kick ?? false}
+                        onChange={(e) => edit({ type: 'setKick', id: pass.id, kick: e.target.checked })}
+                      />
+                      Kick
+                      <span className="sr-only"> {name(pass.from)} to {name(pass.to)}</span>
+                    </label>
                     <select
                       aria-label={`Pass ${name(pass.from)} to ${name(pass.to)} when this player arrives`}
                       value={pass.after?.move ?? ''}

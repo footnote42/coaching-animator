@@ -294,6 +294,10 @@
                   "move"
                 ],
                 "additionalProperties": false
+              },
+              "kick": {
+                "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.",
+                "type": "boolean"
               }
             },
             "required": [
@@ -634,6 +638,10 @@
                         "move"
                       ],
                       "additionalProperties": false
+                    },
+                    "kick": {
+                      "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.",
+                      "type": "boolean"
                     }
                   },
                   "required": [
