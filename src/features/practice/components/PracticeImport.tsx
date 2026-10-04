@@ -58,7 +58,7 @@ const PACE_NAMES: Record<Pace, string> = { walk: 'Walk', jog: 'Jog', sprint: 'Sp
 const TOOL_HINTS: Record<'select' | 'run' | 'pass' | 'place', string> = {
   select: 'Drag a marker to move it. Tap one to select it.',
   run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it.',
-  pass: 'Tap the player with the ball, then the player receiving.',
+  pass: 'Tap the player with the ball, then the player receiving. If the receiver has a Run, tap it to catch on the run.',
   place: 'Tap the Area to place it. The ball goes to the nearest player.',
 };
 
@@ -122,6 +122,9 @@ export function PracticeImport() {
     commit,
     edit,
     pickTool,
+    catchPass,
+    startCatch,
+    endCatch,
     deleteSelection,
     undo,
     redo,
@@ -386,6 +389,15 @@ export function PracticeImport() {
             </>
           )}
   
+          {editing && catchPass && (
+            <>
+              <span>Tap the Run where it is caught.</span>
+              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCatch}>
+                End of run
+              </Button>
+            </>
+          )}
+
           {editing && tool === 'pass' && balls.length > 1 && (
             <>
               <label htmlFor="pass-ball">Ball for new passes</label>
@@ -463,6 +475,9 @@ export function PracticeImport() {
                         tool={tool}
                         selection={selection}
                         ball={balls.length > 1 ? activeBall : undefined}
+                        catchPass={catchPass}
+                        onPassAdded={startCatch}
+                        onCatchDone={endCatch}
                         onSelect={setSelection}
                         onEdit={edit}
                       />

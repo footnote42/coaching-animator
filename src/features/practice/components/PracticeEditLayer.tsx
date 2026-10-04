@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Layer, Rect, Circle, Group, Text } from 'react-konva';
+import { Layer, Rect, Circle, Group, Text, Line } from 'react-konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import type { Vector2d } from 'konva/lib/types';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
@@ -21,6 +21,12 @@ interface EditLayerProps {
   selection: EditorSelection;
   /** The ball a new pass moves, when the Area has more than one. */
   ball?: string;
+  /** The pass whose catch point is being picked: its receiver's Run is highlighted and tappable. */
+  catchPass?: string;
+  /** A pass to a receiver was added (so the Coach can now pick where it is caught). */
+  onPassAdded?: (to: string) => void;
+  /** The Coach is done picking a catch point (set, or kept at the end of the Run). */
+  onCatchDone?: () => void;
   onSelect: (selection: EditorSelection) => void;
   /** Make an edit; returns whether it was made. */
   onEdit: (edit: Edit) => boolean;
@@ -30,7 +36,7 @@ interface EditLayerProps {
  * Konva layer over the Practice for hand editing the base Step: taps place markers,
  * drags snap markers and waypoints to cells, and selection rings show what is picked.
  */
-export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSelect, onEdit }: EditLayerProps) {
+export function PracticeEditLayer({ step, geometry, tool, selection, ball, catchPass, onPassAdded, onCatchDone, onSelect, onEdit }: EditLayerProps) {
   const { width, height, cellPx, radius } = geometry;
   const [dragging, setDragging] = useState<string | null>(null);
   const px = (cell: number) => (cell + 0.5) * cellPx;
@@ -46,9 +52,18 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSel
     return p ? toCell(p) : null;
   };
 
+  const catching = catchPass ? step.passes.find((p) => p.id === catchPass) : undefined;
+  const catchRun = catching ? step.moves.find((m) => m.marker === catching.to) : undefined;
+  const catchStart = catching ? step.markers.find((m) => m.id === catching.to)?.cell : undefined;
+
+  /** Catch at `at` (cell units) on the Run being picked. */
+  const pickCatch = (at: CellPoint | null) => {
+    if (catching && at && onEdit({ type: 'addCatchPoint', id: catching.id, at })) onCatchDone?.();
+  };
+
   const tapBackground = (e: KonvaEventObject<Event>) => {
     const at = pointer(e);
-    if (!at) return;
+    if (!at || catching) return;
     if (isPlaceTool(tool)) onEdit({ type: 'addMarker', kind: tool as MarkerKind, at });
     else if (tool === 'run' && selection.marker) {
       if (onEdit({ type: 'addWaypoint', marker: selection.marker, at })) onSelect({ ...selection, waypoint: null });
@@ -57,9 +72,13 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSel
 
   const tapMarker = (id: string) => {
     if (tool === 'pass' && selection.marker && selection.marker !== id) {
-      if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball })) onSelect({ marker: id, waypoint: null });
+      if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball })) {
+        onPassAdded?.(id);
+        onSelect({ marker: id, waypoint: null });
+      }
       return;
     }
+    onCatchDone?.();
     onSelect({ marker: id, waypoint: null });
   };
 
@@ -71,6 +90,18 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSel
   return (
     <Layer>
       <Rect width={width} height={height} fill="transparent" onClick={tapBackground} onTap={tapBackground} />
+      {catchRun && catchStart && (
+        <Line
+          points={[catchStart, ...catchRun.waypoints].flatMap((c) => [px(c.x), px(c.y)])}
+          stroke={HIGHLIGHT}
+          strokeWidth={4}
+          lineCap="round"
+          lineJoin="round"
+          hitStrokeWidth={Math.max(cellPx, 44)}
+          onClick={(e) => pickCatch(pointer(e))}
+          onTap={(e) => pickCatch(pointer(e))}
+        />
+      )}
       {handles.map((marker) => {
         const selected = selection.marker === marker.id;
         return (
@@ -116,8 +147,8 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, onSel
               onEdit({ type: 'moveWaypoint', marker: run.marker, index, at: toCell(e.target.position()) });
               onSelect({ marker: run.marker, waypoint: index });
             }}
-            onClick={() => onSelect({ marker: run.marker, waypoint: index })}
-            onTap={() => onSelect({ marker: run.marker, waypoint: index })}
+            onClick={() => (catching ? pickCatch(cell) : onSelect({ marker: run.marker, waypoint: index }))}
+            onTap={() => (catching ? pickCatch(cell) : onSelect({ marker: run.marker, waypoint: index }))}
           >
             <Circle radius={12} fill="transparent" />
             <Circle

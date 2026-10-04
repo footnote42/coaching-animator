@@ -35,6 +35,8 @@ export function useEditorWorkspace() {
   const [tool, setTool] = useState<EditorTool>('select');
   const [rawSelection, setSelection] = useState<EditorSelection>(NO_SELECTION);
   const [passBall, setPassBall] = useState<string | null>(null);
+  /** A pass was just added to a receiver with a Run: the next tap on that Run picks the catch point. */
+  const [pendingCatch, setPendingCatch] = useState<{ count: number; to: string } | null>(null);
   const [ghost, setGhost] = useState(false);
   const [showCommentary, setShowCommentary] = useState(true);
   const [time, setTime] = useState(0);
@@ -67,6 +69,17 @@ export function useEditorWorkspace() {
   const balls = step?.markers.filter((m) => m.kind === 'ball') ?? [];
   /** The ball a new pass moves: the Coach's pick if it is still there, else the first. */
   const activeBall = balls.find((b) => b.id === passBall)?.id ?? balls[0]?.id;
+  const lastPass = passes[passes.length - 1];
+  /** The pass whose catch point the Coach is picking, while the pass tool is on and its receiver has a Run. */
+  const catchPass =
+    tool === 'pass' &&
+    pendingCatch &&
+    lastPass &&
+    passes.length === pendingCatch.count &&
+    lastPass.to === pendingCatch.to &&
+    step?.moves.some((m) => m.marker === lastPass.to)
+      ? lastPass.id
+      : undefined;
   const editing = step !== null && !playing && time === 0;
 
   useEffect(() => {
@@ -312,6 +325,9 @@ export function useEditorWorkspace() {
     commit,
     edit,
     pickTool,
+    catchPass,
+    startCatch: (to: string) => setPendingCatch({ count: passes.length + 1, to }),
+    endCatch: () => setPendingCatch(null),
     deleteSelection,
     undo,
     redo,
