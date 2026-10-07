@@ -7,7 +7,7 @@ Next.js editor for rugby coaching Practices: coaches draw, animate, save and sha
 Active. Phase 2 complete; working through the audit DevPlan (see `NOW.md` for current state and next action).
 
 ## Workflow
-`/to-spec` → `/to-tickets` → GitHub issues → implement. Use `/park` to end sessions — updates `NOW.md` (repo root) and optionally captures ideas to Obsidian.
+`/to-spec` → `/to-tickets` → GitHub issues → implement. Use `/park` to end sessions — updates `NOW.md` (repo root) and optionally captures ideas to Obsidian. One ticket batch per session: when a batch is merged, suggest `/park` then `/clear` before starting the next.
 
 ## Key Paths
 - Session state: `NOW.md` (repo root — single source of truth, updated via `/park`)
