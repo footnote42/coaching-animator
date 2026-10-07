@@ -4,7 +4,8 @@
 LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), #84 the MCP endpoint, #109 the skill saves straight to the account over MCP (tested end to end), #110 copy-ready MCP setup on /profile and #81 Gallery card previews. Batch 4 done: #87 light theme with dark toggle, #88 landing rewrite, #89 new look, #90 Help and How-to, #91 desktop Lighthouse and mobile checklist, #119 share from My Practices, #122 accessibility fixes, #123 README. #121 Google sign-in on our own pages is merged but inert until configured. Passing and kit batch done: #128 Direction of attack + forward-pass warning, #129 catch point picker, #130 early-receiver warning, #131 pass when a Run finishes (draw and pass), #136 cone colours, #137 kicks. All merged, none tried in a browser yet. #76 closed (2026-10-07): Resend SMTP live, sign-up confirmations come from noreply@waynetellis.com; Google consent screen branded.
 
 ## Next
-Seeding Practices with AI help (skill + MCP) from the six ideas in IDEAS.md (2026-10-04 park entry). #1 (2 v 1 channel, draw and pass late) saved private: https://coaching-animator.waynetellis.com/practice?id=963b2f3c-69f4-4c38-91ea-5f7cd801be39 — check it plays right (3 v 2 may be cramped in the 7 m channel; carrier stops before passing). Then #2 traffic lights onwards. Then #92 England Rugby seeding and #93 polish audit.
+PAUSED for a /grill-with-docs session (clean window) on animation quality and editor functionality; seeding and #92/#93 wait on its outcome. #72 relabelled ready-for-human (only maintainer tickets #92, #93 left).
+When resumed: seeding Practices with AI help (skill + MCP) from the six ideas in IDEAS.md (2026-10-04 park entry). #1 (2 v 1 channel, draw and pass late) saved private: https://coaching-animator.waynetellis.com/practice?id=963b2f3c-69f4-4c38-91ea-5f7cd801be39 — check it plays right (3 v 2 may be cramped in the 7 m channel; carrier stops before passing). Then #2 traffic lights onwards. Then #92 England Rugby seeding and #93 polish audit.
 - MCP setup friction logged in IDEAS.md (2026-10-07); revisit with the parked OAuth on `/api/mcp`.
 - Try the new passing, kick and cone controls on a phone and tablet.
 - Possible ticket: the early-catch warning misses a catch that slides because of a draw-and-pass wait.
@@ -34,10 +35,10 @@ Seeding Practices with AI help (skill + MCP) from the six ideas in IDEAS.md (202
 - MCP: one user-scope `coaching-animator` registration only; a leftover local-scope entry overrides it (that caused a 401 on 2026-10-07).
 
 ## Blocker
-None.
+Animation quality and functionality issues need grilling before more seeding.
 
 ## Last session
-2026-10-07: closed #76 (custom SMTP had not been enabled; fixed in the dashboard, verified with a plus-address sign-up). Fixed the MCP 401 (stale local-scope token). Seeded Practice #1 over MCP.
+2026-10-07: closed #76 (custom SMTP had not been enabled; fixed in the dashboard, verified with a plus-address sign-up). Fixed the MCP 401 (stale local-scope token). Seeded Practice #1 over MCP. Paused seeding to address animation quality and functionality.
 2026-10-04 (later): grilled passing into #128-#131; added #136 cone colours and #137 kicks from feedback. All six built by Sonnet agents and merged (#132-#135, #138, #139). CONTEXT.md gains Run, Pass, Catch on the run, Direction of attack, Kick.
 2026-10-04: merged #114-#118, #120 (look, landing, Help, Lighthouse, share link) and #124-#126 (README, Google ID-token sign-in, accessibility). #76 steer: email nearly done; Google route B chosen (free, #121).
 2026-10-03 (later): #86 decided and closed. Orchestrated sub-agents for #87, #88, #89, #90, #91 and new #119 (share link from My Practices); all on PRs #114-#118 and #120, none merged yet.
