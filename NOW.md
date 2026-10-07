@@ -30,7 +30,7 @@ When resumed: seeding Practices with AI help (skill + MCP) from the six ideas in
 - Code: `src/features/practice/`; editor state lives in `hooks/useEditorWorkspace.ts`. Routes: /practice, /p/[id], /gallery, /my-practices, /feedback, /admin, /practice-script/v1/{guide,guide.md,schema.json}.
 - Contact: hello@waynetellis.com. Feedback is stored in the `feedback` table and read in /admin.
 - Migrations: CI runs `supabase db push` to production on every push to `main`. Never apply migrations by hand without recording them.
-- Parallel work: every agent (Claude or Antigravity) works in its own git worktree, never in the main checkout. Claude's is `../ca-claude`; Antigravity uses `../ca-pro` and `../ca-flash`.
+- Parallel work: every agent (Claude or Antigravity) works in its own git worktree, never in the main checkout. Create with `scripts/worktree-add.sh <branch>`, remove with `scripts/worktree-remove.sh <dir>` (plain `git worktree remove` empties main node_modules through the junction). Antigravity uses `../ca-pro` and `../ca-flash`.
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`.
 - MCP: one user-scope `coaching-animator` registration only; a leftover local-scope entry overrides it (that caused a 401 on 2026-10-07).
 
@@ -38,8 +38,4 @@ When resumed: seeding Practices with AI help (skill + MCP) from the six ideas in
 Animation quality and functionality issues need grilling before more seeding.
 
 ## Last session
-2026-10-07: closed #76 (custom SMTP had not been enabled; fixed in the dashboard, verified with a plus-address sign-up). Fixed the MCP 401 (stale local-scope token). Seeded Practice #1 over MCP. Paused seeding to address animation quality and functionality.
-2026-10-04 (later): grilled passing into #128-#131; added #136 cone colours and #137 kicks from feedback. All six built by Sonnet agents and merged (#132-#135, #138, #139). CONTEXT.md gains Run, Pass, Catch on the run, Direction of attack, Kick.
-2026-10-04: merged #114-#118, #120 (look, landing, Help, Lighthouse, share link) and #124-#126 (README, Google ID-token sign-in, accessibility). #76 steer: email nearly done; Google route B chosen (free, #121).
-2026-10-03 (later): #86 decided and closed. Orchestrated sub-agents for #87, #88, #89, #90, #91 and new #119 (share link from My Practices); all on PRs #114-#118 and #120, none merged yet.
-2026-10-03: #84 MCP endpoint merged (#108). First AI + MCP try went wrong (no skill or MCP installed), so #109 made the skill MCP-first (#111) and the skill was installed for every location; the MCP server is registered for Claude Code at user scope and a test Practice saved to the account. #110 (#112) and #81 (#113) built in two cloud sessions and merged.
+2026-10-07 (later): retro over the last 10 sessions. Unit tests now block CI and run in pre-commit (dot reporter); ESLint enforces the @/ alias; worktree add/remove scripts; CLAUDE.md trimmed (schema pointer, one batch per session); skill skips the guide fetch on the MCP route. Earlier today: closed #76, fixed the MCP 401, seeded Practice #1, paused seeding for animation quality.
