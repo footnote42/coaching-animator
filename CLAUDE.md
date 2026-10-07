@@ -13,6 +13,7 @@ Active. Phase 2 complete; working through the audit DevPlan (see `NOW.md` for cu
 - Session state: `NOW.md` (repo root — single source of truth, updated via `/park`)
 - Practice model: `src/features/practice/` (engine, schema, editing, components)
 - API routes: `src/app/api/`
+- DB schema: `src/lib/supabase/database.types.ts` (generated; source is `supabase/migrations/`). Read it before writing SQL: table names have changed (`practices`, not `user_animations`)
 - Binding constraints: `docs/constraints.md`
 - Domain glossary: `CONTEXT.md`; decisions: `docs/adr/`
 
