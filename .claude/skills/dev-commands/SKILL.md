@@ -1,6 +1,6 @@
 ---
 name: dev-commands
-description: Dev server, unit test, E2E test, and build commands for coaching-animator, including the non-obvious flags. Use when running the app locally, running Vitest or Playwright tests, or building.
+description: Dev server, unit test, E2E test, and build commands for coaching-animator, including the non-obvious flags. Use when running the app locally, running Vitest or Playwright tests, building, or creating a worktree.
 ---
 
 # coaching-animator — dev commands
@@ -9,9 +9,14 @@ description: Dev server, unit test, E2E test, and build commands for coaching-an
 # Development
 npm run dev              # Next.js dev server (port 3000; increments if port is taken)
 
-# Pre-Push CI Verification (run both before every push)
+# Checks: the pre-commit hook already runs tsc, eslint and vitest on every commit
 npm run lint             # ESLint
 npx tsc --noEmit         # TypeScript type check
+
+# Worktree for a parallel branch (shares node_modules via a junction)
+scripts/worktree-add.sh feat/123-thing   # creates ../ca-feat-123-thing from origin/main
+scripts/worktree-remove.sh ../ca-feat-123-thing feat/123-thing   # always remove this way:
+# plain `git worktree remove` follows the junction and empties the main repo's node_modules
 
 # Unit tests (Vitest)
 npm test -- --run                        # Run all unit tests once

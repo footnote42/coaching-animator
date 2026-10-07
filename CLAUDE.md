@@ -27,32 +27,13 @@ The repo keeps only repo-coupled docs: `docs/testing/`, `docs/user-guide/`, `doc
 
 ---
 
-## Pre-Push CI Verification
+## Checks
 
-Run both before every push:
-
-```bash
-npm run lint             # ESLint
-npx tsc --noEmit         # TypeScript type check
-```
-
-Everything else (dev server, unit tests, E2E, build) is in the `dev-commands` skill.
-
-## Path Aliases (Use in ALL Imports)
-
-```typescript
-// ✅ Correct
-import { validate } from '@/features/practice/engine';
-import { Editor } from '@/features/animation/components/Editor';
-import { Button } from '@/shared/ui/button';
-
-// ❌ Wrong — never use relative imports across features
-import { validate } from '../../features/practice/engine';
-```
+The pre-commit hook runs `tsc`, `eslint` (including the `@/` path-alias rule) and `vitest`; a commit that lands has passed them. Dev server, E2E, build and worktree commands are in the `dev-commands` skill.
 
 ## Architecture: the Practice model
 
-Vocabulary is in `CONTEXT.md`; the decision is ADR 0002. A **Practice** is one row in `practices` holding a **Practice Script** (JSON): an Area in metres, markers on grid cells, moves along waypoints at a Pace, passes triggered by arrival, and Progressions stored as changes over the previous Step.
+Vocabulary is in `CONTEXT.md`; the decision is ADR 0002.
 
 - **Engine** (`src/features/practice/`): `schema.ts` (Zod schema, the source of `practice-script.schema.json`), `engine.ts` (`validate`, `resolveStep`, `positionsAt`), `area.ts` (templates, grid, pitch lines), `editing.ts` (pure edit operations), `markerColour.ts` (the single source of marker colours, from `src/shared/design-tokens.ts`).
 - **Editor** `/practice` (`components/PracticeImport.tsx`): Konva canvas (`PracticeCanvas`, `PracticeEditLayer`), Step controls, script box, save form and My Practices list (`PracticeLibrary`, `MyPracticesList`). Guests keep work on their device (`hooks/useGuestPractice.ts`). `/practice?id=` opens a saved Practice.

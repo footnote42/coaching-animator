@@ -11,7 +11,7 @@ Words to use: Practice (not drill or exercise), Step, Progression, Lever, Area, 
 
 ## How to deliver: MCP first, paste as fallback
 
-- **If the `create_practice` tool (from the coaching-animator MCP server) is available:** write the script, check it against the guide (step 4), save it with `create_practice` (use `update_practice` to change an existing Practice), then reply with the editor link and a one-line summary of the Practice. Nothing else is needed.
+- **If the `create_practice` tool (from the coaching-animator MCP server) is available:** write the script, save it with `create_practice` (use `update_practice` to change an existing Practice), then reply with the editor link and a one-line summary of the Practice. Nothing else is needed.
 - **Otherwise:** use the paste route (step 5) on https://coaching-animator.waynetellis.com/practice, with the script in one code block, and add one line on how to connect the tools next time (see Install).
 
 Don'ts:
@@ -21,12 +21,12 @@ Don'ts:
 - Never name buttons, pages or features that are not in the guide or this skill.
 - Don't publish. Everything you save is private; the Coach publishes from the editor.
 
-## Live references: read these first, every time
+## Live references
 
 - Guide (the rules, limits and prompt): https://coaching-animator.waynetellis.com/practice-script/v1/guide.md
 - JSON Schema: https://coaching-animator.waynetellis.com/practice-script/v1/schema.json
 
-Do not work from memory or from copies. If you cannot open links, ask the Coach to paste the guide. The files in `examples/` next to this skill are worked scripts you can copy the style of:
+On the MCP route, `create_practice` validates the script against the live schema and engine and returns each error with its field path: write from this skill and the examples, then fix what it reports. Read the guide when the drill needs a feature neither covers, or an error message is not enough to fix it. On the paste route nothing checks the script before the Coach sees it, so read the guide first, every time; if you cannot open links, ask the Coach to paste it. The files in `examples/` next to this skill are worked scripts you can copy the style of:
 
 - `examples/01-passing-line.json`: simple passing Practice, no Progressions.
 - `examples/02-pass-and-follow-progressions.json`: a Practice with a Time and a People Progression.

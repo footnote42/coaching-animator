@@ -18,6 +18,7 @@
       }
     ],
     "react-hooks/exhaustive-deps": "warn",
-    "@next/next/no-img-element": "warn"
+    "@next/next/no-img-element": "warn",
+    "no-restricted-imports": ["error", { "patterns": [{ "group": ["../../*"], "message": "Use the @/ path alias for imports across features." }] }]
   }
 }
