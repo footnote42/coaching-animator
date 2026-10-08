@@ -4,8 +4,15 @@
 LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), #84 the MCP endpoint, #109 the skill saves straight to the account over MCP (tested end to end), #110 copy-ready MCP setup on /profile and #81 Gallery card previews. Batch 4 done: #87 light theme with dark toggle, #88 landing rewrite, #89 new look, #90 Help and How-to, #91 desktop Lighthouse and mobile checklist, #119 share from My Practices, #122 accessibility fixes, #123 README. #121 Google sign-in on our own pages is merged but inert until configured. Passing and kit batch done: #128 Direction of attack + forward-pass warning, #129 catch point picker, #130 early-receiver warning, #131 pass when a Run finishes (draw and pass), #136 cone colours, #137 kicks. All merged, none tried in a browser yet. #76 closed (2026-10-07): Resend SMTP live, sign-up confirmations come from noreply@waynetellis.com; Google consent screen branded.
 
 ## Next
-PAUSED for a /grill-with-docs session (clean window) on animation quality and editor functionality; seeding and #92/#93 wait on its outcome. #72 relabelled ready-for-human (only maintainer tickets #92, #93 left).
-When resumed: seeding Practices with AI help (skill + MCP) from the six ideas in IDEAS.md (2026-10-04 park entry). #1 (2 v 1 channel, draw and pass late) saved private: https://coaching-animator.waynetellis.com/practice?id=963b2f3c-69f4-4c38-91ea-5f7cd801be39 — check it plays right (3 v 2 may be cramped in the 7 m channel; carrier stops before passing). Then #2 traffic lights onwards. Then #92 England Rugby seeding and #93 polish audit.
+Build spec #140 (animation flow, kicking and kit) with cloud sessions, coordinated from a CLI session. GitHub is the bus: one ticket per cloud session, one branch and PR each (`Closes #N`); the CLI recomputes the frontier (open sub-issues of #140 with no open blockers), launches or hands out prompts, reviews PRs (`/code-review`) and merges on approval. Cloud sessions cannot message back; read their PRs and transcripts.
+Waves (from the native blocked-by edges):
+1. #141 prefactor (trying remote launch first), #146 Pass/Kick buttons, #149 cone split button, #150 Lying shield.
+2. #142 easing, #147 Kick to space, #151 Tackle bag.
+3. #144 receivers timed to the ball, then #143 Pace per segment (sequential: same engine code).
+4. #145 Release, then #148 Collect (merge #145 first, rebase #148).
+5. #153 hero 3 v 2, then #152 layout pass (short design review before code).
+Per session: start from latest main; setup script must cd into the repo before `npm ci`; no local Supabase needed; checks are tsc, eslint, vitest. UI tickets (#146, #147, #149-#152) need a browser check on the Vercel preview, desktop and phone (guest mode works despite the preview DB_ERROR).
+After #140: resume seeding (Practice #1 rechecked against the new hero), then #92 and #93.
 - MCP setup friction logged in IDEAS.md (2026-10-07); revisit with the parked OAuth on `/api/mcp`.
 - Try the new passing, kick and cone controls on a phone and tablet.
 - Possible ticket: the early-catch warning misses a catch that slides because of a draw-and-pass wait.
@@ -35,7 +42,9 @@ When resumed: seeding Practices with AI help (skill + MCP) from the six ideas in
 - MCP: one user-scope `coaching-animator` registration only; a leftover local-scope entry overrides it (that caused a 401 on 2026-10-07).
 
 ## Blocker
-Animation quality and functionality issues need grilling before more seeding.
+None. Seeding waits on #140.
 
 ## Last session
+2026-10-08: grilled animation quality and editor kit (19 decisions). ADR 0005 (receivers are timed to the ball) and 0006 (kicks can go to space), glossary terms Release, Kick to space, Collect, Lying, Tackle bag. Spec #140 and tickets #141-#153 with native blocked-by edges. Planned the cloud-session build.
+
 2026-10-07 (later): retro over the last 10 sessions. Unit tests now block CI and run in pre-commit (dot reporter); ESLint enforces the @/ alias; worktree add/remove scripts; CLAUDE.md trimmed (schema pointer, one batch per session); skill skips the guide fetch on the MCP route. Earlier today: closed #76, fixed the MCP 401, seeded Practice #1, paused seeding for animation quality.
