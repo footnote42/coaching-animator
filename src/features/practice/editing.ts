@@ -46,8 +46,8 @@ export type Edit =
   | { type: 'removeWaypoint'; marker: string; index: number }
   | { type: 'setPace'; marker: string; pace: Pace }
   | { type: 'removeMove'; marker: string }
-  /** `ball` is the ball passed; left out, it is the first ball. */
-  | { type: 'addPass'; from: string; to: string; ball?: string }
+  /** `ball` is the ball passed; left out, it is the first ball. `kick` makes it a Kick. */
+  | { type: 'addPass'; from: string; to: string; ball?: string; kick?: boolean }
   /** Make a pass a kick (slower, through the air) or an ordinary pass again. */
   | { type: 'setKick'; id: string; kick: boolean }
   /** Change which ball a pass moves. */
@@ -435,7 +435,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       }
       if (script.base.passes.length >= MAX_PASSES) return `A Step holds at most ${MAX_PASSES} passes.`;
       const id = `p${nextNumber(script.base.passes.map((p) => p.id), 'p')}`;
-      const pass: Pass = { id, from: edit.from, to: edit.to, ...(ball !== balls[0] && { ball }) };
+      const pass: Pass = { id, from: edit.from, to: edit.to, ...(ball !== balls[0] && { ball }), ...(edit.kick && { kick: true }) };
       return withBase(script, { passes: [...script.base.passes, pass] });
     }
 

@@ -39,6 +39,8 @@ export function useEditorWorkspace() {
   /** Colour the next placed cone gets: the last one the Coach picked. */
   const [coneColour, setConeColour] = useState<ConeColour>('yellow');
   const [passBall, setPassBall] = useState<string | null>(null);
+  /** Whether the next tap on a receiver with the pass tool adds a Pass or a Kick. */
+  const [passKind, setPassKind] = useState<'pass' | 'kick'>('pass');
   /** A pass was just added to a receiver with a Run: the next tap on that Run picks the catch point. */
   const [pendingCatch, setPendingCatch] = useState<{ count: number; to: string } | null>(null);
   const [ghost, setGhost] = useState(false);
@@ -82,6 +84,13 @@ export function useEditorWorkspace() {
   const balls = step?.markers.filter((m) => m.kind === 'ball') ?? [];
   /** The ball a new pass moves: the Coach's pick if it is still there, else the first. */
   const activeBall = balls.find((b) => b.id === passBall)?.id ?? balls[0]?.id;
+  /** The ball the selected marker holds once this Step's passes are made: they are its carrier. */
+  const carriedBall = selectedMarker
+    ? balls.find((b) => {
+        const mine = passes.filter((p) => (p.ball ?? balls[0].id) === b.id);
+        return (mine.length > 0 ? mine[mine.length - 1].to : b.holder) === selectedMarker.id;
+      })?.id
+    : undefined;
   const lastPass = passes[passes.length - 1];
   /** The pass whose catch point the Coach is picking, while the pass tool is on and its receiver has a Run. */
   const catchPass =
@@ -138,10 +147,22 @@ export function useEditorWorkspace() {
     return commit(applyStepEdit(script, shownStep, withColour));
   };
 
+  // A Kick is for one tap: picking someone else goes back to passing.
+  useEffect(() => setPassKind('pass'), [rawSelection.marker]);
+
   const pickTool = (next: EditorTool) => {
     setTool(next);
+    setPassKind('pass');
     stopPlayback();
     if (next !== 'select' && next !== 'run' && next !== 'pass') setSelection(NO_SELECTION);
+  };
+
+  /** The carrier's Pass or Kick action: the next tap on a player receives the ball. */
+  const startPass = (kind: 'pass' | 'kick', ball: string) => {
+    setTool('pass');
+    setPassKind(kind);
+    setPassBall(ball);
+    stopPlayback();
   };
 
   const deleteSelection = () => {
@@ -345,6 +366,9 @@ export function useEditorWorkspace() {
     balls,
     activeBall,
     setPassBall,
+    carriedBall,
+    passKind,
+    startPass,
     editing,
     stopPlayback,
     commit,
