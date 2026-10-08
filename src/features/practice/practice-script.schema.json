@@ -202,6 +202,15 @@
                       "minimum": 0,
                       "maximum": 9007199254740991,
                       "description": "Row, counted from 0 at the top edge of the Area."
+                    },
+                    "pace": {
+                      "description": "Pace of the segment arriving at this waypoint: walk, jog or sprint. Leave out to use the move's pace. Lets a player jog into position then sprint onto the ball; the engine blends smoothly between Paces.",
+                      "type": "string",
+                      "enum": [
+                        "walk",
+                        "jog",
+                        "sprint"
+                      ]
                     }
                   },
                   "required": [
@@ -209,12 +218,12 @@
                     "y"
                   ],
                   "additionalProperties": false,
-                  "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
+                  "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it."
                 },
                 "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
               },
               "pace": {
-                "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.",
+                "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.",
                 "type": "string",
                 "enum": [
                   "walk",
@@ -333,7 +342,7 @@
               "from"
             ],
             "additionalProperties": false,
-            "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in \"after\" has finished (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time."
+            "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and any move named in \"after\" has finished. The receiver’s run is timed so they reach the catch point (waypoint \"at\" of their move if given, else its end) as the ball does: slowed if they would be early, and the pass goes later, from wherever the passer has run to, if they would be late. A receiver with no move, or whose move waits on this pass, catches on their cell. Balls run at the same time."
           }
         },
         "commentary": {
@@ -558,6 +567,15 @@
                             "minimum": 0,
                             "maximum": 9007199254740991,
                             "description": "Row, counted from 0 at the top edge of the Area."
+                          },
+                          "pace": {
+                            "description": "Pace of the segment arriving at this waypoint: walk, jog or sprint. Leave out to use the move's pace. Lets a player jog into position then sprint onto the ball; the engine blends smoothly between Paces.",
+                            "type": "string",
+                            "enum": [
+                              "walk",
+                              "jog",
+                              "sprint"
+                            ]
                           }
                         },
                         "required": [
@@ -565,12 +583,12 @@
                           "y"
                         ],
                         "additionalProperties": false,
-                        "description": "A grid cell. Cells are 1 m squares; an Area W m wide and L m long has columns 0..W-1 and rows 0..L-1."
+                        "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it."
                       },
                       "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
                     },
                     "pace": {
-                      "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.",
+                      "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.",
                       "type": "string",
                       "enum": [
                         "walk",

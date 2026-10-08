@@ -60,7 +60,7 @@ const PACE_NAMES: Record<Pace, string> = { walk: 'Walk', jog: 'Jog', sprint: 'Sp
 
 const TOOL_HINTS: Record<'select' | 'run' | 'pass' | 'place', string> = {
   select: 'Drag a marker to move it. Tap one to select it.',
-  run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it.',
+  run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it.',
   pass: 'Tap the player with the ball, then the player receiving. If the receiver has a Run, tap it to catch on the run.',
   place: 'Tap the Area to place it. Tap on a player to give them the ball, or on the ground to leave it loose.',
 };
@@ -429,6 +429,30 @@ export function PracticeImport() {
                       <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
                     ))}
                   </select>
+                  {selection.waypoint !== null && selectedMove.waypoints[selection.waypoint] && (
+                    <>
+                      <label htmlFor="segment-pace">Segment {selection.waypoint + 1}</label>
+                      <select
+                        id="segment-pace"
+                        title="Pace of the run into this point"
+                        value={selectedMove.waypoints[selection.waypoint].pace ?? ''}
+                        onChange={(e) =>
+                          edit({
+                            type: 'setWaypointPace',
+                            marker: selectedMove.marker,
+                            index: selection.waypoint!,
+                            pace: e.target.value === '' ? null : (e.target.value as Pace),
+                          })
+                        }
+                        className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
+                      >
+                        <option value="">Run Pace</option>
+                        {PACES.map((pace) => (
+                          <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
+                        ))}
+                      </select>
+                    </>
+                  )}
                   <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMove', marker: selectedMove.marker })}>
                     Delete run
                   </Button>

@@ -24,7 +24,7 @@
     "moves": [
       { "marker": "a1", "waypoints": [{ "x": 12, "y": 12 }], "pace": "jog" },
       { "marker": "a2", "waypoints": [{ "x": 17, "y": 13 }], "pace": "jog" },
-      { "marker": "a3", "waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13 }, { "x": 24, "y": 4 }], "pace": "sprint" },
+      { "marker": "a3", "waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13, "pace": "sprint" }, { "x": 24, "y": 4, "pace": "sprint" }], "pace": "jog" },
       { "marker": "d1", "waypoints": [{ "x": 13, "y": 11 }], "pace": "jog" },
       { "marker": "d2", "waypoints": [{ "x": 18, "y": 12 }], "pace": "jog" }
     ],
@@ -35,7 +35,8 @@
     "commentary": {
       "points": [
         "Three attackers against two defenders: use the extra player",
-        "Draw the defender, then pass, so the overlap runs into space"
+        "Draw the defender, then pass, so the overlap runs into space",
+        "3 jogs wide to hold the width, then sprints onto the ball"
       ]
     }
   },

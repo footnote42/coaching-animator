@@ -50,6 +50,8 @@ export type Edit =
   | { type: 'moveWaypoint'; marker: string; index: number; at: CellPoint }
   | { type: 'removeWaypoint'; marker: string; index: number }
   | { type: 'setPace'; marker: string; pace: Pace }
+  /** Pace of the segment arriving at waypoint `index` of the marker's run; null goes back to the run's Pace. */
+  | { type: 'setWaypointPace'; marker: string; index: number; pace: Pace | null }
   | { type: 'removeMove'; marker: string }
   /** `ball` is the ball passed; left out, it is the first ball. `kick` makes it a Kick. */
   | { type: 'addPass'; from: string; to: string; ball?: string; kick?: boolean }
@@ -386,7 +388,8 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (sameCell(move.waypoints[edit.index], cell)) return script;
       return mapMove(script, edit.marker, (m) => ({
         ...m,
-        waypoints: m.waypoints.map((w, i) => (i === edit.index ? cell : w)),
+        // Keep the segment's own Pace, if it has one.
+        waypoints: m.waypoints.map((w, i) => (i === edit.index ? { ...w, ...cell } : w)),
       }));
     }
 
@@ -402,6 +405,18 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const move = script.base.moves.find((m) => m.marker === edit.marker);
       if (!move || (move.pace ?? 'jog') === edit.pace) return script;
       return mapMove(script, edit.marker, (m) => ({ ...m, pace: edit.pace }));
+    }
+
+    case 'setWaypointPace': {
+      const move = script.base.moves.find((m) => m.marker === edit.marker);
+      if (!move) return 'That player has no run.';
+      const waypoint = move.waypoints[edit.index];
+      if (!waypoint) return 'That point is not on the run.';
+      if ((waypoint.pace ?? null) === edit.pace) return script;
+      const { pace: _old, ...cell } = waypoint;
+      void _old;
+      const next = edit.pace === null ? cell : { ...cell, pace: edit.pace };
+      return mapMove(script, edit.marker, (m) => ({ ...m, waypoints: m.waypoints.map((w, i) => (i === edit.index ? next : w)) }));
     }
 
     case 'startAfterPass': {
@@ -560,9 +575,12 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (sameCell(cell, start)) return 'Tap further along the run to catch there.';
       if (move.waypoints.length >= MAX_WAYPOINTS) return `A run holds at most ${MAX_WAYPOINTS} waypoints.`;
       // The new waypoint sits at index `leg`; later waypoints, and catches at them, shift up one.
+      // It splits a segment, so both halves keep that segment's Pace.
       const index = best.leg;
+      const { pace } = move.waypoints[index];
+      const added = pace === undefined ? cell : { ...cell, pace };
       const moves = script.base.moves.map((m) =>
-        m === move ? { ...m, waypoints: [...m.waypoints.slice(0, index), cell, ...m.waypoints.slice(index)] } : m,
+        m === move ? { ...m, waypoints: [...m.waypoints.slice(0, index), added, ...m.waypoints.slice(index)] } : m,
       );
       const passes = script.base.passes.map((p) => {
         if (p.id === edit.id) return { ...p, at: index };

@@ -25,6 +25,10 @@ describe('skill worked examples', () => {
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
     expect(result.script.direction).toBe('up');
     expect(warnings(result.script)).toEqual([]);
+    // 3 jogs wide, then sprints onto the ball: Pace per waypoint segment.
+    const a3 = result.script.base.moves.find((m) => m.marker === 'a3')!;
+    expect(a3.pace).toBe('jog');
+    expect(a3.waypoints.map((w) => w.pace)).toEqual([undefined, 'sprint', 'sprint']);
   });
 
   it('05-kick-receipt.json kicks to the other team, who counter-attack backward, with no warning', () => {
