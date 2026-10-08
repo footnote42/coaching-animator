@@ -9,6 +9,8 @@ import {
   PACE_SPEEDS_MPS,
   DEFAULT_PACE,
   PASS_SPEED_MPS,
+  RUN_ACCELERATION_MPS2,
+  RUN_TAPER_MPS2,
 } from './engine';
 import passingSquare from './examples/passing-square.json';
 import withProgressions from './examples/passing-square-progressions.json';
@@ -40,6 +42,24 @@ function straightRun(distance: number) {
 }
 
 const jog = PACE_SPEEDS_MPS[DEFAULT_PACE];
+
+/**
+ * Seconds a Run takes over `metres` at `speed`, worked out here rather than by the
+ * engine: it speeds up from rest at RUN_ACCELERATION_MPS2, holds its Pace (or peaks
+ * below it on a short Run) and tapers to a stop at RUN_TAPER_MPS2.
+ */
+function runSeconds(metres: number, speed: number = jog): number {
+  const a = RUN_ACCELERATION_MPS2;
+  const d = RUN_TAPER_MPS2;
+  const peak = Math.min(speed, Math.sqrt((2 * metres * a * d) / (a + d)));
+  const cruise = metres - (peak * peak) / (2 * a) - (peak * peak) / (2 * d);
+  return peak / a + cruise / peak + peak / d;
+}
+
+/** Seconds to cover `metres` of a Run that has reached its Pace and not yet begun to taper. */
+function cruiseSeconds(metres: number, speed: number = jog): number {
+  return metres / speed + speed / (2 * RUN_ACCELERATION_MPS2);
+}
 
 describe('validate', () => {
   it('accepts the passing square example, as an object or as pasted text', () => {
@@ -100,27 +120,20 @@ describe('positionsAt', () => {
     expect(positions.c3).toEqual({ x: 10, y: 10 });
   });
 
-  it('derives duration from distance at the default Pace', () => {
-    expect(positionsAt(stepOf(straightRun(10)), 0).duration).toBeCloseTo(10 / jog);
-    expect(positionsAt(stepOf(straightRun(20)), 0).duration).toBeCloseTo(20 / jog);
-  });
-
-  it('moves at a steady Pace', () => {
-    const step = stepOf(straightRun(20));
-    const { duration } = positionsAt(step, 0);
-    const samples = [0.25, 0.5, 0.75].map((f) => positionsAt(step, duration * f).positions.a1.x);
-    expect(samples[0]).toBeCloseTo(5);
-    expect(samples[1]).toBeCloseTo(10);
-    expect(samples[2]).toBeCloseTo(15);
+  it('derives duration from distance at the default Pace, with time to speed up and taper', () => {
+    expect(positionsAt(stepOf(straightRun(10)), 0).duration).toBeCloseTo(runSeconds(10));
+    expect(positionsAt(stepOf(straightRun(20)), 0).duration).toBeCloseTo(runSeconds(20));
   });
 
   it('passes through waypoints in order without stopping', () => {
     const script = straightRun(10);
     script.base.moves[0].waypoints = [{ x: 4, y: 0 }, { x: 4, y: 3 }];
     const step = stepOf(script);
-    expect(positionsAt(step, 0).duration).toBeCloseTo(7 / jog);
-    expect(positionsAt(step, 4 / jog).positions.a1).toEqual({ x: 4, y: 0 });
-    const after = positionsAt(step, 5 / jog).positions.a1;
+    expect(positionsAt(step, 0).duration).toBeCloseTo(runSeconds(7));
+    const corner = positionsAt(step, cruiseSeconds(4)).positions.a1;
+    expect(corner.x).toBeCloseTo(4);
+    expect(corner.y).toBeCloseTo(0);
+    const after = positionsAt(step, cruiseSeconds(5)).positions.a1;
     expect(after.x).toBeCloseTo(4);
     expect(after.y).toBeCloseTo(1);
   });
@@ -134,6 +147,60 @@ describe('positionsAt', () => {
     for (const p of Object.values(positions)) {
       expect(Number.isInteger(p.x) && Number.isInteger(p.y)).toBe(true);
     }
+  });
+});
+
+describe('Run easing', () => {
+  /** a1 jogs 20 m along the x axis from rest. */
+  const step = () => stepOf(straightRun(20));
+  const xAt = (t: number) => positionsAt(step(), t).positions.a1.x;
+
+  it('keeps acceleration and taper as named constants', () => {
+    expect(RUN_ACCELERATION_MPS2).toBeGreaterThan(0);
+    expect(RUN_TAPER_MPS2).toBeGreaterThan(0);
+  });
+
+  it('starts from rest: covers less ground at first than at constant Pace, then reaches its Pace', () => {
+    const reachPace = jog / RUN_ACCELERATION_MPS2;
+    expect(xAt(0)).toBe(0);
+    // Half a second in: 0.5 a t^2 metres, against jog * 0.5 at constant Pace.
+    expect(xAt(reachPace / 2)).toBeCloseTo(0.5 * RUN_ACCELERATION_MPS2 * (reachPace / 2) ** 2);
+    expect(xAt(reachPace / 2)).toBeLessThan(jog * (reachPace / 2));
+    // Speeding up costs jog / 2a metres of ground against a runner already at Pace.
+    expect(xAt(reachPace)).toBeCloseTo(jog * reachPace - jog * reachPace / 2);
+  });
+
+  it('holds its Pace through the middle of the Run', () => {
+    const t = cruiseSeconds(8);
+    expect(xAt(t)).toBeCloseTo(8);
+    expect(xAt(t + 1) - xAt(t)).toBeCloseTo(jog);
+    expect(xAt(cruiseSeconds(10))).toBeCloseTo(10);
+  });
+
+  it('slows over its final stretch and stops exactly on its last waypoint', () => {
+    const { duration } = positionsAt(step(), 0);
+    // One second out it is 0.5 d metres short, moving at d m/s, slower than its Pace.
+    expect(xAt(duration - 1)).toBeCloseTo(20 - 0.5 * RUN_TAPER_MPS2);
+    expect(xAt(duration - 0.5) - xAt(duration - 1)).toBeLessThan(jog * 0.5);
+    expect(xAt(duration - 0.1) - xAt(duration - 0.2)).toBeLessThan(xAt(duration - 1) - xAt(duration - 1.1));
+    expect(positionsAt(step(), duration).positions.a1).toEqual({ x: 20, y: 0 });
+    expect(positionsAt(step(), duration + 5).positions.a1).toEqual({ x: 20, y: 0 });
+  });
+
+  it('never runs faster than its Pace', () => {
+    const { duration } = positionsAt(step(), 0);
+    for (let t = 0; t < duration; t += 0.1) {
+      expect(xAt(t + 0.1) - xAt(t)).toBeLessThanOrEqual(jog * 0.1 + 1e-9);
+    }
+  });
+
+  it('peaks below its Pace on a Run too short to reach it, still stopping on the waypoint', () => {
+    const short = stepOf(straightRun(1));
+    const { duration } = positionsAt(short, 0);
+    expect(duration).toBeCloseTo(runSeconds(1));
+    expect(duration).toBeGreaterThan(1 / jog);
+    expect(positionsAt(short, duration / 2).positions.a1.x).toBeGreaterThan(0);
+    expect(positionsAt(short, duration).positions.a1).toEqual({ x: 1, y: 0 });
   });
 });
 
@@ -345,9 +412,9 @@ describe('Motion: Pace, ball and passes', () => {
   it('derives duration from distance and the Pace of each move', () => {
     const run = (pace?: string) =>
       drill({ moves: [{ marker: 'c1', waypoints: [{ x: 12, y: 10 }], ...(pace ? { pace } : {}) }] });
-    expect(at(run(), 0).duration).toBeCloseTo(12 / PACE_SPEEDS_MPS.jog);
-    expect(at(run('walk'), 0).duration).toBeCloseTo(12 / PACE_SPEEDS_MPS.walk);
-    expect(at(run('sprint'), 0).duration).toBeCloseTo(12 / PACE_SPEEDS_MPS.sprint);
+    expect(at(run(), 0).duration).toBeCloseTo(runSeconds(12, PACE_SPEEDS_MPS.jog));
+    expect(at(run('walk'), 0).duration).toBeCloseTo(runSeconds(12, PACE_SPEEDS_MPS.walk));
+    expect(at(run('sprint'), 0).duration).toBeCloseTo(runSeconds(12, PACE_SPEEDS_MPS.sprint));
   });
 
   it('rejects an unknown Pace and a typed duration', () => {
@@ -405,7 +472,7 @@ describe('Motion: Pace, ball and passes', () => {
       moves: [{ marker: 'a2', waypoints: [{ x: 10, y: 6 }] }],
       passes: [{ id: 'p1', from: 'a1', to: 'a2' }],
     });
-    const arrive = 6 / jog;
+    const arrive = runSeconds(6);
     const { passes, duration } = at(script, 0);
     expect(passes[0].fire).toBeCloseTo(arrive);
     expect(passes[0].end).toEqual({ x: 10, y: 6 });
@@ -463,10 +530,11 @@ describe('Motion: Pace, ball and passes', () => {
         { marker: 'a3', waypoints: [{ x: 20, y: 6 }], after: { move: 'a1' } },
       ],
     });
-    const start = 4 / jog;
+    const start = runSeconds(4);
     expect(at(script, start).positions.a3).toEqual({ x: 20, y: 0 });
-    expect(at(script, start + 1).positions.a3.y).toBeCloseTo(jog);
-    expect(at(script, 0).duration).toBeCloseTo(start + 6 / jog);
+    // a3 sets off from rest, so its first second covers 0.5 a metres, not a full jog.
+    expect(at(script, start + 1).positions.a3.y).toBeCloseTo(0.5 * RUN_ACCELERATION_MPS2);
+    expect(at(script, 0).duration).toBeCloseTo(start + runSeconds(6));
   });
 
   it('starts a move after a pass is caught, the passer throwing from its starting cell', () => {
@@ -478,7 +546,7 @@ describe('Motion: Pace, ball and passes', () => {
     const { passes, duration } = at(script, 0);
     expect(passes[0].start).toEqual({ x: 0, y: 0 });
     expect(at(script, land).positions.a1).toEqual({ x: 0, y: 0 });
-    expect(duration).toBeCloseTo(land + 8 / PACE_SPEEDS_MPS.sprint);
+    expect(duration).toBeCloseTo(land + runSeconds(8, PACE_SPEEDS_MPS.sprint));
   });
 
   it('rejects a move waiting on something that is not in the Step', () => {
@@ -535,7 +603,7 @@ describe('Motion: Pace, ball and passes', () => {
     const [base, second, third] = [0, 1, 2].map((n) => at(script, 0, n));
     expect(base.passes.map((p) => p.id)).toEqual(['p1']);
     expect(second.passes.map((p) => `${p.id}:${p.from}>${p.to}`)).toEqual(['p1:a1>a2', 'p2:a2>a3']);
-    const a3Arrives = 10 / PASS_SPEED_MPS + 4 / PACE_SPEEDS_MPS.walk;
+    const a3Arrives = 10 / PASS_SPEED_MPS + runSeconds(4, PACE_SPEEDS_MPS.walk);
     expect(second.passes[1].fire).toBeCloseTo(a3Arrives);
     expect(third.passes.map((p) => `${p.id}:${p.from}>${p.to}`)).toEqual(['p1:a1>a3']);
   });
@@ -573,14 +641,14 @@ describe('Motion: Pace, ball and passes', () => {
       const script = runOn({ at: 0 });
       const { passes, duration } = at(script, 0);
       const [p1] = passes;
-      expect(p1.fire).toBeCloseTo(4 / jog);
+      expect(p1.fire).toBeCloseTo(cruiseSeconds(4));
       expect(p1.end.x).toBeCloseTo(10);
       expect(p1.end.y).toBeGreaterThan(4);
       // The ball meets the receiver where it is when the ball lands.
       expect(at(script, p1.land).positions.a2.y).toBeCloseTo(p1.end.y);
       expect(p1.land - p1.fire).toBeCloseTo(Math.hypot(p1.end.x, p1.end.y) / PASS_SPEED_MPS);
       // The receiver keeps running: the Step lasts as long as its whole move.
-      expect(duration).toBeCloseTo(12 / jog);
+      expect(duration).toBeCloseTo(runSeconds(12));
     });
 
     it('carries the ball with the receiver for the rest of its move', () => {
@@ -609,7 +677,7 @@ describe('Motion: Pace, ball and passes', () => {
 
     it('keeps the default: with no catch waypoint the pass fires at the end of the move', () => {
       const { passes } = at(runOn(), 0);
-      expect(passes[0].fire).toBeCloseTo(12 / jog);
+      expect(passes[0].fire).toBeCloseTo(runSeconds(12));
       expect(passes[0].end).toEqual({ x: 10, y: 12 });
     });
 
@@ -651,8 +719,8 @@ describe('Motion: Pace, ball and passes', () => {
     it('fires when the named run has finished, not before', () => {
       const script = drill({ moves: [a3Runs], passes: [{ id: 'p1', from: 'a1', to: 'a2', ...wait }] });
       const [p1] = at(script, 0).passes;
-      expect(p1.fire).toBeCloseTo(10 / jog);
-      expect(at(script, 10 / jog - 0.01).positions.ball).toEqual({ x: 0, y: 0 });
+      expect(p1.fire).toBeCloseTo(runSeconds(10));
+      expect(at(script, runSeconds(10) - 0.01).positions.ball).toEqual({ x: 0, y: 0 });
       expect(at(script, 99).positions.ball).toEqual({ x: 10, y: 0 });
       // Without the wait the pass goes at once.
       const free = drill({ moves: [a3Runs], passes: [{ id: 'p1', from: 'a1', to: 'a2' }] });
@@ -663,12 +731,12 @@ describe('Motion: Pace, ball and passes', () => {
       const moves = [a3Runs, { marker: 'a2', waypoints: [{ x: 10, y: 4 }, { x: 10, y: 12 }] }];
       const early = drill({ moves, passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }] });
       // a2 reaches its catch waypoint (4 cells) before a3 finishes (10 cells).
-      expect(at(early, 0).passes[0].fire).toBeCloseTo(10 / jog);
+      expect(at(early, 0).passes[0].fire).toBeCloseTo(runSeconds(10));
       const slow = drill({
         moves: [{ marker: 'a3', waypoints: [{ x: 20, y: 2 }] }, moves[1]],
         passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }],
       });
-      expect(at(slow, 0).passes[0].fire).toBeCloseTo(4 / jog);
+      expect(at(slow, 0).passes[0].fire).toBeCloseTo(cruiseSeconds(4));
     });
 
     it('rejects a wait on a marker with no run, and loops', () => {
@@ -686,7 +754,7 @@ describe('Motion: Pace, ball and passes', () => {
       const script = drill({ moves: [a3Runs] }, [
         { lever: 'time', changes: [{ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', ...wait }] },
       ]);
-      expect(at(script, 0, 1).passes[0].fire).toBeCloseTo(10 / jog);
+      expect(at(script, 0, 1).passes[0].fire).toBeCloseTo(runSeconds(10));
     });
   });
 });
