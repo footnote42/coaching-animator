@@ -54,6 +54,9 @@ export const MARKER_KINDS = [
   'coach',
 ] as const;
 
+/** Marker kinds that can be Lying (laid flat on the ground). */
+export const LYING_KINDS = ['tackle-shield'] as const;
+
 export const TEAMS = ['attack', 'defence'] as const;
 
 /** Directions of attack. Up is toward row 0 (the top of the Area), down toward the last row. */
@@ -130,6 +133,12 @@ const StartShape = {
   holder: MarkerIdSchema.optional().describe(
     'For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.',
   ),
+  lying: z
+    .boolean()
+    .optional()
+    .describe(
+      'For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.',
+    ),
 };
 
 export const PlacementSchema = z
@@ -137,7 +146,7 @@ export const PlacementSchema = z
     marker: z.string().describe('Id of the marker being placed.'),
     ...StartShape,
   })
-  .describe('Where a marker starts in the Step: a cell, or for the ball a holder.');
+  .describe('Where a marker starts in the Step: a cell, or for the ball a holder, and whether kit is Lying.');
 
 export const AfterSchema = z
   .strictObject({
@@ -245,7 +254,9 @@ export const PlaceMarkerChangeSchema = z
     marker: z.string().describe('Id of a marker on the Area in the previous Step.'),
     ...StartShape,
   })
-  .describe('Change where a marker starts (or, for the ball, who holds it). Its move, if any, is kept and runs from the new cell.');
+  .describe(
+    'Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell.',
+  );
 
 export const SetMoveChangeSchema = z
   .strictObject({
@@ -333,6 +344,7 @@ export type Cell = z.infer<typeof CellSchema>;
 export type Area = z.infer<typeof AreaSchema>;
 export type AreaTemplate = (typeof AREA_TEMPLATES)[number];
 export type MarkerKind = (typeof MARKER_KINDS)[number];
+export type LyingKind = (typeof LYING_KINDS)[number];
 export type ConeColour = (typeof CONE_COLOURS)[number];
 export type Team = (typeof TEAMS)[number];
 export type Direction = (typeof DIRECTIONS)[number];

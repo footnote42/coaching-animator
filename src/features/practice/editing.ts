@@ -7,6 +7,7 @@
 import { formatError, resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
 import {
   BALL_CARRIER_KINDS,
+  LYING_KINDS,
   MAX_BALLS,
   MAX_COACHING_POINTS,
   MAX_MARKERS,
@@ -64,7 +65,9 @@ export type Edit =
   | { type: 'startAfterPass'; marker: string; pass: string | null }
   | { type: 'setLabel'; marker: string; label: string | undefined }
   /** Colour a cone; yellow clears it. Other kinds are left alone. */
-  | { type: 'setColour'; marker: string; colour: ConeColour };
+  | { type: 'setColour'; marker: string; colour: ConeColour }
+  /** Lay a tackle shield flat (Lying) or stand it up. Other kinds are refused. */
+  | { type: 'setLying'; marker: string; lying: boolean };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
 export type EditorTool = 'select' | 'run' | 'pass' | MarkerKind;
@@ -299,7 +302,8 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       }
       const current = startCell(script, edit.marker);
       if (current && sameCell(current, cell)) return script;
-      const placements = script.base.placements.map((p) => (p.marker === edit.marker ? { marker: p.marker, cell } : p));
+      // Keep everything else about the start, e.g. a shield stays Lying.
+      const placements = script.base.placements.map((p) => (p.marker === edit.marker ? { ...p, cell } : p));
       return withBase(script, { placements });
     }
 
@@ -540,6 +544,18 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (!next.colour) delete next.colour;
       return { ...script, markers: script.markers.map((m) => (m.id === edit.marker ? next : m)) };
     }
+
+    case 'setLying': {
+      const kind = kindOf(script, edit.marker);
+      if (kind === undefined) return `No marker "${edit.marker}".`;
+      if (!(LYING_KINDS as readonly string[]).includes(kind)) return 'Only a tackle shield can be laid flat.';
+      const placement = script.base.placements.find((p) => p.marker === edit.marker);
+      if (!placement || (placement.lying ?? false) === edit.lying) return script;
+      const { lying: _old, ...rest } = placement;
+      void _old;
+      const next: Placement = edit.lying ? { ...rest, lying: true } : rest;
+      return withBase(script, { placements: script.base.placements.map((p) => (p === placement ? next : p)) });
+    }
   }
 }
 
@@ -572,7 +588,9 @@ function stepAsBase(script: PracticeScript, step: ResolvedStep): PracticeScript 
     area: step.area,
     base: {
       placements: step.markers.map((m): Placement =>
-        m.holder !== undefined ? { marker: m.id, holder: m.holder } : { marker: m.id, cell: m.cell },
+        m.holder !== undefined
+          ? { marker: m.id, holder: m.holder }
+          : { marker: m.id, cell: m.cell, ...(m.lying && { lying: true }) },
       ),
       moves: step.moves,
       passes: step.passes,
@@ -595,8 +613,9 @@ const canon = (value: unknown) =>
   );
 const same = (a: unknown, b: unknown) => canon(a) === canon(b);
 
-function startOf(placement: Placement): { cell: Cell } | { holder: string } {
-  return placement.holder !== undefined ? { holder: placement.holder } : { cell: placement.cell! };
+function startOf(placement: Placement): { cell: Cell; lying?: boolean } | { holder: string } {
+  if (placement.holder !== undefined) return { holder: placement.holder };
+  return { cell: placement.cell!, ...(placement.lying && { lying: true }) };
 }
 
 function moveChange(move: Move): Change {
