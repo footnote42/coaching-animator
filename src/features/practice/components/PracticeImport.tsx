@@ -24,6 +24,7 @@ import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import { AreaControl } from '@/features/practice/components/AreaControl';
+import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
@@ -127,6 +128,8 @@ export function PracticeImport() {
     commit,
     edit,
     pickTool,
+    coneColour,
+    pickConeColour,
     catchPass,
     startCatch,
     endCatch,
@@ -287,7 +290,16 @@ export function PracticeImport() {
               </Button>
             ))}
             <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
-            {PALETTE.map(({ kind, name }) => (
+            {PALETTE.map(({ kind, name }) => kind === 'cone' ? (
+              <ConeSplitButton
+                key={kind}
+                active={tool === kind}
+                colour={coneColour}
+                onPlace={() => pickTool(kind)}
+                onPickColour={pickConeColour}
+                className={TOOL_BUTTON}
+              />
+            ) : (
               <Button
                 key={kind}
                 variant={tool === kind ? 'default' : 'outline'}
@@ -299,7 +311,7 @@ export function PracticeImport() {
               >
                 <span
                   aria-hidden
-                  className={cn('inline-block h-4 w-4 border border-black/40', kind === 'tackle-shield' ? 'w-2.5' : kind !== 'cone' && 'rounded-full')}
+                  className={cn('inline-block h-4 w-4 border border-black/40', kind === 'tackle-shield' ? 'w-2.5' : 'rounded-full')}
                   style={{ backgroundColor: markerColour({ kind }) }}
                 />
                 <span className="hidden lg:inline">{name}</span>
