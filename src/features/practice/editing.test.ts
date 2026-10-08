@@ -62,6 +62,22 @@ describe('applyEdit: markers', () => {
     expect(validate(script).ok).toBe(true);
   });
 
+  it('places a cone in a given colour, leaving yellow as the default', () => {
+    const script = edits(
+      emptyScript(),
+      { type: 'addMarker', kind: 'cone', at: at(0, 0), colour: 'blue' },
+      { type: 'addMarker', kind: 'cone', at: at(2, 0), colour: 'yellow' },
+      { type: 'addMarker', kind: 'cone', at: at(4, 0) },
+    );
+    expect(script.markers).toEqual([
+      { id: 'cone1', kind: 'cone', colour: 'blue' },
+      { id: 'cone2', kind: 'cone' },
+      { id: 'cone3', kind: 'cone' },
+    ]);
+    expect(resolveStep(script, 0).markers.find((m) => m.id === 'cone1')?.colour).toBe('blue');
+    expect(validate(script).ok).toBe(true);
+  });
+
   it('puts the ball in the hands of the nearest player', () => {
     const script = edits(
       emptyScript(),
