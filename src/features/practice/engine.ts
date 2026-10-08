@@ -763,26 +763,63 @@ function distance(a: Point, b: Point): number {
   return Math.hypot(b.x - a.x, b.y - a.y);
 }
 
-function speedOf(move: Move): number {
-  return PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE];
+/**
+ * How far along its path a Run has travelled over time: the one place a Run's
+ * speed is decided. Distances are in cells along the path, times in seconds
+ * from the Run's start. `distanceAt` may run past the path, where the Run
+ * rests at its last waypoint.
+ */
+interface SpeedProfile {
+  /** Seconds the whole Run takes. */
+  duration: number;
+  /** Cells travelled `elapsed` seconds after the Run starts. */
+  distanceAt(elapsed: number): number;
+  /** Seconds after the Run starts at which it has travelled `cells`. */
+  timeAt(cells: number): number;
 }
 
-/** Seconds a move takes from its start to waypoint `upto` (default: the last). */
-function moveDuration(start: Point, move: Move, upto = move.waypoints.length - 1): number {
+/** A Run at one speed from start to finish. */
+function constantProfile(length: number, speedMps: number): SpeedProfile {
+  const timeAt = (cells: number) => (cells * CELL_SIZE_M) / speedMps;
+  return {
+    duration: timeAt(length),
+    distanceAt: (elapsed) => (Math.max(0, elapsed) * speedMps) / CELL_SIZE_M,
+    timeAt,
+  };
+}
+
+/** A Run's path from its start cell through its waypoints, and how it moves along it. */
+interface Run {
+  start: Point;
+  move: Move;
+  /** Cells from the start to each waypoint. */
+  reach: number[];
+  profile: SpeedProfile;
+}
+
+function runOf(start: Point, move: Move): Run {
+  const reach: number[] = [];
   let cells = 0;
   let from = start;
-  for (const to of move.waypoints.slice(0, upto + 1)) {
+  for (const to of move.waypoints) {
     cells += distance(from, to);
+    reach.push(cells);
     from = to;
   }
-  return (cells * CELL_SIZE_M) / speedOf(move);
+  return { start, move, reach, profile: constantProfile(cells, PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE]) };
 }
 
-/** Position along a move `elapsed` seconds after it starts. */
-function pointAlong(start: Point, move: Move, elapsed: number): Point {
-  let remaining = (Math.max(0, elapsed) * speedOf(move)) / CELL_SIZE_M;
-  let from = start;
-  for (const to of move.waypoints) {
+/** Seconds a Run takes from its start to waypoint `upto` (default: the last). */
+function runDuration(run: Run, upto?: number): number {
+  if (upto === undefined) return run.profile.duration;
+  return run.profile.timeAt(run.reach[Math.min(upto, run.reach.length - 1)]);
+}
+
+/** Position along a Run `elapsed` seconds after it starts. */
+function pointAlong(run: Run, elapsed: number): Point {
+  let remaining = run.profile.distanceAt(elapsed);
+  let from = run.start;
+  for (const to of run.move.waypoints) {
     const leg = distance(from, to);
     if (remaining <= leg) {
       const f = leg === 0 ? 1 : remaining / leg;
@@ -803,6 +840,7 @@ function pointAlong(start: Point, move: Move, elapsed: number): Point {
  */
 function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]) {
   const moves = new Map(moveList.map((m) => [m.marker, m]));
+  const runs = new Map(moveList.map((m) => [m.marker, runOf(cells.get(m.marker)!, m)]));
   const passIndex = new Map(passes.map((p, i) => [p.id, i]));
   const { edges, inPlace } = waitEdges(moves, passes);
   const starts = new Map<string, number>();
@@ -822,12 +860,13 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
   };
 
   const endOf = (marker: string, upto?: number): number =>
-    startOf(marker) + moveDuration(cells.get(marker)!, moves.get(marker)!, upto);
+    startOf(marker) + runDuration(runs.get(marker)!, upto);
 
   const pointAt = (marker: string, t: number): Point => {
+    const run = runs.get(marker);
+    if (run) return pointAlong(run, t - startOf(marker));
     const cell = cells.get(marker)!;
-    const move = moves.get(marker);
-    return move ? pointAlong(cell, move, t - startOf(marker)) : { x: cell.x, y: cell.y };
+    return { x: cell.x, y: cell.y };
   };
 
   const flight = (i: number): PassFlight => {
