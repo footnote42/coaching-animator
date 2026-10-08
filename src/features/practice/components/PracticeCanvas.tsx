@@ -4,7 +4,7 @@ import React, { useMemo, useRef, type ReactNode } from 'react';
 import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
 import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
-import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
+import { positionsAt, type PassFlight, type Point, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 
@@ -19,6 +19,35 @@ const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 
 /** How much bigger the ball looks at the top of a kick. */
 const KICK_LIFT = 0.6;
+/** How far, in marker radii, a ball under Lying kit sits off centre so its end shows past the kit. */
+const UNDER_KIT_OFFSET = 0.9;
+
+/**
+ * Drawing order, bottom to top: balls resting under Lying kit, the Lying kit,
+ * every other marker, then the other balls (on top of their holders). Players
+ * cross over Lying kit; a ball under it shows only past its edge.
+ */
+export function drawOrder(
+  markers: ResolvedMarker[],
+  positions: Record<string, Point>,
+  passes: PassFlight[],
+  time: number,
+): { marker: ResolvedMarker; underKit: boolean }[] {
+  const kit = markers.filter((m) => m.lying);
+  const flying = (id: string) => passes.some((f) => f.ball === id && time >= f.fire && time < f.land);
+  const underKit = (m: ResolvedMarker) =>
+    m.kind === 'ball' &&
+    !flying(m.id) &&
+    kit.some((k) => Math.hypot(positions[k.id].x - positions[m.id].x, positions[k.id].y - positions[m.id].y) < 0.5);
+  const balls = markers.filter((m) => m.kind === 'ball');
+  const under = balls.filter(underKit);
+  return [
+    ...under.map((marker) => ({ marker, underKit: true })),
+    ...kit.map((marker) => ({ marker, underKit: false })),
+    ...markers.filter((m) => m.kind !== 'ball' && !m.lying).map((marker) => ({ marker, underKit: false })),
+    ...balls.filter((m) => !under.includes(m)).map((marker) => ({ marker, underKit: false })),
+  ];
+}
 
 export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMarker; x: number; y: number; r: number; scale?: number }) {
   const fill = markerColour(marker);
@@ -27,8 +56,11 @@ export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMa
       return <Ellipse x={x} y={y} radiusX={r * 0.7 * scale} radiusY={r * 0.45 * scale} fill={fill} stroke="#111827" strokeWidth={1} />;
     case 'cone':
       return <RegularPolygon x={x} y={y} sides={3} radius={r * 0.6} fill={fill} stroke={CONE_OUTLINE} strokeWidth={1.5} />;
-    case 'tackle-shield':
-      return <Rect x={x - r * 0.6} y={y - r} width={r * 1.2} height={r * 2} fill={fill} stroke="#111827" strokeWidth={1} />;
+    case 'tackle-shield': {
+      // Lying is the upright shield turned 90 degrees: flat on the ground.
+      const [w, h] = marker.lying ? [r * 2, r * 1.2] : [r * 1.2, r * 2];
+      return <Rect x={x - w / 2} y={y - h / 2} width={w} height={h} fill={fill} stroke="#111827" strokeWidth={1} />;
+    }
     default:
       return (
         <Group x={x} y={y}>
@@ -83,8 +115,7 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
   const radius = markerRadius(step.area, cellPx);
   const { positions, passes } = positionsAt(step, time);
   const px = (cell: number) => (cell + 0.5) * cellPx;
-  // Draw the ball last so it sits on top of its holder.
-  const markers = [...step.markers.filter((m) => m.kind !== 'ball'), ...step.markers.filter((m) => m.kind === 'ball')];
+  const markers = drawOrder(step.markers, positions, passes, time);
 
   const spacing = gridSpacing(step.area);
   const gridLines = useMemo(() => {
@@ -154,12 +185,13 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
           })}
         </Layer>
         <Layer listening={false}>
-          {markers.map((marker) => {
+          {markers.map(({ marker, underKit }) => {
             const p = positions[marker.id];
             // The ball grows then shrinks over a kick to suggest height.
             const kick = passes.find((f) => f.kick && f.ball === marker.id && time >= f.fire && time < f.land);
             const scale = kick ? 1 + KICK_LIFT * Math.sin(Math.PI * ((time - kick.fire) / (kick.land - kick.fire))) : 1;
-            return <MarkerShape key={marker.id} marker={marker} x={px(p.x)} y={px(p.y)} r={radius} scale={scale} />;
+            const x = px(p.x) + (underKit ? radius * UNDER_KIT_OFFSET : 0);
+            return <MarkerShape key={marker.id} marker={marker} x={x} y={px(p.y)} r={radius} scale={scale} />;
           })}
         </Layer>
         {overlay?.({ width, height, cellPx, radius })}

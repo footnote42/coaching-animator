@@ -26,7 +26,7 @@ import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary'
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
-import { BALL_CARRIER_KINDS, CONE_COLOURS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
+import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
 
@@ -378,6 +378,18 @@ export function PracticeImport() {
                     );
                   })}
                 </div>
+              )}
+              {(LYING_KINDS as readonly string[]).includes(selectedMarker.kind) && (
+                <Button
+                  type="button"
+                  variant={selectedMarker.lying ? 'default' : 'outline'}
+                  className="h-11"
+                  aria-pressed={!!selectedMarker.lying}
+                  title="Lay flat on the ground for this Step"
+                  onClick={() => edit({ type: 'setLying', marker: selectedMarker.id, lying: !selectedMarker.lying })}
+                >
+                  Lying
+                </Button>
               )}
               {selectedMove ? (
                 <>

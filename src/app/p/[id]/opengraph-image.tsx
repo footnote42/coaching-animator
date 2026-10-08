@@ -24,7 +24,7 @@ function markerStyle(marker: ResolvedMarker, x: number, y: number, r: number) {
     case 'cone':
       return { ...box(r * 1.1, r * 1.1), borderRadius: '50%', backgroundColor: fill, border: `2px solid ${CONE_OUTLINE}` };
     case 'tackle-shield':
-      return { ...box(r * 1.2, r * 2), backgroundColor: fill, border: '1px solid #111827' };
+      return { ...(marker.lying ? box(r * 2, r * 1.2) : box(r * 1.2, r * 2)), backgroundColor: fill, border: '1px solid #111827' };
     default:
       return {
         ...box(r * 2, r * 2),
