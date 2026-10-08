@@ -84,7 +84,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 A move is a run by one marker: `{ "marker", "waypoints", "pace"?, "after"? }`.
 
 - At most one move per marker per Step.
-- `waypoints` is a list of 1 to {{MAX_WAYPOINTS}} cells. The marker runs from its starting cell through each waypoint in order, in straight lines, without stopping, and rests on the last one.
+- `waypoints` is a list of 1 to {{MAX_WAYPOINTS}} cells, each `{ "x", "y", "pace"? }`. The marker runs from its starting cell through each waypoint in order, in straight lines, without stopping, and rests on the last one.
 - The ball never has a move. It travels with its holder or on a pass, or lies loose.
 - A move with no `after` starts at time zero.
 
@@ -92,13 +92,21 @@ A move is a run by one marker: `{ "marker", "waypoints", "pace"?, "after"? }`.
 
 `pace` is `walk`, `jog` or `sprint`; leave it out for `jog`. Every Pace is slower than real time so viewers can follow the idea.
 
+A waypoint may carry its own `pace` for the segment arriving at it, so a player can jog into position then sprint onto the ball. The move's `pace` is the default for every segment without one:
+
+```json
+{ "marker": "a3", "pace": "jog", "waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13, "pace": "sprint" }] }
+```
+
+Here 3 jogs to `(26, 16)`, then sprints to `(23, 13)`.
+
 | Pace | Speed |
 | --- | --- |
 | `walk` | {{PACE_walk}} m/s |
 | `jog` (default) | {{PACE_jog}} m/s |
 | `sprint` | {{PACE_sprint}} m/s |
 
-A move's duration comes from the straight-line length of its path (start cell to each waypoint in turn, in metres) and its Pace. Every move speeds up from a standstill at {{RUN_ACCELERATION}} m/s², holds its Pace, and tapers to a stop on its last waypoint at {{RUN_TAPER}} m/s²; a move too short to reach its Pace peaks below it. Example: from `(0, 0)` to `(6, 8)` is 10 m, about 5 s at `jog` plus a little over a second to get going and slow down. Never write a duration.
+A move's duration comes from the straight-line length of its path (start cell to each waypoint in turn, in metres) and its Pace. Every move speeds up from a standstill at {{RUN_ACCELERATION}} m/s², holds its Pace, and tapers to a stop on its last waypoint at {{RUN_TAPER}} m/s²; a move too short to reach its Pace peaks below it. Between segments of different Pace it blends at the same rates, with no jump in speed: it speeds up after reaching the waypoint that ends a slower segment, and slows before reaching the waypoint that starts a slower one, so no segment is run faster than its Pace. Example: from `(0, 0)` to `(6, 8)` is 10 m, about 5 s at `jog` plus a little over a second to get going and slow down. Never write a duration.
 
 ## Passes
 
@@ -115,7 +123,7 @@ A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`, or for a 
 
 Draw the paths and say where the ball is caught; the engine times each receiver's Run so they reach the catch point as the ball does. Nobody stands and waits. This applies to every Practice, saved ones included; there is nothing to switch on.
 
-- A receiver who would arrive early has their whole Run slowed: speeding up, Pace and taper all stretch together, so the Run keeps its shape. It is never slowed below `walk` ({{PACE_walk}} m/s).
+- A receiver who would arrive early has their whole Run slowed: speeding up, Pace and taper all stretch together, so the Run keeps its shape. No segment is ever slowed below `walk` ({{PACE_walk}} m/s): the Run's slowest segment sets the limit, so a jog-then-sprint Run slows at most until its jog is a walk.
 - Only if the receiver is still early at walking speed does their Run start later, by just what slowing could not absorb.
 - A receiver who would be late even at their own Pace is not waited for: the passer keeps running (if they have a Run) and the pass goes later, from wherever the passer has got to, so the ball arrives with the receiver.
 - So let receivers set off at time zero with the rest of the line. You do not need `after: { "pass": ... }` to time a run onto the ball; that only makes the receiver late.

@@ -167,7 +167,7 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
               strokeWidth={1}
             />
             <Text
-              text={String(index + 1)}
+              text={cell.pace ? `${index + 1} ${cell.pace}` : String(index + 1)}
               x={Math.max(radius * 0.45, 6) + 2}
               y={-14}
               fontSize={11}

@@ -859,47 +859,113 @@ interface SpeedProfile {
   timeAt(cells: number): number;
 }
 
+/** A stretch of a Run arriving at one waypoint, run at one Pace. */
+interface Segment {
+  /** Length in metres. */
+  metres: number;
+  /** Pace speed in metres per second. */
+  speed: number;
+}
+
 /**
- * A Run that accelerates from rest to its Pace, holds it, and tapers to a stop
- * exactly on its last waypoint. A Run too short to reach its Pace peaks below it.
+ * A Run that accelerates from rest, blends between its segment Paces and
+ * tapers to a stop exactly on its last waypoint. Speeding up (from rest, or
+ * onto a faster segment) uses `RUN_ACCELERATION_MPS2` and starts once the
+ * slower segment is done; slowing (onto a slower segment, or into the last
+ * waypoint) uses `RUN_TAPER_MPS2` and is finished as the slower segment
+ * begins. No segment is run faster than its Pace, and a Run or segment too
+ * short to reach its Pace peaks below it.
+ *
+ * Worked as speed squared against distance, where steady acceleration is a
+ * straight line: the fastest profile allowed is, at each point, the lowest of
+ * every segment's Pace pushed out by the acceleration and taper lines (and the
+ * start and end at rest). Within a segment only three lines matter: its own
+ * Pace, the lowest rising line from behind and the lowest falling line from
+ * ahead, so the profile is a chain of straight pieces, each run at one steady
+ * acceleration.
  */
-function easedProfile(length: number, speedMps: number): SpeedProfile {
-  const metres = length * CELL_SIZE_M;
-  if (metres <= 0) return { duration: 0, distanceAt: () => 0, timeAt: () => 0 };
-  const a = RUN_ACCELERATION_MPS2;
-  const d = RUN_TAPER_MPS2;
-  // Speeding up and tapering cover v^2/2a and v^2/2d; on a short Run they meet at the peak.
-  const peak = Math.min(speedMps, Math.sqrt((2 * metres * a * d) / (a + d)));
-  const accelTime = peak / a;
-  const accelMetres = (peak * peak) / (2 * a);
-  const taperTime = peak / d;
-  const taperMetres = (peak * peak) / (2 * d);
-  const cruiseMetres = Math.max(0, metres - accelMetres - taperMetres);
-  const taperStart = accelTime + cruiseMetres / peak;
-  const duration = taperStart + taperTime;
+function easedProfile(segments: Segment[]): SpeedProfile {
+  const a2 = 2 * RUN_ACCELERATION_MPS2;
+  const d2 = 2 * RUN_TAPER_MPS2;
+  const starts: number[] = [];
+  let total = 0;
+  for (const { metres } of segments) {
+    starts.push(total);
+    total += metres;
+  }
+  if (total <= 0) return { duration: 0, distanceAt: () => 0, timeAt: () => 0 };
+  const n = segments.length;
+  const limit = segments.map(({ speed }) => speed * speed);
+  // Rising lines (speed^2 = rise + a2 * s): from rest at the start, and out of each earlier segment.
+  const rise: number[] = [];
+  for (let j = 0, r = 0; j < n; j++) {
+    if (j > 0) r = Math.min(r, limit[j - 1] - a2 * starts[j]);
+    rise.push(r);
+  }
+  // Falling lines (speed^2 = fall - d2 * s): to rest at the end, and into each later segment.
+  const fall: number[] = new Array(n);
+  for (let j = n - 1, f = d2 * total; j >= 0; j--) {
+    if (j < n - 1) f = Math.min(f, limit[j + 1] + d2 * starts[j + 1]);
+    fall[j] = f;
+  }
+  const speedSqAt = (j: number, s: number) => Math.max(0, Math.min(limit[j], rise[j] + a2 * s, fall[j] - d2 * s));
+
+  // Knots in (metres, speed^2), joined by straight lines.
+  const knots: Array<{ s: number; u: number }> = [{ s: 0, u: 0 }];
+  const knot = (j: number, s: number) => {
+    if (s > knots[knots.length - 1].s + 1e-12) knots.push({ s, u: speedSqAt(j, s) });
+  };
+  segments.forEach(({ metres }, j) => {
+    if (metres <= 0) return;
+    const from = starts[j];
+    const to = from + metres;
+    const reach = (limit[j] - rise[j]) / a2; // rising meets the Pace
+    const leave = (fall[j] - limit[j]) / d2; // the Pace meets falling
+    const turns = reach <= leave ? [reach, leave] : [(fall[j] - rise[j]) / (a2 + d2)];
+    for (const s of turns) if (s > from && s < to) knot(j, s);
+    knot(j, to);
+  });
+
+  // Each piece between knots is run at one steady acceleration.
+  const pieces: Array<{ s0: number; s1: number; t0: number; t1: number; v0: number; acc: number }> = [];
+  let time = 0;
+  for (let k = 1; k < knots.length; k++) {
+    const { s: s0, u: u0 } = knots[k - 1];
+    const { s: s1, u: u1 } = knots[k];
+    const v0 = Math.sqrt(u0);
+    const acc = (u1 - u0) / (2 * (s1 - s0));
+    const seconds = Math.abs(acc) < 1e-12 ? (s1 - s0) / v0 : (Math.sqrt(u1) - v0) / acc;
+    pieces.push({ s0, s1, t0: time, t1: time + seconds, v0, acc });
+    time += seconds;
+  }
+  const duration = time;
+  const last = pieces[pieces.length - 1];
 
   const metresAt = (elapsed: number): number => {
     if (elapsed <= 0) return 0;
-    if (elapsed < accelTime) return 0.5 * a * elapsed * elapsed;
-    if (elapsed < taperStart) return accelMetres + peak * (elapsed - accelTime);
-    if (elapsed < duration) {
-      const left = duration - elapsed;
-      return metres - 0.5 * d * left * left;
-    }
-    return metres;
+    if (elapsed >= duration) return total;
+    const p = pieces.find((q) => elapsed < q.t1) ?? last;
+    const tau = elapsed - p.t0;
+    return Math.min(p.s1, p.s0 + p.v0 * tau + 0.5 * p.acc * tau * tau);
   };
   const secondsAt = (m: number): number => {
     if (m <= 0) return 0;
-    if (m < accelMetres) return Math.sqrt((2 * m) / a);
-    if (m < metres - taperMetres) return accelTime + (m - accelMetres) / peak;
-    if (m < metres) return duration - Math.sqrt((2 * (metres - m)) / d);
-    return duration;
+    if (m >= total) return duration;
+    const p = pieces.find((q) => m < q.s1) ?? last;
+    const along = m - p.s0;
+    if (Math.abs(p.acc) < 1e-12) return p.t0 + along / p.v0;
+    return p.t0 + (Math.sqrt(Math.max(0, p.v0 * p.v0 + 2 * p.acc * along)) - p.v0) / p.acc;
   };
   return {
     duration,
     distanceAt: (elapsed) => metresAt(elapsed) / CELL_SIZE_M,
     timeAt: (cells) => secondsAt(cells * CELL_SIZE_M),
   };
+}
+
+/** Speed of the segment arriving at waypoint `index` of a move, in metres per second. */
+function segmentSpeed(move: Move, index: number): number {
+  return PACE_SPEEDS_MPS[move.waypoints[index].pace ?? move.pace ?? DEFAULT_PACE];
 }
 
 /** A profile played `scale` times slower, keeping its shape: easing, Pace and taper all slow together. */
@@ -923,14 +989,17 @@ interface Run {
 
 function runOf(start: Point, move: Move): Run {
   const reach: number[] = [];
+  const segments: Segment[] = [];
   let cells = 0;
-  let from = start;
-  for (const to of move.waypoints) {
-    cells += distance(from, to);
+  let from: Point = start;
+  move.waypoints.forEach((to, i) => {
+    const leg = distance(from, to);
+    cells += leg;
     reach.push(cells);
+    segments.push({ metres: leg * CELL_SIZE_M, speed: segmentSpeed(move, i) });
     from = to;
-  }
-  return { start, move, reach, profile: easedProfile(cells, PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE]) };
+  });
+  return { start, move, reach, profile: easedProfile(segments) };
 }
 
 /** Seconds a Run takes from its start to waypoint `upto` (default: the last). */
@@ -1033,7 +1102,7 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
  * previous pass of its ball is caught and any Run it waits on (`after`) has
  * finished, and flies to the catch point: waypoint `at` of the receiver's Run,
  * or its end. Receivers are timed to the ball (ADR 0005): a receiver who would
- * arrive early has its whole Run slowed, never below walk, then its start
+ * arrive early has its whole Run slowed (no segment below walk), then its start
  * delayed for whatever slowing cannot absorb. A receiver who would be late even
  * at its own Paces is not waited for: the pass goes later, from wherever the
  * passer has run to, so the ball arrives with the receiver. A receiver whose
@@ -1077,7 +1146,10 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
         const { land } = flight(i);
         const reach = runDuration(run, passes[i].at);
         if (land - (start + reach) > 1e-9) {
-          const slowest = PACE_SPEEDS_MPS[run.move.pace ?? DEFAULT_PACE] / PACE_SPEEDS_MPS.walk;
+          // Slowed no further than its slowest segment at walk (ADR 0005), so no
+          // segment ever runs below walk; a later start takes the rest.
+          const slowestPace = Math.min(...run.move.waypoints.map((_, w) => segmentSpeed(run.move, w)));
+          const slowest = slowestPace / PACE_SPEEDS_MPS.walk;
           const scale = reach > 0 ? Math.min(slowest, (land - start) / reach) : 1;
           result = { run: { ...run, profile: slowedProfile(run.profile, scale) }, start: land - reach * scale };
         }

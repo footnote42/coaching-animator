@@ -31,7 +31,7 @@ On the MCP route, `create_practice` validates the script against the live schema
 - `examples/01-passing-line.json`: simple passing Practice, no Progressions.
 - `examples/02-pass-and-follow-progressions.json`: a Practice with a Time and a People Progression.
 - `examples/03-two-ball-square.json`: two balls, each with its own chain of passes.
-- `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a Progression adding a defender.
+- `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a winger who jogs wide then sprints onto the ball (`pace` on a waypoint), a Progression adding a defender.
 - `examples/05-kick-receipt.json`: one team kicks (`"kick": true` on a pass) to the other, who catch and counter-attack with backward passes.
 - `examples/06-shield-to-ruck.json`: a carry into an upright shield, then an Equipment Progression lays it flat as a ruck (`"lying": true` on `placeMarker`) with the ball beneath, and 9 passes away.
 - `examples/07-bag-clear-out.json`: a carry into an upright tackle bag (`"kind": "tackle-bag"`), then a People Progression lays the bag flat over the ball as the ruck, 2 clears out and 9 passes away.
@@ -43,7 +43,7 @@ On the MCP route, `create_practice` validates the script against the live schema
 2. Write the script following the guide exactly. The rules most often broken:
    - Output one JSON object, no comments, no extra fields.
    - Whole-number cells inside the Area; the ball has a `holder`, or a `cell` only when it lies loose on the ground with nobody holding it (it then stays put and cannot be passed).
-   - Never write durations; use `pace` (`walk`, `jog`, `sprint`).
+   - Never write durations; use `pace` (`walk`, `jog`, `sprint`). A waypoint can take its own `pace` for the segment arriving at it, to jog into position then sprint onto the ball: `"waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13, "pace": "sprint" }], "pace": "jog"`.
    - A Kick to space is a kick with `"cell"` instead of `"to"`: `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball lands on the cell, rolls a short way on and lies loose for the rest of the Step, so no pass of that ball can follow it. Chasers set off as it lands with `"after": { "pass": "k1" }`. No `at` on it, and it is never a forward pass.
    - Labels are roles or shirt numbers, never player names.
    - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
@@ -79,7 +79,7 @@ Then check the rugby yourself too: in any Practice with a try line or a directio
 
 - **The catch is on the waypoint.** With `at`, the receiver reaches waypoint `at` as the ball does and runs on with it. Put the catch waypoint level with or a few metres behind the passer.
 - **Draw and pass.** To show the defender being drawn, end the defender's Run at the carrier and give the pass `"after": { "move": "<defender>" }`: the ball goes when that Run finishes (as well as the catch point). Keep the pass level or backward.
-- **Receivers are timed to the ball.** Let receivers set off at time zero with the line: the engine slows an early receiver's whole Run (never below walk), starts it later only if walking is still early, and if the receiver would be late, the carrier runs on and passes when the ball can be taken. Do not hold a receiver with `after: { "pass": ... }` to time its run; that only makes it late. `examples/04-attack-v-defence.json` shows timing with draw and pass.
+- **Receivers are timed to the ball.** Let receivers set off at time zero with the line: the engine slows an early receiver's whole Run (no segment below walk), starts it later only if walking is still early, and if the receiver would be late, the carrier runs on and passes when the ball can be taken. Do not hold a receiver with `after: { "pass": ... }` to time its run; that only makes it late. `examples/04-attack-v-defence.json` shows timing with draw and pass.
 
 ## 5. Paste route (only when you have no `create_practice` tool)
 

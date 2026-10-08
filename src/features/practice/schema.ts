@@ -129,6 +129,17 @@ export const MarkerSchema = z
 
 const MarkerIdSchema = z.string().min(1).max(32);
 
+const PaceSchema = z.enum(PACES);
+
+export const WaypointSchema = z
+  .strictObject({
+    ...CellSchema.shape,
+    pace: PaceSchema.optional().describe(
+      "Pace of the segment arriving at this waypoint: walk, jog or sprint. Leave out to use the move's pace. Lets a player jog into position then sprint onto the ball; the engine blends smoothly between Paces.",
+    ),
+  })
+  .describe('A cell the marker runs to, optionally with its own Pace for the segment arriving at it.');
+
 const StartShape = {
   cell: CellSchema.optional().describe(
     'Cell the marker starts on. Required for every marker except the ball. For the ball, instead of a holder: it starts loose on this cell, lying on the ground with nobody holding it.',
@@ -162,11 +173,13 @@ export const MoveSchema = z
   .strictObject({
     marker: z.string().describe('Id of the marker that moves.'),
     waypoints: z
-      .array(CellSchema)
+      .array(WaypointSchema)
       .min(1)
       .max(MAX_WAYPOINTS)
       .describe('Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last.'),
-    pace: z.enum(PACES).optional().describe('How fast the marker runs: walk, jog or sprint. Defaults to jog. All Paces are slower than real time.'),
+    pace: PaceSchema.optional().describe(
+      'How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.',
+    ),
     after: AfterSchema.optional().describe('Leave out to start at time zero.'),
   })
   .describe(
@@ -210,7 +223,7 @@ export const PassSchema = z
       ),
   })
   .describe(
-    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in "after" has finished (at waypoint "at" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time.',
+    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and any move named in "after" has finished. The receiver’s run is timed so they reach the catch point (waypoint "at" of their move if given, else its end) as the ball does: slowed if they would be early, and the pass goes later, from wherever the passer has run to, if they would be late. A receiver with no move, or whose move waits on this pass, catches on their cell. Balls run at the same time.',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;
@@ -347,6 +360,7 @@ export const PracticeScriptSchema = z
   .describe('A Practice Script: a rugby coaching Practice laid out on a grid of cells and animated by moves and passes.');
 
 export type Cell = z.infer<typeof CellSchema>;
+export type Waypoint = z.infer<typeof WaypointSchema>;
 export type Area = z.infer<typeof AreaSchema>;
 export type AreaTemplate = (typeof AREA_TEMPLATES)[number];
 export type MarkerKind = (typeof MARKER_KINDS)[number];
