@@ -353,6 +353,11 @@ export function useEditorWorkspace() {
     catchPass,
     startCatch: (to: string) => setPendingCatch({ count: passes.length + 1, to }),
     endCatch: () => setPendingCatch(null),
+    coneColour,
+    pickConeColour: (colour: ConeColour) => {
+      setConeColour(colour);
+      pickTool('cone');
+    },
     deleteSelection,
     undo,
     redo,
