@@ -1102,7 +1102,7 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
  * previous pass of its ball is caught and any Run it waits on (`after`) has
  * finished, and flies to the catch point: waypoint `at` of the receiver's Run,
  * or its end. Receivers are timed to the ball (ADR 0005): a receiver who would
- * arrive early has its whole Run slowed (its fastest segment never below walk), then its start
+ * arrive early has its whole Run slowed (no segment below walk), then its start
  * delayed for whatever slowing cannot absorb. A receiver who would be late even
  * at its own Paces is not waited for: the pass goes later, from wherever the
  * passer has run to, so the ball arrives with the receiver. A receiver whose
@@ -1146,10 +1146,10 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
         const { land } = flight(i);
         const reach = runDuration(run, passes[i].at);
         if (land - (start + reach) > 1e-9) {
-          // Slowed no further than its fastest segment at walk: the Run keeps moving
-          // at a walk or better at its quickest, and keeps the shape of its Paces.
-          const fastest = Math.max(...run.move.waypoints.map((_, w) => segmentSpeed(run.move, w)));
-          const slowest = fastest / PACE_SPEEDS_MPS.walk;
+          // Slowed no further than its slowest segment at walk (ADR 0005), so no
+          // segment ever runs below walk; a later start takes the rest.
+          const slowestPace = Math.min(...run.move.waypoints.map((_, w) => segmentSpeed(run.move, w)));
+          const slowest = slowestPace / PACE_SPEEDS_MPS.walk;
           const scale = reach > 0 ? Math.min(slowest, (land - start) / reach) : 1;
           result = { run: { ...run, profile: slowedProfile(run.profile, scale) }, start: land - reach * scale };
         }

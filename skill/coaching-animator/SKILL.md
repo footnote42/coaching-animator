@@ -79,7 +79,7 @@ Then check the rugby yourself too: in any Practice with a try line or a directio
 
 - **The catch is on the waypoint.** With `at`, the receiver reaches waypoint `at` as the ball does and runs on with it. Put the catch waypoint level with or a few metres behind the passer.
 - **Draw and pass.** To show the defender being drawn, end the defender's Run at the carrier and give the pass `"after": { "move": "<defender>" }`: the ball goes when that Run finishes (as well as the catch point). Keep the pass level or backward.
-- **Receivers are timed to the ball.** Let receivers set off at time zero with the line: the engine slows an early receiver's whole Run (its fastest segment never below walk), starts it later only if walking is still early, and if the receiver would be late, the carrier runs on and passes when the ball can be taken. Do not hold a receiver with `after: { "pass": ... }` to time its run; that only makes it late. `examples/04-attack-v-defence.json` shows timing with draw and pass.
+- **Receivers are timed to the ball.** Let receivers set off at time zero with the line: the engine slows an early receiver's whole Run (no segment below walk), starts it later only if walking is still early, and if the receiver would be late, the carrier runs on and passes when the ball can be taken. Do not hold a receiver with `after: { "pass": ... }` to time its run; that only makes it late. `examples/04-attack-v-defence.json` shows timing with draw and pass.
 
 ## 5. Paste route (only when you have no `create_practice` tool)
 

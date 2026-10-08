@@ -123,7 +123,7 @@ A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`, or for a 
 
 Draw the paths and say where the ball is caught; the engine times each receiver's Run so they reach the catch point as the ball does. Nobody stands and waits. This applies to every Practice, saved ones included; there is nothing to switch on.
 
-- A receiver who would arrive early has their whole Run slowed: speeding up, Pace and taper all stretch together, so the Run keeps its shape. Its fastest segment is never slowed below `walk` ({{PACE_walk}} m/s); slower segments slow in proportion.
+- A receiver who would arrive early has their whole Run slowed: speeding up, Pace and taper all stretch together, so the Run keeps its shape. No segment is ever slowed below `walk` ({{PACE_walk}} m/s): the Run's slowest segment sets the limit, so a jog-then-sprint Run slows at most until its jog is a walk.
 - Only if the receiver is still early at walking speed does their Run start later, by just what slowing could not absorb.
 - A receiver who would be late even at their own Pace is not waited for: the passer keeps running (if they have a Run) and the pass goes later, from wherever the passer has got to, so the ball arrives with the receiver.
 - So let receivers set off at time zero with the rest of the line. You do not need `after: { "pass": ... }` to time a run onto the ball; that only makes the receiver late.

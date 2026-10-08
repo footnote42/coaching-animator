@@ -141,7 +141,7 @@ describe('Pace per waypoint segment', () => {
       expect(positionsAt(step, atWaypoint * scale).positions.a2.y).toBeCloseTo(8);
     });
 
-    it('slows to its fastest segment at walk before starting late', () => {
+    it('slows until its slowest segment is a walk, then starts late', () => {
       // A long draw: slowing alone cannot absorb it.
       const step = stepOf(
         drill(
@@ -150,12 +150,32 @@ describe('Pace per waypoint segment', () => {
         ),
       );
       const [p1] = positionsAt(step, 0).passes;
-      // The sprint segment slows at most to walk: four times as long, not the jog default's twice.
-      const delay = p1.land - JOG_THEN_SPRINT_SECONDS * (sprint / walk);
+      // The jog segment slows at most to walk: twice as long. The rest is a later start.
+      const delay = p1.land - JOG_THEN_SPRINT_SECONDS * (jog / walk);
       expect(delay).toBeGreaterThan(0);
       expect(positionsAt(step, delay - 0.01).positions.a2).toEqual({ x: 10, y: 0 });
       expect(positionsAt(step, delay + 0.5).positions.a2.y).toBeGreaterThan(0);
       expect(positionsAt(step, p1.land).positions.a2).toEqual({ x: 10, y: 28 });
+    });
+
+    it('never runs a segment below walk when the receiver is far too early', () => {
+      const step = stepOf(
+        drill(
+          [JOG_THEN_SPRINT, { marker: 'a3', waypoints: [{ x: 20, y: 28 }, { x: 0, y: 28 }, { x: 0, y: 2 }, { x: 30, y: 2 }] }],
+          [{ id: 'p1', from: 'a1', to: 'a2', after: { move: 'a3' } }],
+        ),
+      );
+      const [p1] = positionsAt(step, 0).passes;
+      // Far too early: the start is delayed rather than crawling.
+      expect(p1.land - JOG_THEN_SPRINT_SECONDS * (jog / walk)).toBeGreaterThan(1);
+      const samples = speeds(step, 0.05);
+      // Cruising through the jog segment: at walk, not below.
+      const jogging = samples.filter((s) => s.y > 2 && s.y < 7.5);
+      expect(jogging.length).toBeGreaterThan(0);
+      for (const { v } of jogging) expect(v).toBeGreaterThanOrEqual(walk - 1e-3);
+      // The sprint segment keeps its shape: twice the jog, halved with it.
+      const sprinting = samples.filter((s) => s.y > 12 && s.y < 22);
+      for (const { v } of sprinting) expect(v).toBeCloseTo(sprint * (walk / jog), 2);
     });
   });
 });
