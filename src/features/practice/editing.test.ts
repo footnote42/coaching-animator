@@ -174,6 +174,31 @@ describe('applyEdit: runs and passes', () => {
     expect(removed.base.passes).toEqual([]);
   });
 
+  it('adds a Kick directly, from whoever has the ball, and chains from the receiver', () => {
+    expect(typeof applyEdit(base, { type: 'addPass', from: 'a2', to: 'a1', kick: true })).toBe('string');
+    const script = edits(base, { type: 'addPass', from: 'a1', to: 'a2', kick: true }, { type: 'addPass', from: 'a2', to: 'a1' });
+    expect(script.base.passes).toEqual([
+      { id: 'p1', from: 'a1', to: 'a2', kick: true },
+      { id: 'p2', from: 'a2', to: 'a1' },
+    ]);
+    expect(validate(script).ok).toBe(true);
+    expect(resolveStep(script, 0).passes[0].kick).toBe(true);
+  });
+
+  it('adds a Kick in a Progression as a change', () => {
+    const script = stepEdits(addProgression(base, 'people'), 1, { type: 'addPass', from: 'a1', to: 'a2', kick: true });
+    expect(script.base.passes).toEqual([]);
+    expect(resolveStep(script, 1).passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2', kick: true }]);
+    expect(validate(script).ok).toBe(true);
+  });
+
+  it('still converts an existing pass to a Kick and back', () => {
+    const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
+    const kicked = edits(passed, { type: 'setKick', id: 'p1', kick: true });
+    expect(kicked.base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2', kick: true }]);
+    expect(edits(kicked, { type: 'setKick', id: 'p1', kick: false }).base.passes).toEqual([{ id: 'p1', from: 'a1', to: 'a2' }]);
+  });
+
   it('sets a wait on a run for a pass, and drops it when the run goes', () => {
     const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
     expect(typeof applyEdit(passed, { type: 'setPassWait', id: 'p1', move: 'a1' })).toBe('string');
