@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "title": "Hit the bag, then clear out over the ball",
+  "area": { "width": 12, "length": 14 },
+  "direction": "up",
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "a9", "kind": "attacker", "label": "9" },
+    { "id": "a10", "kind": "attacker", "label": "10" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "bag1", "kind": "tackle-bag" },
+    { "id": "coach1", "kind": "coach", "label": "C" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 6, "y": 12 } },
+      { "marker": "ball", "holder": "a1" },
+      { "marker": "bag1", "cell": { "x": 6, "y": 6 } },
+      { "marker": "coach1", "cell": { "x": 6, "y": 5 } }
+    ],
+    "moves": [
+      { "marker": "a1", "waypoints": [{ "x": 6, "y": 7 }], "pace": "jog" }
+    ],
+    "commentary": {
+      "points": [
+        "Carry into the upright bag the coach is holding: low, square, ball in two hands",
+        "Leg drive on contact, then present the ball long"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "people",
+      "commentary": {
+        "points": [
+          "The bag is laid flat over the ball as the ruck: 2 must clear it beyond the ball",
+          "9 arrives as the bag is cleared and passes away to 10 off the ground"
+        ]
+      },
+      "changes": [
+        { "type": "placeMarker", "marker": "bag1", "cell": { "x": 6, "y": 6 }, "lying": true },
+        { "type": "placeMarker", "marker": "a1", "cell": { "x": 6, "y": 6 } },
+        { "type": "removeMove", "marker": "a1" },
+        { "type": "addMarker", "marker": "a2", "cell": { "x": 7, "y": 11 } },
+        { "type": "addMarker", "marker": "a9", "cell": { "x": 4, "y": 12 } },
+        { "type": "addMarker", "marker": "a10", "cell": { "x": 2, "y": 11 } },
+        { "type": "setMove", "marker": "a2", "waypoints": [{ "x": 6, "y": 5 }], "pace": "sprint" },
+        { "type": "setMove", "marker": "a9", "waypoints": [{ "x": 6, "y": 8 }], "pace": "sprint" },
+        { "type": "setPass", "id": "p1", "from": "a1", "to": "a9" },
+        { "type": "setPass", "id": "p2", "from": "a9", "to": "a10" }
+      ]
+    }
+  ]
+}

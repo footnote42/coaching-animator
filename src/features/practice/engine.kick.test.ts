@@ -222,17 +222,27 @@ describe('a ball that starts loose', () => {
   it('is drawn beneath Lying kit on the same cell, and on top elsewhere', () => {
     const under = stepOf(field({ placements: loosePlacements({ cell: { x: 3, y: 4 } }) }));
     const { positions, passes } = positionsAt(under, 0);
-    expect(drawOrder(under.markers, positions, passes, 0)[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: true });
+    expect(drawOrder(under.markers, positions, passes, 0)[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: 'tackle-shield' });
 
     const apart = stepOf(field({ placements: loosePlacements({ cell: { x: 8, y: 4 } }) }));
     const order = drawOrder(apart.markers, positionsAt(apart, 0).positions, [], 0);
-    expect(order[order.length - 1]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: false });
+    expect(order[order.length - 1]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: null });
+  });
+
+  it('is drawn beneath a Lying tackle bag on the same cell, as under a shield', () => {
+    const script = field({ placements: loosePlacements({ cell: { x: 3, y: 4 } }) });
+    script.markers = script.markers.map((m) => (m.id === 'shield1' ? { ...m, kind: 'tackle-bag' } : m));
+    const step = stepOf(script);
+    const { positions, passes } = positionsAt(step, 0);
+    const order = drawOrder(step.markers, positions, passes, 0);
+    expect(order[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: 'tackle-bag' });
+    expect(order[1].marker.id).toBe('shield1');
   });
 
   it('a ball kicked to space onto Lying kit comes to rest beneath it', () => {
     const step = stepOf(field({ placements: loosePlacements({ holder: 'a1' }).map((p) => (p.marker === 'shield1' ? { ...p, cell: { x: 10, y: 3 } } : p)), passes: [kickUp()] }));
     const { duration, positions, passes } = positionsAt(step, 100);
-    expect(drawOrder(step.markers, positions, passes, duration)[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: true });
+    expect(drawOrder(step.markers, positions, passes, duration)[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: 'tackle-shield' });
   });
 
   it('cannot be passed: nobody holds it', () => {
@@ -265,9 +275,9 @@ describe('a ball that starts loose', () => {
   });
 });
 
-describe('skill example 07-kick-to-space.json', () => {
+describe('skill example 08-kick-to-space.json', () => {
   it('kicks to space, lands and rolls, with a ball starting loose under a Lying shield, and no warning', () => {
-    const file = path.join(process.cwd(), 'skill', 'coaching-animator', 'examples', '07-kick-to-space.json');
+    const file = path.join(process.cwd(), 'skill', 'coaching-animator', 'examples', '08-kick-to-space.json');
     const script = valid(readFileSync(file, 'utf8'));
     const kicks = positionsAt(resolveStep(script, 0), 0).passes.filter((f) => f.roll);
     expect(kicks).toHaveLength(1);

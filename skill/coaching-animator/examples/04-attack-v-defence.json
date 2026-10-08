@@ -24,13 +24,13 @@
     "moves": [
       { "marker": "a1", "waypoints": [{ "x": 12, "y": 12 }], "pace": "jog" },
       { "marker": "a2", "waypoints": [{ "x": 17, "y": 13 }], "pace": "jog" },
-      { "marker": "a3", "waypoints": [{ "x": 22, "y": 17 }, { "x": 24, "y": 4 }], "pace": "sprint", "after": { "pass": "p1" } },
+      { "marker": "a3", "waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13 }, { "x": 24, "y": 4 }], "pace": "sprint" },
       { "marker": "d1", "waypoints": [{ "x": 13, "y": 11 }], "pace": "jog" },
       { "marker": "d2", "waypoints": [{ "x": 18, "y": 12 }], "pace": "jog" }
     ],
     "passes": [
       { "id": "p1", "from": "a1", "to": "a2" },
-      { "id": "p2", "from": "a2", "to": "a3", "at": 0, "after": { "move": "d2" } }
+      { "id": "p2", "from": "a2", "to": "a3", "at": 1, "after": { "move": "d2" } }
     ],
     "commentary": {
       "points": [

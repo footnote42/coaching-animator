@@ -18,7 +18,7 @@
     ],
     "moves": [
       { "marker": "a2", "waypoints": [{ "x": 10, "y": 6 }], "pace": "walk" },
-      { "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "walk", "after": { "pass": "p1" } }
+      { "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "walk" }
     ],
     "passes": [
       { "id": "p1", "from": "a1", "to": "a2" },
@@ -42,7 +42,7 @@
       },
       "changes": [
         { "type": "setMove", "marker": "a2", "waypoints": [{ "x": 10, "y": 6 }], "pace": "sprint" },
-        { "type": "setMove", "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "sprint", "after": { "pass": "p1" } },
+        { "type": "setMove", "marker": "a3", "waypoints": [{ "x": 17, "y": 4 }], "pace": "sprint" },
         { "type": "setPass", "id": "p2", "from": "a2", "to": "a3", "at": 0 }
       ]
     },

@@ -26,11 +26,11 @@ export default function HowToPage() {
           <ol className="space-y-6">
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">1. Draw the base Step</h3>
-              <p>Go to <strong>Create</strong>. Choose an <strong>Area</strong> template, then pick a marker (attacker, defender, ball, cone, tackle shield or coach) and tap the Area to place it. Use <strong>Select and drag</strong> to move markers; they snap to the grid. <strong>Undo</strong> and <strong>Redo</strong> are in the toolbar.</p>
+              <p>Go to <strong>Create</strong>. Choose an <strong>Area</strong> template, then pick a marker (attacker, defender, ball, cone, tackle shield, tackle bag or coach) and tap the Area to place it. Use <strong>Select and drag</strong> to move markers; they snap to the grid. <strong>Undo</strong> and <strong>Redo</strong> are in the toolbar.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">2. Draw runs and passes</h3>
-              <p>Use <strong>Draw a run</strong>: tap a player, then tap cells to draw the path. Select the player to set its <strong>Pace</strong> (walk, jog or sprint). Use <strong>Add a pass</strong>: tap the player with the ball, then the receiver, and the pass fires when the receiver arrives. Press Play under the Area to watch it, and turn on <strong>Ghost mode</strong> to see where markers started.</p>
+              <p>Use <strong>Draw a run</strong>: tap a player, then tap cells to draw the path. Select the player to set its <strong>Pace</strong> (walk, jog or sprint). Use <strong>Add a pass</strong>: tap the player with the ball, then the receiver, and the receiver is timed to meet the ball. Press Play under the Area to watch it, and turn on <strong>Ghost mode</strong> to see where markers started.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">3. Add a Progression</h3>

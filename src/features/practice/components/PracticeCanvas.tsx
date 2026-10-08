@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useMemo, useRef, type ReactNode } from 'react';
-import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group } from 'react-konva';
+import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group, Path } from 'react-konva';
 import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
 import { drawOrder } from '@/features/practice/drawOrder';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
+import { TACKLE_BAG_SHADE, tackleBagShape } from '@/features/practice/tackleBag';
+import type { LyingKind } from '@/features/practice/schema';
 
 /** Below this many pixels between grid lines they are too dense to draw. */
 const MIN_GRID_PX = 6;
@@ -21,7 +23,7 @@ const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 /** How much bigger the ball looks at the top of a kick. */
 const KICK_LIFT = 0.6;
 /** How far, in marker radii, a ball under Lying kit sits off centre so its end shows past the kit. */
-const UNDER_KIT_OFFSET = 0.9;
+const UNDER_KIT_OFFSET: Record<LyingKind, number> = { 'tackle-shield': 0.9, 'tackle-bag': 1.3 };
 
 export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMarker; x: number; y: number; r: number; scale?: number }) {
   const fill = markerColour(marker);
@@ -34,6 +36,15 @@ export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMa
       // Lying is the upright shield turned 90 degrees: flat on the ground.
       const [w, h] = marker.lying ? [r * 2, r * 1.2] : [r * 1.2, r * 2];
       return <Rect x={x - w / 2} y={y - h / 2} width={w} height={h} fill={fill} stroke="#111827" strokeWidth={1} />;
+    }
+    case 'tackle-bag': {
+      const bag = tackleBagShape(x, y, r, marker.lying);
+      return (
+        <Group>
+          <Rect x={bag.x} y={bag.y} width={bag.width} height={bag.height} cornerRadius={bag.cornerRadius} fill={fill} stroke="#111827" strokeWidth={1} />
+          <Path data={bag.shade} fill={TACKLE_BAG_SHADE} />
+        </Group>
+      );
     }
     default:
       return (
@@ -175,7 +186,7 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
             // The ball grows then shrinks over a kick to suggest height.
             const kick = passes.find((f) => f.kick && f.ball === marker.id && time >= f.fire && time < f.land);
             const scale = kick ? 1 + KICK_LIFT * Math.sin(Math.PI * ((time - kick.fire) / (kick.land - kick.fire))) : 1;
-            const x = px(p.x) + (underKit ? radius * UNDER_KIT_OFFSET : 0);
+            const x = px(p.x) + (underKit ? radius * UNDER_KIT_OFFSET[underKit] : 0);
             return <MarkerShape key={marker.id} marker={marker} x={x} y={px(p.y)} r={radius} scale={scale} />;
           })}
         </Layer>

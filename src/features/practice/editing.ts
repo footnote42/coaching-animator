@@ -73,7 +73,7 @@ export type Edit =
   | { type: 'setLabel'; marker: string; label: string | undefined }
   /** Colour a cone; yellow clears it. Other kinds are left alone. */
   | { type: 'setColour'; marker: string; colour: ConeColour }
-  /** Lay a tackle shield flat (Lying) or stand it up. Other kinds are refused. */
+  /** Lay a tackle shield or tackle bag flat (Lying) or stand it up. Other kinds are refused. */
   | { type: 'setLying'; marker: string; lying: boolean };
 
 /** What a tap on the canvas does: select and drag, draw a run, link a pass, or place a marker. */
@@ -113,6 +113,7 @@ const ID_PREFIX: Record<MarkerKind, string> = {
   ball: 'ball',
   cone: 'cone',
   'tackle-shield': 'shield',
+  'tackle-bag': 'bag',
 };
 
 const LABEL_PREFIX: Partial<Record<MarkerKind, string>> = { attacker: 'A', defender: 'D', coach: 'C' };
@@ -593,7 +594,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'setLying': {
       const kind = kindOf(script, edit.marker);
       if (kind === undefined) return `No marker "${edit.marker}".`;
-      if (!(LYING_KINDS as readonly string[]).includes(kind)) return 'Only a tackle shield can be laid flat.';
+      if (!(LYING_KINDS as readonly string[]).includes(kind)) return 'Only a tackle shield or tackle bag can be laid flat.';
       const placement = script.base.placements.find((p) => p.marker === edit.marker);
       if (!placement || (placement.lying ?? false) === edit.lying) return script;
       const { lying: _old, ...rest } = placement;

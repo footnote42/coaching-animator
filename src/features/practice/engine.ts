@@ -902,6 +902,16 @@ function easedProfile(length: number, speedMps: number): SpeedProfile {
   };
 }
 
+/** A profile played `scale` times slower, keeping its shape: easing, Pace and taper all slow together. */
+function slowedProfile(profile: SpeedProfile, scale: number): SpeedProfile {
+  if (scale === 1) return profile;
+  return {
+    duration: profile.duration * scale,
+    distanceAt: (elapsed) => profile.distanceAt(elapsed / scale),
+    timeAt: (cells) => profile.timeAt(cells) * scale,
+  };
+}
+
 /** A Run's path from its start cell through its waypoints, and how it moves along it. */
 interface Run {
   start: Point;
@@ -970,39 +980,123 @@ function rollAt(flight: PassFlight, time: number): Point {
 }
 
 /**
- * When every move starts and every pass flies. A move starts at zero or when
- * what it waits for completes; a pass fires once the previous pass of its ball
- * is caught and the receiver has arrived at its cell, or at waypoint `at` for
- * a catch on the run. A receiver whose move waits on the pass has not set off:
- * the pass fires as soon as the ball is free and is caught on its cell.
+ * Which pass each receiver's Run is timed to (ADR 0005), as receiver id -> pass
+ * index. A Run is timed to the first pass to that receiver in list order. It is
+ * left untimed when its move waits on the pass (caught in place) or when timing
+ * it would loop: the pass would then wait, through the ball, a Run or where the
+ * passer is, on the very Run it times. Decided in list order, so it is deterministic.
+ *
+ * Nodes: `start:<marker>` is when a Run would start untimed, `move:<marker>` the
+ * Run as played, `pass:<id>` a flight. Each lists what it is computed from.
+ */
+function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map<string, string[]>, inPlace: Set<string>) {
+  const graph = new Map<string, string[]>();
+  for (const [marker, { after }] of moves) {
+    graph.set(`start:${marker}`, after?.move !== undefined ? [`move:${after.move}`] : after?.pass !== undefined ? [`pass:${after.pass}`] : []);
+    graph.set(`move:${marker}`, [`start:${marker}`]);
+  }
+  const lastOfBall = new Map<string, string>();
+  for (const pass of passes) {
+    const node = `pass:${pass.id}`;
+    const previous = lastOfBall.get(pass.ball);
+    const needs = previous === undefined ? [] : [`pass:${previous}`];
+    lastOfBall.set(pass.ball, pass.id);
+    if (pass.after) needs.push(`move:${pass.after.move}`);
+    if (moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([node]))) needs.push(`move:${pass.from}`);
+    if (pass.to !== undefined && moves.has(pass.to) && !inPlace.has(pass.id)) needs.push(`move:${pass.to}`);
+    graph.set(node, needs);
+  }
+  const timed = new Map<string, number>();
+  passes.forEach((pass, i) => {
+    // A Kick to space has no receiver, so it never times a Run.
+    if (pass.to === undefined || !moves.has(pass.to) || inPlace.has(pass.id) || timed.has(pass.to)) return;
+    const node = `pass:${pass.id}`;
+    const needs = graph.get(node)!;
+    const to = pass.to;
+    const run = graph.get(`move:${to}`)!;
+    // Timed, the pass needs only when the receiver would start, and the Run needs the pass.
+    const swapped = needs.map((n) => (n === `move:${to}` ? `start:${to}` : n));
+    graph.set(node, swapped);
+    run.push(node);
+    if (waitsOn(graph, node, new Set([node]))) {
+      graph.set(node, needs);
+      run.pop();
+    } else {
+      timed.set(to, i);
+    }
+  });
+  return timed;
+}
+
+/**
+ * When every move starts and every pass flies. A pass is ready once the
+ * previous pass of its ball is caught and any Run it waits on (`after`) has
+ * finished, and flies to the catch point: waypoint `at` of the receiver's Run,
+ * or its end. Receivers are timed to the ball (ADR 0005): a receiver who would
+ * arrive early has its whole Run slowed, never below walk, then its start
+ * delayed for whatever slowing cannot absorb. A receiver who would be late even
+ * at its own Paces is not waited for: the pass goes later, from wherever the
+ * passer has run to, so the ball arrives with the receiver. A receiver whose
+ * move waits on the pass has not set off: the pass fires as soon as the ball
+ * is free and is caught on its cell. A Kick to space (`cell`) has no receiver:
+ * it flies when ready to its cell at kick speed, then rolls on and lies loose.
  */
 function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[], area: Area) {
   const moves = new Map(moveList.map((m) => [m.marker, m]));
   const runs = new Map(moveList.map((m) => [m.marker, runOf(cells.get(m.marker)!, m)]));
   const passIndex = new Map(passes.map((p, i) => [p.id, i]));
   const { edges, inPlace } = waitEdges(moves, passes);
-  const starts = new Map<string, number>();
+  const timedBy = timedReceivers(moves, passes, edges, inPlace);
+  const naturalStarts = new Map<string, number>();
+  const played = new Map<string, { run: Run; start: number }>();
   const flights: PassFlight[] = [];
 
-  const startOf = (marker: string): number => {
-    let start = starts.get(marker);
+  /** When a Run would start if it were not timed to a pass. */
+  const naturalStartOf = (marker: string): number => {
+    let start = naturalStarts.get(marker);
     if (start === undefined) {
       const after = moves.get(marker)!.after;
       start =
         after?.move !== undefined ? endOf(after.move)
         : after?.pass !== undefined ? flight(passIndex.get(after.pass)!).land
         : 0;
-      starts.set(marker, start);
+      naturalStarts.set(marker, start);
     }
     return start;
   };
 
-  const endOf = (marker: string, upto?: number): number =>
-    startOf(marker) + runDuration(runs.get(marker)!, upto);
+  /** A Run as played: slowed and started late if it is timed to a pass it would reach early. */
+  const playedRun = (marker: string): { run: Run; start: number } => {
+    let result = played.get(marker);
+    if (result === undefined) {
+      const run = runs.get(marker)!;
+      const start = naturalStartOf(marker);
+      result = { run, start };
+      const i = timedBy.get(marker);
+      if (i !== undefined) {
+        const { land } = flight(i);
+        const reach = runDuration(run, passes[i].at);
+        if (land - (start + reach) > 1e-9) {
+          const slowest = PACE_SPEEDS_MPS[run.move.pace ?? DEFAULT_PACE] / PACE_SPEEDS_MPS.walk;
+          const scale = reach > 0 ? Math.min(slowest, (land - start) / reach) : 1;
+          result = { run: { ...run, profile: slowedProfile(run.profile, scale) }, start: land - reach * scale };
+        }
+      }
+      played.set(marker, result);
+    }
+    return result;
+  };
+
+  const endOf = (marker: string, upto?: number): number => {
+    const { run, start } = playedRun(marker);
+    return start + runDuration(run, upto);
+  };
 
   const pointAt = (marker: string, t: number): Point => {
-    const run = runs.get(marker);
-    if (run) return pointAlong(run, t - startOf(marker));
+    if (moves.has(marker)) {
+      const { run, start } = playedRun(marker);
+      return pointAlong(run, t - start);
+    }
     const cell = cells.get(marker)!;
     return { x: cell.x, y: cell.y };
   };
@@ -1013,44 +1107,65 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     let previous = i - 1;
     while (previous >= 0 && passes[previous].ball !== pass.ball) previous--;
     const caught = previous >= 0 ? flight(previous).land : 0;
-    const receiver = pass.to === undefined ? undefined : moves.get(pass.to);
-    const waits = receiver !== undefined && !inPlace.has(pass.id);
-    const fire = Math.max(caught, waits ? endOf(pass.to!, pass.at) : 0, pass.after ? endOf(pass.after.move) : 0);
+    const ready = Math.max(caught, pass.after ? endOf(pass.after.move) : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
-    const start =
-      moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))
-        ? pointAt(pass.from, fire)
-        : { x: fromCell.x, y: fromCell.y };
-    const rest = pass.cell ?? (waits ? receiver.waypoints[receiver.waypoints.length - 1] : cells.get(pass.to!)!);
-    let end = { x: rest.x, y: rest.y };
+    const passerRuns = moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]));
+    const startAt = (t: number): Point => (passerRuns ? pointAt(pass.from, t) : { x: fromCell.x, y: fromCell.y });
     const speed = pass.kick ? KICK_SPEED_MPS : PASS_SPEED_MPS;
-    let land = fire + (distance(start, end) * CELL_SIZE_M) / speed;
-    if (pass.at !== undefined && waits) {
-      // Catch on the run: lead the receiver. Every Pace is slower than the ball,
-      // so aiming at where the receiver will be when the ball lands converges.
-      const to = pass.to!;
-      end = pointAt(to, fire);
-      for (let k = 0; k < 40; k++) {
-        land = fire + (distance(start, end) * CELL_SIZE_M) / speed;
-        end = pointAt(to, land);
-      }
+    const flightTime = (from: Point, to: Point) => (distance(from, to) * CELL_SIZE_M) / speed;
+    const record = (fire: number, start: Point, end: Point, land = fire + flightTime(start, end)): PassFlight => {
+      // A Kick to space lands, rolls on and lies loose.
+      const resting = pass.cell && rollTo(start, end, area);
+      const roll = resting && { to: resting, until: land + (distance(resting, end) > 0 ? KICK_ROLL_S : 0) };
+      return (flights[i] = {
+        id: pass.id,
+        ball: pass.ball,
+        from: pass.from,
+        ...(pass.to !== undefined && { to: pass.to }),
+        start,
+        end,
+        ...(pass.kick && { kick: true }),
+        fire,
+        land,
+        ...(roll && { roll }),
+      });
+    };
+
+    // A Kick to space has no receiver to time: it goes as soon as it is ready.
+    if (pass.cell) return record(ready, startAt(ready), { x: pass.cell.x, y: pass.cell.y });
+    const to = pass.to!;
+    const receiver = moves.get(to);
+    if (receiver === undefined || inPlace.has(pass.id)) {
+      const cell = cells.get(to)!;
+      return record(ready, startAt(ready), { x: cell.x, y: cell.y });
     }
-    // A Kick to space lands, rolls on and lies loose.
-    const resting = pass.cell && rollTo(start, end, area);
-    const roll = resting && { to: resting, until: land + (distance(resting, end) > 0 ? KICK_ROLL_S : 0) };
-    return (flights[i] = {
-      id: pass.id,
-      ball: pass.ball,
-      from: pass.from,
-      ...(pass.to !== undefined && { to: pass.to }),
-      start,
-      end,
-      ...(pass.kick && { kick: true }),
-      fire,
-      land,
-      ...(roll && { roll }),
-    });
+    const point = receiver.waypoints[pass.at ?? receiver.waypoints.length - 1];
+    const catchPoint = { x: point.x, y: point.y };
+    const timed = timedBy.get(to) === i;
+    // When the receiver reaches the catch point: at its own Paces if its Run is timed to this pass.
+    const arrival = timed ? naturalStartOf(to) + runDuration(runs.get(to)!, pass.at) : endOf(to, pass.at);
+    let fire = ready;
+    let start = startAt(fire);
+    if (arrival - (fire + flightTime(start, catchPoint)) > 1e-9) {
+      // Late: the passer runs on and the ball goes when it can be taken. Every
+      // Pace is slower than the ball, so solving for the throw point converges.
+      for (let k = 0; k < 40; k++) {
+        fire = Math.max(ready, arrival - flightTime(start, catchPoint));
+        start = startAt(fire);
+      }
+      return record(fire, start, catchPoint);
+    }
+    // Early: a timed receiver is slowed to meet the ball. An untimed one that
+    // catches on the run is led, aiming at where it will be when the ball lands.
+    if (timed || pass.at === undefined) return record(fire, start, catchPoint);
+    let end = pointAt(to, fire);
+    let land = fire;
+    for (let k = 0; k < 40; k++) {
+      land = fire + flightTime(start, end);
+      end = pointAt(to, land);
+    }
+    return record(fire, start, end, land);
   };
 
   passes.forEach((_, i) => flight(i));
@@ -1119,7 +1234,7 @@ function teamOf(marker: ResolvedMarker | undefined): 'attack' | 'defence' {
 /**
  * Warnings for a validated script: a pass is forward when it is caught more than
  * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
- * the real throw and catch points (the ball leads a receiver on the run).
+ * the real throw and catch points (the ball leads an untimed receiver on the run).
  * Also an early catch: the receiver reaches its catch point before the passer has the ball.
  * Never blocks saving. Forward passes need a Direction of attack; early catches do not.
  */

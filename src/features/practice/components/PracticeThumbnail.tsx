@@ -3,6 +3,7 @@ import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
+import { TACKLE_BAG_SHADE, tackleBagShape } from '@/features/practice/tackleBag';
 
 /** Above this many grid lines on a side they are too dense to draw. */
 const MAX_GRID_LINES = 40;
@@ -96,6 +97,15 @@ export function PracticeThumbnail({ step, showMoves = true, title, className, ti
           case 'tackle-shield': {
             const [w, h] = marker.lying ? [r * 2, r * 1.2] : [r * 1.2, r * 2];
             return <rect key={marker.id} x={x - w / 2} y={y - h / 2} width={w} height={h} fill={fill} stroke="#111827" strokeWidth={stroke} />;
+          }
+          case 'tackle-bag': {
+            const bag = tackleBagShape(x, y, r, marker.lying);
+            return (
+              <g key={marker.id}>
+                <rect x={bag.x} y={bag.y} width={bag.width} height={bag.height} rx={bag.cornerRadius} fill={fill} stroke="#111827" strokeWidth={stroke} />
+                <path d={bag.shade} fill={TACKLE_BAG_SHADE} />
+              </g>
+            );
           }
           default:
             return (

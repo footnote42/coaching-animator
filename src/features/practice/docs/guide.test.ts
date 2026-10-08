@@ -42,9 +42,10 @@ describe('worked examples', () => {
     expect(duration).toBeGreaterThan(0);
     // The ball ends with the last receiver.
     expect(positions.ball).toEqual(positions.a14);
-    // The 14 is led on its run but reaches its last waypoint before the ball
-    // does, so the catch is the last thing in the Step until receivers are
-    // timed to the ball (#144).
-    expect(passes[3].land).toBeLessThanOrEqual(duration);
+    // The 14 is timed to the ball: it catches on its first waypoint and carries
+    // on up the touchline, so the catch comes before the Step ends.
+    expect(passes[3].end).toEqual({ x: 9, y: 48 });
+    expect(positionsAt(resolveStep(result.script, 0), passes[3].land).positions.a14).toEqual({ x: 9, y: 48 });
+    expect(passes[3].land).toBeLessThan(duration);
   });
 });

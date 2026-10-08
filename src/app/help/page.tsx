@@ -16,8 +16,8 @@ export default function HelpPage() {
         <h2 className="text-2xl font-heading font-bold mb-4">Core workflow</h2>
         <ol className="list-decimal list-inside space-y-2">
           <li><strong>Pick an Area</strong>: a square, a rectangle, half a pitch or a full pitch, sized in metres.</li>
-          <li><strong>Place markers</strong>: attackers, defenders, a coach, the ball, cones and tackle shields. They snap to the grid.</li>
-          <li><strong>Draw runs and passes</strong>: draw each player&apos;s run, choose its Pace, and add passes that fire when the receiver arrives.</li>
+          <li><strong>Place markers</strong>: attackers, defenders, a coach, the ball, cones, tackle shields and tackle bags. They snap to the grid.</li>
+          <li><strong>Draw runs and passes</strong>: draw each player&apos;s run, choose its Pace, and add passes; each receiver is timed to meet the ball.</li>
           <li><strong>Add Progressions</strong>: each one changes the Step before it by pulling one STEP lever.</li>
           <li><strong>Save and share</strong>: sign in to save, add Tags and a Source if you like, then send the link or publish to the Gallery.</li>
         </ol>

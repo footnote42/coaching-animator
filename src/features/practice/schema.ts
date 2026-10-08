@@ -51,11 +51,12 @@ export const MARKER_KINDS = [
   'ball',
   'cone',
   'tackle-shield',
+  'tackle-bag',
   'coach',
 ] as const;
 
 /** Marker kinds that can be Lying (laid flat on the ground). */
-export const LYING_KINDS = ['tackle-shield'] as const;
+export const LYING_KINDS = ['tackle-shield', 'tackle-bag'] as const;
 
 export const TEAMS = ['attack', 'defence'] as const;
 
@@ -139,7 +140,7 @@ const StartShape = {
     .boolean()
     .optional()
     .describe(
-      'For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.',
+      'For a tackle shield or tackle bag only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for upright kit.',
     ),
 };
 
@@ -196,7 +197,7 @@ export const PassSchema = z
       .max(MAX_WAYPOINTS - 1)
       .optional()
       .describe(
-        "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
+        "Catch on the run: index (from 0) of a waypoint in the receiver's move. The receiver is timed to reach that waypoint as the ball does, and runs the rest of its move holding the ball. Leave out to catch at the end of the move. Only for a receiver with a move.",
       ),
     after: PassAfterSchema.optional().describe(
       'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
@@ -260,7 +261,7 @@ export const PlaceMarkerChangeSchema = z
     ...StartShape,
   })
   .describe(
-    'Change where a marker starts (or, for the ball, who holds it or the cell it lies loose on) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell.',
+    'Change where a marker starts (or, for the ball, who holds it or the cell it lies loose on) and whether a tackle shield or tackle bag is Lying. Replaces the whole start: give the cell again, and leave out lying to stand Lying kit back up. Its move, if any, is kept and runs from the new cell.',
   );
 
 export const SetMoveChangeSchema = z

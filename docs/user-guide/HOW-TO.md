@@ -15,13 +15,13 @@ A browser tool for rugby coaches. You draw a Practice on an Area, animate it, bu
 
 1. Go to **Create**.
 2. Choose an **Area** template (square, horizontal or vertical rectangle, half pitch, full pitch). Set its size in metres.
-3. Pick a marker (attacker, defender, ball, cone, tackle shield, coach) and tap the Area to place it. Markers snap to the grid.
+3. Pick a marker (attacker, defender, ball, cone, tackle shield, tackle bag, coach) and tap the Area to place it. Markers snap to the grid.
 4. **Select and drag** moves a marker. **Undo** (Ctrl+Z) and **Redo** (Ctrl+Shift+Z) are in the toolbar.
 
 ## 3. Runs and passes
 
 - **Draw a run**: tap a player, then tap cells to draw the path. Select the player to set the **Pace** (walk, jog or sprint).
-- **Add a pass**: tap the player with the ball, then the receiver. The pass fires when the receiver arrives.
+- **Add a pass**: tap the player with the ball, then the receiver. The receiver is timed to meet the ball: slowed if they would be early, and if they would be late the pass goes later.
 - **Play** under the Area runs the Step. **Back to start** resets it. **Ghost mode** shows where markers started.
 
 ## 4. Progressions

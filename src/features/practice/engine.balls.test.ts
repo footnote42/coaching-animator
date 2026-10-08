@@ -8,6 +8,7 @@ import {
   DEFAULT_PACE,
   RUN_ACCELERATION_MPS2,
   RUN_TAPER_MPS2,
+  PASS_SPEED_MPS,
 } from './engine';
 
 const jog = PACE_SPEEDS_MPS[DEFAULT_PACE];
@@ -57,10 +58,12 @@ describe('receive, pass, run, receive again', () => {
     expect(p1.fire).toBe(0);
     expect(p1.end).toEqual({ x: 10, y: 0 });
     expect(p2.fire).toBeCloseTo(p1.land);
-    // a2 sets off when p2 is caught, and p3 waits until it is back: 12 m at jog,
+    // a2 sets off when p2 is caught, and p3 lands as it is back: 12 m at jog,
     // plus the time lost speeding up from rest and tapering onto its last waypoint.
+    // Receivers are timed to the ball (#144), so p3 is thrown before a2 arrives.
     const runBack = 12 / jog + jog / (2 * RUN_ACCELERATION_MPS2) + jog / (2 * RUN_TAPER_MPS2);
-    expect(p3.fire).toBeCloseTo(p2.land + runBack);
+    expect(p3.land).toBeCloseTo(p2.land + runBack);
+    expect(p3.fire).toBeCloseTo(p2.land + runBack - 10 / PASS_SPEED_MPS);
     expect(p3.end).toEqual({ x: 10, y: 0 });
   });
 
