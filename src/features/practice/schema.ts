@@ -191,7 +191,7 @@ export const PassSchema = z
       .max(MAX_WAYPOINTS - 1)
       .optional()
       .describe(
-        "Catch on the run: index (from 0) of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, and the receiver runs the rest of its move holding the ball. Leave out to fire at the end of the move. Only for a receiver with a move.",
+        "Catch on the run: index (from 0) of a waypoint in the receiver's move. The receiver is timed to reach that waypoint as the ball does, and runs the rest of its move holding the ball. Leave out to catch at the end of the move. Only for a receiver with a move.",
       ),
     after: PassAfterSchema.optional().describe(
       'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
