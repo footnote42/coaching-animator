@@ -9,6 +9,9 @@ export const CONE_OUTLINE = coneOutline;
 /** Coaches stand out from both teams and from the equipment colours. */
 const COACH_COLOUR = '#EAB308';
 
+/** Tackle bags are slate, like a stack of real bags, so they read apart from red shields. */
+const TACKLE_BAG_COLOUR = '#64748B';
+
 /** Fill colour for a marker. The single source of marker colours for every Practice renderer. */
 export function markerColour(marker: Pick<ResolvedMarker, 'kind'> & Partial<Pick<ResolvedMarker, 'team' | 'colour'>>): string {
   switch (marker.kind) {
@@ -25,5 +28,7 @@ export function markerColour(marker: Pick<ResolvedMarker, 'kind'> & Partial<Pick
       return cone[marker.colour ?? 'yellow'];
     case 'tackle-shield':
       return defense[0];
+    case 'tackle-bag':
+      return TACKLE_BAG_COLOUR;
   }
 }

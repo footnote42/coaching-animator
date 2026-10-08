@@ -51,11 +51,12 @@ export const MARKER_KINDS = [
   'ball',
   'cone',
   'tackle-shield',
+  'tackle-bag',
   'coach',
 ] as const;
 
 /** Marker kinds that can be Lying (laid flat on the ground). */
-export const LYING_KINDS = ['tackle-shield'] as const;
+export const LYING_KINDS = ['tackle-shield', 'tackle-bag'] as const;
 
 export const TEAMS = ['attack', 'defence'] as const;
 
@@ -137,7 +138,7 @@ const StartShape = {
     .boolean()
     .optional()
     .describe(
-      'For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.',
+      'For a tackle shield or tackle bag only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for upright kit.',
     ),
 };
 
@@ -255,7 +256,7 @@ export const PlaceMarkerChangeSchema = z
     ...StartShape,
   })
   .describe(
-    'Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell.',
+    'Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield or tackle bag is Lying. Replaces the whole start: give the cell again, and leave out lying to stand Lying kit back up. Its move, if any, is kept and runs from the new cell.',
   );
 
 export const SetMoveChangeSchema = z
