@@ -53,7 +53,7 @@ A Pass caught at a point part way along the receiver's Run instead of at its end
 _Avoid_: mid-run pass, early catch
 
 **Release**:
-The point part way along the carrier's own Run where a Pass or Kick leaves their hands; the carrier runs on without the ball. Leave it out and the ball goes at the end of the carrier's Run.
+The waypoint part way along the carrier's own Run where a Pass or Kick leaves their hands; the carrier runs on without the ball, and the receiver is timed to meet it. Leave it out and the ball goes as soon as the Pass is ready, from wherever the carrier has run to.
 _Avoid_: pass point, throw point
 
 **Kick to space**:

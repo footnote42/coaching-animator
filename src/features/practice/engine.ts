@@ -86,10 +86,10 @@ export interface ValidationWarning {
   step: number;
   /** Id of the pass concerned. */
   pass: string;
-  /** `forward`: caught ahead of the thrower. `early`: the receiver reaches the catch point before the passer has the ball. */
+  /** `forward`: caught ahead of the thrower. `early`: the receiver reaches the catch point before the passer has the ball, or before it is Released. */
   kind: 'forward' | 'early';
   message: string;
-  /** For `early`: starting the receiver's Run after this earlier pass of the ball clears it. */
+  /** For `early` before the passer has the ball: starting the receiver's Run after this earlier pass of the ball clears it. */
   fix?: { marker: string; afterPass: string };
 }
 
@@ -339,9 +339,10 @@ type BallPass = Pass & { ball: string };
  * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
  * A move waits for its `after`. A pass waits for the previous pass of the same
  * ball to be caught and for the receiver's move (to finish, or reach the catch
- * waypoint). The exception is a receiver whose move waits on this very pass,
- * directly or not: it has not set off, so the pass does not wait for it and is
- * caught on its starting cell. Those passes are returned in `inPlace`.
+ * waypoint), and a pass with a Release waits for the passer's move (to reach
+ * the release waypoint). The exception is a receiver whose move waits on this
+ * very pass, directly or not: it has not set off, so the pass does not wait for
+ * it and is caught on its starting cell. Those passes are returned in `inPlace`.
  */
 function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
   const edges = new Map<string, string[]>();
@@ -359,6 +360,7 @@ function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
   }
   for (const pass of passes) {
     if (pass.after) edges.get(`pass:${pass.id}`)!.push(`move:${pass.after.move}`);
+    if (pass.release !== undefined && moves.has(pass.from)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.from}`);
   }
   for (const pass of passes) {
     if (pass.to !== undefined && moves.has(pass.to)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.to}`);
@@ -536,13 +538,32 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
         issues.push({ target, field: 'at', message: `waypoint ${pass.at} is outside the move of "${pass.to}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})` });
       }
     }
+    if (pass.release !== undefined) {
+      const move = state.moves.get(pass.from);
+      if (!move) {
+        issues.push({ target, field: 'release', message: `marker "${pass.from}" has no move in this Step, so there is nothing to release on the run; leave out "release" or give "${pass.from}" a move` });
+      } else if (pass.release >= move.waypoints.length) {
+        const count = move.waypoints.length;
+        issues.push({ target, field: 'release', message: `waypoint ${pass.release} is outside the move of "${pass.from}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})` });
+      }
+    }
   }
 
   if (issues.length === 0) {
     const passes = [...state.passes.values()].map((pass): BallPass => ({ ...pass, ball: pass.ball ?? defaultBall! }));
     const moves = [...state.moves.values()];
     const { edges, inPlace } = waitEdges(state.moves, passes);
-    const loop = findLoop(edges);
+    // A passer whose move waits on its own pass has not set off when it is thrown.
+    for (const pass of passes) {
+      if (pass.release !== undefined && waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))) {
+        issues.push({
+          target: { kind: 'pass', id: pass.id },
+          field: 'release',
+          message: `the move of "${pass.from}" waits for this pass, so "${pass.from}" has not set off when it is thrown; leave out "release"`,
+        });
+      }
+    }
+    const loop = issues.length === 0 ? findLoop(edges) : null;
     if (loop) {
       const [first, ...rest] = loop.map(splitNode);
       issues.push({
@@ -550,7 +571,7 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
         field: first.kind === 'move' ? 'after' : 'to',
         message: `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for ${rest.map(targetLabel).join(', which waits for ')}`,
       });
-    } else {
+    } else if (issues.length === 0) {
       for (const pass of passes) {
         if (inPlace.has(pass.id) && pass.at !== undefined) {
           issues.push({
@@ -1099,8 +1120,9 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
 
 /**
  * When every move starts and every pass flies. A pass is ready once the
- * previous pass of its ball is caught and any Run it waits on (`after`) has
- * finished, and flies to the catch point: waypoint `at` of the receiver's Run,
+ * previous pass of its ball is caught, any Run it waits on (`after`) has
+ * finished and, with a Release, the passer has reached waypoint `release` of
+ * their Run (they run on without the ball). It flies to the catch point: waypoint `at` of the receiver's Run,
  * or its end. Receivers are timed to the ball (ADR 0005): a receiver who would
  * arrive early has its whole Run slowed (no segment below walk), then its start
  * delayed for whatever slowing cannot absorb. A receiver who would be late even
@@ -1179,10 +1201,12 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     let previous = i - 1;
     while (previous >= 0 && passes[previous].ball !== pass.ball) previous--;
     const caught = previous >= 0 ? flight(previous).land : 0;
-    const ready = Math.max(caught, pass.after ? endOf(pass.after.move) : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
     const passerRuns = moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]));
+    // A Release holds the ball until the passer reaches that waypoint of their Run.
+    const released = passerRuns && pass.release !== undefined ? endOf(pass.from, pass.release) : 0;
+    const ready = Math.max(caught, pass.after ? endOf(pass.after.move) : 0, released);
     const startAt = (t: number): Point => (passerRuns ? pointAt(pass.from, t) : { x: fromCell.x, y: fromCell.y });
     const speed = pass.kick ? KICK_SPEED_MPS : PASS_SPEED_MPS;
     const flightTime = (from: Point, to: Point) => (distance(from, to) * CELL_SIZE_M) / speed;
@@ -1307,7 +1331,8 @@ function teamOf(marker: ResolvedMarker | undefined): 'attack' | 'defence' {
  * Warnings for a validated script: a pass is forward when it is caught more than
  * 0.5 m ahead of where it was thrown, measured in the Direction of attack, using
  * the real throw and catch points (the ball leads an untimed receiver on the run).
- * Also an early catch: the receiver reaches its catch point before the passer has the ball.
+ * Also an early catch: the receiver reaches its catch point before the passer has the ball,
+ * or before the passer reaches its Release point.
  * Never blocks saving. Forward passes need a Direction of attack; early catches do not.
  */
 export function warnings(script: PracticeScript): ValidationWarning[] {
@@ -1326,17 +1351,26 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
       if (!pass.kick && pass.cell === undefined && isForwardPass(direction, flight.start, flight.end)) {
         found.push({ step: n, pass: pass.id, kind: 'forward', message: `Pass ${i + 1} goes forward` });
       }
-      // A catch on the run slides later when the receiver passes waypoint `at` before the passer has the ball.
+      // A catch on the run slides later when the receiver passes waypoint `at` before the passer has the ball,
+      // or before the passer reaches their Release point.
       if (pass.at === undefined || pass.to === undefined || !step.moves.some((m) => m.marker === pass.to)) return;
       const sameBall = flights.filter((f) => f.ball === flight.ball);
       const previous = sameBall[sameBall.indexOf(flight) - 1];
-      if (previous && endOf(pass.to, pass.at) < previous.land - 1e-9) {
+      const reaches = endOf(pass.to, pass.at);
+      if (previous && reaches < previous.land - 1e-9) {
         found.push({
           step: n,
           pass: pass.id,
           kind: 'early',
           message: `${label(pass.to)} reaches the catch point before ${label(pass.from)} has the ball`,
           fix: { marker: pass.to, afterPass: previous.id },
+        });
+      } else if (pass.release !== undefined && step.moves.some((m) => m.marker === pass.from) && reaches < endOf(pass.from, pass.release) - 1e-9) {
+        found.push({
+          step: n,
+          pass: pass.id,
+          kind: 'early',
+          message: `${label(pass.to)} reaches the catch point before ${label(pass.from)} releases the ball`,
         });
       }
     });

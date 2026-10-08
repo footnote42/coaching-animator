@@ -110,12 +110,12 @@ A move's duration comes from the straight-line length of its path (start cell to
 
 ## Passes
 
-A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`, or for a Kick to space `{ "id", "from", "cell", "kick": true, "ball"?, "after"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
+A pass is `{ "id", "from", "to", "ball"?, "at"?, "release"?, "after"?, "kick"? }`, or for a Kick to space `{ "id", "from", "cell", "kick": true, "ball"?, "release"?, "after"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
 - The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
 - `from` and `to` are different attackers, defenders or coaches on the Area.
-- Pass i can go once pass i - 1 has been caught (the first pass needs nothing before it) and, if the pass has `after`, that Run has finished.
+- Pass i can go once pass i - 1 has been caught (the first pass needs nothing before it), if the pass has `after`, that Run has finished, and, if the pass has `release`, the passer has reached that waypoint of their Run.
 - The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the catch point: waypoint `at` of the receiver's move if given, otherwise the end of its move, or the receiver's cell if it has no move.
 - The receiver is timed to arrive at the catch point as the ball does. See "Receivers are timed to the ball".
 
@@ -158,6 +158,22 @@ In rugby the receiver usually runs onto the ball and keeps going. Give the pass 
 - Leave `at` out to catch at the end of the receiver's move: the receiver tapers to a stop as the ball arrives.
 - `at` must name a waypoint of the receiver's move: from `0` to the number of waypoints minus 1. A receiver with no move cannot have `at`.
 - A receiver whose move waits (`after`) on this very pass, directly or through other passes and moves, has not set off yet, so `at` is rejected for that pass. See "Receive, pass, run, receive again".
+
+### `release`: pass mid-Run and run on in support
+
+A carrier with a Run can let the ball go part way along it and run on without it, in support. Give the pass `release`: the index, counted from `0`, of a waypoint in the passer's move. The ball leaves the passer's hands as they reach that waypoint, and they run the rest of their move without it. The receiver is timed to meet a ball released there.
+
+```json
+{ "id": "p1", "from": "a2", "to": "a3", "release": 0 }
+```
+
+- Leave `release` out to pass as soon as the pass is ready, from wherever the passer is.
+- `release` must name a waypoint of the passer's move: from `0` to the number of waypoints minus 1. A passer with no move cannot have `release`, and nor can a passer whose move waits (`after`) on this very pass.
+- The pass still waits for the previous catch and any `after` Run: a carrier who reaches the release waypoint before they have the ball passes as soon as they catch it.
+- If the receiver would be late even at their own Pace, the ball is not thrown to wait for them: as with any pass, the passer runs on and the pass goes later along their Run, so the ball arrives with the receiver.
+- It works the same for a kick, including a Kick to space.
+- The forward-pass warning measures from where the ball is actually released. A receiver whose Run is not timed to this pass (see above) and who reaches `at` before the release raises a warning ("1 reaches the catch point before 2 releases the ball").
+- A Progression's `setPass` carries `release` too; a later `setMove` that shortens the passer's Run must keep the waypoint.
 
 ### `after`: pass when a Run finishes (draw and pass)
 

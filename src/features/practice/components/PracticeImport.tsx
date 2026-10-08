@@ -135,6 +135,9 @@ export function PracticeImport() {
     catchPass,
     startCatch,
     endCatch,
+    releasePass,
+    startRelease,
+    endRelease,
     deleteSelection,
     undo,
     redo,
@@ -506,6 +509,15 @@ export function PracticeImport() {
             </>
           )}
 
+          {editing && !catchPass && releasePass && (
+            <>
+              <span>Tap the passer’s Run where the ball is released.</span>
+              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endRelease}>
+                Cancel
+              </Button>
+            </>
+          )}
+
           {editing && tool === 'pass' && balls.length > 1 && (
             <>
               <label htmlFor="pass-ball">Ball for new passes</label>
@@ -523,6 +535,7 @@ export function PracticeImport() {
               {passes.map((pass) => {
                 const name = (id: string | undefined) => (id === undefined ? 'space' : script.markers.find((m) => m.id === id)?.label ?? id);
                 const run = step?.moves.find((m) => m.marker === pass.to);
+                const passerRun = step?.moves.find((m) => m.marker === pass.from);
                 return (
                   <span key={pass.id} className="flex items-center gap-1">
                     <Button
@@ -581,6 +594,34 @@ export function PracticeImport() {
                         ))}
                       </select>
                     )}
+                    {passerRun && (
+                      <>
+                        <select
+                          aria-label={`Where ${name(pass.from)} releases`}
+                          value={pass.release ?? ''}
+                          onChange={(e) =>
+                            edit({ type: 'setRelease', id: pass.id, release: e.target.value === '' ? null : Number(e.target.value) })
+                          }
+                          className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
+                        >
+                          <option value="">Release when ready</option>
+                          {passerRun.waypoints.map((_, i) => (
+                            <option key={i} value={i}>
+                              {i === passerRun.waypoints.length - 1 ? 'Release at end of run' : `Release at point ${i + 1}, run on`}
+                            </option>
+                          ))}
+                        </select>
+                        <Button
+                          variant="outline"
+                          className="h-11"
+                          aria-pressed={releasePass === pass.id}
+                          onClick={() => (releasePass === pass.id ? endRelease() : startRelease(pass.id))}
+                        >
+                          Tap release
+                          <span className="sr-only"> point for {name(pass.from)} to {name(pass.to)}</span>
+                        </Button>
+                      </>
+                    )}
                   </span>
                 );
               })}
@@ -627,6 +668,8 @@ export function PracticeImport() {
                         catchPass={catchPass}
                         onPassAdded={startCatch}
                         onCatchDone={endCatch}
+                        releasePass={releasePass}
+                        onReleaseDone={endRelease}
                         onSelect={setSelection}
                         onEdit={edit}
                       />

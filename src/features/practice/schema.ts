@@ -212,6 +212,15 @@ export const PassSchema = z
       .describe(
         "Catch on the run: index (from 0) of a waypoint in the receiver's move. The receiver is timed to reach that waypoint as the ball does, and runs the rest of its move holding the ball. Leave out to catch at the end of the move. Only for a receiver with a move.",
       ),
+    release: z
+      .number()
+      .int()
+      .min(0)
+      .max(MAX_WAYPOINTS - 1)
+      .optional()
+      .describe(
+        "Release: index (from 0) of a waypoint in the passer's move. The ball leaves the passer's hands when they reach that waypoint (and the pass is otherwise ready), and the passer runs the rest of its move without it, in support. The receiver is timed to meet a ball released there. Leave out to pass as soon as the pass is ready, from wherever the passer is. Only for a passer with a move that does not wait on this pass.",
+      ),
     after: PassAfterSchema.optional().describe(
       'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
     ),
@@ -223,7 +232,7 @@ export const PassSchema = z
       ),
   })
   .describe(
-    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and any move named in "after" has finished. The receiver’s run is timed so they reach the catch point (waypoint "at" of their move if given, else its end) as the ball does: slowed if they would be early, and the pass goes later, from wherever the passer has run to, if they would be late. A receiver with no move, or whose move waits on this pass, catches on their cell. Balls run at the same time.',
+    'A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught, any move named in "after" has finished and, with "release", the passer has reached that waypoint of their move. The receiver’s run is timed so they reach the catch point (waypoint "at" of their move if given, else its end) as the ball does: slowed if they would be early, and the pass goes later, from wherever the passer has run to, if they would be late. A receiver with no move, or whose move waits on this pass, catches on their cell. Balls run at the same time.',
   );
 
 export const LEVERS = ['space', 'time', 'equipment', 'people'] as const;
