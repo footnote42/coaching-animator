@@ -119,6 +119,9 @@ export function PracticeImport() {
     balls,
     activeBall,
     setPassBall,
+    carriedBall,
+    passKind,
+    startPass,
     editing,
     stopPlayback,
     commit,
@@ -142,7 +145,8 @@ export function PracticeImport() {
   } = workspace;
 
   const placeKind = PALETTE.find((p) => p.kind === tool);
-  const toolHint = TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
+  const toolHint =
+    tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
   const heldBall = selectedMarker && balls.find((b) => b.holder === selectedMarker.id);
   const canGiveBall =
@@ -413,6 +417,24 @@ export function PracticeImport() {
                   Give a ball
                 </Button>
               )}
+              {carriedBall && (
+                <div role="group" aria-label="Ball carrier" className="flex items-center gap-1">
+                  {(['pass', 'kick'] as const).map((kind) => {
+                    const on = tool === 'pass' && passKind === kind;
+                    return (
+                      <Button
+                        key={kind}
+                        variant={on ? 'default' : 'outline'}
+                        className="h-11"
+                        aria-pressed={on}
+                        onClick={() => startPass(kind, carriedBall)}
+                      >
+                        {kind === 'pass' ? 'Pass' : 'Kick'}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
   
@@ -541,6 +563,7 @@ export function PracticeImport() {
                         tool={tool}
                         selection={selection}
                         ball={balls.length > 1 ? activeBall : undefined}
+                        kick={tool === 'pass' && passKind === 'kick'}
                         catchPass={catchPass}
                         onPassAdded={startCatch}
                         onCatchDone={endCatch}

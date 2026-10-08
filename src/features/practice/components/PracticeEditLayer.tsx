@@ -21,6 +21,8 @@ interface EditLayerProps {
   selection: EditorSelection;
   /** The ball a new pass moves, when the Area has more than one. */
   ball?: string;
+  /** The next pass added is a Kick. */
+  kick?: boolean;
   /** The pass whose catch point is being picked: its receiver's Run is highlighted and tappable. */
   catchPass?: string;
   /** A pass to a receiver was added (so the Coach can now pick where it is caught). */
@@ -36,7 +38,7 @@ interface EditLayerProps {
  * Konva layer over the Practice for hand editing the base Step: taps place markers,
  * drags snap markers and waypoints to cells, and selection rings show what is picked.
  */
-export function PracticeEditLayer({ step, geometry, tool, selection, ball, catchPass, onPassAdded, onCatchDone, onSelect, onEdit }: EditLayerProps) {
+export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick, catchPass, onPassAdded, onCatchDone, onSelect, onEdit }: EditLayerProps) {
   const { width, height, cellPx, radius } = geometry;
   const [dragging, setDragging] = useState<string | null>(null);
   const px = (cell: number) => (cell + 0.5) * cellPx;
@@ -72,7 +74,7 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, catch
 
   const tapMarker = (id: string) => {
     if (tool === 'pass' && selection.marker && selection.marker !== id) {
-      if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball })) {
+      if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball, kick })) {
         onPassAdded?.(id);
         onSelect({ marker: id, waypoint: null });
       }
