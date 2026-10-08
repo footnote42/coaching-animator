@@ -59,7 +59,7 @@ const STEPS = [
   },
   {
     title: 'Build the movement',
-    body: 'Draw each run at a walk, jog or sprint. Passes fire when the receiver arrives. Add Progressions to make it harder.',
+    body: 'Draw each run at a walk, jog or sprint. Receivers are timed to meet the ball. Add Progressions to make it harder.',
     art: (
       <StepArt>
         <path d="M34 56 L 34 40" stroke={CHALK} strokeWidth="1.6" strokeDasharray="3 3" fill="none" />

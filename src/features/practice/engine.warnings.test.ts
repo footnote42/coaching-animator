@@ -117,6 +117,36 @@ describe('forward pass warnings', () => {
   });
 });
 
+/**
+ * 1 sprints round a loop from the start, passing to 2 as it sets off, and is
+ * passed back on the run: it reaches the catch point before 2 has the ball.
+ */
+function passAndLoop() {
+  const result = validate({
+    schemaVersion: 1,
+    area: { width: 30, length: 20 },
+    markers: [
+      { id: 'a1', kind: 'attacker', label: '1' },
+      { id: 'a2', kind: 'attacker', label: '2' },
+      { id: 'ball', kind: 'ball' },
+    ],
+    base: {
+      placements: [
+        { marker: 'a1', cell: { x: 0, y: 0 } },
+        { marker: 'a2', cell: { x: 20, y: 0 } },
+        { marker: 'ball', holder: 'a1' },
+      ],
+      moves: [{ marker: 'a1', waypoints: [{ x: 0, y: 3 }, { x: 0, y: 15 }], pace: 'sprint' }],
+      passes: [
+        { id: 'p1', from: 'a1', to: 'a2' },
+        { id: 'p2', from: 'a2', to: 'a1', at: 0 },
+      ],
+    },
+  });
+  if (!result.ok) throw new Error(result.errors.map(formatError).join(String.fromCharCode(10)));
+  return result.script;
+}
+
 /** The 3 v 2 overlap: 3 sprints to a catch point on its run while 2 is still waiting for the ball. */
 function overlap(after?: { pass: string }) {
   const result = validate({
@@ -152,18 +182,30 @@ function overlap(after?: { pass: string }) {
 }
 
 describe('early receiver warnings', () => {
+  it('no longer warns for the overlap: 3 is slowed to meet the ball (#144)', () => {
+    expect(warnings(overlap()).filter((w) => w.kind === 'early')).toEqual([]);
+  });
+
   it('warns when the receiver reaches the catch point before the passer has the ball', () => {
-    const early = warnings(overlap()).filter((w) => w.kind === 'early');
+    // 1 passes and loops round to receive again, so its Run cannot be timed to
+    // the second pass (where 1 throws the first pass from would depend on it).
+    const early = warnings(passAndLoop()).filter((w) => w.kind === 'early');
     expect(early).toEqual([
       {
         step: 0,
         pass: 'p2',
         kind: 'early',
-        message: '3 reaches the catch point before 2 has the ball',
-        fix: { marker: 'a3', afterPass: 'p1' },
+        message: '1 reaches the catch point before 2 has the ball',
+        fix: { marker: 'a1', afterPass: 'p1' },
       },
     ]);
-    expect(formatWarning(early[0])).toBe('3 reaches the catch point before 2 has the ball');
+    expect(formatWarning(early[0])).toBe('1 reaches the catch point before 2 has the ball');
+  });
+
+  it('is cleared on a pass and loop by starting the run after the pass', () => {
+    const fixed = applyEdit(passAndLoop(), { type: 'startAfterPass', marker: 'a1', pass: 'p1' });
+    if (typeof fixed === 'string') throw new Error(fixed);
+    expect(warnings(fixed).filter((w) => w.kind === 'early')).toEqual([]);
   });
 
   it('does not warn when the receiver starts after the previous pass', () => {

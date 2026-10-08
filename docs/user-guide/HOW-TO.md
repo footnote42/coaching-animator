@@ -21,7 +21,7 @@ A browser tool for rugby coaches. You draw a Practice on an Area, animate it, bu
 ## 3. Runs and passes
 
 - **Draw a run**: tap a player, then tap cells to draw the path. Select the player to set the **Pace** (walk, jog or sprint).
-- **Add a pass**: tap the player with the ball, then the receiver. The pass fires when the receiver arrives.
+- **Add a pass**: tap the player with the ball, then the receiver. The receiver is timed to meet the ball: slowed if they would be early, and if they would be late the pass goes later.
 - **Play** under the Area runs the Step. **Back to start** resets it. **Ghost mode** shows where markers started.
 
 ## 4. Progressions

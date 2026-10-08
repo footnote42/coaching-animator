@@ -1,6 +1,6 @@
 # Practice Script guide, version 1
 
-A Practice Script is the JSON form of a rugby coaching Practice: markers placed on grid cells, moves along waypoints at a Pace, passes that fire when the receiver arrives, and Progressions written as changes over the previous Step. Coaching Animator plays it as an animation.
+A Practice Script is the JSON form of a rugby coaching Practice: markers placed on grid cells, moves along waypoints at a Pace, passes that receivers are timed to meet, and Progressions written as changes over the previous Step. Coaching Animator plays it as an animation.
 
 This guide is written for an AI model (or a person) writing a script from a Coach's description. Follow the rules exactly, then check the script as described in "How to check a script". Any model can do this; nothing here depends on one vendor.
 
@@ -106,8 +106,19 @@ A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`. `base.pas
 - `id` is unique within the Step, e.g. `"p1"`.
 - The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
 - `from` and `to` are different attackers, defenders or coaches on the Area.
-- Pass i fires once pass i - 1 has been caught (the first pass needs nothing before it) and the receiver has arrived: at waypoint `at` of its move if given, otherwise at the end of its move, or straight away if it has no move. If the pass has `after`, it also waits for that Run to finish.
-- The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the receiver's final cell, or for a catch on the run to the point on the receiver's run where they meet the ball.
+- Pass i can go once pass i - 1 has been caught (the first pass needs nothing before it) and, if the pass has `after`, that Run has finished.
+- The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the catch point: waypoint `at` of the receiver's move if given, otherwise the end of its move, or the receiver's cell if it has no move.
+- The receiver is timed to arrive at the catch point as the ball does. See "Receivers are timed to the ball".
+
+### Receivers are timed to the ball
+
+Draw the paths and say where the ball is caught; the engine times each receiver's Run so they reach the catch point as the ball does. Nobody stands and waits. This applies to every Practice, saved ones included; there is nothing to switch on.
+
+- A receiver who would arrive early has their whole Run slowed: speeding up, Pace and taper all stretch together, so the Run keeps its shape. It is never slowed below `walk` ({{PACE_walk}} m/s).
+- Only if the receiver is still early at walking speed does their Run start later, by just what slowing could not absorb.
+- A receiver who would be late even at their own Pace is not waited for: the passer keeps running (if they have a Run) and the pass goes later, from wherever the passer has got to, so the ball arrives with the receiver.
+- So let receivers set off at time zero with the rest of the line. You do not need `after: { "pass": ... }` to time a run onto the ball; that only makes the receiver late.
+- A Run is timed to the first pass its marker receives. A later pass to the same marker, or a pass that would loop back on the receiver's own Run (a player who passes and then loops round from time zero to receive again), uses the Run as drawn. If such a receiver reaches the `at` waypoint before the passer has the ball, the ball leads them further up their run and a warning says so ("1 reaches the catch point before 2 has the ball"): start their Run after the earlier pass to fix it.
 
 ### `kick`: kick to a receiver
 
@@ -115,17 +126,17 @@ A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`. `base.pas
 
 The `direction` belongs to the team holding the ball at the start. A pass whose passer is on the other team (for example the receiver of a kick, who now attacks) is checked in the opposite direction, so with `"direction": "up"` and the kicking team holding the ball first, the receiving team's passes must not travel down.
 
-A Practice with a `direction` checks its passes: a pass caught more than 0.5 m ahead of where it was thrown, measured in that direction, raises a warning ("Pass 2 goes forward"). A warning does not stop the script saving, but it is a mistake to fix: make the pass level or backward, for example by moving the catch waypoint behind the passer or holding the receiver with `after: { "pass": ... }`. The check uses the real throw and catch points, and the ball leads a receiver on the run.
+A Practice with a `direction` checks its passes: a pass caught more than 0.5 m ahead of where it was thrown, measured in that direction, raises a warning ("Pass 2 goes forward"). A warning does not stop the script saving, but it is a mistake to fix: make the pass level or backward, for example by moving the catch waypoint level with or behind the passer. The check uses the real throw and catch points.
 
 ### `at`: catch on the run
 
-In rugby the receiver usually runs onto the ball and keeps going. Give the pass `at`: the index, counted from `0`, of a waypoint in the receiver's move. The pass fires when the receiver reaches that waypoint, the ball is passed in front of them, and they catch it on the run and carry it through the rest of their move. A later pass from that receiver can then fire while they are still running.
+In rugby the receiver usually runs onto the ball and keeps going. Give the pass `at`: the index, counted from `0`, of a waypoint in the receiver's move. The receiver reaches that waypoint as the ball does, catches it on the run and carries it through the rest of their move. A later pass from that receiver can then go while they are still running.
 
 ```json
 { "id": "p2", "from": "a10", "to": "a12", "at": 0 }
 ```
 
-- Leave `at` out to fire the pass at the end of the receiver's move (the receiver stops, then catches).
+- Leave `at` out to catch at the end of the receiver's move: the receiver tapers to a stop as the ball arrives.
 - `at` must name a waypoint of the receiver's move: from `0` to the number of waypoints minus 1. A receiver with no move cannot have `at`.
 - A receiver whose move waits (`after`) on this very pass, directly or through other passes and moves, has not set off yet, so `at` is rejected for that pass. See "Receive, pass, run, receive again".
 
@@ -137,15 +148,15 @@ To show draw and pass, give the pass `"after": { "move": "<marker>" }`: it waits
 { "id": "p2", "from": "a2", "to": "a3", "at": 0, "after": { "move": "d2" } }
 ```
 
-- The pass fires once the previous pass is caught, the receiver is at the catch point (`at`, or the end of its Run) and the named Run has finished.
+- The pass goes once the previous pass is caught and the named Run has finished; the receiver is timed to meet it at the catch point (`at`, or the end of its Run).
 - The named marker must have a Run in the Step. Waits may not loop, for example a Run that waits on this very pass.
 - Only `move` is allowed. A Progression's `setPass` carries `after` too.
 
 ### Receive, pass, run, receive again
 
-A player can catch, pass, run somewhere and be passed to again, all in one Step. Give the run `"after": { "pass": "p2" }`, where `p2` is the pass the player makes. A pass to a player whose run has not started, because the run waits on that very pass (directly or through other passes and moves), does not wait for the run: it fires as soon as the ball is free and is caught on the player's starting cell. A pass to a player whose run is not waiting on it works as always and waits for the run to finish (or to reach `at`).
+A player can catch, pass, run somewhere and be passed to again, all in one Step. Give the run `"after": { "pass": "p2" }`, where `p2` is the pass the player makes. A pass to a player whose run has not started, because the run waits on that very pass (directly or through other passes and moves), does not wait for the run: it fires as soon as the ball is free and is caught on the player's starting cell. A pass to a player whose run is not waiting on it works as always: the run is timed to meet the ball at its end (or at `at`).
 
-Example, circle passing where each player runs to a cone behind them and back to their spot after their own pass: `p1` goes from `a1` to `a3`, and the move of `a3` is `{ "marker": "a3", "waypoints": [cone, spot], "after": { "pass": "p2" } }`. `p1` is caught on `a3`'s spot at once, `a3` passes `p2` and sets off, and `a3` is back on the spot before the ball comes round to `a3` again.
+Example, circle passing where each player runs to a cone behind them and back to their spot after their own pass: `p1` goes from `a1` to `a3`, and the move of `a3` is `{ "marker": "a3", "waypoints": [cone, spot], "after": { "pass": "p2" } }`. `p1` is caught on `a3`'s spot at once, `a3` passes `p2` and sets off, and `a3` is back on the spot as the ball comes round to `a3` again.
 
 Moves can still wait on each other in a loop (`a1` after the move of `a2`, `a2` after the move of `a1`); that is rejected.
 
@@ -228,7 +239,7 @@ A 12 x 12 m open-grass square with a cone at each corner. Step 0: two attackers 
 
 ## Worked example 2: a half-pitch play
 
-A half pitch, attacking the try line at the top. The 9 passes to the 10; each back outside the 10 sprints onto the ball after the previous pass, and the defenders come up one after another using `after`. The play ends with the 14 catching on the run (`"at": 0`) and carrying on up the touchline.
+A half pitch, attacking the try line at the top. The 9 passes to the 10; the backs outside the 10 all set off together and each is timed onto the ball, and the defenders come up one after another using `after`. The play ends with the 14 catching on the run (`"at": 0`) and carrying on up the touchline.
 
 ```json
 {{example:half-pitch-play}}
