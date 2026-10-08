@@ -34,6 +34,7 @@ On the MCP route, `create_practice` validates the script against the live schema
 - `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a Progression adding a defender.
 - `examples/05-kick-receipt.json`: one team kicks (`"kick": true` on a pass) to the other, who catch and counter-attack with backward passes.
 - `examples/06-shield-to-ruck.json`: a carry into an upright shield, then an Equipment Progression lays it flat as a ruck (`"lying": true` on `placeMarker`) with the ball beneath, and 9 passes away.
+- `examples/07-bag-clear-out.json`: a carry into an upright tackle bag (`"kind": "tackle-bag"`), then a People Progression lays the bag flat over the ball as the ruck, 2 clears out and 9 passes away.
 
 ## 1. Describe a drill, get a Practice Script
 
@@ -44,7 +45,8 @@ On the MCP route, `create_practice` validates the script against the live schema
    - Never write durations; use `pace` (`walk`, `jog`, `sprint`).
    - Labels are roles or shirt numbers, never player names.
    - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
-   - A tackle shield can be Lying (laid flat, for a ruck or a ball under a pad): add `"lying": true` to its placement, `addMarker` or `placeMarker`. A ball whose holder stands on that cell is drawn beneath it. `placeMarker` replaces the whole start, so give the cell again, and leave `lying` out to stand the shield back up. Only tackle shields take `lying`.
+   - Kit is `cone`, `tackle-shield` or `tackle-bag` (the tall cylindrical contact bag, bigger than a shield; never "tackle dummy").
+   - A tackle shield or tackle bag can be Lying (laid flat, for a ruck or a ball under a pad): add `"lying": true` to its placement, `addMarker` or `placeMarker`. A ball whose holder stands on that cell is drawn beneath it. `placeMarker` replaces the whole start, so give the cell again, and leave `lying` out to stand the kit back up. Only tackle shields and tackle bags take `lying`.
 3. Add Progressions (each pulls one Lever: space, time, equipment or people, with a first coaching point saying why it is harder) unless the Practice is a match play.
 4. Check it (step 3 below) before you hand it over.
 

@@ -61,7 +61,7 @@ On a half pitch, attack towards the try line at the top: attackers start low on 
 Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 
 - `id`: unique, 1 to 32 characters, e.g. `"a1"`, `"d2"`, `"ball"`. Placements, moves and passes refer to markers by id.
-- `kind`: one of `attacker`, `defender`, `ball`, `cone`, `tackle-shield`, `coach`.
+- `kind`: one of `attacker`, `defender`, `ball`, `cone`, `tackle-shield`, `tackle-bag`, `coach`. A `tackle-bag` is the tall cylindrical bag used for contact work, drawn bigger than a tackle shield.
 - `team`: `attack` or `defence`. Defaults to `attack` for attackers and `defence` for defenders; usually leave it out.
 - `label`: at most 4 characters, shown on the marker.
 - `colour`: cones only: `yellow`, `red`, `amber`, `green`, `white` or `blue`. Defaults to yellow. Use it to mark out zones, for example red, amber and green cones for a traffic-light grid. Any other kind with a `colour` is rejected.
@@ -75,7 +75,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 - Every marker except the ball: `{ "marker": "a1", "cell": { "x": 2, "y": 8 } }`.
 - The ball: `{ "marker": "ball", "holder": "a1" }`. The ball has no cell; it rides with its holder. The holder must be an attacker, defender or coach on the Area, and no two balls may start with the same holder.
 - Two markers may share a cell (a player standing on a cone, for example).
-- A tackle shield may add `"lying": true` to lay it flat on the ground for the Step, as at a ruck or with a ball under a pad: `{ "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true }`. A ball on the same cell (its holder standing there) is drawn beneath the shield, partly showing. Leave `lying` out for an upright shield. Any other kind with `lying` is rejected. Lying is set per Step, never animated; to lay a shield down or stand it back up in a Progression, use `placeMarker` (below).
+- A tackle shield or tackle bag may add `"lying": true` to lay it flat on the ground for the Step, as at a ruck or with a ball under a pad: `{ "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true }`. A ball on the same cell (its holder standing there) is drawn beneath the kit, partly showing. Leave `lying` out for upright kit. Any other kind with `lying` is rejected. Lying is set per Step, never animated; to lay kit down or stand it back up in a Progression, use `placeMarker` (below).
 - A marker left out of `base.placements` is not on the Area in Step 0; a Progression must add it with `addMarker`, or the script is rejected.
 
 ## Moves and waypoints
@@ -190,7 +190,7 @@ Change types (each is an object with a `type`):
 | --- | --- | --- |
 | `addMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Put a declared marker on the Area. It must not be on the Area in the previous Step. |
 | `removeMarker` | `marker` | Take a marker and its move off the Area. It must be on the Area. Remove or change any pass that used it. |
-| `placeMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Change where a marker starts, or who holds the ball, and whether a tackle shield is Lying. It replaces the whole start: give the cell even if it is unchanged, add `"lying": true` to lay a shield flat, and leave `lying` out to stand a Lying shield back up. Its move is kept and runs from the new cell. |
+| `placeMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Change where a marker starts, or who holds the ball, and whether a tackle shield or tackle bag is Lying. It replaces the whole start: give the cell even if it is unchanged, add `"lying": true` to lay the kit flat, and leave `lying` out to stand Lying kit back up. Its move is kept and runs from the new cell. |
 | `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. |
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
 | `setPass` | `id`, `from`, `to`, `ball`?, `at`?, `after`?, `kick`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
