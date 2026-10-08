@@ -27,6 +27,7 @@ import { AreaControl } from '@/features/practice/components/AreaControl';
 import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
+import { TACKLE_BAG_SHADE } from '@/features/practice/tackleBag';
 import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
@@ -51,6 +52,7 @@ const PALETTE: Array<{ kind: MarkerKind; name: string }> = [
   { kind: 'ball', name: 'Ball' },
   { kind: 'cone', name: 'Cone' },
   { kind: 'tackle-shield', name: 'Tackle shield' },
+  { kind: 'tackle-bag', name: 'Tackle bag' },
   { kind: 'coach', name: 'Coach' },
 ];
 
@@ -311,8 +313,15 @@ export function PracticeImport() {
               >
                 <span
                   aria-hidden
-                  className={cn('inline-block h-4 w-4 border border-black/40', kind === 'tackle-shield' ? 'w-2.5' : 'rounded-full')}
-                  style={{ backgroundColor: markerColour({ kind }) }}
+                  className={cn(
+                    'inline-block h-4 w-4 border border-black/40',
+                    kind === 'tackle-shield' ? 'w-2.5' : kind === 'tackle-bag' ? 'h-5 w-2.5 rounded-full' : 'rounded-full',
+                  )}
+                  style={{
+                    backgroundColor: markerColour({ kind }),
+                    // A shaded side suggests the bag's cylinder, as on the Area.
+                    backgroundImage: kind === 'tackle-bag' ? `linear-gradient(to right, transparent 65%, ${TACKLE_BAG_SHADE} 65%)` : undefined,
+                  }}
                 />
                 <span className="hidden lg:inline">{name}</span>
               </Button>

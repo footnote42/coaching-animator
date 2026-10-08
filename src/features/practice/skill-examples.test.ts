@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { validate, warnings, formatError } from '@/features/practice/engine';
+import { resolveStep, validate, warnings, formatError } from '@/features/practice/engine';
 import { HERO_SCRIPT } from '@/app/_components/heroScript';
 import { PRACTICE_TAGS } from '@/lib/practice-tags';
 
@@ -32,6 +32,17 @@ describe('skill worked examples', () => {
     if (!result.ok) throw new Error(result.errors.map(formatError).join(', '));
     expect(result.script.base.passes[0].kick).toBe(true);
     expect(result.script.direction).toBe('up');
+    expect(warnings(result.script)).toEqual([]);
+  });
+
+  it('07-bag-clear-out.json lays the tackle bag flat over the ball in its Progression, with no warning', () => {
+    const result = validate(readFileSync(path.join(EXAMPLES_DIR, '07-bag-clear-out.json'), 'utf8'));
+    if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
+    const bag = (step: number) => resolveStep(result.script, step).markers.find((m) => m.id === 'bag1');
+    expect(bag(0)).toMatchObject({ kind: 'tackle-bag' });
+    expect(bag(0)?.lying).toBeUndefined();
+    expect(bag(1)?.lying).toBe(true);
+    expect(resolveStep(result.script, 1).markers.find((m) => m.id === 'ball')?.cell).toEqual(bag(1)?.cell);
     expect(warnings(result.script)).toEqual([]);
   });
 

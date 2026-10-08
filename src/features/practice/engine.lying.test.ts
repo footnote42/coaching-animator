@@ -56,18 +56,18 @@ describe('Lying', () => {
   it('refuses Lying on any other kind', () => {
     const cone = ruck();
     cone.base.placements[2] = { marker: 'cone1', cell: { x: 0, y: 0 }, lying: true };
-    expect(errorsOf(cone)).toEqual(['base.placements[2].lying: only a tackle shield can be Lying; marker "cone1" is a cone']);
+    expect(errorsOf(cone)).toEqual(['base.placements[2].lying: only a tackle shield or a tackle bag can be Lying; marker "cone1" is a cone']);
 
     const player = ruck();
     player.base.placements[0] = { marker: 'a1', cell: { x: 4, y: 4 }, lying: false };
-    expect(errorsOf(player)).toEqual(['base.placements[0].lying: only a tackle shield can be Lying; marker "a1" is a attacker']);
+    expect(errorsOf(player)).toEqual(['base.placements[0].lying: only a tackle shield or a tackle bag can be Lying; marker "a1" is a attacker']);
 
     const ball = ruck();
     ball.base.placements[3] = { marker: 'ball', holder: 'a1', lying: true };
     expect(errorsOf(ball)[0]).toMatch(/^base\.placements\[3\]\.lying: only a tackle shield/);
 
     expect(errorsOf(ruck([{ type: 'placeMarker', marker: 'cone1', cell: { x: 0, y: 0 }, lying: true }]))).toEqual([
-      'progressions[0].changes[0].lying: only a tackle shield can be Lying; marker "cone1" is a cone',
+      'progressions[0].changes[0].lying: only a tackle shield or a tackle bag can be Lying; marker "cone1" is a cone',
     ]);
   });
 
@@ -90,6 +90,46 @@ describe('Lying', () => {
       progressions: [{ lever: 'equipment', changes: [{ type: 'addMarker', marker: 'shield1', cell: { x: 2, y: 2 }, lying: true }] }],
     });
     expect(lyingOf(script, 1, 'shield1')).toBe(true);
+  });
+});
+
+describe('Tackle bag', () => {
+  const withBag = (bagPlacement: Record<string, unknown> = {}, changes: unknown[] = []) => {
+    const script = ruck(changes);
+    script.markers.push({ id: 'bag1', kind: 'tackle-bag' });
+    script.base.placements.push({ marker: 'bag1', cell: { x: 6, y: 6 }, ...bagPlacement });
+    return script;
+  };
+
+  it('is a marker kind placed on a cell, upright by default', () => {
+    const step = resolveStep(valid(withBag()), 0);
+    const bag = step.markers.find((m) => m.id === 'bag1');
+    expect(bag).toMatchObject({ kind: 'tackle-bag', cell: { x: 6, y: 6 } });
+    expect(bag?.lying).toBeUndefined();
+  });
+
+  it('can be Lying, with a ball on its cell', () => {
+    const script = withBag({ lying: true });
+    script.base.placements[0] = { marker: 'a1', cell: { x: 6, y: 6 } };
+    const step = resolveStep(valid(script), 0);
+    expect(step.markers.find((m) => m.id === 'bag1')?.lying).toBe(true);
+    expect(step.markers.find((m) => m.id === 'ball')?.cell).toEqual({ x: 6, y: 6 });
+  });
+
+  it('is laid flat and stood up by Progressions', () => {
+    const script = valid(
+      withBag({}, [
+        { type: 'placeMarker', marker: 'bag1', cell: { x: 6, y: 6 }, lying: true },
+      ]),
+    );
+    expect(lyingOf(script, 0, 'bag1')).toBeUndefined();
+    expect(lyingOf(script, 1, 'bag1')).toBe(true);
+  });
+
+  it('names both kinds when Lying is refused', () => {
+    expect(errorsOf(ruck([{ type: 'placeMarker', marker: 'cone1', cell: { x: 0, y: 0 }, lying: true }]))[0]).toMatch(
+      /only a tackle shield or a tackle bag can be Lying/,
+    );
   });
 });
 

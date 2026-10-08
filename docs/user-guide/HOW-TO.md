@@ -15,7 +15,7 @@ A browser tool for rugby coaches. You draw a Practice on an Area, animate it, bu
 
 1. Go to **Create**.
 2. Choose an **Area** template (square, horizontal or vertical rectangle, half pitch, full pitch). Set its size in metres.
-3. Pick a marker (attacker, defender, ball, cone, tackle shield, coach) and tap the Area to place it. Markers snap to the grid.
+3. Pick a marker (attacker, defender, ball, cone, tackle shield, tackle bag, coach) and tap the Area to place it. Markers snap to the grid.
 4. **Select and drag** moves a marker. **Undo** (Ctrl+Z) and **Redo** (Ctrl+Shift+Z) are in the toolbar.
 
 ## 3. Runs and passes
