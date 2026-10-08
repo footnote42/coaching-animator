@@ -63,11 +63,17 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
     if (catching && at && onEdit({ type: 'addCatchPoint', id: catching.id, at })) onCatchDone?.();
   };
 
+  /** A ball dropped within a marker's width of a player goes to them. */
+  const reach = Math.max(radius / cellPx, 0.75);
+
   const tapBackground = (e: KonvaEventObject<Event>) => {
     const at = pointer(e);
     if (!at || catching) return;
-    if (isPlaceTool(tool)) onEdit({ type: 'addMarker', kind: tool as MarkerKind, at });
-    else if (tool === 'run' && selection.marker) {
+    if (isPlaceTool(tool)) onEdit({ type: 'addMarker', kind: tool as MarkerKind, at, ...(tool === 'ball' && { reach }) });
+    else if (tool === 'pass' && kick && selection.marker) {
+      // Kick, then tap the ground: a Kick to space.
+      if (onEdit({ type: 'addKickToSpace', from: selection.marker, at, ball })) onSelect(NO_SELECTION);
+    } else if (tool === 'run' && selection.marker) {
       if (onEdit({ type: 'addWaypoint', marker: selection.marker, at })) onSelect({ ...selection, waypoint: null });
     } else onSelect(NO_SELECTION);
   };
@@ -84,7 +90,8 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
     onSelect({ marker: id, waypoint: null });
   };
 
-  const handles = step.markers.filter((m) => m.kind !== 'ball');
+  // A held ball moves with its holder; a loose ball has a handle of its own.
+  const handles = step.markers.filter((m) => m.kind !== 'ball' || m.holder === undefined);
   const run = selection.marker ? step.moves.find((m) => m.marker === selection.marker) : undefined;
   const canDrag = tool === 'select' || tool === 'run';
   const handlesListen = !isPlaceTool(tool);
@@ -120,7 +127,7 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
             }}
             onDragEnd={(e) => {
               setDragging(null);
-              onEdit({ type: 'moveMarker', marker: marker.id, at: toCell(e.target.position()) });
+              onEdit({ type: 'moveMarker', marker: marker.id, at: toCell(e.target.position()), ...(marker.kind === 'ball' && { reach }) });
             }}
             onClick={() => tapMarker(marker.id)}
             onTap={() => tapMarker(marker.id)}

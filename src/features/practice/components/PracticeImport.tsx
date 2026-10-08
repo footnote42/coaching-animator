@@ -62,7 +62,7 @@ const TOOL_HINTS: Record<'select' | 'run' | 'pass' | 'place', string> = {
   select: 'Drag a marker to move it. Tap one to select it.',
   run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it.',
   pass: 'Tap the player with the ball, then the player receiving. If the receiver has a Run, tap it to catch on the run.',
-  place: 'Tap the Area to place it. The ball goes to the nearest player.',
+  place: 'Tap the Area to place it. Tap on a player to give them the ball, or on the ground to leave it loose.',
 };
 
 /** Toolbar buttons: at least 44 px square for touch. */
@@ -151,7 +151,7 @@ export function PracticeImport() {
 
   const placeKind = PALETTE.find((p) => p.kind === tool);
   const toolHint =
-    tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
+    tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
   const heldBall = selectedMarker && balls.find((b) => b.holder === selectedMarker.id);
   const canGiveBall =
@@ -433,6 +433,8 @@ export function PracticeImport() {
                     Delete run
                   </Button>
                 </>
+              ) : selectedMarker.kind === 'ball' ? (
+                <span className="text-xs">{selectedMarker.holder ? 'Drag the player to move the ball.' : 'Lying loose. Drag it onto a player to give it to them.'}</span>
               ) : (
                 <span className="text-xs">No run yet: use Draw a run.</span>
               )}
@@ -495,7 +497,7 @@ export function PracticeImport() {
             <div role="group" aria-label="Passes" className="flex flex-wrap items-center gap-2">
               <span>Passes:</span>
               {passes.map((pass) => {
-                const name = (id: string) => script.markers.find((m) => m.id === id)?.label ?? id;
+                const name = (id: string | undefined) => (id === undefined ? 'space' : script.markers.find((m) => m.id === id)?.label ?? id);
                 const run = step?.moves.find((m) => m.marker === pass.to);
                 return (
                   <span key={pass.id} className="flex items-center gap-1">
@@ -523,6 +525,7 @@ export function PracticeImport() {
                       <input
                         type="checkbox"
                         checked={pass.kick ?? false}
+                        disabled={pass.cell !== undefined}
                         onChange={(e) => edit({ type: 'setKick', id: pass.id, kick: e.target.checked })}
                       />
                       Kick

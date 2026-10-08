@@ -16,6 +16,7 @@ import {
   AREA_TEMPLATES,
 } from '@/features/practice/schema';
 import {
+  KICK_ROLL_M,
   KICK_SPEED_MPS,
   MAX_SCRIPT_BYTES,
   PACE_SPEEDS_MPS,
@@ -55,6 +56,7 @@ function tokens(origin: string): Record<string, string | number> {
     MAX_SCRIPT_BYTES,
     PASS_SPEED_MPS,
     KICK_SPEED_MPS,
+    KICK_ROLL_M,
     RUN_ACCELERATION: RUN_ACCELERATION_MPS2,
     RUN_TAPER: RUN_TAPER_MPS2,
     PITCH_IN_GOAL_M,

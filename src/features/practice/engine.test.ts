@@ -432,21 +432,27 @@ describe('Motion: Pace, ball and passes', () => {
     }
   });
 
-  it('requires the ball to start with a holder who can carry it', () => {
-    const onCell = drill({
+  it('requires the ball to start with a holder who can carry it, or loose on a cell', () => {
+    const both = drill({
       placements: [
         { marker: 'a1', cell: { x: 0, y: 0 } },
         { marker: 'a2', cell: { x: 10, y: 0 } },
         { marker: 'a3', cell: { x: 20, y: 0 } },
-        { marker: 'ball', cell: { x: 1, y: 0 } },
+        { marker: 'ball', cell: { x: 1, y: 0 }, holder: 'a1' },
         { marker: 'c1', holder: 'a1' },
       ],
     });
-    expect(errorsOf(onCell)).toEqual([
-      'base.placements[3].cell: the ball is not placed on a cell; give "holder" instead: the id of the marker carrying it',
+    expect(errorsOf(both)).toEqual([
+      'base.placements[3].cell: give "holder" (the marker carrying the ball) or "cell" (where it lies loose), not both',
       'base.placements[4].holder: only the ball has a holder',
       'markers[3]: marker "ball" is never on the Area: place it in base.placements or add it in a Progression',
       'markers[4]: marker "c1" is never on the Area: place it in base.placements or add it in a Progression',
+    ]);
+    const neither = drill();
+    neither.base.placements[3] = { marker: 'ball' } as (typeof neither.base.placements)[number];
+    expect(errorsOf(neither)).toEqual([
+      'base.placements[3].holder: is required: the id of the marker carrying the ball, or give "cell" for a ball lying loose',
+      'markers[3]: marker "ball" is never on the Area: place it in base.placements or add it in a Progression',
     ]);
     const byCone = drill();
     (byCone.base.placements[3] as { holder: string }).holder = 'c1';
@@ -715,7 +721,7 @@ describe('Motion: Pace, ball and passes', () => {
         const { duration, passes } = positionsAt(step, 0);
         expect(passes.length).toBeGreaterThan(0);
         const end = positionsAt(step, duration).positions;
-        expect(end.ball).toEqual(end[passes[passes.length - 1].to]);
+        expect(end.ball).toEqual(end[passes[passes.length - 1].to!]);
       }
     }
   });

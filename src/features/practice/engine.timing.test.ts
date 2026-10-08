@@ -215,10 +215,10 @@ function waiting(step: ResolvedStep): string[] {
   const found: string[] = [];
   passes.forEach((flight, i) => {
     const pass = step.passes.find((p) => p.id === flight.id)!;
-    const startCell = pos(flight.to, 0);
-    const caughtInPlace = near(flight.end, startCell);
-    if (runners.has(flight.to) && !caughtInPlace && near(pos(flight.to, flight.land - 0.05), flight.end)) {
-      found.push(`${flight.to} stands at the catch point of ${flight.id}`);
+    // A Kick to space (#147) has no receiver to wait.
+    const to = flight.to;
+    if (to !== undefined && runners.has(to) && !near(flight.end, pos(to, 0)) && near(pos(to, flight.land - 0.05), flight.end)) {
+      found.push(`${to} stands at the catch point of ${flight.id}`);
     }
     const previous = passes.slice(0, i).filter((f) => f.ball === flight.ball).pop();
     const ready = Math.max(previous?.land ?? 0, pass.after ? finish(pass.after.move) : 0);

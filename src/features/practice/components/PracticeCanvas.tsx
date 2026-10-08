@@ -4,7 +4,8 @@ import React, { useMemo, useRef, type ReactNode } from 'react';
 import { Stage, Layer, Rect, Line, Arrow, Circle, Ellipse, RegularPolygon, Text, Group, Path } from 'react-konva';
 import { useShareCanvasSize } from '@/features/practice/hooks/useShareCanvasSize';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
-import { positionsAt, type PassFlight, type Point, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
+import { positionsAt, type ResolvedMarker, type ResolvedStep } from '@/features/practice/engine';
+import { drawOrder } from '@/features/practice/drawOrder';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { gridSpacing, isPitch, markerRadius, pitchLines } from '@/features/practice/area';
 import { TACKLE_BAG_SHADE, tackleBagShape } from '@/features/practice/tackleBag';
@@ -23,34 +24,6 @@ const LINE_COLOUR = 'rgba(255,255,255,0.7)';
 const KICK_LIFT = 0.6;
 /** How far, in marker radii, a ball under Lying kit sits off centre so its end shows past the kit. */
 const UNDER_KIT_OFFSET: Record<LyingKind, number> = { 'tackle-shield': 0.9, 'tackle-bag': 1.3 };
-
-/**
- * Drawing order, bottom to top: balls resting under Lying kit, the Lying kit,
- * every other marker, then the other balls (on top of their holders). Players
- * cross over Lying kit; a ball under it shows only past its edge.
- */
-export function drawOrder(
-  markers: ResolvedMarker[],
-  positions: Record<string, Point>,
-  passes: PassFlight[],
-  time: number,
-): { marker: ResolvedMarker; underKit: LyingKind | null }[] {
-  const kit = markers.filter((m) => m.lying);
-  const flying = (id: string) => passes.some((f) => f.ball === id && time >= f.fire && time < f.land);
-  /** The kind of Lying kit a resting ball is under, if any. */
-  const kitOver = (m: ResolvedMarker): LyingKind | null => {
-    if (m.kind !== 'ball' || flying(m.id)) return null;
-    const over = kit.find((k) => Math.hypot(positions[k.id].x - positions[m.id].x, positions[k.id].y - positions[m.id].y) < 0.5);
-    return over ? (over.kind as LyingKind) : null;
-  };
-  const balls = markers.filter((m) => m.kind === 'ball').map((marker) => ({ marker, underKit: kitOver(marker) }));
-  return [
-    ...balls.filter((b) => b.underKit),
-    ...kit.map((marker) => ({ marker, underKit: null })),
-    ...markers.filter((m) => m.kind !== 'ball' && !m.lying).map((marker) => ({ marker, underKit: null })),
-    ...balls.filter((b) => !b.underKit),
-  ];
-}
 
 export function MarkerShape({ marker, x, y, r, scale = 1 }: { marker: ResolvedMarker; x: number; y: number; r: number; scale?: number }) {
   const fill = markerColour(marker);
@@ -182,17 +155,28 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
             const len = Math.hypot(dx, dy) || 1;
             const mid = [(x1 + x2) / 2 + (dy / len) * arch, (y1 + y2) / 2 - (dx / len) * arch];
             return (
-              <Arrow
-                key={`pass-${pass.id}`}
-                points={pass.kick ? [x1, y1, mid[0], mid[1], x2, y2] : [x1, y1, x2, y2]}
-                tension={pass.kick ? 0.5 : 0}
-                dash={pass.kick ? [8, 6] : undefined}
-                stroke={colour}
-                fill={colour}
-                strokeWidth={forwardPasses?.has(pass.id) ? 3 : 2}
-                pointerLength={8}
-                pointerWidth={8}
-              />
+              <React.Fragment key={`pass-${pass.id}`}>
+                <Arrow
+                  points={pass.kick ? [x1, y1, mid[0], mid[1], x2, y2] : [x1, y1, x2, y2]}
+                  tension={pass.kick ? 0.5 : 0}
+                  dash={pass.kick ? [8, 6] : undefined}
+                  stroke={colour}
+                  fill={colour}
+                  strokeWidth={forwardPasses?.has(pass.id) ? 3 : 2}
+                  pointerLength={8}
+                  pointerWidth={8}
+                />
+                {/* A Kick to space rolls on along the ground from where it lands. */}
+                {pass.roll && (
+                  <Line
+                    points={[x2, y2, px(pass.roll.to.x), px(pass.roll.to.y)]}
+                    stroke={colour}
+                    strokeWidth={2}
+                    dash={[2, 4]}
+                    lineCap="round"
+                  />
+                )}
+              </React.Fragment>
             );
           })}
         </Layer>

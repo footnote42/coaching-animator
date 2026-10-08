@@ -139,8 +139,8 @@ describe('circle passing', () => {
     expect(passes).toHaveLength(12);
     for (const flight of passes) {
       const { positions } = positionsAt(step, flight.land);
-      expect(positions.ball.x).toBeCloseTo(positions[flight.to].x);
-      expect(positions.ball.y).toBeCloseTo(positions[flight.to].y);
+      expect(positions.ball.x).toBeCloseTo(positions[flight.to!].x);
+      expect(positions.ball.y).toBeCloseTo(positions[flight.to!].y);
     }
     // The first pass is caught on a3's starting cell, though a3 runs after its own pass.
     expect(passes[0].end).toEqual({ x: 15, y: 13 });

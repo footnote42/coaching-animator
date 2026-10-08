@@ -89,8 +89,10 @@ describe('applyEdit: markers', () => {
     expect(validate(script).ok).toBe(true);
   });
 
-  it('refuses a ball with no player to hold it', () => {
-    expect(typeof applyEdit(emptyScript(), { type: 'addMarker', kind: 'ball', at: at(1, 1) })).toBe('string');
+  it('leaves a ball with no player to hold it lying loose on its cell', () => {
+    const script = edits(emptyScript(), { type: 'addMarker', kind: 'ball', at: at(1.2, 0.9) });
+    expect(script.base.placements).toEqual([{ marker: 'ball', cell: { x: 1, y: 1 } }]);
+    expect(validate(script).ok).toBe(true);
   });
 
   it('snaps a dragged marker to the nearest cell', () => {
@@ -600,8 +602,9 @@ describe('applyEdit: more than one ball', () => {
   });
 
   it('moving a ball never lands it on another ball’s holder', () => {
-    const moved = edits(two, { type: 'moveMarker', marker: 'ball1', at: at(2, 1) });
-    expect(moved.base.placements.find((p) => p.marker === 'ball1')?.holder).toBe('a2');
+    const moved = edits(two, { type: 'moveMarker', marker: 'ball1', at: at(1, 1) });
+    expect(moved.base.placements.find((p) => p.marker === 'ball1')).toEqual({ marker: 'ball1', cell: { x: 1, y: 1 } });
+    expect(validate(moved).ok).toBe(true);
   });
 
   it('works inside a Progression', () => {

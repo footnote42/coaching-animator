@@ -130,7 +130,9 @@ export const MarkerSchema = z
 const MarkerIdSchema = z.string().min(1).max(32);
 
 const StartShape = {
-  cell: CellSchema.optional().describe('Cell the marker starts on. Required for every marker except the ball.'),
+  cell: CellSchema.optional().describe(
+    'Cell the marker starts on. Required for every marker except the ball. For the ball, instead of a holder: it starts loose on this cell, lying on the ground with nobody holding it.',
+  ),
   holder: MarkerIdSchema.optional().describe(
     'For the ball only, instead of a cell: id of the attacker, defender or coach holding it at the start of the Step. The ball rides with its holder.',
   ),
@@ -147,7 +149,7 @@ export const PlacementSchema = z
     marker: z.string().describe('Id of the marker being placed.'),
     ...StartShape,
   })
-  .describe('Where a marker starts in the Step: a cell, or for the ball a holder, and whether kit is Lying.');
+  .describe('Where a marker starts in the Step: a cell, or for the ball a holder or a cell to lie loose on, and whether kit is Lying.');
 
 export const AfterSchema = z
   .strictObject({
@@ -181,7 +183,10 @@ export const PassSchema = z
   .strictObject({
     id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
     from: z.string().describe('Id of the marker passing. Must hold the ball when the pass fires.'),
-    to: z.string().describe('Id of the marker receiving.'),
+    to: z.string().optional().describe('Id of the marker receiving. Give exactly one of to or cell.'),
+    cell: CellSchema.optional().describe(
+      'Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with "kick": true; no "at".',
+    ),
     ball: MarkerIdSchema.optional().describe(
       'Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.',
     ),
@@ -201,7 +206,7 @@ export const PassSchema = z
       .boolean()
       .optional()
       .describe(
-        'true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.',
+        'true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. It goes to a receiver ("to") or to space ("cell"). Leave out for an ordinary pass.',
       ),
   })
   .describe(
@@ -256,7 +261,7 @@ export const PlaceMarkerChangeSchema = z
     ...StartShape,
   })
   .describe(
-    'Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield or tackle bag is Lying. Replaces the whole start: give the cell again, and leave out lying to stand Lying kit back up. Its move, if any, is kept and runs from the new cell.',
+    'Change where a marker starts (or, for the ball, who holds it or the cell it lies loose on) and whether a tackle shield or tackle bag is Lying. Replaces the whole start: give the cell again, and leave out lying to stand Lying kit back up. Its move, if any, is kept and runs from the new cell.',
   );
 
 export const SetMoveChangeSchema = z

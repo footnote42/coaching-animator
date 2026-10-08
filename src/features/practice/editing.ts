@@ -37,9 +37,14 @@ export interface CellPoint {
 
 /** One hand edit of the base Step. Positions are snapped to the nearest cell. */
 export type Edit =
-  /** `colour` applies to cones only; yellow (the default) is stored as nothing. */
-  | { type: 'addMarker'; kind: MarkerKind; at: CellPoint; colour?: ConeColour }
-  | { type: 'moveMarker'; marker: string; at: CellPoint }
+  /**
+   * `colour` applies to cones only; yellow (the default) is stored as nothing.
+   * `reach` applies to the ball only: a free player within that many cells of
+   * `at` takes it, else it lies loose on the ground (default `BALL_REACH_CELLS`).
+   */
+  | { type: 'addMarker'; kind: MarkerKind; at: CellPoint; colour?: ConeColour; reach?: number }
+  /** `reach` as for `addMarker`, when the marker is the ball. */
+  | { type: 'moveMarker'; marker: string; at: CellPoint; reach?: number }
   | { type: 'removeMarker'; marker: string }
   | { type: 'addWaypoint'; marker: string; at: CellPoint }
   | { type: 'moveWaypoint'; marker: string; index: number; at: CellPoint }
@@ -48,6 +53,8 @@ export type Edit =
   | { type: 'removeMove'; marker: string }
   /** `ball` is the ball passed; left out, it is the first ball. `kick` makes it a Kick. */
   | { type: 'addPass'; from: string; to: string; ball?: string; kick?: boolean }
+  /** Kick to space: the ball's holder kicks it to the cell at `at`, where it lands, rolls on and lies loose. */
+  | { type: 'addKickToSpace'; from: string; at: CellPoint; ball?: string }
   /** Make a pass a kick (slower, through the air) or an ordinary pass again. */
   | { type: 'setKick'; id: string; kick: boolean }
   /** Change which ball a pass moves. */
@@ -111,11 +118,16 @@ const ID_PREFIX: Record<MarkerKind, string> = {
 
 const LABEL_PREFIX: Partial<Record<MarkerKind, string>> = { attacker: 'A', defender: 'D', coach: 'C' };
 
+const LOOSE_BALL = 'The ball is lying loose: nobody has it to pass or kick.';
+
 const isCarrier = (kind: MarkerKind | undefined) =>
   kind !== undefined && (BALL_CARRIER_KINDS as readonly string[]).includes(kind);
 
 /** A catch tap this close (in cells) to a waypoint uses it instead of adding one. */
 const CATCH_SNAP_CELLS = 1;
+
+/** A ball dropped this close (in cells) to a free player goes into their hands; further away it lies loose. */
+export const BALL_REACH_CELLS = 1.5;
 
 const sameCell = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y;
 
@@ -123,7 +135,7 @@ function kindOf(script: PracticeScript, id: string): MarkerKind | undefined {
   return script.markers.find((m) => m.id === id)?.kind;
 }
 
-/** Starting cell of a marker in the base Step (the ball's is its holder's). */
+/** Starting cell of a marker in the base Step (the ball's is its holder's, or the cell it lies loose on). */
 export function startCell(script: PracticeScript, id: string): Cell | undefined {
   const placement = script.base.placements.find((p) => p.marker === id);
   if (!placement) return undefined;
@@ -140,7 +152,7 @@ export function ballHolder(script: PracticeScript, ball: string | undefined = ba
   return ball === undefined ? undefined : script.base.placements.find((p) => p.marker === ball)?.holder;
 }
 
-/** Who holds a ball (default: the first) once every base pass of it has been caught. */
+/** Who holds a ball (default: the first) once every base pass of it has been caught; undefined while it lies loose. */
 export function holderAfterPasses(script: PracticeScript, ball: string | undefined = ballIds(script)[0]): string | undefined {
   const first = ballIds(script)[0];
   const mine = script.base.passes.filter((p) => (p.ball ?? first) === ball);
@@ -155,10 +167,10 @@ function holdersExcept(script: PracticeScript, except?: string): Set<string> {
   return holders;
 }
 
-/** Nearest placed attacker, defender or coach to a cell, skipping `except` and anyone in `busy`. */
-function nearestCarrier(script: PracticeScript, cell: Cell, except?: string, busy?: Set<string>): string | undefined {
+/** Nearest placed attacker, defender or coach to a cell (within `reach` cells), skipping `except` and anyone in `busy`. */
+function nearestCarrier(script: PracticeScript, cell: CellPoint, except?: string, busy?: Set<string>, reach = Infinity): string | undefined {
   let best: string | undefined;
-  let bestDistance = Infinity;
+  let bestDistance = reach + 1e-9;
   for (const p of script.base.placements) {
     if (p.marker === except || busy?.has(p.marker) || !p.cell || !isCarrier(kindOf(script, p.marker))) continue;
     const d = Math.hypot(p.cell.x - cell.x, p.cell.y - cell.y);
@@ -189,12 +201,19 @@ function mapMove(script: PracticeScript, marker: string, f: (move: Move) => Move
   return cleanWaits(withBase(script, { moves }));
 }
 
-/** Set (or, for the ball, re-hold) where a marker starts in the base Step. */
-function placeBall(script: PracticeScript, ballId: string, holder: string): PracticeScript {
+/** Put a ball in a player's hands, or loose on a cell, at the start of the base Step. */
+function placeBall(script: PracticeScript, ballId: string, start: { holder: string } | { cell: Cell }): PracticeScript {
+  const placement: Placement = { marker: ballId, ...start };
   const placements = script.base.placements.some((p) => p.marker === ballId)
-    ? script.base.placements.map((p) => (p.marker === ballId ? { marker: ballId, holder } : p))
-    : [...script.base.placements, { marker: ballId, holder }];
+    ? script.base.placements.map((p) => (p.marker === ballId ? placement : p))
+    : [...script.base.placements, placement];
   return repairPasses(withBase(script, { placements }));
+}
+
+/** Where a ball dropped at `at` starts: with a free player within `reach` cells, else loose on the nearest cell. */
+function ballStart(script: PracticeScript, ballId: string | undefined, at: CellPoint, reach = BALL_REACH_CELLS): { holder: string } | { cell: Cell } {
+  const holder = nearestCarrier(script, at, undefined, holdersExcept(script, ballId), reach);
+  return holder ? { holder } : { cell: snapCell(at, script.area) };
 }
 
 /**
@@ -210,10 +229,13 @@ export function repairPasses(script: PracticeScript): PracticeScript {
     const ball = pass.ball ?? firstBall;
     const holder = ball === undefined ? undefined : holders.get(ball);
     if (ball === undefined || holder === undefined) continue;
-    if (pass.from !== holder || pass.to === pass.from || !isCarrier(kindOf(script, pass.to))) continue;
-    if (!script.base.placements.some((p) => p.marker === pass.to)) continue;
+    if (pass.from !== holder || pass.to === pass.from) continue;
+    const to = pass.to;
+    if (to !== undefined && (!isCarrier(kindOf(script, to)) || !script.base.placements.some((p) => p.marker === to))) continue;
     passes.push(pass);
-    holders.set(ball, pass.to);
+    // After a Kick to space the ball lies loose: nobody holds it.
+    if (to === undefined) holders.delete(ball);
+    else holders.set(ball, to);
   }
   if (passes.length === script.base.passes.length) return script;
   return cleanWaits(withBase(script, { passes }));
@@ -272,12 +294,11 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const cell = snapCell(edit.at, area);
       if (edit.kind === 'ball') {
         const existing = script.markers.find((m) => m.kind === 'ball');
-        const holder = nearestCarrier(script, cell, undefined, holdersExcept(script, existing?.id));
-        if (!holder) return 'Place a player first: the ball starts in a player’s hands.';
-        if (existing) return placeBall(script, existing.id, holder);
+        const start = ballStart(script, existing?.id, edit.at, edit.reach);
+        if (existing) return placeBall(script, existing.id, start);
         if (script.markers.length >= MAX_MARKERS) return `A Practice holds at most ${MAX_MARKERS} markers.`;
         const id = script.markers.some((m) => m.id === 'ball') ? `ball${nextNumber(script.markers.map((m) => m.id), 'ball')}` : 'ball';
-        return placeBall({ ...script, markers: [...script.markers, { id, kind: 'ball' }] }, id, holder);
+        return placeBall({ ...script, markers: [...script.markers, { id, kind: 'ball' }] }, id, start);
       }
       if (script.markers.length >= MAX_MARKERS) return `A Practice holds at most ${MAX_MARKERS} markers.`;
       const prefix = ID_PREFIX[edit.kind];
@@ -298,8 +319,10 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const kind = kindOf(script, edit.marker);
       if (kind === undefined) return `No marker "${edit.marker}".`;
       if (kind === 'ball') {
-        const holder = nearestCarrier(script, cell, undefined, holdersExcept(script, edit.marker));
-        return holder ? placeBall(script, edit.marker, holder) : 'Place a player first: the ball starts in a player’s hands.';
+        const start = ballStart(script, edit.marker, edit.at, edit.reach);
+        const current = script.base.placements.find((p) => p.marker === edit.marker);
+        if (current && same(startOf(current), start)) return script;
+        return placeBall(script, edit.marker, start);
       }
       const current = startCell(script, edit.marker);
       if (current && sameCell(current, cell)) return script;
@@ -402,7 +425,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       if (script.markers.length >= MAX_MARKERS) return `A Practice holds at most ${MAX_MARKERS} markers.`;
       const ids = script.markers.map((m) => m.id);
       const id = ids.includes('ball') ? `ball${nextNumber(ids, 'ball')}` : 'ball';
-      return placeBall({ ...script, markers: [...script.markers, { id, kind: 'ball' }] }, id, edit.holder);
+      return placeBall({ ...script, markers: [...script.markers, { id, kind: 'ball' }] }, id, { holder: edit.holder });
     }
 
     case 'setPassBall': {
@@ -425,7 +448,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const ball = edit.ball ?? balls[0];
       if (ball !== undefined && !balls.includes(ball)) return `No ball "${ball}".`;
       const holder = holderAfterPasses(script, ball);
-      if (holder === undefined) return 'Place the ball first: a pass needs someone holding it.';
+      if (holder === undefined) return ball === undefined ? 'Place the ball first: a pass needs someone holding it.' : LOOSE_BALL;
       if (edit.from === edit.to) return 'A player cannot pass to themselves.';
       if (!isCarrier(kindOf(script, edit.from)) || !isCarrier(kindOf(script, edit.to))) {
         return 'Only attackers, defenders and coaches pass and receive.';
@@ -440,6 +463,25 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       return withBase(script, { passes: [...script.base.passes, pass] });
     }
 
+    case 'addKickToSpace': {
+      const balls = ballIds(script);
+      const ball = edit.ball ?? balls[0];
+      if (ball !== undefined && !balls.includes(ball)) return `No ball "${ball}".`;
+      const holder = holderAfterPasses(script, ball);
+      if (holder === undefined) return ball === undefined ? 'Place the ball first: a kick needs someone holding it.' : LOOSE_BALL;
+      if (edit.from !== holder) {
+        const label = script.markers.find((m) => m.id === holder)?.label ?? holder;
+        return `${label} has the ball at that point, so the next kick must come from ${label}.`;
+      }
+      const cell = snapCell(edit.at, area);
+      const from = startCell(script, edit.from);
+      if (from && sameCell(from, cell)) return 'Tap further away to kick into space.';
+      if (script.base.passes.length >= MAX_PASSES) return `A Step holds at most ${MAX_PASSES} passes.`;
+      const id = `k${nextNumber(script.base.passes.map((p) => p.id), 'k')}`;
+      const pass: Pass = { id, from: edit.from, cell, ...(ball !== balls[0] && { ball }), kick: true };
+      return withBase(script, { passes: [...script.base.passes, pass] });
+    }
+
     case 'removePass': {
       if (!script.base.passes.some((p) => p.id === edit.id)) return script;
       return repairPasses(withBase(script, { passes: script.base.passes.filter((p) => p.id !== edit.id) }));
@@ -451,6 +493,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const { at: _old, ...rest } = pass;
       void _old;
       if (edit.at !== null) {
+        if (pass.to === undefined) return 'A Kick to space has no receiver to catch on the run.';
         const move = script.base.moves.find((m) => m.marker === pass.to);
         if (!move) return 'The receiver has no run: draw one to catch on the run.';
         if (edit.at < 0 || edit.at >= move.waypoints.length) return 'That point is not on the receiver’s run.';
@@ -462,6 +505,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'setKick': {
       const pass = script.base.passes.find((p) => p.id === edit.id);
       if (!pass || (pass.kick ?? false) === edit.kick) return script;
+      if (pass.cell) return 'A Kick to space is always a kick: delete it to pass instead.';
       const { kick: _old, ...rest } = pass;
       void _old;
       const next = edit.kick ? { ...rest, kick: true } : rest;
@@ -481,6 +525,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'addCatchPoint': {
       const pass = script.base.passes.find((p) => p.id === edit.id);
       if (!pass) return script;
+      if (pass.to === undefined) return 'A Kick to space has no receiver to catch on the run.';
       const move = script.base.moves.find((m) => m.marker === pass.to);
       const start = startCell(script, pass.to);
       if (!move || !start) return 'The receiver has no run: draw one to catch on the run.';
@@ -614,6 +659,7 @@ const canon = (value: unknown) =>
   );
 const same = (a: unknown, b: unknown) => canon(a) === canon(b);
 
+/** Where a placement starts, as a placeMarker change writes it (a loose ball is just a cell). */
 function startOf(placement: Placement): { cell: Cell; lying?: boolean } | { holder: string } {
   if (placement.holder !== undefined) return { holder: placement.holder };
   return { cell: placement.cell!, ...(placement.lying && { lying: true }) };
