@@ -34,17 +34,19 @@ On the MCP route, `create_practice` validates the script against the live schema
 - `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a Progression adding a defender.
 - `examples/05-kick-receipt.json`: one team kicks (`"kick": true` on a pass) to the other, who catch and counter-attack with backward passes.
 - `examples/06-shield-to-ruck.json`: a carry into an upright shield, then an Equipment Progression lays it flat as a ruck (`"lying": true` on `placeMarker`) with the ball beneath, and 9 passes away.
+- `examples/07-kick-to-space.json`: 10 kicks to space (`"cell"` instead of `"to"` on a kick) and the wingers chase as it lands; then an Equipment Progression starts the ball loose on the ground (`"cell"` instead of `"holder"`) under a Lying shield.
 
 ## 1. Describe a drill, get a Practice Script
 
 1. Ask only for what is missing and matters: the Area size, how many players, equipment, what happens, how it gets harder. If the Coach has given enough, do not ask.
 2. Write the script following the guide exactly. The rules most often broken:
    - Output one JSON object, no comments, no extra fields.
-   - Whole-number cells inside the Area; the ball has a `holder`, not a cell.
+   - Whole-number cells inside the Area; the ball has a `holder`, or a `cell` only when it lies loose on the ground with nobody holding it (it then stays put and cannot be passed).
    - Never write durations; use `pace` (`walk`, `jog`, `sprint`).
+   - A Kick to space is a kick with `"cell"` instead of `"to"`: `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball lands on the cell, rolls a short way on and lies loose for the rest of the Step, so no pass of that ball can follow it. Chasers set off as it lands with `"after": { "pass": "k1" }`. No `at` on it, and it is never a forward pass.
    - Labels are roles or shirt numbers, never player names.
    - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
-   - A tackle shield can be Lying (laid flat, for a ruck or a ball under a pad): add `"lying": true` to its placement, `addMarker` or `placeMarker`. A ball whose holder stands on that cell is drawn beneath it. `placeMarker` replaces the whole start, so give the cell again, and leave `lying` out to stand the shield back up. Only tackle shields take `lying`.
+   - A tackle shield can be Lying (laid flat, for a ruck or a ball under a pad): add `"lying": true` to its placement, `addMarker` or `placeMarker`. A ball on that cell, loose or with its holder standing there, is drawn beneath it. `placeMarker` replaces the whole start, so give the cell again, and leave `lying` out to stand the shield back up. Only tackle shields take `lying`.
 3. Add Progressions (each pulls one Lever: space, time, equipment or people, with a first coaching point saying why it is harder) unless the Practice is a match play.
 4. Check it (step 3 below) before you hand it over.
 
@@ -110,13 +112,13 @@ Rules: everything you create is private; you cannot publish, share or delete. Yo
 **Claude Code skill**, user-level, works from any folder. Bash:
 
 ```bash
-B=https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator; D=~/.claude/skills/coaching-animator; mkdir -p "$D/examples" && for f in SKILL.md examples/01-passing-line.json examples/02-pass-and-follow-progressions.json examples/03-two-ball-square.json examples/04-attack-v-defence.json examples/05-kick-receipt.json; do curl -fsSL "$B/$f" -o "$D/$f"; done
+B=https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator; D=~/.claude/skills/coaching-animator; mkdir -p "$D/examples" && for f in SKILL.md examples/01-passing-line.json examples/02-pass-and-follow-progressions.json examples/03-two-ball-square.json examples/04-attack-v-defence.json examples/05-kick-receipt.json examples/06-shield-to-ruck.json examples/07-kick-to-space.json; do curl -fsSL "$B/$f" -o "$D/$f"; done
 ```
 
 PowerShell:
 
 ```powershell
-$B='https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator'; $D="$HOME/.claude/skills/coaching-animator"; New-Item -ItemType Directory -Force "$D/examples" | Out-Null; 'SKILL.md','examples/01-passing-line.json','examples/02-pass-and-follow-progressions.json','examples/03-two-ball-square.json','examples/04-attack-v-defence.json','examples/05-kick-receipt.json' | ForEach-Object { Invoke-WebRequest "$B/$_" -OutFile "$D/$_" }
+$B='https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator'; $D="$HOME/.claude/skills/coaching-animator"; New-Item -ItemType Directory -Force "$D/examples" | Out-Null; 'SKILL.md','examples/01-passing-line.json','examples/02-pass-and-follow-progressions.json','examples/03-two-ball-square.json','examples/04-attack-v-defence.json','examples/05-kick-receipt.json','examples/06-shield-to-ruck.json','examples/07-kick-to-space.json' | ForEach-Object { Invoke-WebRequest "$B/$_" -OutFile "$D/$_" }
 ```
 
 **MCP tools** (so the AI saves Practices straight to your account). Sign in at https://coaching-animator.waynetellis.com/profile and create a personal token (starts with `ca_pat_`, shown once, revocable there). Then:

@@ -60,6 +60,10 @@ _Avoid_: pass point, throw point
 A Kick aimed at a cell rather than a player. The ball lands, rolls a short way and lies loose until someone Collects it (ADR 0006).
 _Avoid_: grubber, chip, loose kick (as separate things)
 
+**Loose ball**:
+A ball lying on the ground with nobody holding it: after a Kick to space comes to rest, or placed on a cell at the start of a Step. It stays put until someone Collects it; a loose ball on the same cell as Lying kit shows beneath it.
+_Avoid_: dead ball, dropped ball
+
 **Collect**:
 A named player reaching a loose ball and taking it, after which the next Pass or Kick of that ball is theirs. Either team can Collect.
 _Avoid_: pick up, gather, regather

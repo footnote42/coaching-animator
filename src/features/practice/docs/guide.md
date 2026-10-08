@@ -74,8 +74,9 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 
 - Every marker except the ball: `{ "marker": "a1", "cell": { "x": 2, "y": 8 } }`.
 - The ball: `{ "marker": "ball", "holder": "a1" }`. The ball has no cell; it rides with its holder. The holder must be an attacker, defender or coach on the Area, and no two balls may start with the same holder.
+- A ball lying loose on the ground, held by nobody: give it a `cell` instead of a `holder`, `{ "marker": "ball", "cell": { "x": 6, "y": 5 } }`. It stays on that cell for the whole Step and cannot be passed or kicked, since nobody holds it. Give one or the other, never both.
 - Two markers may share a cell (a player standing on a cone, for example).
-- A tackle shield may add `"lying": true` to lay it flat on the ground for the Step, as at a ruck or with a ball under a pad: `{ "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true }`. A ball on the same cell (its holder standing there) is drawn beneath the shield, partly showing. Leave `lying` out for an upright shield. Any other kind with `lying` is rejected. Lying is set per Step, never animated; to lay a shield down or stand it back up in a Progression, use `placeMarker` (below).
+- A tackle shield may add `"lying": true` to lay it flat on the ground for the Step, as at a ruck or with a ball under a pad: `{ "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true }`. A ball on the same cell (lying loose there, or its holder standing there) is drawn beneath the shield, partly showing. Leave `lying` out for an upright shield. Any other kind with `lying` is rejected. Lying is set per Step, never animated; to lay a shield down or stand it back up in a Progression, use `placeMarker` (below).
 - A marker left out of `base.placements` is not on the Area in Step 0; a Progression must add it with `addMarker`, or the script is rejected.
 
 ## Moves and waypoints
@@ -84,7 +85,7 @@ A move is a run by one marker: `{ "marker", "waypoints", "pace"?, "after"? }`.
 
 - At most one move per marker per Step.
 - `waypoints` is a list of 1 to {{MAX_WAYPOINTS}} cells. The marker runs from its starting cell through each waypoint in order, in straight lines, without stopping, and rests on the last one.
-- The ball never has a move. It travels with its holder or on a pass.
+- The ball never has a move. It travels with its holder or on a pass, or lies loose.
 - A move with no `after` starts at time zero.
 
 ## Pace
@@ -101,7 +102,7 @@ A move's duration comes from the straight-line length of its path (start cell to
 
 ## Passes
 
-A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
+A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`, or for a Kick to space `{ "id", "from", "cell", "kick": true, "ball"?, "after"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
 - The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
@@ -111,7 +112,16 @@ A pass is `{ "id", "from", "to", "ball"?, "at"?, "after"?, "kick"? }`. `base.pas
 
 ### `kick`: kick to a receiver
 
-`"kick": true` makes the pass a kick: the ball flies through the air at {{KICK_SPEED_MPS}} m/s (slower than a pass), drawn as a dashed arc with the ball growing and shrinking. A kick follows the same order, catch (`at`) and `after` rules as a pass, and is never a forward pass. A kick goes to a receiver only; the ball does not land in space. To show one team kicking to the other, set the other team's markers with `"team"` and kick to one of them.
+`"kick": true` makes the pass a kick: the ball flies through the air at {{KICK_SPEED_MPS}} m/s (slower than a pass), drawn as a dashed arc with the ball growing and shrinking. A kick follows the same order, catch (`at`) and `after` rules as a pass, and is never a forward pass. To show one team kicking to the other, set the other team's markers with `"team"` and kick to one of them.
+
+### Kick to space
+
+A kick may go to a cell instead of a player: give `"cell"` in place of `"to"`, with `"kick": true`, e.g. `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball flies to that cell, lands, rolls on {{KICK_ROLL_M}} m in the direction of the kick (stopping at the edge of the Area) and lies loose there until the end of the Step. The Step plays on until the ball comes to rest.
+
+- Give exactly one of `to` or `cell`. A `cell` needs `"kick": true`, and a Kick to space has no `at`.
+- The cell must be inside the Area.
+- It is never a forward pass, however far forward it goes.
+- After it, nobody holds the ball, so no later pass of that ball can follow in the Step. Chasers can still run after it: give their moves `"after": { "pass": "k1" }` to set off as it lands.
 
 The `direction` belongs to the team holding the ball at the start. A pass whose passer is on the other team (for example the receiver of a kick, who now attacks) is checked in the opposite direction, so with `"direction": "up"` and the kicking team holding the ball first, the receiving team's passes must not travel down.
 
@@ -188,12 +198,12 @@ Change types (each is an object with a `type`):
 
 | `type` | Fields | Effect and rules |
 | --- | --- | --- |
-| `addMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Put a declared marker on the Area. It must not be on the Area in the previous Step. |
+| `addMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Put a declared marker on the Area. It must not be on the Area in the previous Step. A ball given a `cell` lies loose there. |
 | `removeMarker` | `marker` | Take a marker and its move off the Area. It must be on the Area. Remove or change any pass that used it. |
-| `placeMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Change where a marker starts, or who holds the ball, and whether a tackle shield is Lying. It replaces the whole start: give the cell even if it is unchanged, add `"lying": true` to lay a shield flat, and leave `lying` out to stand a Lying shield back up. Its move is kept and runs from the new cell. |
+| `placeMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Change where a marker starts, or who holds the ball (or, with `cell`, drop it loose on that cell), and whether a tackle shield is Lying. It replaces the whole start: give the cell even if it is unchanged, add `"lying": true` to lay a shield flat, and leave `lying` out to stand a Lying shield back up. Its move is kept and runs from the new cell. |
 | `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. |
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
-| `setPass` | `id`, `from`, `to`, `ball`?, `at`?, `after`?, `kick`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
+| `setPass` | `id`, `from`, `to` or (Kick to space) `cell`, `ball`?, `at`?, `after`?, `kick`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
 | `removePass` | `id` | Remove a pass. It must exist in the previous Step. |
 | `setArea` | `width`, `length`, `template`? | Replace the Area from this Step on. Only allowed when `lever` is `space`. Every cell used from this Step on, including cells carried forward, must fit the new Area. |
 
