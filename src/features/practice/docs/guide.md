@@ -96,7 +96,7 @@ A move is a run by one marker: `{ "marker", "waypoints", "pace"?, "after"? }`.
 | `jog` (default) | {{PACE_jog}} m/s |
 | `sprint` | {{PACE_sprint}} m/s |
 
-A move's duration is the straight-line length of its path (start cell to each waypoint in turn, in metres) divided by the Pace speed. Example: from `(0, 0)` to `(6, 8)` is 10 m, so 5 s at `jog`. Never write a duration.
+A move's duration comes from the straight-line length of its path (start cell to each waypoint in turn, in metres) and its Pace. Every move speeds up from a standstill at {{RUN_ACCELERATION}} m/s², holds its Pace, and tapers to a stop on its last waypoint at {{RUN_TAPER}} m/s²; a move too short to reach its Pace peaks below it. Example: from `(0, 0)` to `(6, 8)` is 10 m, about 5 s at `jog` plus a little over a second to get going and slow down. Never write a duration.
 
 ## Passes
 

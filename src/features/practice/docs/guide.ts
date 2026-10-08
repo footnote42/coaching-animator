@@ -15,7 +15,14 @@ import {
   MAX_WAYPOINTS,
   AREA_TEMPLATES,
 } from '@/features/practice/schema';
-import { KICK_SPEED_MPS, MAX_SCRIPT_BYTES, PACE_SPEEDS_MPS, PASS_SPEED_MPS } from '@/features/practice/engine';
+import {
+  KICK_SPEED_MPS,
+  MAX_SCRIPT_BYTES,
+  PACE_SPEEDS_MPS,
+  PASS_SPEED_MPS,
+  RUN_ACCELERATION_MPS2,
+  RUN_TAPER_MPS2,
+} from '@/features/practice/engine';
 import {
   AREA_TEMPLATE_SIZES,
   FULL_PITCH_LENGTH_M,
@@ -48,6 +55,8 @@ function tokens(origin: string): Record<string, string | number> {
     MAX_SCRIPT_BYTES,
     PASS_SPEED_MPS,
     KICK_SPEED_MPS,
+    RUN_ACCELERATION: RUN_ACCELERATION_MPS2,
+    RUN_TAPER: RUN_TAPER_MPS2,
     PITCH_IN_GOAL_M,
     HALF_PITCH_LENGTH_M,
     HALF_22_Y: PITCH_IN_GOAL_M + PITCH_22_M,

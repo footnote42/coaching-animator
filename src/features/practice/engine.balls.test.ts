@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { validate, resolveStep, positionsAt, formatError, PACE_SPEEDS_MPS, DEFAULT_PACE } from './engine';
+import {
+  validate,
+  resolveStep,
+  positionsAt,
+  formatError,
+  PACE_SPEEDS_MPS,
+  DEFAULT_PACE,
+  RUN_ACCELERATION_MPS2,
+  RUN_TAPER_MPS2,
+} from './engine';
 
 const jog = PACE_SPEEDS_MPS[DEFAULT_PACE];
 
@@ -48,8 +57,10 @@ describe('receive, pass, run, receive again', () => {
     expect(p1.fire).toBe(0);
     expect(p1.end).toEqual({ x: 10, y: 0 });
     expect(p2.fire).toBeCloseTo(p1.land);
-    // a2 sets off when p2 is caught, and p3 waits until it is back.
-    expect(p3.fire).toBeCloseTo(p2.land + 12 / jog);
+    // a2 sets off when p2 is caught, and p3 waits until it is back: 12 m at jog,
+    // plus the time lost speeding up from rest and tapering onto its last waypoint.
+    const runBack = 12 / jog + jog / (2 * RUN_ACCELERATION_MPS2) + jog / (2 * RUN_TAPER_MPS2);
+    expect(p3.fire).toBeCloseTo(p2.land + runBack);
     expect(p3.end).toEqual({ x: 10, y: 0 });
   });
 

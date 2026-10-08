@@ -46,6 +46,17 @@ export const PACE_SPEEDS_MPS = {
 
 export const DEFAULT_PACE: Pace = 'jog';
 
+/**
+ * How hard a Run speeds up from a standstill to its Pace, in metres per second
+ * squared: a jog reaches Pace in 1 s, a sprint in 2 s. Tune by eye, like the Paces.
+ */
+export const RUN_ACCELERATION_MPS2 = 2;
+/**
+ * How hard a Run slows into its last waypoint, in metres per second squared.
+ * Gentler than the acceleration so players ease off rather than brake. Tune by eye.
+ */
+export const RUN_TAPER_MPS2 = 1.5;
+
 /** Speed of the ball on a pass, in metres per second. Also slower than real time. */
 export const PASS_SPEED_MPS = 8;
 /** Speed of the ball on a kick, in metres per second: half a pass, as a kick hangs in the air. */
@@ -778,13 +789,46 @@ interface SpeedProfile {
   timeAt(cells: number): number;
 }
 
-/** A Run at one speed from start to finish. */
-function constantProfile(length: number, speedMps: number): SpeedProfile {
-  const timeAt = (cells: number) => (cells * CELL_SIZE_M) / speedMps;
+/**
+ * A Run that accelerates from rest to its Pace, holds it, and tapers to a stop
+ * exactly on its last waypoint. A Run too short to reach its Pace peaks below it.
+ */
+function easedProfile(length: number, speedMps: number): SpeedProfile {
+  const metres = length * CELL_SIZE_M;
+  if (metres <= 0) return { duration: 0, distanceAt: () => 0, timeAt: () => 0 };
+  const a = RUN_ACCELERATION_MPS2;
+  const d = RUN_TAPER_MPS2;
+  // Speeding up and tapering cover v^2/2a and v^2/2d; on a short Run they meet at the peak.
+  const peak = Math.min(speedMps, Math.sqrt((2 * metres * a * d) / (a + d)));
+  const accelTime = peak / a;
+  const accelMetres = (peak * peak) / (2 * a);
+  const taperTime = peak / d;
+  const taperMetres = (peak * peak) / (2 * d);
+  const cruiseMetres = Math.max(0, metres - accelMetres - taperMetres);
+  const taperStart = accelTime + cruiseMetres / peak;
+  const duration = taperStart + taperTime;
+
+  const metresAt = (elapsed: number): number => {
+    if (elapsed <= 0) return 0;
+    if (elapsed < accelTime) return 0.5 * a * elapsed * elapsed;
+    if (elapsed < taperStart) return accelMetres + peak * (elapsed - accelTime);
+    if (elapsed < duration) {
+      const left = duration - elapsed;
+      return metres - 0.5 * d * left * left;
+    }
+    return metres;
+  };
+  const secondsAt = (m: number): number => {
+    if (m <= 0) return 0;
+    if (m < accelMetres) return Math.sqrt((2 * m) / a);
+    if (m < metres - taperMetres) return accelTime + (m - accelMetres) / peak;
+    if (m < metres) return duration - Math.sqrt((2 * (metres - m)) / d);
+    return duration;
+  };
   return {
-    duration: timeAt(length),
-    distanceAt: (elapsed) => (Math.max(0, elapsed) * speedMps) / CELL_SIZE_M,
-    timeAt,
+    duration,
+    distanceAt: (elapsed) => metresAt(elapsed) / CELL_SIZE_M,
+    timeAt: (cells) => secondsAt(cells * CELL_SIZE_M),
   };
 }
 
@@ -806,7 +850,7 @@ function runOf(start: Point, move: Move): Run {
     reach.push(cells);
     from = to;
   }
-  return { start, move, reach, profile: constantProfile(cells, PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE]) };
+  return { start, move, reach, profile: easedProfile(cells, PACE_SPEEDS_MPS[move.pace ?? DEFAULT_PACE]) };
 }
 
 /** Seconds a Run takes from its start to waypoint `upto` (default: the last). */
