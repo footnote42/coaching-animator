@@ -33,24 +33,44 @@ The space a Practice happens in, sized in metres and started from a template: sq
 _Avoid_: canvas, field, grid (grid is the cells inside an Area)
 
 **Pace**:
-How fast a marker moves: steady by default, slower than real time so viewers can follow the idea, and changed per move (walk, jog, sprint) when the Practice needs it. Durations come from distance and Pace, never typed by hand.
+How fast a marker moves: slower than real time so viewers can follow the idea, set per Run (walk, jog, sprint) and changeable per waypoint segment, so a player can jog in then sprint onto the ball. The engine eases into, between and out of Paces, and may scale a receiver's Run to meet the ball (ADR 0005). Durations come from distance and Pace, never typed by hand.
 _Avoid_: speed, tempo, duration
 
 **Run**:
-A marker's path across the Area through waypoints at a Pace. It starts straight away or after another Run or Pass finishes.
+A marker's path across the Area through waypoints at a Pace. It starts straight away or after another Run or Pass finishes, and tapers to a stop at its end rather than halting dead.
 _Avoid_: move (in anything a Coach reads), path, route
 
 **Pass**:
-The ball travelling from the marker holding it to another marker. It is thrown once the previous Pass of that ball is caught and the receiver reaches the catch point. The ball flies to where the receiver will be when it arrives.
+The ball travelling from the marker holding it to another marker. It is thrown once the previous Pass of that ball is caught, and the receiver's Run is timed so they reach the catch point as the ball does (ADR 0005). The ball flies to where the receiver will be when it arrives.
 _Avoid_: throw, ball movement
 
 **Kick**:
-The ball kicked from the marker holding it to a receiver, through the air, slower and higher than a Pass. A Kick is never a forward pass; after a Kick to the other team, that team attacks the opposite way.
+The ball kicked from the marker holding it, through the air, slower and higher than a Pass, either to a receiver or to space. A Kick is never a forward pass; after a Kick to the other team, that team attacks the opposite way.
 _Avoid_: punt, kick pass (as a separate thing)
 
 **Catch on the run**:
 A Pass caught at a point part way along the receiver's Run instead of at its end. The receiver carries on running with the ball.
 _Avoid_: mid-run pass, early catch
+
+**Release**:
+The point part way along the carrier's own Run where a Pass or Kick leaves their hands; the carrier runs on without the ball. Leave it out and the ball goes at the end of the carrier's Run.
+_Avoid_: pass point, throw point
+
+**Kick to space**:
+A Kick aimed at a cell rather than a player. The ball lands, rolls a short way and lies loose until someone Collects it (ADR 0006).
+_Avoid_: grubber, chip, loose kick (as separate things)
+
+**Collect**:
+A named player reaching a loose ball and taking it, after which the next Pass or Kick of that ball is theirs. Either team can Collect.
+_Avoid_: pick up, gather, regather
+
+**Lying**:
+A tackle shield or tackle bag laid flat on the ground, as in a ruck or a ball placed under a pad; a ball on the same cell shows beneath it. Set per Step, not animated.
+_Avoid_: rotated, down, flat
+
+**Tackle bag**:
+The tall cylindrical bag used for contact work: bigger than a tackle shield, and like it can be upright or Lying.
+_Avoid_: tackle dummy, bag (alone), tackle tube
 
 **Direction of attack**:
 The way the attack is going in a Practice: up, down, left or right on the Area, or none for drills without a try line. A Pass is forward when it is caught ahead of where it was thrown, measured in this direction; only a Practice with a direction can have one.
