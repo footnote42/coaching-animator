@@ -467,18 +467,22 @@ describe('Motion: Pace, ball and passes', () => {
     expect(at(script, flight + 1).positions.ball).toEqual({ x: 10, y: 0 });
   });
 
-  it('fires a pass when the receiver arrives at its cell, not before', () => {
+  it('throws to a late receiver so the ball lands as it arrives at its cell', () => {
     const script = drill({
       moves: [{ marker: 'a2', waypoints: [{ x: 10, y: 6 }] }],
       passes: [{ id: 'p1', from: 'a1', to: 'a2' }],
     });
+    // Receivers are timed to the ball (#144): the pass no longer waits for a2 to
+    // stand on its cell, it goes early enough to arrive with a2.
     const arrive = runSeconds(6);
+    const fire = arrive - Math.hypot(10, 6) / PASS_SPEED_MPS;
     const { passes, duration } = at(script, 0);
-    expect(passes[0].fire).toBeCloseTo(arrive);
+    expect(passes[0].fire).toBeCloseTo(fire);
+    expect(passes[0].land).toBeCloseTo(arrive);
     expect(passes[0].end).toEqual({ x: 10, y: 6 });
-    expect(duration).toBeCloseTo(arrive + Math.hypot(10, 6) / PASS_SPEED_MPS);
-    expect(at(script, arrive - 0.01).positions.ball).toEqual({ x: 0, y: 0 });
-    expect(at(script, arrive + 0.1).positions.ball.x).toBeGreaterThan(0);
+    expect(duration).toBeCloseTo(arrive);
+    expect(at(script, fire - 0.01).positions.ball).toEqual({ x: 0, y: 0 });
+    expect(at(script, fire + 0.1).positions.ball.x).toBeGreaterThan(0);
     expect(at(script, duration).positions.ball).toEqual({ x: 10, y: 6 });
   });
 
@@ -603,8 +607,10 @@ describe('Motion: Pace, ball and passes', () => {
     const [base, second, third] = [0, 1, 2].map((n) => at(script, 0, n));
     expect(base.passes.map((p) => p.id)).toEqual(['p1']);
     expect(second.passes.map((p) => `${p.id}:${p.from}>${p.to}`)).toEqual(['p1:a1>a2', 'p2:a2>a3']);
+    // a3 walks, so it is late even unslowed: p2 goes early enough to land as it arrives (#144).
     const a3Arrives = 10 / PASS_SPEED_MPS + runSeconds(4, PACE_SPEEDS_MPS.walk);
-    expect(second.passes[1].fire).toBeCloseTo(a3Arrives);
+    expect(second.passes[1].fire).toBeCloseTo(a3Arrives - Math.hypot(10, 4) / PASS_SPEED_MPS);
+    expect(second.passes[1].land).toBeCloseTo(a3Arrives);
     expect(third.passes.map((p) => `${p.id}:${p.from}>${p.to}`)).toEqual(['p1:a1>a3']);
   });
 
@@ -637,16 +643,16 @@ describe('Motion: Pace, ball and passes', () => {
         passes: [{ id: 'p1', from: 'a1', to: 'a2', ...pass }, ...passes],
       });
 
-    it('fires the pass when the receiver reaches the catch waypoint and leads the runner', () => {
+    it('throws so the ball meets the runner on the catch waypoint', () => {
       const script = runOn({ at: 0 });
       const { passes, duration } = at(script, 0);
       const [p1] = passes;
-      expect(p1.fire).toBeCloseTo(cruiseSeconds(4));
-      expect(p1.end.x).toBeCloseTo(10);
-      expect(p1.end.y).toBeGreaterThan(4);
-      // The ball meets the receiver where it is when the ball lands.
-      expect(at(script, p1.land).positions.a2.y).toBeCloseTo(p1.end.y);
-      expect(p1.land - p1.fire).toBeCloseTo(Math.hypot(p1.end.x, p1.end.y) / PASS_SPEED_MPS);
+      // Timed to the ball (#144): a2 is late at its own Pace, so the pass goes
+      // early and is caught on waypoint 0 as a2 runs through it, not led past it.
+      expect(p1.land).toBeCloseTo(cruiseSeconds(4));
+      expect(p1.end).toEqual({ x: 10, y: 4 });
+      expect(at(script, p1.land).positions.a2.y).toBeCloseTo(4);
+      expect(p1.land - p1.fire).toBeCloseTo(Math.hypot(10, 4) / PASS_SPEED_MPS);
       // The receiver keeps running: the Step lasts as long as its whole move.
       expect(duration).toBeCloseTo(runSeconds(12));
     });
@@ -675,9 +681,11 @@ describe('Motion: Pace, ball and passes', () => {
       expect(end.a2).toEqual({ x: 10, y: 12 });
     });
 
-    it('keeps the default: with no catch waypoint the pass fires at the end of the move', () => {
+    it('keeps the default: with no catch waypoint the ball is caught at the end of the move', () => {
       const { passes } = at(runOn(), 0);
-      expect(passes[0].fire).toBeCloseTo(runSeconds(12));
+      // Lands as a2 arrives rather than firing once a2 stands there (#144).
+      expect(passes[0].land).toBeCloseTo(runSeconds(12));
+      expect(passes[0].fire).toBeCloseTo(runSeconds(12) - Math.hypot(10, 12) / PASS_SPEED_MPS);
       expect(passes[0].end).toEqual({ x: 10, y: 12 });
     });
 
@@ -730,13 +738,19 @@ describe('Motion: Pace, ball and passes', () => {
     it('combines with a catch on the run: waits for both', () => {
       const moves = [a3Runs, { marker: 'a2', waypoints: [{ x: 10, y: 4 }, { x: 10, y: 12 }] }];
       const early = drill({ moves, passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }] });
-      // a2 reaches its catch waypoint (4 cells) before a3 finishes (10 cells).
-      expect(at(early, 0).passes[0].fire).toBeCloseTo(runSeconds(10));
+      // a2 would reach its catch waypoint (4 cells) before a3 finishes (10 cells),
+      // so the pass goes when a3 finishes and a2 is slowed to meet it (#144).
+      const [held] = at(early, 0).passes;
+      expect(held.fire).toBeCloseTo(runSeconds(10));
+      expect(at(early, held.land).positions.a2).toEqual({ x: 10, y: 4 });
       const slow = drill({
         moves: [{ marker: 'a3', waypoints: [{ x: 20, y: 2 }] }, moves[1]],
         passes: [{ id: 'p1', from: 'a1', to: 'a2', at: 0, after: { move: 'a3' } }],
       });
-      expect(at(slow, 0).passes[0].fire).toBeCloseTo(cruiseSeconds(4));
+      // a3 finishes first, but the pass still waits for it before going to a2.
+      const [p1] = at(slow, 0).passes;
+      expect(p1.fire).toBeCloseTo(runSeconds(2));
+      expect(at(slow, p1.land).positions.a2.y).toBeCloseTo(4);
     });
 
     it('rejects a wait on a marker with no run, and loops', () => {

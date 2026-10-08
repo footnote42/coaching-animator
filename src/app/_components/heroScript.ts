@@ -26,15 +26,15 @@ export const HERO_SCRIPT = {
     moves: [
       { marker: 'a1', waypoints: [{ x: 12, y: 12 }], pace: 'jog' },
       { marker: 'a2', waypoints: [{ x: 17, y: 13 }], pace: 'jog' },
-      // Sets off on the first catch, then sprints on to its catch point; the ball leads it, so the catch lands just behind 2 (a legal pass).
-      { marker: 'a3', waypoints: [{ x: 22, y: 17 }, { x: 24, y: 4 }], pace: 'sprint', after: { pass: 'p1' } },
+      // Sets off with the line, arcs out and back in to catch level with 2, then sprints for the line; timed to the ball.
+      { marker: 'a3', waypoints: [{ x: 26, y: 16 }, { x: 23, y: 13 }, { x: 24, y: 4 }], pace: 'sprint' },
       { marker: 'd1', waypoints: [{ x: 13, y: 11 }], pace: 'jog' },
       // Draws 2: runs in to the carrier, and the ball goes when D2 arrives (draw and pass).
       { marker: 'd2', waypoints: [{ x: 18, y: 12 }], pace: 'jog' },
     ],
     passes: [
       { id: 'p1', from: 'a1', to: 'a2' },
-      { id: 'p2', from: 'a2', to: 'a3', at: 0, after: { move: 'd2' } },
+      { id: 'p2', from: 'a2', to: 'a3', at: 1, after: { move: 'd2' } },
     ],
     commentary: { points: ['Draw the defender, then pass, so the overlap runs into space'] },
   },
