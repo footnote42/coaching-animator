@@ -87,3 +87,37 @@ describe('Progressions: Lying', () => {
     expect(script.progressions[0].changes).toEqual([]);
   });
 });
+
+describe('Tackle bag', () => {
+  const withBag = edits(base, { type: 'addMarker', kind: 'tackle-bag', at: { x: 7, y: 2 } });
+  const bagPlacement = (script: PracticeScript) => script.base.placements.find((p) => p.marker === 'bag1');
+
+  it('places a bag from the palette, upright, and the script stays valid', () => {
+    expect(withBag.markers).toContainEqual({ id: 'bag1', kind: 'tackle-bag' });
+    expect(bagPlacement(withBag)).toEqual({ marker: 'bag1', cell: { x: 7, y: 2 } });
+    expect(validate(withBag).ok).toBe(true);
+  });
+
+  it('toggles Lying on a bag', () => {
+    const down = edits(withBag, { type: 'setLying', marker: 'bag1', lying: true });
+    expect(bagPlacement(down)).toEqual({ marker: 'bag1', cell: { x: 7, y: 2 }, lying: true });
+    expect(validate(down).ok).toBe(true);
+    expect(lyingOf(down, 0, 'bag1')).toBe(true);
+
+    const up = edits(down, { type: 'setLying', marker: 'bag1', lying: false });
+    expect(bagPlacement(up)).toEqual({ marker: 'bag1', cell: { x: 7, y: 2 } });
+  });
+
+  it('records laying a bag down in a Progression as a placeMarker change', () => {
+    const script = stepEdits(addProgression(withBag, 'equipment'), 1, { type: 'setLying', marker: 'bag1', lying: true });
+    expect(script.progressions[0].changes).toEqual([{ type: 'placeMarker', marker: 'bag1', cell: { x: 7, y: 2 }, lying: true }]);
+    expect(lyingOf(script, 0, 'bag1')).toBeUndefined();
+    expect(lyingOf(script, 1, 'bag1')).toBe(true);
+  });
+
+  it('names both kinds when refusing Lying', () => {
+    expect(applyEdit(withBag, { type: 'setLying', marker: 'cone1', lying: true })).toBe(
+      'Only a tackle shield or tackle bag can be laid flat.',
+    );
+  });
+});

@@ -79,6 +79,7 @@
               "ball",
               "cone",
               "tackle-shield",
+              "tackle-bag",
               "coach"
             ],
             "description": "What the marker represents."
@@ -160,7 +161,7 @@
                 "maxLength": 32
               },
               "lying": {
-                "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                "description": "For a tackle shield or tackle bag only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for upright kit.",
                 "type": "boolean"
               }
             },
@@ -424,7 +425,7 @@
                       "maxLength": 32
                     },
                     "lying": {
-                      "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                      "description": "For a tackle shield or tackle bag only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for upright kit.",
                       "type": "boolean"
                     }
                   },
@@ -495,7 +496,7 @@
                       "maxLength": 32
                     },
                     "lying": {
-                      "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                      "description": "For a tackle shield or tackle bag only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for upright kit.",
                       "type": "boolean"
                     }
                   },
@@ -504,7 +505,7 @@
                     "marker"
                   ],
                   "additionalProperties": false,
-                  "description": "Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell."
+                  "description": "Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield or tackle bag is Lying. Replaces the whole start: give the cell again, and leave out lying to stand Lying kit back up. Its move, if any, is kept and runs from the new cell."
                 },
                 {
                   "type": "object",

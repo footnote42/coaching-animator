@@ -3,6 +3,7 @@ import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, resolveStep, stepCount, type ResolvedMarker } from '@/features/practice/engine';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { markerRadius } from '@/features/practice/area';
+import { TACKLE_BAG_SHADE, tackleBagShape } from '@/features/practice/tackleBag';
 import { loadPractice } from './loadPractice';
 
 export const runtime = 'nodejs';
@@ -25,6 +26,21 @@ function markerStyle(marker: ResolvedMarker, x: number, y: number, r: number) {
       return { ...box(r * 1.1, r * 1.1), borderRadius: '50%', backgroundColor: fill, border: `2px solid ${CONE_OUTLINE}` };
     case 'tackle-shield':
       return { ...(marker.lying ? box(r * 2, r * 1.2) : box(r * 1.2, r * 2)), backgroundColor: fill, border: '1px solid #111827' };
+    case 'tackle-bag': {
+      const bag = tackleBagShape(x, y, r, marker.lying);
+      return {
+        position: 'absolute' as const,
+        left: bag.x,
+        top: bag.y,
+        width: bag.width,
+        height: bag.height,
+        borderRadius: bag.cornerRadius,
+        backgroundColor: fill,
+        // The shaded side suggests a cylinder: right when upright, bottom when Lying.
+        backgroundImage: `linear-gradient(${marker.lying ? 'to bottom' : 'to right'}, transparent 65%, ${TACKLE_BAG_SHADE} 65%)`,
+        border: '1px solid #111827',
+      };
+    }
     default:
       return {
         ...box(r * 2, r * 2),

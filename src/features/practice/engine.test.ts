@@ -92,7 +92,7 @@ describe('validate', () => {
   it('names the path of structural errors', () => {
     const script = clone(passingSquare) as Record<string, unknown> & typeof passingSquare;
     delete (script.area as Partial<typeof script.area>).width;
-    (script.markers[0] as Record<string, unknown>).kind = 'tackle-bag';
+    (script.markers[0] as Record<string, unknown>).kind = 'tackle-dummy';
     const errors = errorsOf(script);
     expect(errors).toContain('area.width: is required');
     expect(errors.some((e) => e.startsWith('markers[0].kind: '))).toBe(true);
