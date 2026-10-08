@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { formatError, resolveStep, validate } from './engine';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { formatError, resolveStep, validate, warnings } from './engine';
 import type { PracticeScript } from './schema';
 
 function errorsOf(input: unknown): string[] {
@@ -88,5 +90,17 @@ describe('Lying', () => {
       progressions: [{ lever: 'equipment', changes: [{ type: 'addMarker', marker: 'shield1', cell: { x: 2, y: 2 }, lying: true }] }],
     });
     expect(lyingOf(script, 1, 'shield1')).toBe(true);
+  });
+});
+
+describe('skill example 06-shield-to-ruck.json', () => {
+  it('lays the shield flat over the ball in its Progression, with no warning', () => {
+    const file = path.join(process.cwd(), 'skill', 'coaching-animator', 'examples', '06-shield-to-ruck.json');
+    const script = valid(readFileSync(file, 'utf8'));
+    expect(lyingOf(script, 0, 'shield1')).toBeUndefined();
+    expect(lyingOf(script, 1, 'shield1')).toBe(true);
+    const ruckStep = resolveStep(script, 1).markers;
+    expect(ruckStep.find((m) => m.id === 'ball')?.cell).toEqual(ruckStep.find((m) => m.id === 'shield1')?.cell);
+    expect(warnings(script)).toEqual([]);
   });
 });
