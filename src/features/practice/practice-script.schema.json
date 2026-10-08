@@ -158,13 +158,17 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 32
+              },
+              "lying": {
+                "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                "type": "boolean"
               }
             },
             "required": [
               "marker"
             ],
             "additionalProperties": false,
-            "description": "Where a marker starts in the Step: a cell, or for the ball a holder."
+            "description": "Where a marker starts in the Step: a cell, or for the ball a holder, and whether kit is Lying."
           },
           "description": "Markers on the Area in Step 0, each placed at most once. A marker left out must be added by a Progression."
         },
@@ -418,6 +422,10 @@
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 32
+                    },
+                    "lying": {
+                      "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                      "type": "boolean"
                     }
                   },
                   "required": [
@@ -485,6 +493,10 @@
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 32
+                    },
+                    "lying": {
+                      "description": "For a tackle shield only: true lays it flat on the ground for the whole Step, as at a ruck or with a ball under a pad. A ball on the same cell is drawn beneath it, partly showing. Leave out for an upright shield.",
+                      "type": "boolean"
                     }
                   },
                   "required": [
@@ -492,7 +504,7 @@
                     "marker"
                   ],
                   "additionalProperties": false,
-                  "description": "Change where a marker starts (or, for the ball, who holds it). Its move, if any, is kept and runs from the new cell."
+                  "description": "Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell."
                 },
                 {
                   "type": "object",

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "title": "Hit the shield, then ruck and pass away",
+  "area": { "width": 12, "length": 12 },
+  "direction": "up",
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a9", "kind": "attacker", "label": "9" },
+    { "id": "a10", "kind": "attacker", "label": "10" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "shield1", "kind": "tackle-shield" },
+    { "id": "coach1", "kind": "coach", "label": "C" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 6, "y": 10 } },
+      { "marker": "ball", "holder": "a1" },
+      { "marker": "shield1", "cell": { "x": 6, "y": 5 } },
+      { "marker": "coach1", "cell": { "x": 6, "y": 4 } }
+    ],
+    "moves": [
+      { "marker": "a1", "waypoints": [{ "x": 6, "y": 6 }], "pace": "jog" }
+    ],
+    "commentary": {
+      "points": [
+        "Carry into the upright shield: low, square, ball in two hands",
+        "Drive your legs through the contact"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "equipment",
+      "commentary": {
+        "points": [
+          "The shield is laid flat as the ruck, with the ball beneath it: 9 must clear it quickly",
+          "9 arrives low and passes away to 10 off the ground"
+        ]
+      },
+      "changes": [
+        { "type": "placeMarker", "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true },
+        { "type": "placeMarker", "marker": "a1", "cell": { "x": 6, "y": 5 } },
+        { "type": "removeMove", "marker": "a1" },
+        { "type": "addMarker", "marker": "a9", "cell": { "x": 4, "y": 10 } },
+        { "type": "addMarker", "marker": "a10", "cell": { "x": 2, "y": 9 } },
+        { "type": "setMove", "marker": "a9", "waypoints": [{ "x": 6, "y": 7 }], "pace": "sprint" },
+        { "type": "setPass", "id": "p1", "from": "a1", "to": "a9" },
+        { "type": "setPass", "id": "p2", "from": "a9", "to": "a10" }
+      ]
+    }
+  ]
+}

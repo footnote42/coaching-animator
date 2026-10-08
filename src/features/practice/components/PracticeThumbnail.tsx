@@ -93,8 +93,10 @@ export function PracticeThumbnail({ step, showMoves = true, title, className, ti
             const points = `${x},${y - s} ${x + s * 0.866},${y + s / 2} ${x - s * 0.866},${y + s / 2}`;
             return <polygon key={marker.id} points={points} fill={fill} stroke={CONE_OUTLINE} strokeWidth={stroke * 1.5} />;
           }
-          case 'tackle-shield':
-            return <rect key={marker.id} x={x - r * 0.6} y={y - r} width={r * 1.2} height={r * 2} fill={fill} stroke="#111827" strokeWidth={stroke} />;
+          case 'tackle-shield': {
+            const [w, h] = marker.lying ? [r * 2, r * 1.2] : [r * 1.2, r * 2];
+            return <rect key={marker.id} x={x - w / 2} y={y - h / 2} width={w} height={h} fill={fill} stroke="#111827" strokeWidth={stroke} />;
+          }
           default:
             return (
               <g key={marker.id}>

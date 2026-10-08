@@ -12,6 +12,7 @@
 import {
   BALL_CARRIER_KINDS,
   CELL_SIZE_M,
+  LYING_KINDS,
   MAX_BALLS,
   PracticeScriptSchema,
   SCHEMA_VERSION,
@@ -79,6 +80,8 @@ export interface ResolvedMarker extends Marker {
   cell: Cell;
   /** For the ball: the marker holding it at the start of the Step. */
   holder?: string;
+  /** True when the kit lies flat for the whole Step. Left out when upright. */
+  lying?: true;
 }
 
 export interface ResolvedStep {
@@ -189,26 +192,36 @@ interface StepState {
   cells: Map<string, Cell>;
   /** Who holds the ball at the start of the Step, keyed by ball id. */
   holders: Map<string, string>;
+  /** Kit lying flat in this Step. */
+  lying: Set<string>;
   moves: Map<string, Move>;
   passes: Map<string, Pass>;
 }
 
 function emptyState(area: Area): StepState {
-  return { area, cells: new Map(), holders: new Map(), moves: new Map(), passes: new Map() };
+  return { area, cells: new Map(), holders: new Map(), lying: new Set(), moves: new Map(), passes: new Map() };
 }
+
+const canLie = (kind: MarkerKind | undefined) => kind !== undefined && (LYING_KINDS as readonly string[]).includes(kind);
+const LYING_KIND_NAMES = LYING_KINDS.map((kind) => `a ${kind.replace('-', ' ')}`).join(' or ');
 
 function onArea(state: StepState, marker: string): boolean {
   return state.cells.has(marker) || state.holders.has(marker);
 }
 
-/** Set where a marker starts: the ball takes a holder, every other marker a cell. */
+/**
+ * Set where a marker starts: the ball takes a holder, every other marker a
+ * cell. The start is replaced whole, so kit given no `lying` stands upright.
+ * Lying on a kind that cannot lie is reported after the marker is placed, so
+ * it does not also show up as a marker missing from the Area.
+ */
 function setStart(
   state: StepState,
   marker: string,
-  start: { cell?: Cell; holder?: string },
-  isBall: boolean,
+  start: { cell?: Cell; holder?: string; lying?: boolean },
+  kind: MarkerKind | undefined,
 ): ValidationError | null {
-  if (isBall) {
+  if (kind === 'ball') {
     if (start.cell) {
       return { path: 'cell', message: 'the ball is not placed on a cell; give "holder" instead: the id of the marker carrying it' };
     }
@@ -219,6 +232,11 @@ function setStart(
     if (!start.cell) return { path: 'cell', message: 'is required' };
     state.cells.set(marker, start.cell);
   }
+  if (start.lying !== undefined && !canLie(kind)) {
+    return { path: 'lying', message: `only ${LYING_KIND_NAMES} can be Lying; marker "${marker}" is a ${kind}` };
+  }
+  if (start.lying) state.lying.add(marker);
+  else state.lying.delete(marker);
   return null;
 }
 
@@ -226,7 +244,7 @@ function setStart(
  * Apply one change to `state` in place. Returns an error (with a path relative
  * to the change) and leaves `state` untouched if the change does not fit.
  */
-function applyChange(state: StepState, change: Change, isBall: (id: string) => boolean): ValidationError | null {
+function applyChange(state: StepState, change: Change, kindOf: (id: string) => MarkerKind | undefined): ValidationError | null {
   if (change.type === 'setPass') {
     const { type: _type, ...pass } = change;
     void _type;
@@ -247,16 +265,17 @@ function applyChange(state: StepState, change: Change, isBall: (id: string) => b
   switch (change.type) {
     case 'addMarker':
       if (present) return { path: 'marker', message: `marker "${marker}" is already on the Area in the previous Step` };
-      return setStart(state, marker, change, isBall(marker));
+      return setStart(state, marker, change, kindOf(marker));
     case 'removeMarker':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
       state.cells.delete(marker);
       state.holders.delete(marker);
+      state.lying.delete(marker);
       state.moves.delete(marker);
       return null;
     case 'placeMarker':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
-      return setStart(state, marker, change, isBall(marker));
+      return setStart(state, marker, change, kindOf(marker));
     case 'setMove':
       if (!present) return { path: 'marker', message: `marker "${marker}" is not on the Area in the previous Step` };
       state.moves.set(marker, { marker, waypoints: change.waypoints, pace: change.pace, after: change.after });
@@ -516,7 +535,7 @@ function checkReferences(script: PracticeScript): ValidationError[] {
       if (balls > MAX_BALLS) errors.push({ path: `markers[${i}].kind`, message: `a Practice has at most ${MAX_BALLS} balls` });
     }
   });
-  const isBall = (id: string) => kinds.get(id) === 'ball';
+  const kindOf = (id: string) => kinds.get(id);
 
   // Whole-Step problems carry forward to later Steps; report each one once.
   const reported = new Set<string>();
@@ -540,9 +559,9 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     } else if (onArea(state, placement.marker)) {
       errors.push({ path: `${path}.marker`, message: `marker "${placement.marker}" is placed more than once` });
     } else {
-      const error = setStart(state, placement.marker, placement, isBall(placement.marker));
+      const error = setStart(state, placement.marker, placement, kindOf(placement.marker));
       if (error) errors.push({ path: `${path}.${error.path}`, message: error.message });
-      else everPlaced.add(placement.marker);
+      if (onArea(state, placement.marker)) everPlaced.add(placement.marker);
     }
     if (placement.cell) checkCell(placement.cell, script.area, `${path}.cell`, errors);
   });
@@ -600,9 +619,9 @@ function checkReferences(script: PracticeScript): ValidationError[] {
       if ('marker' in change && !kinds.has(change.marker)) {
         errors.push({ path: `${path}.marker`, message: `no marker with id "${change.marker}"` });
       } else {
-        const error = applyChange(state, change, isBall);
+        const error = applyChange(state, change, kindOf);
         if (error) errors.push({ path: `${path}.${error.path}`, message: error.message });
-        else if (change.type === 'addMarker') everPlaced.add(change.marker);
+        if (change.type === 'addMarker' && onArea(state, change.marker)) everPlaced.add(change.marker);
       }
       for (const { cell, path: cellPath } of changeCells(change)) {
         checkCell(cell, area, `${path}.${cellPath}`, errors);
@@ -727,15 +746,15 @@ export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
   if (!Number.isInteger(n) || n < 0 || n >= stepCount(script)) {
     throw new RangeError(`Step ${n} does not exist; this Practice has ${stepCount(script)} Step(s)`);
   }
-  const balls = new Set(script.markers.filter((m) => m.kind === 'ball').map((m) => m.id));
-  const isBall = (id: string) => balls.has(id);
+  const kinds = new Map(script.markers.map((m) => [m.id, m.kind]));
+  const kindOf = (id: string) => kinds.get(id);
   const state = emptyState(script.area);
-  for (const placement of script.base.placements) setStart(state, placement.marker, placement, isBall(placement.marker));
+  for (const placement of script.base.placements) setStart(state, placement.marker, placement, kindOf(placement.marker));
   for (const move of script.base.moves) state.moves.set(move.marker, move);
   for (const pass of script.base.passes) state.passes.set(pass.id, pass);
   for (const progression of script.progressions.slice(0, n)) {
     for (const change of progression.changes) {
-      const error = applyChange(state, change, isBall);
+      const error = applyChange(state, change, kindOf);
       if (error) throw new Error(`Script is not valid: ${error.message}; run validate() first`);
     }
   }
@@ -743,9 +762,8 @@ export function resolveStep(script: PracticeScript, n: number): ResolvedStep {
     .filter((marker) => onArea(state, marker.id))
     .map((marker): ResolvedMarker => {
       const holder = state.holders.get(marker.id);
-      return holder === undefined
-        ? { ...marker, cell: state.cells.get(marker.id)! }
-        : { ...marker, holder, cell: state.cells.get(holder)! };
+      if (holder !== undefined) return { ...marker, holder, cell: state.cells.get(holder)! };
+      return { ...marker, cell: state.cells.get(marker.id)!, ...(state.lying.has(marker.id) && { lying: true as const }) };
     });
   const progression = n > 0 ? script.progressions[n - 1] : undefined;
   return {
