@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "title": "Kick chase, then a loose ball at the breakdown",
+  "area": { "width": 30, "length": 40 },
+  "direction": "up",
+  "markers": [
+    { "id": "a10", "kind": "attacker", "label": "10" },
+    { "id": "a11", "kind": "attacker", "label": "11" },
+    { "id": "a14", "kind": "attacker", "label": "14" },
+    { "id": "a9", "kind": "attacker", "label": "9" },
+    { "id": "d15", "kind": "defender", "label": "15" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "shield1", "kind": "tackle-shield" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a10", "cell": { "x": 15, "y": 34 } },
+      { "marker": "a11", "cell": { "x": 4, "y": 32 } },
+      { "marker": "a14", "cell": { "x": 26, "y": 32 } },
+      { "marker": "d15", "cell": { "x": 15, "y": 8 } },
+      { "marker": "ball", "holder": "a10" }
+    ],
+    "moves": [
+      { "marker": "a11", "waypoints": [{ "x": 12, "y": 14 }], "pace": "sprint", "after": { "pass": "k1" } },
+      { "marker": "a14", "waypoints": [{ "x": 19, "y": 14 }], "pace": "sprint", "after": { "pass": "k1" } },
+      { "marker": "d15", "waypoints": [{ "x": 17, "y": 12 }], "pace": "jog" }
+    ],
+    "passes": [
+      { "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }
+    ],
+    "commentary": {
+      "points": [
+        "10 kicks into the space in front of 15: the ball lands, rolls on and lies loose",
+        "11 and 14 chase as the ball lands, closing the space either side of the ball"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "equipment",
+      "commentary": {
+        "points": [
+          "The ball starts loose under a flat shield at the breakdown: 9 must get there first",
+          "11 and 14 come up level, ready for 9's pass"
+        ]
+      },
+      "changes": [
+        { "type": "removePass", "id": "k1" },
+        { "type": "addMarker", "marker": "shield1", "cell": { "x": 15, "y": 30 }, "lying": true },
+        { "type": "placeMarker", "marker": "ball", "cell": { "x": 15, "y": 30 } },
+        { "type": "addMarker", "marker": "a9", "cell": { "x": 12, "y": 35 } },
+        { "type": "setMove", "marker": "a9", "waypoints": [{ "x": 15, "y": 31 }], "pace": "sprint" },
+        { "type": "setMove", "marker": "a11", "waypoints": [{ "x": 9, "y": 31 }], "pace": "jog" },
+        { "type": "setMove", "marker": "a14", "waypoints": [{ "x": 21, "y": 31 }], "pace": "jog" }
+      ]
+    }
+  ]
+}

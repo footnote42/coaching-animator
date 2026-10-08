@@ -131,7 +131,7 @@
                 "description": "Id of the marker being placed."
               },
               "cell": {
-                "description": "Cell the marker starts on. Required for every marker except the ball.",
+                "description": "Cell the marker starts on. Required for every marker except the ball. For the ball, instead of a holder: it starts loose on this cell, lying on the ground with nobody holding it.",
                 "type": "object",
                 "properties": {
                   "x": {
@@ -168,7 +168,7 @@
               "marker"
             ],
             "additionalProperties": false,
-            "description": "Where a marker starts in the Step: a cell, or for the ball a holder, and whether kit is Lying."
+            "description": "Where a marker starts in the Step: a cell, or for the ball a holder or a cell to lie loose on, and whether kit is Lying."
           },
           "description": "Markers on the Area in Step 0, each placed at most once. A marker left out must be added by a Progression."
         },
@@ -268,8 +268,31 @@
                 "description": "Id of the marker passing. Must hold the ball when the pass fires."
               },
               "to": {
-                "type": "string",
-                "description": "Id of the marker receiving."
+                "description": "Id of the marker receiving. Give exactly one of to or cell.",
+                "type": "string"
+              },
+              "cell": {
+                "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with \"kick\": true; no \"at\".",
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Column, counted from 0 at the left edge of the Area."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "Row, counted from 0 at the top edge of the Area."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false
               },
               "ball": {
                 "description": "Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.",
@@ -300,14 +323,13 @@
                 "additionalProperties": false
               },
               "kick": {
-                "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.",
+                "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. It goes to a receiver (\"to\") or to space (\"cell\"). Leave out for an ordinary pass.",
                 "type": "boolean"
               }
             },
             "required": [
               "id",
-              "from",
-              "to"
+              "from"
             ],
             "additionalProperties": false,
             "description": "A pass of a ball. Passes of one ball fire in list order: each fires once the previous one is caught and the receiver has arrived and any move named in \"after\" has finished (at waypoint \"at\" of its move if given, else the end of its move, or straight away if it has no move, or if its move is still waiting on this pass). Balls run at the same time."
@@ -395,7 +417,7 @@
                       "description": "Id of a marker that is not on the Area in the previous Step."
                     },
                     "cell": {
-                      "description": "Cell the marker starts on. Required for every marker except the ball.",
+                      "description": "Cell the marker starts on. Required for every marker except the ball. For the ball, instead of a holder: it starts loose on this cell, lying on the ground with nobody holding it.",
                       "type": "object",
                       "properties": {
                         "x": {
@@ -466,7 +488,7 @@
                       "description": "Id of a marker on the Area in the previous Step."
                     },
                     "cell": {
-                      "description": "Cell the marker starts on. Required for every marker except the ball.",
+                      "description": "Cell the marker starts on. Required for every marker except the ball. For the ball, instead of a holder: it starts loose on this cell, lying on the ground with nobody holding it.",
                       "type": "object",
                       "properties": {
                         "x": {
@@ -504,7 +526,7 @@
                     "marker"
                   ],
                   "additionalProperties": false,
-                  "description": "Change where a marker starts (or, for the ball, who holds it) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell."
+                  "description": "Change where a marker starts (or, for the ball, who holds it or the cell it lies loose on) and whether a tackle shield is Lying. Replaces the whole start: give the cell again, and leave out lying to stand a Lying shield back up. Its move, if any, is kept and runs from the new cell."
                 },
                 {
                   "type": "object",
@@ -620,8 +642,31 @@
                       "description": "Id of the marker passing. Must hold the ball when the pass fires."
                     },
                     "to": {
-                      "type": "string",
-                      "description": "Id of the marker receiving."
+                      "description": "Id of the marker receiving. Give exactly one of to or cell.",
+                      "type": "string"
+                    },
+                    "cell": {
+                      "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with \"kick\": true; no \"at\".",
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Column, counted from 0 at the left edge of the Area."
+                        },
+                        "y": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "Row, counted from 0 at the top edge of the Area."
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false
                     },
                     "ball": {
                       "description": "Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.",
@@ -652,15 +697,14 @@
                       "additionalProperties": false
                     },
                     "kick": {
-                      "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. Leave out for an ordinary pass.",
+                      "description": "true makes this pass a kick: the ball flies through the air, slower than a pass, drawn as a dashed arc. A kick is never a forward pass. It goes to a receiver (\"to\") or to space (\"cell\"). Leave out for an ordinary pass.",
                       "type": "boolean"
                     }
                   },
                   "required": [
                     "type",
                     "id",
-                    "from",
-                    "to"
+                    "from"
                   ],
                   "additionalProperties": false,
                   "description": "Replace the pass with this id in place, or add it after the existing passes."
