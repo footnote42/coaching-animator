@@ -106,7 +106,7 @@ export function ConeSplitButton({
           className="inline-block h-4 w-4 border"
           style={{ backgroundColor: markerColour({ kind: 'cone', colour }), borderColor: CONE_OUTLINE }}
         />
-        <span className="hidden lg:inline">Cone</span>
+        <span className="hidden 2xl:inline">Cone</span>
       </Button>
       <Button
         ref={arrowRef}

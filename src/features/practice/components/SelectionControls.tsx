@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type Pace } from '@/features/practice/schema';
@@ -11,7 +12,7 @@ export const PACE_NAMES: Record<Pace, string> = { walk: 'Walk', jog: 'Jog', spri
 
 /** Controls for the selected marker: label, colour, Lying, Run Pace, ball and Pass/Kick. */
 export function SelectionControls({ workspace }: { workspace: EditorWorkspace }) {
-  const { editing, selectedMarker, selectedMove, selection, balls, carriedBall, tool, passKind, startPass, edit } = workspace;
+  const { editing, selectedMarker, selectedMove, selection, balls, carriedBall, tool, passKind, startPass, edit, deleteSelection } = workspace;
   const [labelDraft, setLabelDraft] = useState<string | null>(null);
   useEffect(() => {
     setLabelDraft(null);
@@ -161,6 +162,15 @@ export function SelectionControls({ workspace }: { workspace: EditorWorkspace })
             })}
           </div>
         )}
+        <Button
+          variant="outline"
+          className="h-11"
+          aria-label={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
+          title={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
+          onClick={deleteSelection}
+        >
+          <Trash2 /> Delete
+        </Button>
       </>
     )}
     </>

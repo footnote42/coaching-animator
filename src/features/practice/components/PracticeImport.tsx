@@ -15,7 +15,6 @@ import {
   ArrowRightLeft,
   Undo2,
   Redo2,
-  Trash2,
   Ghost,
   FilePlus,
   Save,
@@ -133,7 +132,6 @@ export function PracticeImport() {
     looseBalls,
     collectBall,
     endCollect,
-    deleteSelection,
     undo,
     redo,
     applyText,
@@ -307,8 +305,8 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1">
-          <div className="flex flex-wrap items-center gap-1">
+        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 md:gap-x-3">
+          <div role="group" aria-label="Mode" className="flex shrink-0 items-center gap-1">
             {(
               [
                 { id: 'select', name: 'Select and drag', icon: <MousePointer2 /> },
@@ -328,7 +326,10 @@ export function PracticeImport() {
                 {icon}
               </Button>
             ))}
-            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
+          </div>
+          <span className="hidden h-8 w-px bg-[var(--color-border)] md:block" aria-hidden />
+          {/* On a phone the kit takes its own row under the mode and history tools. */}
+          <div role="group" aria-label="Place" className="order-2 flex basis-full items-center gap-0.5 sm:gap-1 md:order-none md:basis-auto">
             {PALETTE.map(({ kind, name }) => kind === 'cone' ? (
               <ConeSplitButton
                 key={kind}
@@ -342,7 +343,7 @@ export function PracticeImport() {
               <Button
                 key={kind}
                 variant={tool === kind ? 'default' : 'outline'}
-                className={TOOL_BUTTON}
+                className={cn(TOOL_BUTTON, 'shrink-0')}
                 aria-label={`Place ${name.toLowerCase()}`}
                 aria-pressed={tool === kind}
                 title={`Place ${name.toLowerCase()}`}
@@ -360,37 +361,19 @@ export function PracticeImport() {
                     backgroundImage: kind === 'tackle-bag' ? `linear-gradient(to right, transparent 65%, ${TACKLE_BAG_SHADE} 65%)` : undefined,
                   }}
                 />
-                <span className="hidden lg:inline">{name}</span>
+                <span className="hidden 2xl:inline">{name}</span>
               </Button>
             ))}
-            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
           </div>
-          <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
-            <Undo2 />
-          </Button>
-          <Button variant="outline" className={TOOL_BUTTON} aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={editor.future.length === 0}>
-            <Redo2 />
-          </Button>
-          <Button
-            variant="outline"
-            className={TOOL_BUTTON}
-            aria-label={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
-            title={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
-            onClick={deleteSelection}
-            disabled={!editing || !selection.marker}
-          >
-            <Trash2 />
-          </Button>
-          <Button
-            variant={ghost ? 'default' : 'outline'}
-            className={TOOL_BUTTON}
-            aria-label="Ghost mode"
-            aria-pressed={ghost}
-            title="Ghost mode: show where markers started and were a moment ago"
-            onClick={() => setGhost((g) => !g)}
-          >
-            <Ghost />
-          </Button>
+          <span className="hidden h-8 w-px bg-[var(--color-border)] md:block" aria-hidden />
+          <div role="group" aria-label="History" className="order-1 ml-auto flex items-center gap-1 md:order-none md:ml-0">
+            <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
+              <Undo2 />
+            </Button>
+            <Button variant="outline" className={TOOL_BUTTON} aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={editor.future.length === 0}>
+              <Redo2 />
+            </Button>
+          </div>
         </div>
 
         <p aria-live="polite" className="min-h-8 text-xs leading-4 text-text-primary">{hint}</p>
@@ -458,8 +441,9 @@ export function PracticeImport() {
             </div>
           )}
         </div>
-        {step && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {step && (
+          <>
             <Button
               variant="outline"
               size="icon"
@@ -483,11 +467,22 @@ export function PracticeImport() {
             >
               <MessageSquare />
             </Button>
+            <Button
+              variant={ghost ? 'default' : 'outline'}
+              className={TOOL_BUTTON}
+              aria-label="Ghost mode"
+              aria-pressed={ghost}
+              title="Ghost mode: show where markers started and were a moment ago"
+              onClick={() => setGhost((g) => !g)}
+            >
+              <Ghost />
+            </Button>
             <span className="font-mono text-xs text-text-primary">
               {time.toFixed(1)}s / {duration.toFixed(1)}s
             </span>
-          </div>
-        )}
+          </>
+          )}
+        </div>
       </section>
     </main>
   );
