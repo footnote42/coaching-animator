@@ -10,6 +10,8 @@ interface AreaControlProps {
   /** Direction of attack of the Practice; undefined shows as none. */
   direction?: Direction;
   onDirectionChange?: (direction: Direction) => void;
+  /** Keep the legend for screen readers only, when a heading above already says Area. */
+  hideLegend?: boolean;
 }
 
 const DIRECTION_NAMES = {
@@ -21,14 +23,14 @@ const DIRECTION_NAMES = {
 } as const satisfies Record<Direction, string>;
 
 const inputClass =
-  'h-8 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+  'h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
 
 /**
  * The Area of the base Step: a template picker plus width and length in metres.
  * Picking a template resets the size to the template's; sizes commit on blur or Enter.
  * Give it a key from the Area's size so it resets when the script changes.
  */
-export function AreaControl({ area, onChange, direction, onDirectionChange }: AreaControlProps) {
+export function AreaControl({ area, onChange, direction, onDirectionChange, hideLegend }: AreaControlProps) {
   const [width, setWidth] = useState(String(area.width));
   const [length, setLength] = useState(String(area.length));
 
@@ -46,13 +48,13 @@ export function AreaControl({ area, onChange, direction, onDirectionChange }: Ar
 
   return (
     <fieldset className="flex flex-wrap items-end gap-2 text-sm text-text-primary">
-      <legend className="mb-1 font-medium">Area</legend>
+      <legend className={hideLegend ? 'sr-only' : 'mb-1 font-medium'}>Area</legend>
       <label className="flex flex-col gap-1">
         <span>Template</span>
         <select
           value={areaTemplate(area)}
           onChange={(e) => onChange(areaFromTemplate(e.target.value as AreaTemplate))}
-          className="h-8 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {AREA_TEMPLATES.map((t) => (
             <option key={t} value={t}>
@@ -89,7 +91,7 @@ export function AreaControl({ area, onChange, direction, onDirectionChange }: Ar
           <select
             value={direction ?? 'none'}
             onChange={(e) => onDirectionChange(e.target.value as Direction)}
-            className="h-8 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             {DIRECTIONS.map((d) => (
               <option key={d} value={d}>

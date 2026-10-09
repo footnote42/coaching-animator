@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import {
   Play,
@@ -14,21 +15,26 @@ import {
   ArrowRightLeft,
   Undo2,
   Redo2,
-  Trash2,
   Ghost,
   FilePlus,
+  Save,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { stepCount } from '@/features/practice/engine';
 import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
-import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
+import { useMediaQuery } from '@/features/practice/hooks/useMediaQuery';
+import { EditorSection } from '@/features/practice/components/EditorSection';
+import { MyPractices, PracticeDetails, SignInToSave, usePracticeSave } from '@/features/practice/components/PracticeLibrary';
+import { useUser } from '@/lib/contexts/UserContext';
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
-import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
+import { markerColour } from '@/features/practice/markerColour';
 import { TACKLE_BAG_SHADE } from '@/features/practice/tackleBag';
-import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
+import { type MarkerKind } from '@/features/practice/schema';
+import { SelectionPanel } from '@/features/practice/components/SelectionPanel';
+import { PassList } from '@/features/practice/components/PassList';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
 
@@ -56,8 +62,6 @@ const PALETTE: Array<{ kind: MarkerKind; name: string }> = [
   { kind: 'coach', name: 'Coach' },
 ];
 
-const PACE_NAMES: Record<Pace, string> = { walk: 'Walk', jog: 'Jog', sprint: 'Sprint' };
-
 const TOOL_HINTS: Record<'select' | 'run' | 'pass' | 'place', string> = {
   select: 'Drag a marker to move it. Tap one to select it.',
   run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it.',
@@ -76,11 +80,6 @@ const TOOL_BUTTON = 'h-11 min-w-11 px-2';
 export function PracticeImport() {
   const router = useRouter();
   const workspace = useEditorWorkspace();
-
-  const [labelDraft, setLabelDraft] = useState<string | null>(null);
-  useEffect(() => {
-    setLabelDraft(null);
-  }, [workspace.selectedMarker?.id]);
 
   const {
     editor,
@@ -116,15 +115,10 @@ export function PracticeImport() {
     problems,
     setDirection,
     stepWarnings,
-    selectedMarker,
-    selectedMove,
     passes,
     balls,
     activeBall,
-    setPassBall,
-    carriedBall,
     passKind,
-    startPass,
     editing,
     stopPlayback,
     commit,
@@ -136,13 +130,10 @@ export function PracticeImport() {
     startCatch,
     endCatch,
     releasePass,
-    startRelease,
     endRelease,
     looseBalls,
     collectBall,
-    startCollect,
     endCollect,
-    deleteSelection,
     undo,
     redo,
     applyText,
@@ -156,59 +147,80 @@ export function PracticeImport() {
     playStep,
   } = workspace;
 
+  const { user, loading } = useUser();
+  const signedIn = !loading && !!user;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const saver = usePracticeSave({ scriptText, practiceId, title, description, tags, sourceUrl, sourceTitle, onSaved: saved });
+  /** Save, or open the details first when the Practice has no title yet. */
+  const onSave = () => {
+    if (!title.trim()) {
+      setDetailsOpen(true);
+      toast.info('Give the Practice a title, then save.');
+      requestAnimationFrame(() => {
+        titleRef.current?.scrollIntoView({ block: 'center' });
+        titleRef.current?.focus();
+      });
+      return;
+    }
+    void saver.save();
+  };
+  const saveButton = (
+    <Button className={TOOL_BUTTON} onClick={onSave} disabled={saver.saving || !scriptText.trim()}>
+      <Save /> {practiceId ? 'Save changes' : 'Save'}
+    </Button>
+  );
+
+  const wide = useMediaQuery('(min-width: 1280px)');
+  const passMeta =
+    passes.length === 0 ? '(none)' : `(${passes.length})${stepWarnings.length > 0 ? ` · ${stepWarnings.length} to check` : ''}`;
+
   const placeKind = PALETTE.find((p) => p.kind === tool);
   const toolHint =
     tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
-  const heldBall = selectedMarker && balls.find((b) => b.holder === selectedMarker.id);
-  const canGiveBall =
-    selectedMarker &&
-    !heldBall &&
-    balls.length > 0 &&
-    balls.length < MAX_BALLS &&
-    (BALL_CARRIER_KINDS as readonly string[]).includes(selectedMarker.kind);
-  const ballName = (id: string) => `Ball ${balls.findIndex((b) => b.id === id) + 1}`;
-  const ballSelect = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm';
   const stepArea = step?.area ?? script.area;
+  const stepLever = shownStep > 0 ? script.progressions[shownStep - 1]?.lever : undefined;
+  const stepTitle = stepLever ? `Step ${shownStep}: ${LEVER_NAMES[stepLever]}` : 'Base Step';
   const forwardIds = new Set(stepWarnings.filter((w) => w.kind === 'forward').map((w) => w.pass));
 
   return (
-    <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
-      <section className="flex min-w-0 flex-col gap-3 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
-        <div className="flex items-center justify-between gap-2">
+    <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-2 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row md:gap-4">
+      {/* On a phone this column's children join the page flow: the header first, then the canvas, then the groups. */}
+      <section className="contents md:flex md:w-72 md:min-w-0 md:shrink-0 md:flex-col md:gap-2 md:overflow-y-auto lg:w-80">
+        <div className="order-first flex flex-wrap items-center justify-between gap-2 md:order-none">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
-          <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
-            <FilePlus /> New
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
+              <FilePlus /> New
+            </Button>
+            {signedIn && saveButton}
+          </div>
         </div>
+        {!loading && !user && <SignInToSave />}
         
-        <PracticeLibrary
-          key={libraryKey}
-          scriptText={scriptText}
-          practiceId={practiceId}
-          title={title}
-          description={description}
-          tags={tags}
-          onTagsChange={setTags}
-          sourceUrl={sourceUrl}
-          sourceTitle={sourceTitle}
-          onSourceUrlChange={setSourceUrl}
-          onSourceTitleChange={setSourceTitle}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onSaved={saved}
-          onOpen={(id) => router.push(`/practice?id=${id}`)}
-          hideListOnMobile
-        />
-        <div>
-          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
-        </div>
+        <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
 
-        <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
-        <div className="flex flex-col gap-3">
+        <EditorSection title="Area" meta={`${stepArea.width} × ${stepArea.length} m`}>
+          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} hideLegend onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
+        </EditorSection>
+
+        {!wide && (
+          <EditorSection title="Passing and kicking" meta={passMeta}>
+            <PassList workspace={workspace} />
+          </EditorSection>
+        )}
+
+        <EditorSection title={stepTitle}>
+          <StepDetails hideLegend script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
+        </EditorSection>
+
+        <EditorSection
+          title="Script and AI"
+          meta={errors.length > 0 ? '(can’t load)' : problems.length > 0 ? `(${problems.length} to fix)` : undefined}
+        >
           <PracticeScriptActions text={scriptText} isGuest={isGuest} />
           <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
-          <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
           <details className="flex flex-col gap-2">
             <summary className="cursor-pointer py-2 text-sm font-medium text-text-primary">Practice Script</summary>
             <label htmlFor="practice-script" className="text-sm text-text-primary">
@@ -250,17 +262,46 @@ export function PracticeImport() {
               </ul>
             </div>
           )}
-        </div>
+        </EditorSection>
+
+        {signedIn && (
+          <EditorSection
+            title="Details and save"
+            meta={title.trim() ? `· ${title.trim()}` : '· untitled'}
+            collapse="always"
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+          >
+            <PracticeDetails
+              practiceId={practiceId}
+              title={title}
+              description={description}
+              tags={tags}
+              sourceUrl={sourceUrl}
+              sourceTitle={sourceTitle}
+              visibility={saver.visibility}
+              onTitleChange={setTitle}
+              onDescriptionChange={setDescription}
+              onTagsChange={setTags}
+              onSourceUrlChange={setSourceUrl}
+              onSourceTitleChange={setSourceTitle}
+              onVisibilityChange={saver.setVisibility}
+              titleRef={titleRef}
+            />
+            {saveButton}
+          </EditorSection>
+        )}
+        {signedIn && <MyPractices refreshKey={saver.refreshKey + libraryKey} onOpen={(id) => router.push(`/practice?id=${id}`)} />}
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
-        <div role="group" aria-label="Steps" className="flex flex-wrap gap-2">
+        <div role="group" aria-label="Steps" className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           {Array.from({ length: stepCount(script) }, (_, n) => {
             const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
             return (
               <Button
                 key={n}
-                className="h-11"
+                className="h-11 shrink-0"
                 variant={n === shownStep ? 'default' : 'outline'}
                 aria-pressed={n === shownStep}
                 onClick={() => playStep(n)}
@@ -269,7 +310,7 @@ export function PracticeImport() {
               </Button>
             );
           })}
-          <div>
+          <div className="shrink-0">
             <AddProgressionButton
               script={script}
               onAdd={(next) => commit(next) && playStep(next.progressions.length)}
@@ -277,8 +318,8 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1">
-          <div className="flex flex-wrap items-center gap-1">
+        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 lg:gap-x-2">
+          <div role="group" aria-label="Mode" className="flex shrink-0 items-center gap-1">
             {(
               [
                 { id: 'select', name: 'Select and drag', icon: <MousePointer2 /> },
@@ -298,7 +339,10 @@ export function PracticeImport() {
                 {icon}
               </Button>
             ))}
-            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
+          </div>
+          <span className="hidden h-8 w-px bg-[var(--color-border)] lg:block" aria-hidden />
+          {/* On a phone the kit takes its own row under the mode and history tools (phone and small tablet). */}
+          <div role="group" aria-label="Place" className="order-2 flex basis-full items-center gap-0.5 sm:gap-1 lg:order-none lg:basis-auto">
             {PALETTE.map(({ kind, name }) => kind === 'cone' ? (
               <ConeSplitButton
                 key={kind}
@@ -312,7 +356,7 @@ export function PracticeImport() {
               <Button
                 key={kind}
                 variant={tool === kind ? 'default' : 'outline'}
-                className={TOOL_BUTTON}
+                className={cn(TOOL_BUTTON, 'shrink-0')}
                 aria-label={`Place ${name.toLowerCase()}`}
                 aria-pressed={tool === kind}
                 title={`Place ${name.toLowerCase()}`}
@@ -330,355 +374,28 @@ export function PracticeImport() {
                     backgroundImage: kind === 'tackle-bag' ? `linear-gradient(to right, transparent 65%, ${TACKLE_BAG_SHADE} 65%)` : undefined,
                   }}
                 />
-                <span className="hidden lg:inline">{name}</span>
+                <span className="hidden 2xl:inline">{name}</span>
               </Button>
             ))}
-            <span className="mx-1 hidden h-8 w-px bg-[var(--color-border)] sm:block" aria-hidden />
           </div>
-          <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
-            <Undo2 />
-          </Button>
-          <Button variant="outline" className={TOOL_BUTTON} aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={editor.future.length === 0}>
-            <Redo2 />
-          </Button>
-          <Button
-            variant="outline"
-            className={TOOL_BUTTON}
-            aria-label={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
-            title={selection.waypoint !== null ? 'Delete waypoint' : 'Delete marker'}
-            onClick={deleteSelection}
-            disabled={!editing || !selection.marker}
-          >
-            <Trash2 />
-          </Button>
-          <Button
-            variant={ghost ? 'default' : 'outline'}
-            className={TOOL_BUTTON}
-            aria-label="Ghost mode"
-            aria-pressed={ghost}
-            title="Ghost mode: show where markers started and were a moment ago"
-            onClick={() => setGhost((g) => !g)}
-          >
-            <Ghost />
-          </Button>
+          <span className="hidden h-8 w-px bg-[var(--color-border)] lg:block" aria-hidden />
+          <div role="group" aria-label="History" className="order-1 ml-auto flex items-center gap-1 lg:order-none lg:ml-0">
+            <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
+              <Undo2 />
+            </Button>
+            <Button variant="outline" className={TOOL_BUTTON} aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={editor.future.length === 0}>
+              <Redo2 />
+            </Button>
+          </div>
         </div>
 
-        <p aria-live="polite" className="min-h-8 text-xs leading-4 text-text-primary">{hint}</p>
+        <SelectionPanel workspace={workspace} hint={hint} />
 
-        {/* One fixed-height row for the selection and passes, so the canvas does not jump. */}
-        <div className="flex min-h-11 flex-wrap items-center gap-2 text-sm text-text-primary">
-          {editing && selectedMarker && (
-            <>
-              <label htmlFor="marker-label" className="sr-only">Label</label>
-              <input
-                id="marker-label"
-                type="text"
-                placeholder={selectedMarker.id}
-                value={labelDraft ?? selectedMarker.label ?? ''}
-                onChange={(e) => setLabelDraft(e.target.value)}
-                onBlur={() => {
-                  if (labelDraft !== null && labelDraft !== (selectedMarker.label ?? '')) {
-                    edit({ type: 'setLabel', marker: selectedMarker.id, label: labelDraft });
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') e.currentTarget.blur();
-                }}
-                maxLength={4}
-                className="h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-center text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-              {selectedMarker.kind === 'cone' && (
-                <div role="group" aria-label="Cone colour" className="flex items-center gap-1">
-                  {CONE_COLOURS.map((colour) => {
-                    const current = (selectedMarker.colour ?? 'yellow') === colour;
-                    const name = `${colour[0].toUpperCase()}${colour.slice(1)} cone`;
-                    return (
-                      <button
-                        key={colour}
-                        type="button"
-                        aria-label={name}
-                        title={name}
-                        aria-pressed={current}
-                        onClick={() => edit({ type: 'setColour', marker: selectedMarker.id, colour })}
-                        className={cn('h-11 w-11 flex items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring', current && 'bg-[var(--color-surface)]')}
-                      >
-                        <span
-                          className={cn('inline-block h-6 w-6 rounded-full border-2', current && 'ring-2 ring-offset-1 ring-black')}
-                          style={{ backgroundColor: markerColour({ kind: 'cone', colour }), borderColor: CONE_OUTLINE }}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              {(LYING_KINDS as readonly string[]).includes(selectedMarker.kind) && (
-                <Button
-                  type="button"
-                  variant={selectedMarker.lying ? 'default' : 'outline'}
-                  className="h-11"
-                  aria-pressed={!!selectedMarker.lying}
-                  title="Lay flat on the ground for this Step"
-                  onClick={() => edit({ type: 'setLying', marker: selectedMarker.id, lying: !selectedMarker.lying })}
-                >
-                  Lying
-                </Button>
-              )}
-              {selectedMove ? (
-                <>
-                  <label htmlFor="run-pace">Pace</label>
-                  <select
-                    id="run-pace"
-                    value={selectedMove.pace ?? 'jog'}
-                    onChange={(e) => edit({ type: 'setPace', marker: selectedMove.marker, pace: e.target.value as Pace })}
-                    className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
-                  >
-                    {PACES.map((pace) => (
-                      <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
-                    ))}
-                  </select>
-                  {selection.waypoint !== null && selectedMove.waypoints[selection.waypoint] && (
-                    <>
-                      <label htmlFor="segment-pace">Segment {selection.waypoint + 1}</label>
-                      <select
-                        id="segment-pace"
-                        title="Pace of the run into this point"
-                        value={selectedMove.waypoints[selection.waypoint].pace ?? ''}
-                        onChange={(e) =>
-                          edit({
-                            type: 'setWaypointPace',
-                            marker: selectedMove.marker,
-                            index: selection.waypoint!,
-                            pace: e.target.value === '' ? null : (e.target.value as Pace),
-                          })
-                        }
-                        className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
-                      >
-                        <option value="">Run Pace</option>
-                        {PACES.map((pace) => (
-                          <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
-                        ))}
-                      </select>
-                    </>
-                  )}
-                  <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMove', marker: selectedMove.marker })}>
-                    Delete run
-                  </Button>
-                </>
-              ) : selectedMarker.kind === 'ball' ? (
-                <span className="text-xs">{selectedMarker.holder ? 'Drag the player to move the ball.' : 'Lying loose. Drag it onto a player to give it to them, or use Collect to send a player to it.'}</span>
-              ) : (
-                <span className="text-xs">No run yet: use Draw a run.</span>
-              )}
-              {heldBall && (
-                <Button
-                  variant="outline"
-                  className="h-11"
-                  onClick={() => edit({ type: 'removeMarker', marker: heldBall.id })}
-                >
-                  Remove ball
-                </Button>
-              )}
-              {canGiveBall && (
-                <Button variant="outline" className="h-11" onClick={() => edit({ type: 'addBall', holder: selectedMarker.id })}>
-                  Give a ball
-                </Button>
-              )}
-              {carriedBall && (
-                <div role="group" aria-label="Ball carrier" className="flex items-center gap-1">
-                  {(['pass', 'kick'] as const).map((kind) => {
-                    const on = tool === 'pass' && passKind === kind;
-                    return (
-                      <Button
-                        key={kind}
-                        variant={on ? 'default' : 'outline'}
-                        className="h-11"
-                        aria-pressed={on}
-                        onClick={() => startPass(kind, carriedBall)}
-                      >
-                        {kind === 'pass' ? 'Pass' : 'Kick'}
-                      </Button>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-  
-          {editing && catchPass && (
-            <>
-              <span>Tap the Run where it is caught.</span>
-              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCatch}>
-                End of run
-              </Button>
-            </>
-          )}
-
-          {editing && !catchPass && releasePass && (
-            <>
-              <span>Tap the passer’s Run where the ball is released.</span>
-              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endRelease}>
-                Cancel
-              </Button>
-            </>
-          )}
-
-          {editing && collectBall ? (
-            <>
-              <span>Tap the player who Collects the loose ball. Their Run goes to it.</span>
-              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCollect}>
-                Cancel
-              </Button>
-            </>
-          ) : (
-            editing &&
-            !catchPass &&
-            !releasePass &&
-            looseBalls.length > 0 && (
-              <div role="group" aria-label="Loose ball" className="flex flex-wrap items-center gap-2">
-                {looseBalls.map((loose) => {
-                  const collector = passes.find((p) => p.id === loose.collect)?.from;
-                  const who = collector && (script.markers.find((m) => m.id === collector)?.label ?? collector);
-                  return (
-                    <Button key={loose.ball} type="button" variant="outline" className="h-11" onClick={() => startCollect(loose.ball)}>
-                      {balls.length > 1 ? `Collect ${ballName(loose.ball)}` : 'Collect'}
-                      {who ? ` (${who})` : ''}
-                    </Button>
-                  );
-                })}
-              </div>
-            )
-          )}
-
-          {editing && tool === 'pass' && balls.length > 1 && (
-            <>
-              <label htmlFor="pass-ball">Ball for new passes</label>
-              <select id="pass-ball" value={activeBall} onChange={(e) => setPassBall(e.target.value)} className={ballSelect}>
-                {balls.map((b) => (
-                  <option key={b.id} value={b.id}>{ballName(b.id)}</option>
-                ))}
-              </select>
-            </>
-          )}
-
-          {editing && passes.length > 0 && (
-            <div role="group" aria-label="Passes" className="flex flex-wrap items-center gap-2">
-              <span>Passes:</span>
-              {passes.map((pass) => {
-                const name = (id: string | undefined) => (id === undefined ? 'space' : script.markers.find((m) => m.id === id)?.label ?? id);
-                const run = step?.moves.find((m) => m.marker === pass.to);
-                const passerRun = step?.moves.find((m) => m.marker === pass.from);
-                return (
-                  <span key={pass.id} className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      className="h-11"
-                      aria-label={`Delete pass ${name(pass.from)} to ${name(pass.to)}`}
-                      onClick={() => edit({ type: 'removePass', id: pass.id })}
-                    >
-                      {name(pass.from)} &rarr; {name(pass.to)} <Trash2 />
-                    </Button>
-                    {balls.length > 1 && (
-                      <select
-                        aria-label={`Ball for pass ${name(pass.from)} to ${name(pass.to)}`}
-                        value={pass.ball ?? balls[0].id}
-                        onChange={(e) => edit({ type: 'setPassBall', id: pass.id, ball: e.target.value })}
-                        className={ballSelect}
-                      >
-                        {balls.map((b) => (
-                          <option key={b.id} value={b.id}>{ballName(b.id)}</option>
-                        ))}
-                      </select>
-                    )}
-                    <label className="flex h-11 items-center gap-1 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={pass.kick ?? false}
-                        disabled={pass.cell !== undefined}
-                        onChange={(e) => edit({ type: 'setKick', id: pass.id, kick: e.target.checked })}
-                      />
-                      Kick
-                      <span className="sr-only"> {name(pass.from)} to {name(pass.to)}</span>
-                    </label>
-                    <select
-                      aria-label={`Pass ${name(pass.from)} to ${name(pass.to)} when this player arrives`}
-                      value={pass.after?.move ?? ''}
-                      onChange={(e) => edit({ type: 'setPassWait', id: pass.id, move: e.target.value === '' ? null : e.target.value })}
-                      className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
-                    >
-                      <option value="">Pass when no one arrives</option>
-                      {step?.moves.map((m) => (
-                        <option key={m.marker} value={m.marker}>Pass when {name(m.marker)} arrives</option>
-                      ))}
-                    </select>
-                    {run && run.waypoints.length > 1 && (
-                      <select
-                        aria-label={`Where ${name(pass.to)} catches`}
-                        value={pass.at ?? ''}
-                        onChange={(e) =>
-                          edit({ type: 'setCatch', id: pass.id, at: e.target.value === '' ? null : Number(e.target.value) })
-                        }
-                        className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
-                      >
-                        <option value="">Catch at end of run</option>
-                        {run.waypoints.slice(0, -1).map((_, i) => (
-                          <option key={i} value={i}>Catch at point {i + 1}, run on</option>
-                        ))}
-                      </select>
-                    )}
-                    {passerRun && (
-                      <>
-                        <select
-                          aria-label={`Where ${name(pass.from)} releases`}
-                          value={pass.release ?? ''}
-                          onChange={(e) =>
-                            edit({ type: 'setRelease', id: pass.id, release: e.target.value === '' ? null : Number(e.target.value) })
-                          }
-                          className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm"
-                        >
-                          <option value="">Release when ready</option>
-                          {passerRun.waypoints.map((_, i) => (
-                            <option key={i} value={i}>
-                              {i === passerRun.waypoints.length - 1 ? 'Release at end of run' : `Release at point ${i + 1}, run on`}
-                            </option>
-                          ))}
-                        </select>
-                        <Button
-                          variant="outline"
-                          className="h-11"
-                          aria-pressed={releasePass === pass.id}
-                          onClick={() => (releasePass === pass.id ? endRelease() : startRelease(pass.id))}
-                        >
-                          Tap release
-                          <span className="sr-only"> point for {name(pass.from)} to {name(pass.to)}</span>
-                        </Button>
-                      </>
-                    )}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-          {editing && stepWarnings.length > 0 && (
-            <ul role="status" className="border-l-4 border-[var(--color-accent-warm)] pl-2 text-sm text-text-primary">
-              {stepWarnings.map((w) => (
-                <li key={`${w.kind}-${w.pass}`} className="flex flex-wrap items-center gap-2">
-                  {w.message}
-                  {w.fix && (
-                    <Button
-                      variant="outline"
-                      className="h-11"
-                      onClick={() => edit({ type: 'startAfterPass', marker: w.fix!.marker, pass: w.fix!.afterPass })}
-                    >
-                      Start the run after the pass
-                    </Button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="relative h-[60dvh] min-h-64 md:h-auto md:min-h-0 md:flex-1">
+        {/* On a phone the box takes the Area's shape, so the playback controls sit right under the pitch. */}
+        <div
+          className="relative max-h-[60dvh] w-full aspect-[var(--area-aspect)] md:aspect-auto md:max-h-none md:min-h-0 md:flex-1"
+          style={{ '--area-aspect': `${stepArea.width} / ${stepArea.length}` } as CSSProperties}
+        >
           {step ? (
             <>
               <PracticeCanvas
@@ -735,8 +452,9 @@ export function PracticeImport() {
             </div>
           )}
         </div>
-        {step && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {step && (
+          <>
             <Button
               variant="outline"
               size="icon"
@@ -760,12 +478,35 @@ export function PracticeImport() {
             >
               <MessageSquare />
             </Button>
+            <Button
+              variant={ghost ? 'default' : 'outline'}
+              className={TOOL_BUTTON}
+              aria-label="Ghost mode"
+              aria-pressed={ghost}
+              title="Ghost mode: show where markers started and were a moment ago"
+              onClick={() => setGhost((g) => !g)}
+            >
+              <Ghost />
+            </Button>
             <span className="font-mono text-xs text-text-primary">
               {time.toFixed(1)}s / {duration.toFixed(1)}s
             </span>
-          </div>
-        )}
+          </>
+          )}
+        </div>
       </section>
+
+      {/* From xl up, passing and kicking get their own column beside the canvas. */}
+      <aside aria-label="Passing and kicking" className="hidden min-h-0 w-64 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
+        {wide && (
+          <>
+            <h2 className="flex min-h-11 items-center text-sm font-medium text-text-primary">
+              Passing and kicking&nbsp;<span className="font-sans font-normal normal-case text-text-muted">{passMeta}</span>
+            </h2>
+            <PassList workspace={workspace} />
+          </>
+        )}
+      </aside>
     </main>
   );
 }

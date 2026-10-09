@@ -81,10 +81,12 @@ interface StepDetailsProps {
   onChange: (result: PracticeScript | string) => boolean;
   /** Select another Step (after a reorder or delete). */
   onSelectStep: (step: number) => void;
+  /** Keep the legend for screen readers only, when a heading above already names the Step. */
+  hideLegend?: boolean;
 }
 
 /** Lever, order and Commentary of the selected Step. */
-export function StepDetails({ script, step, onChange, onSelectStep }: StepDetailsProps) {
+export function StepDetails({ script, step, onChange, onSelectStep, hideLegend }: StepDetailsProps) {
   const progression = step > 0 ? script.progressions[step - 1] : undefined;
   const points = progression ? progression.commentary.points : script.base.commentary.points;
   const [draft, setDraft] = useState('');
@@ -92,7 +94,7 @@ export function StepDetails({ script, step, onChange, onSelectStep }: StepDetail
 
   return (
     <fieldset className="flex flex-col gap-2 text-sm text-text-primary">
-      <legend className="mb-1 font-medium">{progression ? `Step ${step}` : 'Base Step'}</legend>
+      <legend className={hideLegend ? 'sr-only' : 'mb-1 font-medium'}>{progression ? `Step ${step}` : 'Base Step'}</legend>
       {progression && (
         <div className="flex flex-wrap items-end gap-2">
           <label className="flex flex-col gap-1">

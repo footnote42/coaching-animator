@@ -454,3 +454,5 @@ export function useEditorWorkspace() {
     playStep,
   };
 }
+
+export type EditorWorkspace = ReturnType<typeof useEditorWorkspace>;
