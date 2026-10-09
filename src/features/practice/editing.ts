@@ -574,7 +574,19 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
     case 'removeWaypoint': {
       const move = script.base.moves.find((m) => m.marker === edit.marker);
       if (!move || !move.waypoints[edit.index]) return script;
-      return mapMove(script, edit.marker, (m) =>
+      // Catches and Releases on later waypoints shift down one; one on the removed waypoint goes.
+      const shift = (index: number | undefined) =>
+        index === undefined || index < edit.index ? index : index === edit.index ? undefined : index - 1;
+      const passes = script.base.passes.map((p) => {
+        const at = p.to === edit.marker ? shift(p.at) : p.at;
+        const release = p.from === edit.marker ? shift(p.release) : p.release;
+        if (at === p.at && release === p.release) return p;
+        const { at: _at, release: _release, ...rest } = p;
+        void _at;
+        void _release;
+        return { ...rest, ...(at !== undefined && { at }), ...(release !== undefined && { release }) };
+      });
+      return mapMove(withBase(script, { passes }), edit.marker, (m) =>
         m.waypoints.length === 1 ? null : { ...m, waypoints: m.waypoints.filter((_, i) => i !== edit.index) },
       );
     }
