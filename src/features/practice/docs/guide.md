@@ -74,7 +74,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 
 - Every marker except the ball: `{ "marker": "a1", "cell": { "x": 2, "y": 8 } }`.
 - The ball: `{ "marker": "ball", "holder": "a1" }`. The ball has no cell; it rides with its holder. The holder must be an attacker, defender or coach on the Area, and no two balls may start with the same holder.
-- A ball lying loose on the ground, held by nobody: give it a `cell` instead of a `holder`, `{ "marker": "ball", "cell": { "x": 6, "y": 5 } }`. It stays on that cell for the whole Step and cannot be passed or kicked, since nobody holds it. Give one or the other, never both.
+- A ball lying loose on the ground, held by nobody: give it a `cell` instead of a `holder`, `{ "marker": "ball", "cell": { "x": 6, "y": 5 } }`. It stays on that cell until someone Collects it (see "Collect a loose ball"); nobody can pass or kick it before then. Give one or the other, never both.
 - Two markers may share a cell (a player standing on a cone, for example).
 - A tackle shield or tackle bag may add `"lying": true` to lay it flat on the ground for the Step, as at a ruck or with a ball under a pad: `{ "marker": "shield1", "cell": { "x": 6, "y": 5 }, "lying": true }`. A ball on the same cell (lying loose there, or its holder standing there) is drawn beneath the kit, partly showing. Leave `lying` out for upright kit. Any other kind with `lying` is rejected. Lying is set per Step, never animated; to lay kit down or stand it back up in a Progression, use `placeMarker` (below).
 - A marker left out of `base.placements` is not on the Area in Step 0; a Progression must add it with `addMarker`, or the script is rejected.
@@ -113,7 +113,7 @@ A move's duration comes from the straight-line length of its path (start cell to
 A pass is `{ "id", "from", "to", "ball"?, "at"?, "release"?, "after"?, "kick"? }`, or for a Kick to space `{ "id", "from", "cell", "kick": true, "ball"?, "release"?, "after"? }`. `base.passes` lists the passes in the order they happen (at most {{MAX_PASSES}}).
 
 - `id` is unique within the Step, e.g. `"p1"`.
-- The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one).
+- The first pass must come from the ball holder. Each later pass must come from the receiver of the pass before it (of the same ball, if there is more than one). The pass of a loose ball comes from the player who Collects it.
 - `from` and `to` are different attackers, defenders or coaches on the Area.
 - Pass i can go once pass i - 1 has been caught (the first pass needs nothing before it), if the pass has `after`, that Run has finished, and, if the pass has `release`, the passer has reached that waypoint of their Run.
 - The ball flies at {{PASS_SPEED_MPS}} m/s from wherever the passer is (a passer can pass while still running) to the catch point: waypoint `at` of the receiver's move if given, otherwise the end of its move, or the receiver's cell if it has no move.
@@ -135,16 +135,33 @@ Draw the paths and say where the ball is caught; the engine times each receiver'
 
 ### Kick to space
 
-A kick may go to a cell instead of a player: give `"cell"` in place of `"to"`, with `"kick": true`, e.g. `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball flies to that cell, lands, rolls on {{KICK_ROLL_M}} m in the direction of the kick (stopping at the edge of the Area) and lies loose there until the end of the Step. The Step plays on until the ball comes to rest.
+A kick may go to a cell instead of a player: give `"cell"` in place of `"to"`, with `"kick": true`, e.g. `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball flies to that cell, lands, rolls on {{KICK_ROLL_M}} m in the direction of the kick to the nearest cell (stopping at the edge of the Area) and lies loose there until someone Collects it, or to the end of the Step. The Step plays on until the ball comes to rest.
 
 - Give exactly one of `to` or `cell`. A `cell` needs `"kick": true`, and a Kick to space has no `at`.
 - The cell must be inside the Area.
 - It is never a forward pass, however far forward it goes.
 - It has no receiver, so no Run is timed to it: it goes as soon as it can, once the previous pass of the ball is caught and any `after` Run has finished, from wherever the kicker has run to.
-- After it, nobody holds the ball, so no later pass of that ball can follow in the Step. Chasers can still run after it: give their moves `"after": { "pass": "k1" }` to set off as it lands.
+- After it, nobody holds the ball until someone Collects it. Chasers can run after it: give their moves `"after": { "pass": "k1" }` to set off as it lands.
 
-The `direction` belongs to the team holding the ball at the start. A pass whose passer is on the other team (for example the receiver of a kick, who now attacks) is checked in the opposite direction, so with `"direction": "up"` and the kicking team holding the ball first, the receiving team's passes must not travel down.
+### Collect a loose ball
 
+A ball lying loose (after a Kick to space, or placed with a `cell`) is picked up by the player you name: the next pass or kick of that ball comes `from` them, and their Run must end on the cell where the ball lies. For a Kick to space that is where it comes to rest after the roll: the kick's direction from where it leaves the kicker, {{KICK_ROLL_M}} m on from the landing cell, rounded to the nearest cell. Kicked straight up or down the Area from a standing kicker, it is the landing cell moved {{KICK_ROLL_M}} cells on; if you get it wrong, the error names the right cell.
+
+```json
+"moves": [{ "marker": "a14", "waypoints": [{ "x": 16, "y": 10 }], "pace": "sprint" }],
+"passes": [
+  { "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true },
+  { "id": "p2", "from": "a14", "to": "a11" }
+]
+```
+
+- The collector takes the ball when they reach the end of their Run, never before it has come to rest. A collector who would get there early is timed to it like a receiver (see "Receivers are timed to the ball"): their Run is slowed, never below walk on any segment, then started later. A late collector simply gets there later, and the ball lies loose until they do.
+- The pass then goes as any other: once the collector has the ball, any `after` Run has finished, and the receiver is timed to meet it.
+- No `release` on that pass: the collector's Run ends at the ball, so there is nothing left to run on. Their Run cannot wait (`after`) for that pass either.
+- Either team can Collect. A player of the other team picks the ball up and attacks the other way, so their passes are checked for going forward in the opposite direction, as with a kick to the other team.
+- A loose ball Collected by a player already holding another ball is rejected.
+
+The `direction` belongs to the team holding the ball at the start (the team attacking `direction` when the ball starts loose). A pass whose passer is on the other team (for example the receiver of a kick, or a defender who Collects a loose ball, who now attacks) is checked in the opposite direction, so with `"direction": "up"` and the kicking team holding the ball first, the receiving team's passes must not travel down.
 A Practice with a `direction` checks its passes: a pass caught more than 0.5 m ahead of where it was thrown, measured in that direction, raises a warning ("Pass 2 goes forward"). A warning does not stop the script saving, but it is a mistake to fix: make the pass level or backward, for example by moving the catch waypoint level with or behind the passer. The check uses the real throw and catch points.
 
 ### `at`: catch on the run

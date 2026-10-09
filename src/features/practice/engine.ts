@@ -146,8 +146,21 @@ export interface PassFlight {
   fire: number;
   /** Seconds into the Step the pass is caught, or for a Kick to space lands. */
   land: number;
-  /** Kick to space only: after landing the ball rolls on to `to`, resting there loose from `until` seconds. */
+  /** Kick to space only: after landing the ball rolls on to `to`, a cell, resting there loose from `until` seconds. */
   roll?: { to: Point; until: number };
+  /** A Pass or Kick of a loose ball only: seconds into the Step `from` reaches the ball and Collects it. */
+  pickup?: number;
+}
+
+/** A ball lying loose in a Step: on the cell it starts on, or where it comes to rest after a Kick to space. */
+export interface LooseBall {
+  ball: string;
+  /** The cell it lies on, where its collector's Run must end. */
+  cell: Cell;
+  /** The Kick to space that left it there. Left out for a ball that starts loose. */
+  kick?: string;
+  /** The pass whose passer Collects it. Left out while nobody does. */
+  collect?: string;
 }
 
 export function formatPath(path: ReadonlyArray<PropertyKey>): string {
@@ -336,15 +349,31 @@ function changeCells(change: Change): Array<{ cell: Cell; path: string }> {
 type BallPass = Pass & { ball: string };
 
 /**
+ * Ids of the passes that Collect a loose ball (ADR 0006): the first pass of a
+ * ball in `loose` (it starts loose), and any pass that follows a Kick to space of its ball.
+ */
+function collectPasses(passes: BallPass[], loose: ReadonlySet<string>): Set<string> {
+  const collects = new Set<string>();
+  const lying = new Set(loose);
+  for (const pass of passes) {
+    if (lying.has(pass.ball)) collects.add(pass.id);
+    if (pass.to === undefined) lying.add(pass.ball);
+    else lying.delete(pass.ball);
+  }
+  return collects;
+}
+
+/**
  * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
  * A move waits for its `after`. A pass waits for the previous pass of the same
  * ball to be caught and for the receiver's move (to finish, or reach the catch
  * waypoint), and a pass with a Release waits for the passer's move (to reach
- * the release waypoint). The exception is a receiver whose move waits on this
+ * the release waypoint), as does a pass that Collects a loose ball (the
+ * collector's move reaching the ball). The exception is a receiver whose move waits on this
  * very pass, directly or not: it has not set off, so the pass does not wait for
  * it and is caught on its starting cell. Those passes are returned in `inPlace`.
  */
-function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
+function waitEdges(moves: Map<string, Move>, passes: BallPass[], collects: ReadonlySet<string> = new Set()) {
   const edges = new Map<string, string[]>();
   for (const [marker, { after }] of moves) {
     edges.set(
@@ -360,7 +389,7 @@ function waitEdges(moves: Map<string, Move>, passes: BallPass[]) {
   }
   for (const pass of passes) {
     if (pass.after) edges.get(`pass:${pass.id}`)!.push(`move:${pass.after.move}`);
-    if (pass.release !== undefined && moves.has(pass.from)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.from}`);
+    if ((pass.release !== undefined || collects.has(pass.id)) && moves.has(pass.from)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.from}`);
   }
   for (const pass of passes) {
     if (pass.to !== undefined && moves.has(pass.to)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.to}`);
@@ -461,9 +490,12 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     }
     holders.set(ball, ballHolder);
   }
-  /** Why each ball nobody holds is loose, for messages: it started loose, or was kicked to space. */
-  const looseBy = new Map<string, string>();
-  for (const [ball, cell] of state.loose) looseBy.set(ball, `lies loose on cell (${cell.x}, ${cell.y})`);
+  /** Each ball nobody holds: the cell it started loose on, or the Kick to space that left it loose. */
+  const looseBy = new Map<string, { cell: Cell } | { kick: string }>();
+  for (const [ball, cell] of state.loose) looseBy.set(ball, { cell });
+  /** Collects of a ball kicked to space, checked once the timeline says where it comes to rest. */
+  const kickCollects: Array<{ pass: Pass; kick: string }> = [];
+  const cellText = (cell: Cell) => `cell (${cell.x}, ${cell.y})`;
 
   for (const [marker, { after }] of state.moves) {
     const target: Target = { kind: 'move', id: marker };
@@ -498,12 +530,26 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     const ball = pass.ball ?? defaultBall;
     const holder = ball === undefined ? undefined : holders.get(ball);
     const loose = ball === undefined ? undefined : looseBy.get(ball);
-    if (ball !== undefined && holder === undefined && loose !== undefined) {
-      const which = state.holders.size + state.loose.size > 1 ? `ball "${ball}"` : 'the ball';
-      issues.push({ target, field: 'from', message: `${which} ${loose}, so nobody holds it to pass when this pass fires` });
-      continue;
-    }
-    if (ball === undefined || holder === undefined) {
+    const which = state.holders.size + state.loose.size > 1 ? `ball "${ball}"` : 'the ball';
+    const collecting = ball !== undefined && holder === undefined && loose !== undefined;
+    if (collecting) {
+      // A Collect (ADR 0006): the passer runs to the loose ball and takes it.
+      if (pass.from === pass.to) issues.push({ target, field: 'to', message: 'a marker cannot pass to itself' });
+      if (pass.release !== undefined) {
+        issues.push({ target, field: 'release', message: `"${pass.from}" Collects ${which} at the end of their Run, so there is no Run left to release it on; leave out "release"` });
+      }
+      if ('kick' in loose) {
+        kickCollects.push({ pass, kick: loose.kick });
+      } else {
+        const move = state.moves.get(pass.from);
+        const end = move?.waypoints[move.waypoints.length - 1];
+        if (!end) {
+          issues.push({ target, field: 'from', message: `${which} lies loose on ${cellText(loose.cell)}, so "${pass.from}" Collects it with this pass: give "${pass.from}" a move that ends on ${cellText(loose.cell)}` });
+        } else if (end.x !== loose.cell.x || end.y !== loose.cell.y) {
+          issues.push({ target, field: 'from', message: `${which} lies loose on ${cellText(loose.cell)}, but the move of "${pass.from}" ends on ${cellText(end)}; end it on ${cellText(loose.cell)} for "${pass.from}" to Collect it` });
+        }
+      }
+    } else if (ball === undefined || holder === undefined) {
       issues.push({
         target,
         field: 'ball',
@@ -513,18 +559,17 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
             : `ball "${ball}" is not on the Area in this Step; name the ball being passed`,
       });
       continue;
-    }
-    if (pass.from === pass.to) {
+    } else if (pass.from === pass.to) {
       issues.push({ target, field: 'to', message: 'a marker cannot pass to itself' });
     } else if (pass.from !== holder) {
-      const which = state.holders.size + state.loose.size > 1 ? `ball "${ball}"` : 'the ball';
       issues.push({ target, field: 'from', message: `marker "${pass.from}" does not hold ${which} when this pass fires; "${holder}" does` });
     }
     if (pass.to === undefined) {
       holders.delete(ball);
-      looseBy.set(ball, `lies loose after the Kick to space "${pass.id}"`);
+      looseBy.set(ball, { kick: pass.id });
     } else {
       holders.set(ball, pass.to);
+      looseBy.delete(ball);
     }
     if (pass.after && !state.moves.has(pass.after.move)) {
       issues.push({ target, field: 'after.move', message: `marker "${pass.after.move}" has no move in this Step` });
@@ -538,7 +583,7 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
         issues.push({ target, field: 'at', message: `waypoint ${pass.at} is outside the move of "${pass.to}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})` });
       }
     }
-    if (pass.release !== undefined) {
+    if (pass.release !== undefined && !collecting) {
       const move = state.moves.get(pass.from);
       if (!move) {
         issues.push({ target, field: 'release', message: `marker "${pass.from}" has no move in this Step, so there is nothing to release on the run; leave out "release" or give "${pass.from}" a move` });
@@ -552,10 +597,19 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
   if (issues.length === 0) {
     const passes = [...state.passes.values()].map((pass): BallPass => ({ ...pass, ball: pass.ball ?? defaultBall! }));
     const moves = [...state.moves.values()];
-    const { edges, inPlace } = waitEdges(state.moves, passes);
+    const loose = new Set(state.loose.keys());
+    const collects = collectPasses(passes, loose);
+    const { edges, inPlace } = waitEdges(state.moves, passes, collects);
     // A passer whose move waits on its own pass has not set off when it is thrown.
     for (const pass of passes) {
-      if (pass.release !== undefined && waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))) {
+      if (!waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))) continue;
+      if (collects.has(pass.id)) {
+        issues.push({
+          target: { kind: 'move', id: pass.from },
+          field: 'after',
+          message: `"${pass.from}" Collects the loose ball for pass "${pass.id}" at the end of this move, so the move cannot wait for that pass`,
+        });
+      } else if (pass.release !== undefined) {
         issues.push({
           target: { kind: 'pass', id: pass.id },
           field: 'release',
@@ -581,9 +635,23 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
           });
         }
       }
-      if (issues.length === 0 && state.holders.size > 1) {
-        const { flights } = timeline(state.cells, moves, passes, state.area);
-        const twice = heldTwice(flights, state.holders);
+      if (issues.length === 0 && (state.holders.size + state.loose.size > 1 || kickCollects.length > 0)) {
+        const { flights } = timeline(state.cells, moves, passes, state.area, loose);
+        // A ball kicked to space is Collected on the cell it comes to rest on.
+        for (const { pass, kick } of kickCollects) {
+          const rest = flights.find((f) => f.id === kick)?.roll?.to;
+          if (!rest) continue;
+          const target: Target = { kind: 'pass', id: pass.id };
+          const move = state.moves.get(pass.from);
+          const end = move?.waypoints[move.waypoints.length - 1];
+          const where = `the ball comes to rest on ${cellText(rest)} after the Kick to space "${kick}"`;
+          if (!end) {
+            issues.push({ target, field: 'from', message: `${where}, so "${pass.from}" Collects it with this pass: give "${pass.from}" a move that ends on ${cellText(rest)}` });
+          } else if (end.x !== rest.x || end.y !== rest.y) {
+            issues.push({ target, field: 'from', message: `${where}, but the move of "${pass.from}" ends on ${cellText(end)}; end it on ${cellText(rest)} for "${pass.from}" to Collect it` });
+          }
+        }
+        const twice = issues.length === 0 ? heldTwice(flights, state.holders) : null;
         if (twice) issues.push(twice);
       }
     }
@@ -1047,13 +1115,14 @@ function pointAlong(run: Run, elapsed: number): Point {
 
 /**
  * Where a ball kicked to space from `start` to `end` stops rolling: `KICK_ROLL_M`
- * on in the kick's direction, held inside the Area. A kick with no direction does not roll.
+ * on in the kick's direction, to the nearest cell, held inside the Area, so a
+ * collector's Run can end on it. A kick with no direction does not roll.
  */
 function rollTo(start: Point, end: Point, area: Area): Point {
   const length = distance(start, end);
   if (length === 0) return { x: end.x, y: end.y };
   const cells = KICK_ROLL_M / CELL_SIZE_M;
-  const clamp = (v: number, max: number) => Math.min(Math.max(v, 0), max);
+  const clamp = (v: number, max: number) => Math.min(Math.max(Math.round(v), 0), max);
   return {
     x: clamp(end.x + ((end.x - start.x) / length) * cells, area.width - 1),
     y: clamp(end.y + ((end.y - start.y) / length) * cells, area.length - 1),
@@ -1078,8 +1147,12 @@ function rollAt(flight: PassFlight, time: number): Point {
  *
  * Nodes: `start:<marker>` is when a Run would start untimed, `move:<marker>` the
  * Run as played, `pass:<id>` a flight. Each lists what it is computed from.
+ *
+ * A collector's Run is timed the same way to the loose ball it Collects (ADR
+ * 0006): to the moment it comes to rest, so the Run needs the Kick to space
+ * before it. A ball that starts loose is at rest from the start, so that timing never slows a Run.
  */
-function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map<string, string[]>, inPlace: Set<string>) {
+function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map<string, string[]>, inPlace: Set<string>, collects: ReadonlySet<string>) {
   const graph = new Map<string, string[]>();
   for (const [marker, { after }] of moves) {
     graph.set(`start:${marker}`, after?.move !== undefined ? [`move:${after.move}`] : after?.pass !== undefined ? [`pass:${after.pass}`] : []);
@@ -1098,6 +1171,19 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
   }
   const timed = new Map<string, number>();
   passes.forEach((pass, i) => {
+    if (collects.has(pass.id) && moves.has(pass.from) && !timed.has(pass.from)) {
+      const from = pass.from;
+      let previous = i - 1;
+      while (previous >= 0 && passes[previous].ball !== pass.ball) previous--;
+      if (previous < 0) {
+        timed.set(from, i);
+      } else {
+        const run = graph.get(`move:${from}`)!;
+        run.push(`pass:${passes[previous].id}`);
+        if (waitsOn(graph, `move:${from}`, new Set([`move:${from}`]))) run.pop();
+        else timed.set(from, i);
+      }
+    }
     // A Kick to space has no receiver, so it never times a Run.
     if (pass.to === undefined || !moves.has(pass.to) || inPlace.has(pass.id) || timed.has(pass.to)) return;
     const node = `pass:${pass.id}`;
@@ -1131,13 +1217,18 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
  * move waits on the pass has not set off: the pass fires as soon as the ball
  * is free and is caught on its cell. A Kick to space (`cell`) has no receiver:
  * it flies when ready to its cell at kick speed, then rolls on and lies loose.
+ * The next pass of a loose ball (one in `loose`, or after a Kick to space)
+ * Collects it (ADR 0006): its passer takes the ball on reaching the end of
+ * their Run, never before the ball comes to rest, and their Run is timed to
+ * that moment like a receiver's. The pass is then ready as any other.
  */
-function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[], area: Area) {
+function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[], area: Area, loose: ReadonlySet<string>) {
   const moves = new Map(moveList.map((m) => [m.marker, m]));
   const runs = new Map(moveList.map((m) => [m.marker, runOf(cells.get(m.marker)!, m)]));
   const passIndex = new Map(passes.map((p, i) => [p.id, i]));
-  const { edges, inPlace } = waitEdges(moves, passes);
-  const timedBy = timedReceivers(moves, passes, edges, inPlace);
+  const collects = collectPasses(passes, loose);
+  const { edges, inPlace } = waitEdges(moves, passes, collects);
+  const timedBy = timedReceivers(moves, passes, edges, inPlace, collects);
   const naturalStarts = new Map<string, number>();
   const played = new Map<string, { run: Run; start: number }>();
   const flights: PassFlight[] = [];
@@ -1165,8 +1256,10 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
       result = { run, start };
       const i = timedBy.get(marker);
       if (i !== undefined) {
-        const { land } = flight(i);
-        const reach = runDuration(run, passes[i].at);
+        // A collector is timed to the ball coming to rest, at the end of its Run; a receiver to the catch.
+        const collector = passes[i].from === marker;
+        const land = collector ? restOf(i) : flight(i).land;
+        const reach = runDuration(run, collector ? undefined : passes[i].at);
         if (land - (start + reach) > 1e-9) {
           // Slowed no further than its slowest segment at walk (ADR 0005), so no
           // segment ever runs below walk; a later start takes the rest.
@@ -1195,12 +1288,28 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     return { x: cell.x, y: cell.y };
   };
 
+  /** The previous pass of the same ball as pass `i`, or -1. */
+  const previousOf = (i: number): number => {
+    let previous = i - 1;
+    while (previous >= 0 && passes[previous].ball !== passes[i].ball) previous--;
+    return previous;
+  };
+
+  /** When the loose ball pass `i` Collects comes to rest: after the Kick to space's roll, or at once if it started loose. */
+  const restOf = (i: number): number => {
+    const previous = previousOf(i);
+    if (previous < 0) return 0;
+    const kicked = flight(previous);
+    return kicked.roll?.until ?? kicked.land;
+  };
+
   const flight = (i: number): PassFlight => {
     if (flights[i]) return flights[i];
     const pass = passes[i];
-    let previous = i - 1;
-    while (previous >= 0 && passes[previous].ball !== pass.ball) previous--;
-    const caught = previous >= 0 ? flight(previous).land : 0;
+    const previous = previousOf(i);
+    // A Collect: the passer takes the loose ball on reaching it, never before it comes to rest.
+    const pickup = collects.has(pass.id) ? Math.max(restOf(i), moves.has(pass.from) ? endOf(pass.from) : 0) : undefined;
+    const caught = pickup ?? (previous >= 0 ? flight(previous).land : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
     const passerRuns = moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]));
@@ -1225,6 +1334,7 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
         fire,
         land,
         ...(roll && { roll }),
+        ...(pickup !== undefined && { pickup }),
       });
     };
 
@@ -1270,11 +1380,14 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
 
 /** The first pair of holds of different balls by one player that overlap in time, as a fault on the later catch. */
 function heldTwice(flights: PassFlight[], startHolders: Map<string, string>): StepIssue | null {
-  interface Hold { ball: string; holder: string; from: number; to: number; pass?: string }
+  interface Hold { ball: string; holder: string; from: number; to: number; pass?: string; collect?: true }
   const holds: Hold[] = [];
-  for (const [ball, first] of startHolders) {
-    let hold: Hold | null = { ball, holder: first, from: 0, to: Infinity };
+  for (const ball of new Set([...startHolders.keys(), ...flights.map((f) => f.ball)])) {
+    const first = startHolders.get(ball);
+    let hold: Hold | null = first === undefined ? null : { ball, holder: first, from: 0, to: Infinity };
     for (const f of flights.filter((x) => x.ball === ball)) {
+      // A loose ball is held from when its collector picks it up.
+      if (f.pickup !== undefined) hold = { ball, holder: f.from, from: f.pickup, to: Infinity, pass: f.id, collect: true };
       if (hold) {
         hold.to = f.fire;
         holds.push(hold);
@@ -1288,11 +1401,12 @@ function heldTwice(flights: PassFlight[], startHolders: Map<string, string>): St
     for (const b of holds) {
       const later = a.from < b.from || (a.from === b.from && a.ball < b.ball);
       if (b.pass === undefined || a.ball === b.ball || a.holder !== b.holder || !later) continue;
-      if (Math.min(a.to, b.to) - b.from > 1e-9) {
+      // A Collect counts even when the ball is passed on the moment it is picked up.
+      if ((b.collect ? a.to : Math.min(a.to, b.to)) - b.from > 1e-9) {
         return {
           target: { kind: 'pass', id: b.pass },
-          field: 'to',
-          message: `marker "${b.holder}" catches ball "${b.ball}" while still holding ball "${a.ball}"; a player cannot hold two balls at once`,
+          field: b.collect ? 'from' : 'to',
+          message: `marker "${b.holder}" ${b.collect ? 'Collects' : 'catches'} ball "${b.ball}" while still holding ball "${a.ball}"; a player cannot hold two balls at once`,
         };
       }
     }
@@ -1357,13 +1471,15 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
       const sameBall = flights.filter((f) => f.ball === flight.ball);
       const previous = sameBall[sameBall.indexOf(flight) - 1];
       const reaches = endOf(pass.to, pass.at);
-      if (previous && reaches < previous.land - 1e-9) {
+      // The passer has the ball once the previous pass is caught or, for a loose ball, once they Collect it.
+      const has = flight.pickup ?? previous?.land;
+      if (has !== undefined && reaches < has - 1e-9) {
         found.push({
           step: n,
           pass: pass.id,
           kind: 'early',
           message: `${label(pass.to)} reaches the catch point before ${label(pass.from)} has the ball`,
-          fix: { marker: pass.to, afterPass: previous.id },
+          ...(flight.pickup === undefined && previous && { fix: { marker: pass.to, afterPass: previous.id } }),
         });
       } else if (pass.release !== undefined && step.moves.some((m) => m.marker === pass.from) && reaches < endOf(pass.from, pass.release) - 1e-9) {
         found.push({
@@ -1387,7 +1503,38 @@ export function formatWarning(warning: ValidationWarning): string {
 function stepTimeline(step: ResolvedStep) {
   const cells = new Map(step.markers.map((m) => [m.id, m.cell]));
   const defaultBall = step.markers.find((m) => m.kind === 'ball')?.id;
-  return timeline(cells, step.moves, step.passes.map((p) => ({ ...p, ball: p.ball ?? defaultBall! })), step.area);
+  const loose = new Set(step.markers.filter((m) => m.kind === 'ball' && m.holder === undefined).map((m) => m.id));
+  return timeline(cells, step.moves, step.passes.map((p) => ({ ...p, ball: p.ball ?? defaultBall! })), step.area, loose);
+}
+
+/**
+ * Every time a ball lies loose in a resolved Step, in pass order: where it lies
+ * (its starting cell, or where it comes to rest after a Kick to space) and the
+ * pass that Collects it, if any. For the editor, which sends a collector to the ball.
+ */
+export function looseBalls(step: ResolvedStep): LooseBall[] {
+  const { flights } = stepTimeline(step);
+  const found: LooseBall[] = [];
+  const open = new Map<string, LooseBall>();
+  for (const marker of step.markers) {
+    if (marker.kind !== 'ball' || marker.holder !== undefined) continue;
+    const loose: LooseBall = { ball: marker.id, cell: { x: marker.cell.x, y: marker.cell.y } };
+    found.push(loose);
+    open.set(marker.id, loose);
+  }
+  for (const flight of flights) {
+    const lying = open.get(flight.ball);
+    if (lying) {
+      lying.collect = flight.id;
+      open.delete(flight.ball);
+    }
+    if (flight.roll) {
+      const loose: LooseBall = { ball: flight.ball, cell: { x: flight.roll.to.x, y: flight.roll.to.y }, kick: flight.id };
+      found.push(loose);
+      open.set(flight.ball, loose);
+    }
+  }
+  return found;
 }
 
 /** Every marker's position at `t` seconds into the Step, plus the Step's duration and pass flights. */
@@ -1402,7 +1549,11 @@ export function positionsAt(step: ResolvedStep, t: number): StepPositions {
     let holder = ball.holder;
     let loose: Point = { x: ball.cell.x, y: ball.cell.y };
     for (const f of flights.filter((x) => x.ball === ball.id)) {
-      if (time < f.fire) break;
+      if (time < f.fire) {
+        // Collected: it rides with its collector until the pass.
+        if (f.pickup !== undefined && time >= f.pickup) holder = f.from;
+        break;
+      }
       if (time < f.land) {
         const k = (time - f.fire) / (f.land - f.fire);
         return { x: f.start.x + (f.end.x - f.start.x) * k, y: f.start.y + (f.end.y - f.start.y) * k };

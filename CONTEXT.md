@@ -65,7 +65,7 @@ A ball lying on the ground with nobody holding it: after a Kick to space comes t
 _Avoid_: dead ball, dropped ball
 
 **Collect**:
-A named player reaching a loose ball and taking it, after which the next Pass or Kick of that ball is theirs. Either team can Collect.
+A named player reaching a loose ball and taking it, after which the next Pass or Kick of that ball is theirs. Their Run ends on the ball's cell and is timed to it like a receiver's; they never take it before it comes to rest. Either team can Collect; when the other team does, it attacks the opposite way.
 _Avoid_: pick up, gather, regather
 
 **Lying**:
