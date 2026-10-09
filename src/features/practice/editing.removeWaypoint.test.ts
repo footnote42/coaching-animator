@@ -73,3 +73,48 @@ describe('applyStepEdit: removeWaypoint in a Progression', () => {
     expect(validate(next).ok).toBe(true);
   });
 });
+
+describe('applyStepEdit: waypoint edits carry into later Progressions', () => {
+  /** Step 1 releases p1 at a1's waypoint 1 and catches it at a2's waypoint 2, as its own setPass. */
+  const withLater = ok(applyStepEdit(addProgression(base, 'time'), 1, { type: 'setRelease', id: 'p1', release: 1 }));
+  const laterPass = (script: PracticeScript, n = 0) => script.progressions[n].changes.find((c) => c.type === 'setPass');
+
+  it('shifts a later Progression’s Release down one when an earlier waypoint goes', () => {
+    expect(laterPass(withLater)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 1, at: 2 });
+    const next = ok(applyStepEdit(withLater, 0, { type: 'removeWaypoint', marker: 'a1', index: 0 }));
+    expect(laterPass(next)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 0, at: 2 });
+    expect(resolveStep(next, 1).passes[0]).toEqual({ id: 'p1', from: 'a1', to: 'a2', release: 0, at: 2 });
+    expect(validate(next).ok).toBe(true);
+  });
+
+  it('drops a later Progression’s Release on the removed waypoint, and leaves earlier ones alone', () => {
+    const dropped = ok(applyStepEdit(withLater, 0, { type: 'removeWaypoint', marker: 'a1', index: 1 }));
+    expect(laterPass(dropped)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', at: 2 });
+    const kept = ok(applyStepEdit(withLater, 0, { type: 'removeWaypoint', marker: 'a2', index: 2 }));
+    expect(laterPass(kept)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 1 });
+    expect(validate(dropped).ok).toBe(true);
+    expect(validate(kept).ok).toBe(true);
+  });
+
+  it('shifts Progressions after an edited Progression', () => {
+    const twoSteps = ok(applyStepEdit(addProgression(withLater, 'time'), 2, { type: 'setCatch', id: 'p1', at: 1 }));
+    const next = ok(applyStepEdit(twoSteps, 1, { type: 'removeWaypoint', marker: 'a2', index: 0 }));
+    expect(laterPass(next, 1)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 1, at: 0 });
+    expect(validate(next).ok).toBe(true);
+  });
+
+  it('leaves a later Progression alone when it replaces that Run', () => {
+    const ownRun = ok(applyStepEdit(withLater, 1, { type: 'moveWaypoint', marker: 'a1', index: 2, at: { x: 3, y: 4 } }));
+    expect(ownRun.progressions[0].changes).toContainEqual(expect.objectContaining({ type: 'setMove', marker: 'a1' }));
+    const next = ok(applyStepEdit(ownRun, 0, { type: 'removeWaypoint', marker: 'a1', index: 0 }));
+    expect(laterPass(next)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 1, at: 2 });
+    expect(validate(next).ok).toBe(true);
+  });
+
+  it('shifts a later Progression’s catch up one when a catch point adds an earlier waypoint', () => {
+    const next = ok(applyStepEdit(withLater, 0, { type: 'addCatchPoint', id: 'p1', at: { x: 8, y: 7 } }));
+    expect(next.base.moves[1].waypoints).toHaveLength(4);
+    expect(laterPass(next)).toEqual({ type: 'setPass', id: 'p1', from: 'a1', to: 'a2', release: 1, at: 3 });
+    expect(validate(next).ok).toBe(true);
+  });
+});

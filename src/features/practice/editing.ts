@@ -384,13 +384,66 @@ function insertWaypoint(script: PracticeScript, marker: string, index: number, c
     const added = pace === undefined ? cell : { ...cell, pace };
     return { ...m, waypoints: [...m.waypoints.slice(0, index), added, ...m.waypoints.slice(index)] };
   });
-  const passes = script.base.passes.map((p) => {
-    let next = p;
-    if (p.to === marker && p.at !== undefined && p.at >= index) next = { ...next, at: p.at + 1 };
-    if (p.from === marker && p.release !== undefined && p.release >= index) next = { ...next, release: p.release + 1 };
-    return next;
-  });
+  const passes = script.base.passes.map((p) => shiftPass(p, { marker, index, by: 1 }));
   return withBase(script, { moves, passes });
+}
+
+/** A waypoint added (`by` 1) or removed (`by` -1) at `index` of `marker`'s Run. */
+interface WaypointShift {
+  marker: string;
+  index: number;
+  by: 1 | -1;
+}
+
+/**
+ * Keep a pass's catch (`at`) and Release on their waypoints after a shift of
+ * the receiver's or passer's Run: later ones move by one, one on a removed
+ * waypoint goes. Returns the same pass when nothing changes.
+ */
+function shiftPass<P extends Pass>(p: P, s: WaypointShift): P {
+  const shift = (index: number | undefined) =>
+    index === undefined || index < s.index ? index : s.by === -1 && index === s.index ? undefined : index + s.by;
+  const at = p.to === s.marker ? shift(p.at) : p.at;
+  const release = p.from === s.marker ? shift(p.release) : p.release;
+  if (at === p.at && release === p.release) return p;
+  const { at: _at, release: _release, ...rest } = p;
+  void _at;
+  void _release;
+  return { ...rest, ...(at !== undefined && { at }), ...(release !== undefined && { release }) } as P;
+}
+
+/** The shift `edit` makes to a Run's waypoints in `step` (a base-only script), if any. */
+function waypointShift(step: PracticeScript, edit: Edit): WaypointShift | undefined {
+  if (edit.type === 'removeWaypoint') {
+    const move = step.base.moves.find((m) => m.marker === edit.marker);
+    return move?.waypoints[edit.index] ? { marker: edit.marker, index: edit.index, by: -1 } : undefined;
+  }
+  if (edit.type !== 'addCatchPoint' && edit.type !== 'addReleasePoint') return undefined;
+  const pass = step.base.passes.find((p) => p.id === edit.id);
+  const marker = edit.type === 'addCatchPoint' ? pass?.to : pass?.from;
+  if (marker === undefined) return undefined;
+  const point = pointOnRun(step, marker, edit.at);
+  return typeof point === 'object' && 'insert' in point ? { marker, index: point.insert, by: 1 } : undefined;
+}
+
+/**
+ * Carry a waypoint shift made in Step n into later Progressions' setPass
+ * changes, up to the first one that replaces or removes that marker's Run
+ * (its indices, and those after it, refer to the new Run).
+ */
+function shiftLaterSteps(script: PracticeScript, n: number, s: WaypointShift): PracticeScript {
+  let replaced = false;
+  const progressions = script.progressions.map((p, i) => {
+    // progressions[i] is Step i + 1, so the later Steps are i >= n.
+    if (i < n || replaced) return p;
+    if (p.changes.some((c) => (c.type === 'setMove' || c.type === 'removeMove' || c.type === 'removeMarker') && c.marker === s.marker)) {
+      replaced = true;
+      return p;
+    }
+    const changes = p.changes.map((c) => (c.type === 'setPass' ? shiftPass(c, s) : c));
+    return changes.every((c, j) => c === p.changes[j]) ? p : { ...p, changes };
+  });
+  return { ...script, progressions };
 }
 
 /** Drop `after` waits that point at a move or pass no longer in the base Step, and stale catch waypoints. */
@@ -575,17 +628,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const move = script.base.moves.find((m) => m.marker === edit.marker);
       if (!move || !move.waypoints[edit.index]) return script;
       // Catches and Releases on later waypoints shift down one; one on the removed waypoint goes.
-      const shift = (index: number | undefined) =>
-        index === undefined || index < edit.index ? index : index === edit.index ? undefined : index - 1;
-      const passes = script.base.passes.map((p) => {
-        const at = p.to === edit.marker ? shift(p.at) : p.at;
-        const release = p.from === edit.marker ? shift(p.release) : p.release;
-        if (at === p.at && release === p.release) return p;
-        const { at: _at, release: _release, ...rest } = p;
-        void _at;
-        void _release;
-        return { ...rest, ...(at !== undefined && { at }), ...(release !== undefined && { release }) };
-      });
+      const passes = script.base.passes.map((p) => shiftPass(p, { marker: edit.marker, index: edit.index, by: -1 }));
       return mapMove(withBase(script, { passes }), edit.marker, (m) =>
         m.waypoints.length === 1 ? null : { ...m, waypoints: m.waypoints.filter((_, i) => i !== edit.index) },
       );
@@ -954,6 +997,7 @@ function editProgression(
   script: PracticeScript,
   n: number,
   edit: (step: PracticeScript) => PracticeScript | string,
+  later: (script: PracticeScript) => PracticeScript = (s) => s,
 ): PracticeScript | string {
   if (!script.progressions[n - 1]) return stepMissing(n);
   let prev: PracticeScript;
@@ -968,11 +1012,13 @@ function editProgression(
   if (typeof edited === 'string') return edited;
   if (edited === current) return script;
   const declared = new Set(script.markers.map((m) => m.id));
-  const next = pruneMarkers({
-    ...script,
-    markers: [...script.markers, ...edited.markers.filter((m) => !declared.has(m.id))],
-    progressions: script.progressions.map((p, i) => (i === n - 1 ? { ...p, changes: diffSteps(prev, edited) } : p)),
-  });
+  const next = pruneMarkers(
+    later({
+      ...script,
+      markers: [...script.markers, ...edited.markers.filter((m) => !declared.has(m.id))],
+      progressions: script.progressions.map((p, i) => (i === n - 1 ? { ...p, changes: diffSteps(prev, edited) } : p)),
+    }),
+  );
   return keepValid(script, next, BREAKS_LATER_STEP);
 }
 
@@ -983,8 +1029,23 @@ function editProgression(
  * a message saying why it cannot be made.
  */
 export function applyStepEdit(script: PracticeScript, n: number, edit: Edit): PracticeScript | string {
-  if (n === 0) return keepValid(script, applyEdit(script, edit), BREAKS_LATER_STEP);
-  return editProgression(script, n, (step) => applyEdit(step, edit));
+  // Later Steps' catches and Releases follow a waypoint added to or removed from a Run they inherit.
+  let shift: WaypointShift | undefined;
+  const later = (next: PracticeScript) => (shift ? shiftLaterSteps(next, n, shift) : next);
+  if (n === 0) {
+    shift = waypointShift(script, edit);
+    const after = applyEdit(script, edit);
+    return keepValid(script, typeof after === 'string' || after === script ? after : later(after), BREAKS_LATER_STEP);
+  }
+  return editProgression(
+    script,
+    n,
+    (step) => {
+      shift = waypointShift(step, edit);
+      return applyEdit(step, edit);
+    },
+    later,
+  );
 }
 
 /**
