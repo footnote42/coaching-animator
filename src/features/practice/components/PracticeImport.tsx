@@ -318,7 +318,7 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 md:gap-x-3">
+        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 lg:gap-x-2">
           <div role="group" aria-label="Mode" className="flex shrink-0 items-center gap-1">
             {(
               [
@@ -340,9 +340,9 @@ export function PracticeImport() {
               </Button>
             ))}
           </div>
-          <span className="hidden h-8 w-px bg-[var(--color-border)] md:block" aria-hidden />
-          {/* On a phone the kit takes its own row under the mode and history tools. */}
-          <div role="group" aria-label="Place" className="order-2 flex basis-full items-center gap-0.5 sm:gap-1 md:order-none md:basis-auto">
+          <span className="hidden h-8 w-px bg-[var(--color-border)] lg:block" aria-hidden />
+          {/* On a phone the kit takes its own row under the mode and history tools (phone and small tablet). */}
+          <div role="group" aria-label="Place" className="order-2 flex basis-full items-center gap-0.5 sm:gap-1 lg:order-none lg:basis-auto">
             {PALETTE.map(({ kind, name }) => kind === 'cone' ? (
               <ConeSplitButton
                 key={kind}
@@ -378,8 +378,8 @@ export function PracticeImport() {
               </Button>
             ))}
           </div>
-          <span className="hidden h-8 w-px bg-[var(--color-border)] md:block" aria-hidden />
-          <div role="group" aria-label="History" className="order-1 ml-auto flex items-center gap-1 md:order-none md:ml-0">
+          <span className="hidden h-8 w-px bg-[var(--color-border)] lg:block" aria-hidden />
+          <div role="group" aria-label="History" className="order-1 ml-auto flex items-center gap-1 lg:order-none lg:ml-0">
             <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
               <Undo2 />
             </Button>
@@ -497,7 +497,7 @@ export function PracticeImport() {
       </section>
 
       {/* From xl up, passing and kicking get their own column beside the canvas. */}
-      <aside aria-label="Passing and kicking" className="hidden min-h-0 w-72 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
+      <aside aria-label="Passing and kicking" className="hidden min-h-0 w-64 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
         {wide && (
           <>
             <h2 className="flex min-h-11 items-center text-sm font-medium text-text-primary">
