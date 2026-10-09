@@ -275,14 +275,14 @@
               },
               "from": {
                 "type": "string",
-                "description": "Id of the marker passing. Must hold the ball when the pass fires."
+                "description": "Id of the marker passing. Must hold the ball when the pass fires. For a ball lying loose (placed with a cell, or after a Kick to space), the marker who Collects it: their move must end on the cell where the ball lies, and they pick it up when they get there."
               },
               "to": {
                 "description": "Id of the marker receiving. Give exactly one of to or cell.",
                 "type": "string"
               },
               "cell": {
-                "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with \"kick\": true; no \"at\".",
+                "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick to the nearest cell and lies loose until the next pass of that ball Collects it. Only with \"kick\": true; no \"at\".",
                 "type": "object",
                 "properties": {
                   "x": {
@@ -664,14 +664,14 @@
                     },
                     "from": {
                       "type": "string",
-                      "description": "Id of the marker passing. Must hold the ball when the pass fires."
+                      "description": "Id of the marker passing. Must hold the ball when the pass fires. For a ball lying loose (placed with a cell, or after a Kick to space), the marker who Collects it: their move must end on the cell where the ball lies, and they pick it up when they get there."
                     },
                     "to": {
                       "description": "Id of the marker receiving. Give exactly one of to or cell.",
                       "type": "string"
                     },
                     "cell": {
-                      "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with \"kick\": true; no \"at\".",
+                      "description": "Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick to the nearest cell and lies loose until the next pass of that ball Collects it. Only with \"kick\": true; no \"at\".",
                       "type": "object",
                       "properties": {
                         "x": {

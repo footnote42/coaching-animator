@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { validate, warnings, resolveStep, positionsAt, formatError, stepCount } from '@/features/practice/engine';
+import {
+  validate,
+  warnings,
+  resolveStep,
+  positionsAt,
+  formatError,
+  stepCount,
+  looseBalls as looseBallsOf,
+  type LooseBall,
+} from '@/features/practice/engine';
 import {
   applyDirection,
   applyStepArea,
@@ -45,6 +54,8 @@ export function useEditorWorkspace() {
   const [pendingCatch, setPendingCatch] = useState<{ count: number; to: string } | null>(null);
   /** The pass whose Release point the Coach is picking: the next tap on the passer's Run sets it. */
   const [pendingRelease, setPendingRelease] = useState<string | null>(null);
+  /** The loose ball the Coach is picking a collector for: the next tap on a player sends them to it. */
+  const [pendingCollect, setPendingCollect] = useState<string | null>(null);
   const [ghost, setGhost] = useState(false);
   const [showCommentary, setShowCommentary] = useState(true);
   const [time, setTime] = useState(0);
@@ -86,11 +97,27 @@ export function useEditorWorkspace() {
   const balls = step?.markers.filter((m) => m.kind === 'ball') ?? [];
   /** The ball a new pass moves: the Coach's pick if it is still there, else the first. */
   const activeBall = balls.find((b) => b.id === passBall)?.id ?? balls[0]?.id;
-  /** The ball the selected marker holds once this Step's passes are made: they are its carrier. */
+  /** Each ball's last time lying loose in this Step: the cell it lies on, and the pass that Collects it, if any. */
+  const looseBalls = useMemo((): LooseBall[] => {
+    if (!step) return [];
+    try {
+      const all = looseBallsOf(step);
+      return all.filter((l, i) => !all.slice(i + 1).some((later) => later.ball === l.ball));
+    } catch {
+      return [];
+    }
+  }, [step]);
+  /**
+   * The ball the selected marker holds once this Step's passes are made: they
+   * are its carrier. A player whose Run ends on a loose ball Collects it, so they carry it too.
+   */
   const carriedBall = selectedMarker
     ? balls.find((b) => {
         const mine = passes.filter((p) => (p.ball ?? balls[0].id) === b.id);
-        return (mine.length > 0 ? mine[mine.length - 1].to : b.holder) === selectedMarker.id;
+        if ((mine.length > 0 ? mine[mine.length - 1].to : b.holder) === selectedMarker.id) return true;
+        const loose = looseBalls.find((l) => l.ball === b.id && l.collect === undefined);
+        const end = selectedMove?.waypoints[selectedMove.waypoints.length - 1];
+        return loose !== undefined && end !== undefined && end.x === loose.cell.x && end.y === loose.cell.y;
       })?.id
     : undefined;
   const lastPass = passes[passes.length - 1];
@@ -109,6 +136,8 @@ export function useEditorWorkspace() {
   const releasePassing = pendingRelease ? passes.find((p) => p.id === pendingRelease) : undefined;
   const releasePass =
     editing && releasePassing && step?.moves.some((m) => m.marker === releasePassing.from) ? releasePassing.id : undefined;
+  /** The loose ball the Coach is picking a collector for: the next tap on a player sends them to it. */
+  const collectBall = editing && pendingCollect && looseBalls.some((l) => l.ball === pendingCollect) ? pendingCollect : undefined;
 
   useEffect(() => {
     if (!playing) return;
@@ -159,6 +188,7 @@ export function useEditorWorkspace() {
   const pickTool = (next: EditorTool) => {
     setTool(next);
     setPendingRelease(null);
+    setPendingCollect(null);
     setPassKind('pass');
     stopPlayback();
     if (next !== 'select' && next !== 'run' && next !== 'pass') setSelection(NO_SELECTION);
@@ -387,9 +417,21 @@ export function useEditorWorkspace() {
     releasePass,
     startRelease: (id: string) => {
       setPendingCatch(null);
+      setPendingCollect(null);
       setPendingRelease(id);
     },
     endRelease: () => setPendingRelease(null),
+    looseBalls,
+    collectBall,
+    /** Collect: the next tap on a player sends them to loose ball `ball`. */
+    startCollect: (ball: string) => {
+      setTool('select');
+      setPendingCatch(null);
+      setPendingRelease(null);
+      setPendingCollect(ball);
+      stopPlayback();
+    },
+    endCollect: () => setPendingCollect(null),
     coneColour,
     pickConeColour: (colour: ConeColour) => {
       setConeColour(colour);

@@ -33,6 +33,12 @@ interface EditLayerProps {
   releasePass?: string;
   /** The Coach is done picking a Release point. */
   onReleaseDone?: () => void;
+  /** The loose ball whose collector is being picked: the next tap on a player sends them to it. */
+  collectBall?: string;
+  /** Cells loose balls lie on (after a Kick to space, where it comes to rest), marked while a collector is picked. */
+  looseCells?: Array<{ x: number; y: number }>;
+  /** The Coach is done picking a collector. */
+  onCollectDone?: () => void;
   onSelect: (selection: EditorSelection) => void;
   /** Make an edit; returns whether it was made. */
   onEdit: (edit: Edit) => boolean;
@@ -54,6 +60,9 @@ export function PracticeEditLayer({
   onCatchDone,
   releasePass,
   onReleaseDone,
+  collectBall,
+  looseCells,
+  onCollectDone,
   onSelect,
   onEdit,
 }: EditLayerProps) {
@@ -104,6 +113,10 @@ export function PracticeEditLayer({
 
   const tapBackground = (e: KonvaEventObject<Event>) => {
     const at = pointer(e);
+    if (collectBall) {
+      onCollectDone?.();
+      return;
+    }
     if (!at || picking) return;
     if (isPlaceTool(tool)) onEdit({ type: 'addMarker', kind: tool as MarkerKind, at, ...(tool === 'ball' && { reach }) });
     else if (tool === 'pass' && kick && selection.marker) {
@@ -115,6 +128,14 @@ export function PracticeEditLayer({
   };
 
   const tapMarker = (id: string) => {
+    if (collectBall) {
+      // Collect: send the tapped player to the loose ball, then select them to pass it on.
+      if (onEdit({ type: 'setCollector', marker: id, ball: collectBall })) {
+        onCollectDone?.();
+        onSelect({ marker: id, waypoint: null });
+      }
+      return;
+    }
     if (tool === 'pass' && selection.marker && selection.marker !== id) {
       if (onEdit({ type: 'addPass', from: selection.marker, to: id, ball, kick })) {
         onPassAdded?.(id);
@@ -143,6 +164,10 @@ export function PracticeEditLayer({
           <Circle key={key} x={px(x)} y={px(y)} radius={8} stroke={HIGHLIGHT} strokeWidth={2} listening={false} />
         ),
       )}
+      {collectBall &&
+        looseCells?.map((cell) => (
+          <Circle key={`loose-${cell.x}-${cell.y}`} x={px(cell.x)} y={px(cell.y)} radius={Math.max(radius, 12)} stroke={HIGHLIGHT} strokeWidth={2} dash={[4, 4]} listening={false} />
+        ))}
       {pickRun && pickStart && (
         <Line
           points={[pickStart, ...pickRun.waypoints].flatMap((c) => [px(c.x), px(c.y)])}

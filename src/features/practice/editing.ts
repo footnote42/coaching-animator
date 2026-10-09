@@ -4,7 +4,7 @@
  * editor writes the same Practice Script an agent writes (ADR 0002), so every
  * edit keeps the script shaped by the schema and snaps positions to grid cells.
  */
-import { formatError, resolveStep, validate, type ResolvedStep } from '@/features/practice/engine';
+import { formatError, looseBalls, resolveStep, validate, type LooseBall, type ResolvedStep } from '@/features/practice/engine';
 import {
   BALL_CARRIER_KINDS,
   LYING_KINDS,
@@ -57,6 +57,13 @@ export type Edit =
   | { type: 'addPass'; from: string; to: string; ball?: string; kick?: boolean }
   /** Kick to space: the ball's holder kicks it to the cell at `at`, where it lands, rolls on and lies loose. */
   | { type: 'addKickToSpace'; from: string; at: CellPoint; ball?: string }
+  /**
+   * Collect: send `marker` to the loose ball (default: the first ball) so they
+   * pick it up. Their Run is extended to the cell it lies on, or its last
+   * waypoint moved there when that is close by (a Run is added if they have
+   * none), and the pass that Collects the ball, if there is one, becomes theirs.
+   */
+  | { type: 'setCollector'; marker: string; ball?: string }
   /** Make a pass a kick (slower, through the air) or an ordinary pass again. */
   | { type: 'setKick'; id: string; kick: boolean }
   /** Change which ball a pass moves. */
@@ -124,7 +131,11 @@ const ID_PREFIX: Record<MarkerKind, string> = {
 
 const LABEL_PREFIX: Partial<Record<MarkerKind, string>> = { attacker: 'A', defender: 'D', coach: 'C' };
 
-const LOOSE_BALL = 'The ball is lying loose: nobody has it to pass or kick.';
+const LOOSE_BALL = 'The ball is lying loose: use Collect to send a player to it, then pass or kick from them.';
+const NOT_LOOSE = 'The ball is not lying loose: kick it to space or put it on the ground first.';
+
+/** A collector's last waypoint this close (in cells) to the loose ball is moved onto it; further away the Run is extended. */
+const COLLECT_REDIRECT_CELLS = 3;
 
 const isCarrier = (kind: MarkerKind | undefined) =>
   kind !== undefined && (BALL_CARRIER_KINDS as readonly string[]).includes(kind);
@@ -164,6 +175,28 @@ export function holderAfterPasses(script: PracticeScript, ball: string | undefin
   const mine = script.base.passes.filter((p) => (p.ball ?? first) === ball);
   const last = mine[mine.length - 1];
   return last ? last.to : ballHolder(script, ball);
+}
+
+/**
+ * The last time a ball (default: the first) lies loose in the base Step: the
+ * cell it lies on and the pass that Collects it, if any. Undefined when it never lies loose.
+ */
+export function lastLooseBall(script: PracticeScript, ball: string | undefined = ballIds(script)[0]): LooseBall | undefined {
+  if (ball === undefined) return undefined;
+  try {
+    return looseBalls(resolveStep(script, 0)).filter((l) => l.ball === ball).pop();
+  } catch {
+    return undefined;
+  }
+}
+
+/** Whether `marker` is on their way to Collect a ball nobody has Collected yet: their Run ends where it lies. */
+export function isCollector(script: PracticeScript, marker: string, ball: string | undefined = ballIds(script)[0]): boolean {
+  const loose = lastLooseBall(script, ball);
+  if (!loose || loose.collect !== undefined) return false;
+  const move = script.base.moves.find((m) => m.marker === marker);
+  const end = move?.waypoints[move.waypoints.length - 1];
+  return end !== undefined && sameCell(end, loose.cell);
 }
 
 /** Players holding a ball at the start of the base Step, leaving out the holder of ball `except`. */
@@ -224,24 +257,45 @@ function ballStart(script: PracticeScript, ballId: string | undefined, at: CellP
 
 /**
  * Keep only passes that still chain from their ball's holder: each must come
- * from whoever holds that ball when it fires and go to another carrier.
+ * from whoever holds that ball when it fires and go to another carrier. The
+ * pass of a loose ball must come from a carrier with a Run (its collector),
+ * ending on the cell where a ball that starts loose lies.
  */
 export function repairPasses(script: PracticeScript): PracticeScript {
   const holders = new Map<string, string>();
-  for (const p of script.base.placements) if (p.holder !== undefined) holders.set(p.marker, p.holder);
+  /** Balls nobody holds: the cell one that starts loose lies on, or null after a Kick to space. */
+  const loose = new Map<string, Cell | null>();
+  for (const p of script.base.placements) {
+    if (p.holder !== undefined) holders.set(p.marker, p.holder);
+    else if (p.cell && kindOf(script, p.marker) === 'ball') loose.set(p.marker, p.cell);
+  }
   const firstBall = script.markers.find((m) => m.kind === 'ball')?.id;
+  const placed = (id: string) => script.base.placements.some((p) => p.marker === id);
   const passes: Pass[] = [];
   for (const pass of script.base.passes) {
     const ball = pass.ball ?? firstBall;
-    const holder = ball === undefined ? undefined : holders.get(ball);
-    if (ball === undefined || holder === undefined) continue;
-    if (pass.from !== holder || pass.to === pass.from) continue;
+    if (ball === undefined) continue;
+    const holder = holders.get(ball);
+    const lying = loose.get(ball);
+    if (holder === undefined) {
+      // A Collect: the passer must run to the ball.
+      const run = script.base.moves.find((m) => m.marker === pass.from);
+      const end = run?.waypoints[run.waypoints.length - 1];
+      if (lying === undefined || !end || !isCarrier(kindOf(script, pass.from)) || !placed(pass.from)) continue;
+      if (lying !== null && !sameCell(end, lying)) continue;
+    } else if (pass.from !== holder) continue;
+    if (pass.to === pass.from) continue;
     const to = pass.to;
-    if (to !== undefined && (!isCarrier(kindOf(script, to)) || !script.base.placements.some((p) => p.marker === to))) continue;
+    if (to !== undefined && (!isCarrier(kindOf(script, to)) || !placed(to))) continue;
     passes.push(pass);
     // After a Kick to space the ball lies loose: nobody holds it.
-    if (to === undefined) holders.delete(ball);
-    else holders.set(ball, to);
+    if (to === undefined) {
+      holders.delete(ball);
+      loose.set(ball, null);
+    } else {
+      holders.set(ball, to);
+      loose.delete(ball);
+    }
   }
   if (passes.length === script.base.passes.length) return script;
   return cleanWaits(withBase(script, { passes }));
@@ -364,6 +418,49 @@ function cleanWaits(input: PracticeScript): PracticeScript {
     return rest;
   });
   return changed || passesChanged ? withBase(script, { moves: changed ? moves : script.base.moves, passes: passesChanged ? passes : script.base.passes }) : script;
+}
+
+/**
+ * Send `marker` to a loose ball: their Run ends on the cell it lies on (moving
+ * a nearby last waypoint there, else adding one, or a new Run) and the pass
+ * that Collects it, if there is one, comes from them. The same script when they already do.
+ */
+function sendToBall(script: PracticeScript, marker: string, loose: LooseBall): PracticeScript | string {
+  const { cell } = loose;
+  const collect = loose.collect === undefined ? undefined : script.base.passes.find((p) => p.id === loose.collect);
+  if (collect?.to === marker) return 'That player receives the pass after the Collect: pick someone else, or delete that pass first.';
+  const move = script.base.moves.find((m) => m.marker === marker);
+  let moves = script.base.moves;
+  if (!move) {
+    moves = [...moves, { marker, waypoints: [cell] }];
+  } else {
+    let next: Move = move;
+    const last = move.waypoints[move.waypoints.length - 1];
+    if (!sameCell(last, cell)) {
+      const near = Math.hypot(last.x - cell.x, last.y - cell.y) <= COLLECT_REDIRECT_CELLS;
+      // Moving the last waypoint keeps the Pace of the stretch into it.
+      const waypoints = near || move.waypoints.length >= MAX_WAYPOINTS
+        ? [...move.waypoints.slice(0, -1), { ...last, ...cell }]
+        : [...move.waypoints, cell];
+      next = { ...next, waypoints };
+    }
+    // A collector's Run cannot wait for the pass they make once they have the ball.
+    if (collect && next.after?.pass === collect.id) {
+      const { after: _dropped, ...rest } = next;
+      void _dropped;
+      next = rest;
+    }
+    if (next !== move) moves = moves.map((m) => (m === move ? next : m));
+  }
+  let passes = script.base.passes;
+  if (collect && (collect.from !== marker || collect.release !== undefined)) {
+    // A collector's Run ends at the ball, so there is nothing to release on.
+    const { release: _dropped, ...rest } = collect;
+    void _dropped;
+    passes = passes.map((p) => (p === collect ? { ...rest, from: marker } : p));
+  }
+  if (moves === script.base.moves && passes === script.base.passes) return script;
+  return cleanWaits(withBase(script, { moves, passes }));
 }
 
 /**
@@ -544,12 +641,14 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const ball = edit.ball ?? balls[0];
       if (ball !== undefined && !balls.includes(ball)) return `No ball "${ball}".`;
       const holder = holderAfterPasses(script, ball);
-      if (holder === undefined) return ball === undefined ? 'Place the ball first: a pass needs someone holding it.' : LOOSE_BALL;
+      if (ball === undefined) return 'Place the ball first: a pass needs someone holding it.';
+      // A loose ball is passed by the player running to Collect it.
+      if (holder === undefined && !isCollector(script, edit.from, ball)) return LOOSE_BALL;
       if (edit.from === edit.to) return 'A player cannot pass to themselves.';
       if (!isCarrier(kindOf(script, edit.from)) || !isCarrier(kindOf(script, edit.to))) {
         return 'Only attackers, defenders and coaches pass and receive.';
       }
-      if (edit.from !== holder) {
+      if (holder !== undefined && edit.from !== holder) {
         const label = script.markers.find((m) => m.id === holder)?.label ?? holder;
         return `${label} has the ball at that point, so the next pass must come from ${label}.`;
       }
@@ -564,18 +663,40 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const ball = edit.ball ?? balls[0];
       if (ball !== undefined && !balls.includes(ball)) return `No ball "${ball}".`;
       const holder = holderAfterPasses(script, ball);
-      if (holder === undefined) return ball === undefined ? 'Place the ball first: a kick needs someone holding it.' : LOOSE_BALL;
-      if (edit.from !== holder) {
+      if (ball === undefined) return 'Place the ball first: a kick needs someone holding it.';
+      if (holder === undefined && !isCollector(script, edit.from, ball)) return LOOSE_BALL;
+      if (holder !== undefined && edit.from !== holder) {
         const label = script.markers.find((m) => m.id === holder)?.label ?? holder;
         return `${label} has the ball at that point, so the next kick must come from ${label}.`;
       }
       const cell = snapCell(edit.at, area);
-      const from = startCell(script, edit.from);
+      const from = holder === undefined ? lastLooseBall(script, ball)?.cell : startCell(script, edit.from);
       if (from && sameCell(from, cell)) return 'Tap further away to kick into space.';
       if (script.base.passes.length >= MAX_PASSES) return `A Step holds at most ${MAX_PASSES} passes.`;
       const id = `k${nextNumber(script.base.passes.map((p) => p.id), 'k')}`;
       const pass: Pass = { id, from: edit.from, cell, ...(ball !== balls[0] && { ball }), kick: true };
       return withBase(script, { passes: [...script.base.passes, pass] });
+    }
+
+    case 'setCollector': {
+      const balls = ballIds(script);
+      const ball = edit.ball ?? balls[0];
+      if (ball === undefined || !balls.includes(ball)) return 'Place the ball first.';
+      const kind = kindOf(script, edit.marker);
+      if (kind === undefined) return `No marker "${edit.marker}".`;
+      if (!isCarrier(kind)) return 'Only attackers, defenders and coaches Collect the ball.';
+      if (!lastLooseBall(script, ball)) return NOT_LOOSE;
+      // Where a kicked ball stops can depend on the collector's Run (a kicker chasing
+      // their own kick), so send them again until it settles.
+      let next = script;
+      for (let k = 0; k < 4; k++) {
+        const loose = lastLooseBall(next, ball);
+        if (!loose) return NOT_LOOSE;
+        const sent = sendToBall(next, edit.marker, loose);
+        if (typeof sent === 'string' || sent === next) return sent;
+        next = sent;
+      }
+      return 'Where the ball stops keeps moving with this player’s Run: draw their Run to the ball by hand.';
     }
 
     case 'removePass': {

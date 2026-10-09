@@ -138,6 +138,10 @@ export function PracticeImport() {
     releasePass,
     startRelease,
     endRelease,
+    looseBalls,
+    collectBall,
+    startCollect,
+    endCollect,
     deleteSelection,
     undo,
     redo,
@@ -461,7 +465,7 @@ export function PracticeImport() {
                   </Button>
                 </>
               ) : selectedMarker.kind === 'ball' ? (
-                <span className="text-xs">{selectedMarker.holder ? 'Drag the player to move the ball.' : 'Lying loose. Drag it onto a player to give it to them.'}</span>
+                <span className="text-xs">{selectedMarker.holder ? 'Drag the player to move the ball.' : 'Lying loose. Drag it onto a player to give it to them, or use Collect to send a player to it.'}</span>
               ) : (
                 <span className="text-xs">No run yet: use Draw a run.</span>
               )}
@@ -516,6 +520,33 @@ export function PracticeImport() {
                 Cancel
               </Button>
             </>
+          )}
+
+          {editing && collectBall ? (
+            <>
+              <span>Tap the player who Collects the loose ball. Their Run goes to it.</span>
+              <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCollect}>
+                Cancel
+              </Button>
+            </>
+          ) : (
+            editing &&
+            !catchPass &&
+            !releasePass &&
+            looseBalls.length > 0 && (
+              <div role="group" aria-label="Loose ball" className="flex flex-wrap items-center gap-2">
+                {looseBalls.map((loose) => {
+                  const collector = passes.find((p) => p.id === loose.collect)?.from;
+                  const who = collector && (script.markers.find((m) => m.id === collector)?.label ?? collector);
+                  return (
+                    <Button key={loose.ball} type="button" variant="outline" className="h-11" onClick={() => startCollect(loose.ball)}>
+                      {balls.length > 1 ? `Collect ${ballName(loose.ball)}` : 'Collect'}
+                      {who ? ` (${who})` : ''}
+                    </Button>
+                  );
+                })}
+              </div>
+            )
           )}
 
           {editing && tool === 'pass' && balls.length > 1 && (
@@ -670,6 +701,9 @@ export function PracticeImport() {
                         onCatchDone={endCatch}
                         releasePass={releasePass}
                         onReleaseDone={endRelease}
+                        collectBall={collectBall}
+                        looseCells={looseBalls.filter((l) => l.ball === collectBall).map((l) => l.cell)}
+                        onCollectDone={endCollect}
                         onSelect={setSelection}
                         onEdit={edit}
                       />

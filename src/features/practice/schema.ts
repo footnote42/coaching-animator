@@ -195,10 +195,14 @@ export const PassAfterSchema = z
 export const PassSchema = z
   .strictObject({
     id: MarkerIdSchema.describe('Unique id for the pass in its Step, e.g. "p1". Used by after.pass, setPass and removePass.'),
-    from: z.string().describe('Id of the marker passing. Must hold the ball when the pass fires.'),
+    from: z
+      .string()
+      .describe(
+        'Id of the marker passing. Must hold the ball when the pass fires. For a ball lying loose (placed with a cell, or after a Kick to space), the marker who Collects it: their move must end on the cell where the ball lies, and they pick it up when they get there.',
+      ),
     to: z.string().optional().describe('Id of the marker receiving. Give exactly one of to or cell.'),
     cell: CellSchema.optional().describe(
-      'Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick and lies loose. Only with "kick": true; no "at".',
+      'Kick to space, instead of to: the cell a kick lands on. The ball lands there, rolls a short way on in the direction of the kick to the nearest cell and lies loose until the next pass of that ball Collects it. Only with "kick": true; no "at".',
     ),
     ball: MarkerIdSchema.optional().describe(
       'Id of the ball being passed. Leave out to pass the first ball declared in markers, which is the only ball in most Practices. Each ball has its own chain of passes.',

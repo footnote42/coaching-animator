@@ -44,7 +44,7 @@ describe('dropping the ball on the ground', () => {
     const passed = edits(base, { type: 'addPass', from: 'a1', to: 'a2' });
     const loose = edits(passed, { type: 'moveMarker', marker: 'ball', at: at(5, 5) });
     expect(loose.base.passes).toEqual([]);
-    expect(applyEdit(loose, { type: 'addPass', from: 'a1', to: 'a2' })).toBe('The ball is lying loose: nobody has it to pass or kick.');
+    expect(applyEdit(loose, { type: 'addPass', from: 'a1', to: 'a2' })).toBe('The ball is lying loose: use Collect to send a player to it, then pass or kick from them.');
   });
 
   it('can be dropped loose inside a Progression, as a placeMarker change', () => {
@@ -79,7 +79,7 @@ describe('Kick to space', () => {
 
   it('leaves the ball loose: nothing can follow it, until the kick is deleted', () => {
     const kicked = edits(base, { type: 'addKickToSpace', from: 'a1', at: at(5, 5) });
-    expect(applyEdit(kicked, { type: 'addPass', from: 'a1', to: 'a2' })).toBe('The ball is lying loose: nobody has it to pass or kick.');
+    expect(applyEdit(kicked, { type: 'addPass', from: 'a1', to: 'a2' })).toBe('The ball is lying loose: use Collect to send a player to it, then pass or kick from them.');
     expect(typeof applyEdit(kicked, { type: 'addKickToSpace', from: 'a1', at: at(9, 9) })).toBe('string');
     const undone = edits(kicked, { type: 'removePass', id: 'k1' });
     expect(edits(undone, { type: 'addPass', from: 'a1', to: 'a2' }).base.passes).toHaveLength(1);

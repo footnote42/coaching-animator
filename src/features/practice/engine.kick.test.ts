@@ -98,9 +98,8 @@ describe('Kick to space', () => {
 
   it('rolls along a diagonal kick and stops at the edge of the Area', () => {
     const diagonal = positionsAt(stepOf(field({ passes: [kickUp({ cell: { x: 16, y: 7 } })] })), 0).passes[0];
-    // From (10, 15) to (16, 7) is a 3-4-5 line, 10 m long.
-    expect(diagonal.roll!.to.x).toBeCloseTo(16 + KICK_ROLL_M * 0.6);
-    expect(diagonal.roll!.to.y).toBeCloseTo(7 - KICK_ROLL_M * 0.8);
+    // From (10, 15) to (16, 7) is a 3-4-5 line, 10 m long; the ball comes to rest on the nearest cell.
+    expect(diagonal.roll!.to).toEqual({ x: Math.round(16 + KICK_ROLL_M * 0.6), y: Math.round(7 - KICK_ROLL_M * 0.8) });
 
     const toEdge = positionsAt(stepOf(field({ passes: [kickUp({ cell: { x: 10, y: 1 } })] })), 0).passes[0];
     expect(toEdge.roll!.to).toEqual({ x: 10, y: 0 });
@@ -187,9 +186,9 @@ describe('Kick to space', () => {
     ]);
   });
 
-  it('leaves the ball loose: no pass of it can follow until it is Collected', () => {
+  it('leaves the ball loose: the next pass of it Collects it, so its passer must run to the ball', () => {
     expect(errorsOf(field({ passes: [kickUp(), { id: 'p2', from: 'a1', to: 'a2' }] }))).toEqual([
-      'base.passes[1].from: the ball lies loose after the Kick to space "k1", so nobody holds it to pass when this pass fires',
+      'base.passes[1].from: the ball comes to rest on cell (10, 3) after the Kick to space "k1", so "a1" Collects it with this pass: give "a1" a move that ends on cell (10, 3)',
     ]);
   });
 
@@ -245,9 +244,9 @@ describe('a ball that starts loose', () => {
     expect(drawOrder(step.markers, positions, passes, duration)[0]).toEqual({ marker: expect.objectContaining({ id: 'ball' }), underKit: 'tackle-shield' });
   });
 
-  it('cannot be passed: nobody holds it', () => {
+  it('cannot be passed until someone runs to it and Collects it', () => {
     expect(errorsOf(field({ placements: loosePlacements({ cell: { x: 3, y: 4 } }), passes: [{ id: 'p1', from: 'a1', to: 'a2' }] }))).toEqual([
-      'base.passes[0].from: the ball lies loose on cell (3, 4), so nobody holds it to pass when this pass fires',
+      'base.passes[0].from: the ball lies loose on cell (3, 4), so "a1" Collects it with this pass: give "a1" a move that ends on cell (3, 4)',
     ]);
   });
 
@@ -276,13 +275,21 @@ describe('a ball that starts loose', () => {
 });
 
 describe('skill example 08-kick-to-space.json', () => {
-  it('kicks to space, lands and rolls, with a ball starting loose under a Lying shield, and no warning', () => {
+  it('kicks to space, lands, rolls and is Collected, then a ball starting loose under a Lying shield is Collected, with no warning', () => {
     const file = path.join(process.cwd(), 'skill', 'coaching-animator', 'examples', '08-kick-to-space.json');
     const script = valid(readFileSync(file, 'utf8'));
-    const kicks = positionsAt(resolveStep(script, 0), 0).passes.filter((f) => f.roll);
+    const base = positionsAt(resolveStep(script, 0), 0).passes;
+    const kicks = base.filter((f) => f.roll);
     expect(kicks).toHaveLength(1);
+    // 14 chases, Collects the ball where it comes to rest and passes on.
+    const collect = base.find((f) => f.pickup !== undefined)!;
+    expect(collect.from).toBe('a14');
+    expect(collect.start).toEqual(kicks[0].roll!.to);
+    expect(collect.pickup!).toBeGreaterThanOrEqual(kicks[0].roll!.until);
     const loose = resolveStep(script, 1).markers.filter((m) => m.kind === 'ball' && m.holder === undefined);
     expect(loose.length).toBeGreaterThan(0);
+    // 9 Collects the ball that starts loose under the shield.
+    expect(positionsAt(resolveStep(script, 1), 0).passes[0]).toMatchObject({ from: 'a9', start: loose[0].cell });
     expect(warnings(script)).toEqual([]);
   });
 });
