@@ -39,6 +39,7 @@ Then: re-author seeded Practice #1 (963b2f3c...) with Release and receiver timin
 - Contact: hello@waynetellis.com. Feedback is stored in the `feedback` table and read in /admin.
 - Migrations: CI runs `supabase db push` to production on every push to `main`. Never apply migrations by hand without recording them.
 - Parallel work: every agent (Claude or Antigravity) works in its own git worktree, never in the main checkout. Create with `scripts/worktree-add.sh <branch>`, remove with `scripts/worktree-remove.sh <dir>` (plain `git worktree remove` empties main node_modules through the junction). Antigravity uses `../ca-pro` and `../ca-flash`.
+- Production test login `e2e-test@waynetellis.com`: credentials in gitignored `.env.e2e`, Playwright state in `.auth/coach.json`. Specs using it must skip without E2E_PASSWORD and delete what they save. Node fetch to supabase.co times out on this machine; use curl or the Supabase MCP.
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`.
 - MCP: one user-scope `coaching-animator` registration only; a leftover local-scope entry overrides it (that caused a 401 on 2026-10-07).
 
