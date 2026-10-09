@@ -4,7 +4,7 @@
 LIVE at coaching-animator.waynetellis.com. Iteration 2 (spec #72): batch 1 (fixes) and batch 2 (Tags, Source, personal tokens, account deletion, 404s, ball choice) are done and deployed. Batch 3 so far: #80 richer Gallery cards and Tag filter, #82 the skill and Ask your AI button, the full editor on phones (#107), #84 the MCP endpoint, #109 the skill saves straight to the account over MCP (tested end to end), #110 copy-ready MCP setup on /profile and #81 Gallery card previews. Batch 4 done: #87 light theme with dark toggle, #88 landing rewrite, #89 new look, #90 Help and How-to, #91 desktop Lighthouse and mobile checklist, #119 share from My Practices, #122 accessibility fixes, #123 README. #121 Google sign-in on our own pages is merged but inert until configured. Spec #140 built (see Next). Passing and kit batch done: #128 Direction of attack + forward-pass warning, #129 catch point picker, #130 early-receiver warning, #131 pass when a Run finishes (draw and pass), #136 cone colours, #137 kicks. All merged, none tried in a browser yet. #76 closed (2026-10-07): Resend SMTP live, sign-up confirmations come from noreply@waynetellis.com; Google consent screen branded.
 
 ## Next
-Spec #140 (animation flow, kicking and kit) is built and merged: #141-#153 plus #164. None of it has been tried in a browser. Morning checks, on production (main deploys live) or a Vercel preview, desktop and phone:
+Spec #140 (animation flow, kicking and kit) is built and merged: #141-#153 plus #164 and #169. None of it has been tried in a browser. Morning checks, on production (main deploys live) or a Vercel preview, desktop and phone:
 1. Hero 3 v 2 on the landing page: everyone moves from the start, catches on the run, no one stands waiting, a strong finish.
 2. Runs ease in and taper; a per-waypoint Pace changes speed mid-Run.
 3. Pass and Kick buttons on the ball carrier; Release picker (pass mid-Run); a receiver arrives as the ball does.
@@ -14,7 +14,7 @@ Spec #140 (animation flow, kicking and kit) is built and merged: #141-#153 plus 
 7. Real iPhone: cone placement and the phone layout.
 8. Tune by eye: `RUN_ACCELERATION_MPS2` (2), `RUN_TAPER_MPS2` (1.5), `KICK_ROLL_M` (2), `KICK_SPEED_MPS` (4).
 9. Confirm the layout defaults chosen for you: Details and save folds (not a sheet), phone uses folding groups (not tabs), Tags shown in 4 headed groups.
-Possible follow-ups (raise tickets if wanted): corners at waypoints are sharp (no path rounding); "That would break a later Step" is misleading on Step 0 edits; tab order differs from screen order below 1024 px; the "Ball for new passes" picker now shows whenever there are 2 or more balls; CRLF/LF churn between cloud and local sessions (add `.gitattributes`); #169 later Progressions' catch and Release indices after a base waypoint delete; the early-catch warning may miss a catch that slides because of a draw-and-pass wait.
+Possible follow-ups (raise tickets if wanted): corners at waypoints are sharp (no path rounding); "That would break a later Step" is misleading on Step 0 edits; tab order differs from screen order below 1024 px; the "Ball for new passes" picker now shows whenever there are 2 or more balls; CRLF/LF churn between cloud and local sessions (add `.gitattributes`); the early-catch warning may miss a catch that slides because of a draw-and-pass wait.
 Then: re-author seeded Practice #1 (963b2f3c...) with Release and receiver timing, resume seeding, then #92 and #93.
 - Build lessons: `claude --cloud` needs an interactive TTY, so a coordinating Claude session cannot launch cloud sessions; the Agent tool's remote isolation silently falls back to local worktrees. Local agent worktrees have a real node_modules, so `git worktree remove --force` is safe for them.
 - MCP setup friction logged in IDEAS.md (2026-10-07); revisit with the parked OAuth on `/api/mcp`.
@@ -46,7 +46,7 @@ Then: re-author seeded Practice #1 (963b2f3c...) with Release and receiver timin
 None. Seeding waits on the browser checks above.
 
 ## Last session
-2026-10-09: built spec #140 overnight with cloud sessions and local sub-agents, merged in order: #141 prefactor, #146 Pass/Kick buttons, #149 cone split button, #150 Lying shield, #142 easing, #151 tackle bag, #144 receivers timed to the ball, #147 kick to space and loose ball, #143 Pace per segment, #145 Release, #148 Collect, #153 hero, #152 layout pass, #164 waypoint index fix. Examples 06-09 added. CI green on each; no browser checks yet.
+2026-10-09: built spec #140 overnight with cloud sessions and local sub-agents, merged in order: #141 prefactor, #146 Pass/Kick buttons, #149 cone split button, #150 Lying shield, #142 easing, #151 tackle bag, #144 receivers timed to the ball, #147 kick to space and loose ball, #143 Pace per segment, #145 Release, #148 Collect, #153 hero, #152 layout pass, #164 and #169 waypoint index fixes. Examples 06-09 added. CI green on each; no browser checks yet.
 
 2026-10-08: grilled animation quality and editor kit (19 decisions). ADR 0005 (receivers are timed to the ball) and 0006 (kicks can go to space), glossary terms Release, Kick to space, Collect, Lying, Tackle bag. Spec #140 and tickets #141-#153 with native blocked-by edges. Planned the cloud-session build.
 
