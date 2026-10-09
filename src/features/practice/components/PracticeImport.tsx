@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -185,9 +185,10 @@ export function PracticeImport() {
   const forwardIds = new Set(stepWarnings.filter((w) => w.kind === 'forward').map((w) => w.pass));
 
   return (
-    <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
-      <section className="flex min-w-0 flex-col gap-2 md:w-72 md:shrink-0 md:overflow-y-auto lg:w-80">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-2 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row md:gap-4">
+      {/* On a phone this column's children join the page flow: the header first, then the canvas, then the groups. */}
+      <section className="contents md:flex md:w-72 md:min-w-0 md:shrink-0 md:flex-col md:gap-2 md:overflow-y-auto lg:w-80">
+        <div className="order-first flex flex-wrap items-center justify-between gap-2 md:order-none">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
           <div className="flex gap-2">
             <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
@@ -294,13 +295,13 @@ export function PracticeImport() {
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
-        <div role="group" aria-label="Steps" className="flex flex-wrap gap-2">
+        <div role="group" aria-label="Steps" className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           {Array.from({ length: stepCount(script) }, (_, n) => {
             const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
             return (
               <Button
                 key={n}
-                className="h-11"
+                className="h-11 shrink-0"
                 variant={n === shownStep ? 'default' : 'outline'}
                 aria-pressed={n === shownStep}
                 onClick={() => playStep(n)}
@@ -309,7 +310,7 @@ export function PracticeImport() {
               </Button>
             );
           })}
-          <div>
+          <div className="shrink-0">
             <AddProgressionButton
               script={script}
               onAdd={(next) => commit(next) && playStep(next.progressions.length)}
@@ -390,7 +391,11 @@ export function PracticeImport() {
 
         <SelectionPanel workspace={workspace} hint={hint} />
 
-        <div className="relative h-[60dvh] min-h-64 md:h-auto md:min-h-0 md:flex-1">
+        {/* On a phone the box takes the Area's shape, so the playback controls sit right under the pitch. */}
+        <div
+          className="relative max-h-[60dvh] w-full aspect-[var(--area-aspect)] md:aspect-auto md:max-h-none md:min-h-0 md:flex-1"
+          style={{ '--area-aspect': `${stepArea.width} / ${stepArea.length}` } as CSSProperties}
+        >
           {step ? (
             <>
               <PracticeCanvas
