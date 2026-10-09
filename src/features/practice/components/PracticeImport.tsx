@@ -21,6 +21,7 @@ import { Button } from '@/shared/ui/button';
 import { stepCount } from '@/features/practice/engine';
 import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
+import { EditorSection } from '@/features/practice/components/EditorSection';
 import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
@@ -147,11 +148,13 @@ export function PracticeImport() {
     tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
   const stepArea = step?.area ?? script.area;
+  const stepLever = shownStep > 0 ? script.progressions[shownStep - 1]?.lever : undefined;
+  const stepTitle = stepLever ? `Step ${shownStep}: ${LEVER_NAMES[stepLever]}` : 'Base Step';
   const forwardIds = new Set(stepWarnings.filter((w) => w.kind === 'forward').map((w) => w.pass));
 
   return (
     <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
-      <section className="flex min-w-0 flex-col gap-3 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
+      <section className="flex min-w-0 flex-col gap-2 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
           <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
@@ -159,33 +162,22 @@ export function PracticeImport() {
           </Button>
         </div>
         
-        <PracticeLibrary
-          key={libraryKey}
-          scriptText={scriptText}
-          practiceId={practiceId}
-          title={title}
-          description={description}
-          tags={tags}
-          onTagsChange={setTags}
-          sourceUrl={sourceUrl}
-          sourceTitle={sourceTitle}
-          onSourceUrlChange={setSourceUrl}
-          onSourceTitleChange={setSourceTitle}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onSaved={saved}
-          onOpen={(id) => router.push(`/practice?id=${id}`)}
-          hideListOnMobile
-        />
-        <div>
-          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
-        </div>
+        <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
 
-        <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
-        <div className="flex flex-col gap-3">
+        <EditorSection title="Area" meta={`${stepArea.width} × ${stepArea.length} m`} showTitle={false}>
+          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
+        </EditorSection>
+
+        <EditorSection title={stepTitle} meta="coaching points" showTitle={false}>
+          <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
+        </EditorSection>
+
+        <EditorSection
+          title="Script and AI"
+          meta={errors.length > 0 ? '(can’t load)' : problems.length > 0 ? `(${problems.length} to fix)` : undefined}
+        >
           <PracticeScriptActions text={scriptText} isGuest={isGuest} />
           <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
-          <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
           <details className="flex flex-col gap-2">
             <summary className="cursor-pointer py-2 text-sm font-medium text-text-primary">Practice Script</summary>
             <label htmlFor="practice-script" className="text-sm text-text-primary">
@@ -227,7 +219,26 @@ export function PracticeImport() {
               </ul>
             </div>
           )}
-        </div>
+        </EditorSection>
+
+        <PracticeLibrary
+          key={libraryKey}
+          scriptText={scriptText}
+          practiceId={practiceId}
+          title={title}
+          description={description}
+          tags={tags}
+          onTagsChange={setTags}
+          sourceUrl={sourceUrl}
+          sourceTitle={sourceTitle}
+          onSourceUrlChange={setSourceUrl}
+          onSourceTitleChange={setSourceTitle}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          onSaved={saved}
+          onOpen={(id) => router.push(`/practice?id=${id}`)}
+          hideListOnMobile
+        />
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">

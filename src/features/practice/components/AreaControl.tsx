@@ -21,7 +21,7 @@ const DIRECTION_NAMES = {
 } as const satisfies Record<Direction, string>;
 
 const inputClass =
-  'h-8 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+  'h-11 w-16 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
 
 /**
  * The Area of the base Step: a template picker plus width and length in metres.
@@ -52,7 +52,7 @@ export function AreaControl({ area, onChange, direction, onDirectionChange }: Ar
         <select
           value={areaTemplate(area)}
           onChange={(e) => onChange(areaFromTemplate(e.target.value as AreaTemplate))}
-          className="h-8 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {AREA_TEMPLATES.map((t) => (
             <option key={t} value={t}>
@@ -89,7 +89,7 @@ export function AreaControl({ area, onChange, direction, onDirectionChange }: Ar
           <select
             value={direction ?? 'none'}
             onChange={(e) => onDirectionChange(e.target.value as Direction)}
-            className="h-8 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             {DIRECTIONS.map((d) => (
               <option key={d} value={d}>
