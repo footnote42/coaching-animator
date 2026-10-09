@@ -1,14 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type Ref } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Button } from '@/shared/ui/button';
-import { useUser } from '@/lib/contexts/UserContext';
 import { MyPracticesList, type Visibility } from './MyPracticesList';
 import { TagPicker } from './TagPicker';
 
-interface Props {
+interface SaveInput {
   /** Current script text from the Import box; saved as-is. */
   scriptText: string;
   /** Id of the opened Practice: saving updates it. Null saves a new Practice. */
@@ -16,56 +14,17 @@ interface Props {
   title: string;
   description: string;
   tags: string[];
-  onTagsChange: (tags: string[]) => void;
   sourceUrl: string;
   sourceTitle: string;
-  onSourceUrlChange: (url: string) => void;
-  onSourceTitleChange: (title: string) => void;
-  onTitleChange: (title: string) => void;
-  onDescriptionChange: (description: string) => void;
   /** Called with the Practice's id after a successful save. */
   onSaved: (id: string) => void;
-  onOpen: (id: string) => void;
-  /** Hide the library list on mobile (since it takes a lot of space) */
-  hideListOnMobile?: boolean;
 }
 
-/** Enter in a single-line field must never submit or trigger anything. */
-const blockEnter = (e: React.KeyboardEvent) => {
-  if (e.key === 'Enter') e.preventDefault();
-};
-
-/** Save form and "My Practices" list. Guests see a sign-in prompt instead. */
-export function PracticeLibrary({
-  scriptText,
-  practiceId,
-  title,
-  description,
-  tags,
-  onTagsChange,
-  sourceUrl,
-  sourceTitle,
-  onSourceUrlChange,
-  onSourceTitleChange,
-  onTitleChange,
-  onDescriptionChange,
-  onSaved,
-  onOpen,
-  hideListOnMobile,
-}: Props) {
-  const { user, loading } = useUser();
+/** Saving a Practice: the request, its busy state, the new Practice's Visibility and a key to refresh My Practices. */
+export function usePracticeSave({ scriptText, practiceId, title, description, tags, sourceUrl, sourceTitle, onSaved }: SaveInput) {
   const [visibility, setVisibility] = useState<Visibility>('private');
   const [saving, setSaving] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  if (loading) return null;
-  if (!user) {
-    return (
-      <p className="text-sm text-text-primary">
-        <Link href="/login?redirect=/practice" className="underline">Sign in</Link> to save Practices and see My Practices.
-      </p>
-    );
-  }
 
   const save = async () => {
     let script: unknown;
@@ -100,78 +59,129 @@ export function PracticeLibrary({
     }
   };
 
-  const field =
-    'border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+  return { save, saving, visibility, setVisibility, refreshKey };
+}
 
+/** Enter in a single-line field must never submit or trigger anything. */
+const blockEnter = (e: React.KeyboardEvent) => {
+  if (e.key === 'Enter') e.preventDefault();
+};
+
+const FIELD =
+  'min-h-11 border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+
+interface DetailsProps {
+  practiceId: string | null;
+  title: string;
+  description: string;
+  tags: string[];
+  sourceUrl: string;
+  sourceTitle: string;
+  visibility: Visibility;
+  onTitleChange: (title: string) => void;
+  onDescriptionChange: (description: string) => void;
+  onTagsChange: (tags: string[]) => void;
+  onSourceUrlChange: (url: string) => void;
+  onSourceTitleChange: (title: string) => void;
+  onVisibilityChange: (visibility: Visibility) => void;
+  titleRef?: Ref<HTMLInputElement>;
+}
+
+/** The Practice's details: Title, Description, Tags, Source and (for a new Practice) Visibility. */
+export function PracticeDetails({
+  practiceId,
+  title,
+  description,
+  tags,
+  sourceUrl,
+  sourceTitle,
+  visibility,
+  onTitleChange,
+  onDescriptionChange,
+  onTagsChange,
+  onSourceUrlChange,
+  onSourceTitleChange,
+  onVisibilityChange,
+  titleRef,
+}: DetailsProps) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-text-primary">
-          {practiceId ? 'Update this Practice' : 'Save this Practice'}
-        </h2>
-        <input
-          aria-label="Title"
-          placeholder="Title"
-          maxLength={100}
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          onKeyDown={blockEnter}
-          className={field}
-        />
-        <textarea
-          aria-label="Description"
-          placeholder="Description (optional)"
-          maxLength={2000}
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-          className={`${field} h-16 resize-none`}
-        />
+    <div className="flex flex-col gap-2">
+      <input
+        ref={titleRef}
+        aria-label="Title"
+        placeholder="Title"
+        maxLength={100}
+        value={title}
+        onChange={(e) => onTitleChange(e.target.value)}
+        onKeyDown={blockEnter}
+        className={FIELD}
+      />
+      <textarea
+        aria-label="Description"
+        placeholder="Description (optional)"
+        maxLength={2000}
+        value={description}
+        onChange={(e) => onDescriptionChange(e.target.value)}
+        className={`${FIELD} h-16 resize-none`}
+      />
+      <input
+        aria-label="Source link"
+        type="url"
+        placeholder="Source link, https only (optional)"
+        maxLength={2000}
+        value={sourceUrl}
+        onChange={(e) => onSourceUrlChange(e.target.value)}
+        onKeyDown={blockEnter}
+        className={FIELD}
+      />
+      <input
+        aria-label="Source title"
+        placeholder="Source title (optional)"
+        maxLength={200}
+        value={sourceTitle}
+        onChange={(e) => onSourceTitleChange(e.target.value)}
+        onKeyDown={blockEnter}
+        className={FIELD}
+      />
+      {!practiceId && (
+        <select
+          aria-label="Visibility"
+          value={visibility}
+          onChange={(e) => onVisibilityChange(e.target.value as Visibility)}
+          className={FIELD}
+        >
+          <option value="private">Private</option>
+          <option value="link">Anyone with the link</option>
+          <option value="public">Public</option>
+        </select>
+      )}
+      {!practiceId && visibility === 'public' && (
+        <p className="text-xs text-text-primary">
+          Public Practices appear in the Gallery. Please do not name or identify players.
+        </p>
+      )}
+      <div className="mt-1">
         <TagPicker value={tags} onChange={onTagsChange} />
-        <input
-          aria-label="Source link"
-          type="url"
-          placeholder="Source link, https only (optional)"
-          maxLength={2000}
-          value={sourceUrl}
-          onChange={(e) => onSourceUrlChange(e.target.value)}
-          onKeyDown={blockEnter}
-          className={field}
-        />
-        <input
-          aria-label="Source title"
-          placeholder="Source title (optional)"
-          maxLength={200}
-          value={sourceTitle}
-          onChange={(e) => onSourceTitleChange(e.target.value)}
-          onKeyDown={blockEnter}
-          className={field}
-        />
-        {!practiceId && (
-          <select
-            aria-label="Visibility"
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value as Visibility)}
-            className={field}
-          >
-            <option value="private">Private</option>
-            <option value="link">Anyone with the link</option>
-            <option value="public">Public</option>
-          </select>
-        )}
-        {!practiceId && visibility === 'public' && (
-          <p className="text-xs text-text-primary">
-            Public Practices appear in the Gallery. Please do not name or identify players.
-          </p>
-        )}
-        <Button onClick={save} disabled={saving || !title.trim() || !scriptText.trim()}>
-          {practiceId ? 'Save changes' : 'Save'}
-        </Button>
-      </div>
-
-      <div className={hideListOnMobile ? 'hidden md:block' : undefined}>
-        <h2 className="mb-1 text-sm font-medium text-text-primary">My Practices</h2>
-        <MyPracticesList refreshKey={refreshKey} onOpen={onOpen} />
       </div>
     </div>
+  );
+}
+
+/** The signed-out prompt in place of saving. */
+export function SignInToSave() {
+  return (
+    <p className="text-sm text-text-primary">
+      <Link href="/login?redirect=/practice" className="underline">Sign in</Link> to save Practices and see My Practices.
+    </p>
+  );
+}
+
+/** The Coach's saved Practices (hidden on a phone, where it takes too much room). */
+export function MyPractices({ refreshKey, onOpen }: { refreshKey: number; onOpen: (id: string) => void }) {
+  return (
+    <section className="hidden border-t border-[var(--color-border)] pt-3 md:block">
+      <h2 className="mb-1 text-sm font-medium text-text-primary">My Practices</h2>
+      <MyPracticesList refreshKey={refreshKey} onOpen={onOpen} />
+    </section>
   );
 }

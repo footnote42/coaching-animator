@@ -1,7 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import {
   Play,
@@ -16,13 +18,15 @@ import {
   Trash2,
   Ghost,
   FilePlus,
+  Save,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { stepCount } from '@/features/practice/engine';
 import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
 import { EditorSection } from '@/features/practice/components/EditorSection';
-import { PracticeLibrary } from '@/features/practice/components/PracticeLibrary';
+import { MyPractices, PracticeDetails, SignInToSave, usePracticeSave } from '@/features/practice/components/PracticeLibrary';
+import { useUser } from '@/lib/contexts/UserContext';
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
 import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/practice/components/StepControls';
@@ -143,6 +147,30 @@ export function PracticeImport() {
     playStep,
   } = workspace;
 
+  const { user, loading } = useUser();
+  const signedIn = !loading && !!user;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const saver = usePracticeSave({ scriptText, practiceId, title, description, tags, sourceUrl, sourceTitle, onSaved: saved });
+  /** Save, or open the details first when the Practice has no title yet. */
+  const onSave = () => {
+    if (!title.trim()) {
+      setDetailsOpen(true);
+      toast.info('Give the Practice a title, then save.');
+      requestAnimationFrame(() => {
+        titleRef.current?.scrollIntoView({ block: 'center' });
+        titleRef.current?.focus();
+      });
+      return;
+    }
+    void saver.save();
+  };
+  const saveButton = (
+    <Button className={TOOL_BUTTON} onClick={onSave} disabled={saver.saving || !scriptText.trim()}>
+      <Save /> {practiceId ? 'Save changes' : 'Save'}
+    </Button>
+  );
+
   const placeKind = PALETTE.find((p) => p.kind === tool);
   const toolHint =
     tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
@@ -155,12 +183,16 @@ export function PracticeImport() {
   return (
     <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
       <section className="flex min-w-0 flex-col gap-2 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
-          <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
-            <FilePlus /> New
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className={TOOL_BUTTON} onClick={newPractice}>
+              <FilePlus /> New
+            </Button>
+            {signedIn && saveButton}
+          </div>
         </div>
+        {!loading && !user && <SignInToSave />}
         
         <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
 
@@ -221,24 +253,34 @@ export function PracticeImport() {
           )}
         </EditorSection>
 
-        <PracticeLibrary
-          key={libraryKey}
-          scriptText={scriptText}
-          practiceId={practiceId}
-          title={title}
-          description={description}
-          tags={tags}
-          onTagsChange={setTags}
-          sourceUrl={sourceUrl}
-          sourceTitle={sourceTitle}
-          onSourceUrlChange={setSourceUrl}
-          onSourceTitleChange={setSourceTitle}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onSaved={saved}
-          onOpen={(id) => router.push(`/practice?id=${id}`)}
-          hideListOnMobile
-        />
+        {signedIn && (
+          <EditorSection
+            title="Details and save"
+            meta={title.trim() ? `· ${title.trim()}` : '· untitled'}
+            collapse="always"
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+          >
+            <PracticeDetails
+              practiceId={practiceId}
+              title={title}
+              description={description}
+              tags={tags}
+              sourceUrl={sourceUrl}
+              sourceTitle={sourceTitle}
+              visibility={saver.visibility}
+              onTitleChange={setTitle}
+              onDescriptionChange={setDescription}
+              onTagsChange={setTags}
+              onSourceUrlChange={setSourceUrl}
+              onSourceTitleChange={setSourceTitle}
+              onVisibilityChange={saver.setVisibility}
+              titleRef={titleRef}
+            />
+            {saveButton}
+          </EditorSection>
+        )}
+        {signedIn && <MyPractices refreshKey={saver.refreshKey + libraryKey} onOpen={(id) => router.push(`/practice?id=${id}`)} />}
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
