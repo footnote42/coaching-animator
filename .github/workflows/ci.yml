@@ -159,7 +159,7 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> "$GITHUB_ENV"
 
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Build against local Supabase
         run: npm run build
@@ -167,7 +167,9 @@ jobs:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
 
       - name: Run end-to-end spec
-        run: npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium
+        run: |
+          npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium
+          npx playwright test tests/e2e/phone-canvas.spec.ts --project=chromium --project=phone
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4

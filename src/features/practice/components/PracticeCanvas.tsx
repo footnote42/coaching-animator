@@ -114,7 +114,10 @@ export function PracticeCanvas({ step, time, overlay, forwardPasses }: PracticeC
   const markings = pitchLines(step.area);
 
   return (
-    <div ref={containerRef} className="flex h-full w-full items-center justify-center overflow-hidden">
+    // Absolute, not h-full: WebKit resolves a percentage height against the aspect-ratio height before the
+    // parent's max-height clamps it, so h-full measured taller than the box and the stage overflowed (#172).
+    // The parent (the editor canvas box) is the positioned ancestor.
+    <div ref={containerRef} className="absolute inset-0 flex items-center justify-center overflow-hidden">
       {measured && <Stage width={width} height={height}>
         <Layer listening={false}>
           <Rect width={width} height={height} fill={DESIGN_TOKENS.colours.primary} />
