@@ -4,8 +4,6 @@ import { Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import type { EditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
 
-/** Toolbar-sized button: at least 44 px square for touch. */
-const TOOL_BUTTON = 'h-11 min-w-11 px-2';
 const ballSelect = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm';
 
 /** The Step's passes and kicks: pending picks, loose balls, each pass's settings and the Step warnings. */
@@ -13,13 +11,11 @@ export function PassList({ workspace }: { workspace: EditorWorkspace }) {
   const {
     editing,
     catchPass,
-    endCatch,
     releasePass,
     startRelease,
     endRelease,
     collectBall,
     startCollect,
-    endCollect,
     looseBalls,
     passes,
     balls,
@@ -35,35 +31,10 @@ export function PassList({ workspace }: { workspace: EditorWorkspace }) {
 
   return (
     <>
-    {editing && catchPass && (
-      <>
-        <span>Tap the Run where it is caught.</span>
-        <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCatch}>
-          End of run
-        </Button>
-      </>
-    )}
-
-    {editing && !catchPass && releasePass && (
-      <>
-        <span>Tap the passer’s Run where the ball is released.</span>
-        <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endRelease}>
-          Cancel
-        </Button>
-      </>
-    )}
-
-    {editing && collectBall ? (
-      <>
-        <span>Tap the player who Collects the loose ball. Their Run goes to it.</span>
-        <Button type="button" variant="outline" className={TOOL_BUTTON} onClick={endCollect}>
-          Cancel
-        </Button>
-      </>
-    ) : (
-      editing &&
+    {editing &&
       !catchPass &&
       !releasePass &&
+      !collectBall &&
       looseBalls.length > 0 && (
         <div role="group" aria-label="Loose ball" className="flex flex-wrap items-center gap-2">
           {looseBalls.map((loose) => {
@@ -77,8 +48,7 @@ export function PassList({ workspace }: { workspace: EditorWorkspace }) {
             );
           })}
         </div>
-      )
-    )}
+      )}
 
     {editing && tool === 'pass' && balls.length > 1 && (
       <>

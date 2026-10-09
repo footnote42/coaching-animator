@@ -32,7 +32,7 @@ import { AddProgressionButton, LEVER_NAMES, StepDetails } from '@/features/pract
 import { markerColour } from '@/features/practice/markerColour';
 import { TACKLE_BAG_SHADE } from '@/features/practice/tackleBag';
 import { type MarkerKind } from '@/features/practice/schema';
-import { SelectionControls } from '@/features/practice/components/SelectionControls';
+import { SelectionPanel } from '@/features/practice/components/SelectionPanel';
 import { PassList } from '@/features/practice/components/PassList';
 import { cn } from '@/lib/utils';
 import example from '@/features/practice/examples/passing-square-progressions.json';
@@ -376,11 +376,9 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <p aria-live="polite" className="min-h-8 text-xs leading-4 text-text-primary">{hint}</p>
+        <SelectionPanel workspace={workspace} hint={hint} />
 
-        {/* One fixed-height row for the selection and passes, so the canvas does not jump. */}
-        <div className="flex min-h-11 flex-wrap items-center gap-2 text-sm text-text-primary">
-          <SelectionControls workspace={workspace} />
+        <div className="flex flex-wrap items-center gap-2 text-sm text-text-primary empty:hidden">
           <PassList workspace={workspace} />
         </div>
 
