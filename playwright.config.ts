@@ -56,6 +56,10 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
     {
+      name: 'phone',
+      use: { ...devices['iPhone 13'] },
+    },
+    {
       name: 'tablet',
       use: { ...devices['iPad Mini landscape'] },
     },
