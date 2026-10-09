@@ -25,25 +25,25 @@ export const HERO_SCRIPT = {
       { marker: 'd2', cell: { x: 16, y: 4 } },
     ],
     moves: [
-      // Carries straight, passes on the run (Release at waypoint 0) and runs on in support.
-      { marker: 'a1', waypoints: [{ x: 9, y: 13 }, { x: 10, y: 10 }, { x: 10, y: 8 }], pace: 'jog' },
-      // Catches on the run, attacks the inside shoulder of D2, passes once D2 commits, runs on into the tackle.
-      { marker: 'a2', waypoints: [{ x: 13, y: 14 }, { x: 14, y: 11 }, { x: 13, y: 10 }], pace: 'jog' },
+      // Carries straight, passes on the run (Release at waypoint 0) and runs on in support of 3.
+      { marker: 'a1', waypoints: [{ x: 9, y: 13 }, { x: 11, y: 10 }, { x: 18, y: 6 }], pace: 'jog' },
+      // Catches on the run, attacks the inside shoulder of D2, passes as D2 commits, then follows 3 in support.
+      { marker: 'a2', waypoints: [{ x: 13, y: 14 }, { x: 14, y: 11 }, { x: 20, y: 7 }], pace: 'jog' },
       // Jogs wide to hold the width, then sprints onto the ball and on into space.
       {
         marker: 'a3',
-        waypoints: [{ x: 23, y: 16 }, { x: 22, y: 12, pace: 'sprint' }, { x: 23, y: 5, pace: 'sprint' }],
+        waypoints: [{ x: 23, y: 16 }, { x: 22, y: 12, pace: 'sprint' }, { x: 23, y: 3, pace: 'sprint' }],
         pace: 'jog',
       },
-      // Comes up, drifts across off 1, and eases off, caught between 1 and 2.
-      { marker: 'd1', waypoints: [{ x: 9, y: 6 }, { x: 12, y: 7, pace: 'walk' }], pace: 'jog' },
-      // Drifts out towards 3, then is drawn back in onto 2.
-      { marker: 'd2', waypoints: [{ x: 18, y: 7 }, { x: 15, y: 10 }], pace: 'jog' },
+      // Comes up, drifts across off 1, then turns to cover across behind.
+      { marker: 'd1', waypoints: [{ x: 9, y: 6 }, { x: 12, y: 7 }, { x: 19, y: 2 }], pace: 'jog' },
+      // Drifts out towards 3, is drawn back in onto 2 as 2 passes, then turns and chases 3, too late.
+      { marker: 'd2', waypoints: [{ x: 18, y: 7 }, { x: 15, y: 10 }, { x: 21, y: 4 }], pace: 'jog' },
     ],
     passes: [
       { id: 'p1', from: 'a1', to: 'a2', at: 0, release: 0 },
-      // Draw and pass: goes once D2's Run ends on 2.
-      { id: 'p2', from: 'a2', to: 'a3', at: 1, release: 1, after: { move: 'd2' } },
+      // Draw and pass: 2 lets it go on the run (Release at waypoint 1) just as D2 arrives.
+      { id: 'p2', from: 'a2', to: 'a3', at: 1, release: 1 },
     ],
     commentary: { points: ['Draw the defender, then pass, so the overlap runs into space'] },
   },

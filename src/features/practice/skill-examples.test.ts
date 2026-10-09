@@ -29,6 +29,15 @@ describe('skill worked examples', () => {
     const a3 = result.script.base.moves.find((m) => m.marker === 'a3')!;
     expect(a3.pace).toBe('jog');
     expect(a3.waypoints.map((w) => w.pace)).toEqual([undefined, 'sprint', 'sprint']);
+    // 1 and 2 pass on the run and keep going rather than stopping to pass.
+    expect(result.script.base.passes.map((p) => p.release)).toEqual([0, 1]);
+    expect(result.script.base.passes[1].after).toEqual({ move: 'd2' });
+    for (let n = 0; n < 2; n++) {
+      const step = resolveStep(result.script, n);
+      const [p1, p2] = positionsAt(step, 0).passes;
+      expect(positionsAt(step, p1.fire + 0.5).positions.a1.y).toBeLessThan(p1.start.y);
+      expect(positionsAt(step, p2.fire - 0.2).positions.a2).not.toEqual(positionsAt(step, p2.fire).positions.a2);
+    }
   });
 
   it('05-kick-receipt.json kicks to the other team, who counter-attack backward, with no warning', () => {
@@ -63,12 +72,18 @@ describe('skill worked examples', () => {
     expect(warnings(result.script)).toEqual([]);
   });
 
-  it('the landing 3 v 2 attacks up, passes on D2 arriving, and raises no warning', () => {
+  it('the landing 3 v 2 attacks up, passes as D2 is drawn in, and raises no warning', () => {
     const result = validate(HERO_SCRIPT);
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
     expect(result.script.direction).toBe('up');
-    expect(result.script.base.passes[1].after).toEqual({ move: 'd2' });
     expect(warnings(result.script)).toEqual([]);
+    // D2 is drawn onto 2: within a couple of metres as the ball goes, but not in contact.
+    const step = resolveStep(result.script, 0);
+    const p2 = positionsAt(step, 0).passes[1];
+    const at = positionsAt(step, p2.fire).positions;
+    const gap = Math.hypot(at.a2.x - at.d2.x, at.a2.y - at.d2.y);
+    expect(gap).toBeGreaterThan(1.2);
+    expect(gap).toBeLessThan(2.5);
   });
 
   it('the landing 3 v 2 flows: everyone sets off at once, passes go on the run, 3 jogs then sprints', () => {
@@ -100,6 +115,12 @@ describe('skill worked examples', () => {
     expect(at(p2.fire + 0.5).positions.a2.y).toBeLessThan(p2.start.y);
     expect(at(duration).positions.ball).toEqual(at(duration).positions.a3);
     expect(at(duration).positions.a3.y).toBeLessThan(6);
+    // No quiet finish: every player is still moving 1.5 s before the end (support and cover runs).
+    const late = duration - 1.5;
+    for (const id of ['a1', 'a2', 'a3', 'd1', 'd2']) {
+      const [p, q] = [at(late).positions[id], at(late + 0.1).positions[id]];
+      expect(Math.hypot(q.x - p.x, q.y - p.y), id).toBeGreaterThan(0.05);
+    }
   });
 });
 

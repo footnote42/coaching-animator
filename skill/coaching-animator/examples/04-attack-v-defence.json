@@ -14,28 +14,29 @@
   ],
   "base": {
     "placements": [
-      { "marker": "a1", "cell": { "x": 12, "y": 17 } },
-      { "marker": "a2", "cell": { "x": 17, "y": 18 } },
-      { "marker": "a3", "cell": { "x": 22, "y": 19 } },
+      { "marker": "a1", "cell": { "x": 9, "y": 17 } },
+      { "marker": "a2", "cell": { "x": 13, "y": 19 } },
+      { "marker": "a3", "cell": { "x": 17, "y": 19 } },
       { "marker": "ball", "holder": "a1" },
-      { "marker": "d1", "cell": { "x": 13, "y": 7 } },
-      { "marker": "d2", "cell": { "x": 19, "y": 7 } }
+      { "marker": "d1", "cell": { "x": 7, "y": 3 } },
+      { "marker": "d2", "cell": { "x": 16, "y": 4 } }
     ],
     "moves": [
-      { "marker": "a1", "waypoints": [{ "x": 12, "y": 12 }], "pace": "jog" },
-      { "marker": "a2", "waypoints": [{ "x": 17, "y": 13 }], "pace": "jog" },
-      { "marker": "a3", "waypoints": [{ "x": 26, "y": 16 }, { "x": 23, "y": 13, "pace": "sprint" }, { "x": 24, "y": 4, "pace": "sprint" }], "pace": "jog" },
-      { "marker": "d1", "waypoints": [{ "x": 13, "y": 11 }], "pace": "jog" },
-      { "marker": "d2", "waypoints": [{ "x": 18, "y": 12 }], "pace": "jog" }
+      { "marker": "a1", "waypoints": [{ "x": 9, "y": 13 }, { "x": 10, "y": 10 }, { "x": 11, "y": 7 }], "pace": "jog" },
+      { "marker": "a2", "waypoints": [{ "x": 13, "y": 14 }, { "x": 14, "y": 11 }, { "x": 13, "y": 10 }], "pace": "jog" },
+      { "marker": "a3", "waypoints": [{ "x": 23, "y": 16 }, { "x": 22, "y": 12, "pace": "sprint" }, { "x": 23, "y": 5, "pace": "sprint" }], "pace": "jog" },
+      { "marker": "d1", "waypoints": [{ "x": 9, "y": 6 }, { "x": 12, "y": 6, "pace": "walk" }], "pace": "jog" },
+      { "marker": "d2", "waypoints": [{ "x": 18, "y": 7 }, { "x": 15, "y": 10 }], "pace": "jog" }
     ],
     "passes": [
-      { "id": "p1", "from": "a1", "to": "a2" },
-      { "id": "p2", "from": "a2", "to": "a3", "at": 1, "after": { "move": "d2" } }
+      { "id": "p1", "from": "a1", "to": "a2", "at": 0, "release": 0 },
+      { "id": "p2", "from": "a2", "to": "a3", "at": 1, "release": 1, "after": { "move": "d2" } }
     ],
     "commentary": {
       "points": [
         "Three attackers against two defenders: use the extra player",
         "Draw the defender, then pass, so the overlap runs into space",
+        "Pass on the run and keep going in support",
         "3 jogs wide to hold the width, then sprints onto the ball"
       ]
     }
@@ -50,8 +51,8 @@
         ]
       },
       "changes": [
-        { "type": "addMarker", "marker": "d3", "cell": { "x": 25, "y": 7 } },
-        { "type": "setMove", "marker": "d3", "waypoints": [{ "x": 24, "y": 10 }], "pace": "jog" }
+        { "type": "addMarker", "marker": "d3", "cell": { "x": 28, "y": 1 } },
+        { "type": "setMove", "marker": "d3", "waypoints": [{ "x": 27, "y": 3 }, { "x": 25, "y": 5 }], "pace": "walk" }
       ]
     }
   ]

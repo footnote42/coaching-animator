@@ -31,7 +31,7 @@ On the MCP route, `create_practice` validates the script against the live schema
 - `examples/01-passing-line.json`: simple passing Practice, no Progressions.
 - `examples/02-pass-and-follow-progressions.json`: a Practice with a Time and a People Progression.
 - `examples/03-two-ball-square.json`: two balls, each with its own chain of passes.
-- `examples/04-attack-v-defence.json`: attackers against defenders, catch on the run, draw and pass (`after` on a pass), a winger who jogs wide then sprints onto the ball (`pace` on a waypoint), a Progression adding a defender.
+- `examples/04-attack-v-defence.json`: attackers against defenders, passes Released on the run (`release`) with the passers running on, catch on the run, draw and pass (`after` on a pass), a winger who jogs wide then sprints onto the ball (`pace` on a waypoint), a Progression adding a defender.
 - `examples/05-kick-receipt.json`: one team kicks (`"kick": true` on a pass) to the other, who catch and counter-attack with backward passes.
 - `examples/06-shield-to-ruck.json`: a carry into an upright shield, then an Equipment Progression lays it flat as a ruck (`"lying": true` on `placeMarker`) with the ball beneath, and 9 passes away.
 - `examples/07-bag-clear-out.json`: a carry into an upright tackle bag (`"kind": "tackle-bag"`), then a People Progression lays the bag flat over the ball as the ruck, 2 clears out and 9 passes away.
