@@ -2,6 +2,16 @@
 
 Playwright end-to-end tests for critical user journeys in coaching-animator.
 
+## Production checks for spec #140
+
+`prod-spec140.spec.ts` drives a deployed site (desktop chromium and iPhone 13 webkit) and signs in with a private test account; it creates one Practice and deletes it again. It skips unless `E2E_PASSWORD` and `E2E_BASE_URL` are both set, so CI never runs it. Set `BASE_URL` too, so no local server starts:
+
+```bash
+E2E_BASE_URL=https://coaching-animator.waynetellis.com E2E_EMAIL=... E2E_PASSWORD=... BASE_URL=$E2E_BASE_URL   PROD140_OUT=/tmp/prod140 npx playwright test tests/e2e/prod-spec140.spec.ts --project=chromium
+```
+
+Screenshots, videos and notes go to `PROD140_OUT` (default `test-results/prod140`); the signed-in state goes to `E2E_STORAGE_STATE` (default `.auth/coach.json`, gitignored). The spec launches its own browsers, so one `--project` is enough.
+
 ## Test Coverage
 
 ### US1: Cloud Save & Personal Gallery
