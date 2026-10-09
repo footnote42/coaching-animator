@@ -66,10 +66,14 @@ export type Edit =
   | { type: 'removePass'; id: string }
   /** Catch on the run at waypoint `at` of the receiver's run; null catches at the end of the run. */
   | { type: 'setCatch'; id: string; at: number | null }
+  /** Release the ball at waypoint `release` of the passer's run, who runs on without it; null passes as soon as the pass is ready. */
+  | { type: 'setRelease'; id: string; release: number | null }
   /** Make a pass also wait for the run of marker `move` to finish (draw and pass); null waits for nothing extra. */
   | { type: 'setPassWait'; id: string; move: string | null }
   /** Catch on the run at the point of the receiver's run nearest `at`: reuse a waypoint within a cell, else add one there. */
   | { type: 'addCatchPoint'; id: string; at: CellPoint }
+  /** Release at the point of the passer's run nearest `at`: reuse a waypoint within a cell, else add one there. */
+  | { type: 'addReleasePoint'; id: string; at: CellPoint }
   /** Start a marker's run once pass `pass` is caught; null starts it at the beginning of the Step. */
   | { type: 'startAfterPass'; marker: string; pass: string | null }
   | { type: 'setLabel'; marker: string; label: string | undefined }
@@ -125,7 +129,7 @@ const LOOSE_BALL = 'The ball is lying loose: nobody has it to pass or kick.';
 const isCarrier = (kind: MarkerKind | undefined) =>
   kind !== undefined && (BALL_CARRIER_KINDS as readonly string[]).includes(kind);
 
-/** A catch tap this close (in cells) to a waypoint uses it instead of adding one. */
+/** A catch or release tap this close (in cells) to a waypoint uses it instead of adding one. */
 const CATCH_SNAP_CELLS = 1;
 
 /** A ball dropped this close (in cells) to a free player goes into their hands; further away it lies loose. */
@@ -243,19 +247,96 @@ export function repairPasses(script: PracticeScript): PracticeScript {
   return cleanWaits(withBase(script, { passes }));
 }
 
-/** Drop catch waypoints the receiver's run no longer has. */
+/** Drop catch waypoints the receiver's run no longer has, and Release waypoints the passer's run no longer has. */
 function cleanCatches(script: PracticeScript): PracticeScript {
   let changed = false;
+  const fits = (marker: string | undefined, index: number) => {
+    const move = script.base.moves.find((m) => m.marker === marker);
+    return move !== undefined && index < move.waypoints.length;
+  };
   const passes = script.base.passes.map((pass) => {
-    if (pass.at === undefined) return pass;
-    const move = script.base.moves.find((m) => m.marker === pass.to);
-    if (move && pass.at < move.waypoints.length) return pass;
-    changed = true;
-    const { at: _dropped, ...rest } = pass;
-    void _dropped;
-    return rest;
+    let next = pass;
+    if (next.at !== undefined && !fits(next.to, next.at)) {
+      const { at: _dropped, ...rest } = next;
+      void _dropped;
+      next = rest;
+    }
+    if (next.release !== undefined && !fits(next.from, next.release)) {
+      const { release: _dropped, ...rest } = next;
+      void _dropped;
+      next = rest;
+    }
+    if (next !== pass) changed = true;
+    return next;
   });
   return changed ? withBase(script, { passes }) : script;
+}
+
+/**
+ * The point of a marker's run nearest `at`: an existing waypoint within a cell
+ * (`index`), or where to add one (`insert`, before the waypoint now at that
+ * index). `'no run'` or `'start'` when the marker has no run or the point is
+ * its starting cell, or a message.
+ */
+function pointOnRun(
+  script: PracticeScript,
+  marker: string,
+  at: CellPoint,
+): { index: number } | { insert: number; cell: Cell } | string {
+  const move = script.base.moves.find((m) => m.marker === marker);
+  const start = startCell(script, marker);
+  if (!move || !start) return 'no run';
+  const path = [start, ...move.waypoints];
+  // Nearest point on the run: project onto each leg, keep the closest.
+  let best = { dist: Infinity, leg: 0, x: start.x, y: start.y };
+  for (let i = 0; i + 1 < path.length; i++) {
+    const a = path[i];
+    const b = path[i + 1];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len2 = dx * dx + dy * dy;
+    const t = len2 === 0 ? 0 : Math.min(Math.max(((at.x - a.x) * dx + (at.y - a.y) * dy) / len2, 0), 1);
+    const x = a.x + t * dx;
+    const y = a.y + t * dy;
+    const dist = Math.hypot(at.x - x, at.y - y);
+    if (dist < best.dist) best = { dist, leg: i, x, y };
+  }
+  // Close to a waypoint: use it instead of adding another.
+  let near = -1;
+  let nearDist = CATCH_SNAP_CELLS;
+  move.waypoints.forEach((w, i) => {
+    const d = Math.hypot(best.x - w.x, best.y - w.y);
+    if (d <= nearDist) {
+      near = i;
+      nearDist = d;
+    }
+  });
+  if (near >= 0) return { index: near };
+  const cell = snapCell({ x: best.x, y: best.y }, script.area);
+  if (sameCell(cell, start)) return 'start';
+  if (move.waypoints.length >= MAX_WAYPOINTS) return `A run holds at most ${MAX_WAYPOINTS} waypoints.`;
+  return { insert: best.leg, cell };
+}
+
+/**
+ * Add waypoint `cell` to a marker's run at `index`. It splits a segment, so both
+ * halves keep that segment's Pace. Later waypoints shift up one, and so do the
+ * catches (`at`) and Releases on them.
+ */
+function insertWaypoint(script: PracticeScript, marker: string, index: number, cell: Cell): PracticeScript {
+  const moves = script.base.moves.map((m) => {
+    if (m.marker !== marker) return m;
+    const { pace } = m.waypoints[index];
+    const added = pace === undefined ? cell : { ...cell, pace };
+    return { ...m, waypoints: [...m.waypoints.slice(0, index), added, ...m.waypoints.slice(index)] };
+  });
+  const passes = script.base.passes.map((p) => {
+    let next = p;
+    if (p.to === marker && p.at !== undefined && p.at >= index) next = { ...next, at: p.at + 1 };
+    if (p.from === marker && p.release !== undefined && p.release >= index) next = { ...next, release: p.release + 1 };
+    return next;
+  });
+  return withBase(script, { moves, passes });
 }
 
 /** Drop `after` waits that point at a move or pass no longer in the base Step, and stale catch waypoints. */
@@ -541,52 +622,42 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const pass = script.base.passes.find((p) => p.id === edit.id);
       if (!pass) return script;
       if (pass.to === undefined) return 'A Kick to space has no receiver to catch on the run.';
-      const move = script.base.moves.find((m) => m.marker === pass.to);
-      const start = startCell(script, pass.to);
-      if (!move || !start) return 'The receiver has no run: draw one to catch on the run.';
-      const path = [start, ...move.waypoints];
-      // Nearest point on the run: project onto each leg, keep the closest.
-      let best = { dist: Infinity, leg: 0, x: start.x, y: start.y };
-      for (let i = 0; i + 1 < path.length; i++) {
-        const a = path[i];
-        const b = path[i + 1];
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const len2 = dx * dx + dy * dy;
-        const t = len2 === 0 ? 0 : Math.min(Math.max(((edit.at.x - a.x) * dx + (edit.at.y - a.y) * dy) / len2, 0), 1);
-        const x = a.x + t * dx;
-        const y = a.y + t * dy;
-        const dist = Math.hypot(edit.at.x - x, edit.at.y - y);
-        if (dist < best.dist) best = { dist, leg: i, x, y };
+      const point = pointOnRun(script, pass.to, edit.at);
+      if (point === 'no run') return 'The receiver has no run: draw one to catch on the run.';
+      if (point === 'start') return 'Tap further along the run to catch there.';
+      if (typeof point === 'string') return point;
+      if ('index' in point) {
+        const last = script.base.moves.find((m) => m.marker === pass.to)!.waypoints.length - 1;
+        return applyEdit(script, { type: 'setCatch', id: edit.id, at: point.index === last ? null : point.index });
       }
-      // Close to a waypoint: catch there instead of adding another.
-      let near = -1;
-      let nearDist = CATCH_SNAP_CELLS;
-      move.waypoints.forEach((w, i) => {
-        const d = Math.hypot(best.x - w.x, best.y - w.y);
-        if (d <= nearDist) {
-          near = i;
-          nearDist = d;
-        }
-      });
-      if (near === move.waypoints.length - 1) return applyEdit(script, { type: 'setCatch', id: edit.id, at: null });
-      if (near >= 0) return applyEdit(script, { type: 'setCatch', id: edit.id, at: near });
-      const cell = snapCell({ x: best.x, y: best.y }, area);
-      if (sameCell(cell, start)) return 'Tap further along the run to catch there.';
-      if (move.waypoints.length >= MAX_WAYPOINTS) return `A run holds at most ${MAX_WAYPOINTS} waypoints.`;
-      // The new waypoint sits at index `leg`; later waypoints, and catches at them, shift up one.
-      // It splits a segment, so both halves keep that segment's Pace.
-      const index = best.leg;
-      const { pace } = move.waypoints[index];
-      const added = pace === undefined ? cell : { ...cell, pace };
-      const moves = script.base.moves.map((m) =>
-        m === move ? { ...m, waypoints: [...m.waypoints.slice(0, index), added, ...m.waypoints.slice(index)] } : m,
-      );
-      const passes = script.base.passes.map((p) => {
-        if (p.id === edit.id) return { ...p, at: index };
-        return p.to === pass.to && p.at !== undefined && p.at >= index ? { ...p, at: p.at + 1 } : p;
-      });
-      return withBase(script, { moves, passes });
+      const added = insertWaypoint(script, pass.to, point.insert, point.cell);
+      return withBase(added, { passes: added.base.passes.map((p) => (p.id === edit.id ? { ...p, at: point.insert } : p)) });
+    }
+
+    case 'setRelease': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass || (pass.release ?? null) === edit.release) return script;
+      const { release: _old, ...rest } = pass;
+      void _old;
+      if (edit.release !== null) {
+        const move = script.base.moves.find((m) => m.marker === pass.from);
+        if (!move) return 'The passer has no run: draw one to release on the run.';
+        if (edit.release < 0 || edit.release >= move.waypoints.length) return 'That point is not on the passer’s run.';
+        if (move.after?.pass === pass.id) return 'The passer’s run starts after this pass, so it cannot be released on the run.';
+      }
+      const next = edit.release === null ? rest : { ...rest, release: edit.release };
+      return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
+    }
+
+    case 'addReleasePoint': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass) return script;
+      const point = pointOnRun(script, pass.from, edit.at);
+      if (point === 'no run') return 'The passer has no run: draw one to release on the run.';
+      if (point === 'start') return 'Tap further along the run to release there.';
+      if (typeof point === 'string') return point;
+      if ('index' in point) return applyEdit(script, { type: 'setRelease', id: edit.id, release: point.index });
+      return applyEdit(insertWaypoint(script, pass.from, point.insert, point.cell), { type: 'setRelease', id: edit.id, release: point.insert });
     }
 
     case 'setLabel': {

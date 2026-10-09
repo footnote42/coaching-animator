@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Layer, Rect, Circle, Group, Text, Line } from 'react-konva';
+import { Layer, Rect, Circle, Group, Text, Line, RegularPolygon } from 'react-konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import type { Vector2d } from 'konva/lib/types';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
@@ -29,6 +29,10 @@ interface EditLayerProps {
   onPassAdded?: (to: string) => void;
   /** The Coach is done picking a catch point (set, or kept at the end of the Run). */
   onCatchDone?: () => void;
+  /** The pass whose Release point is being picked: its passer's Run is highlighted and tappable. */
+  releasePass?: string;
+  /** The Coach is done picking a Release point. */
+  onReleaseDone?: () => void;
   onSelect: (selection: EditorSelection) => void;
   /** Make an edit; returns whether it was made. */
   onEdit: (edit: Edit) => boolean;
@@ -38,7 +42,21 @@ interface EditLayerProps {
  * Konva layer over the Practice for hand editing the base Step: taps place markers,
  * drags snap markers and waypoints to cells, and selection rings show what is picked.
  */
-export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick, catchPass, onPassAdded, onCatchDone, onSelect, onEdit }: EditLayerProps) {
+export function PracticeEditLayer({
+  step,
+  geometry,
+  tool,
+  selection,
+  ball,
+  kick,
+  catchPass,
+  onPassAdded,
+  onCatchDone,
+  releasePass,
+  onReleaseDone,
+  onSelect,
+  onEdit,
+}: EditLayerProps) {
   const { width, height, cellPx, radius } = geometry;
   const [dragging, setDragging] = useState<string | null>(null);
   const px = (cell: number) => (cell + 0.5) * cellPx;
@@ -54,21 +72,39 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
     return p ? toCell(p) : null;
   };
 
+  // Picking a point on a Run: where a pass is caught (the receiver's Run) or Released (the passer's).
   const catching = catchPass ? step.passes.find((p) => p.id === catchPass) : undefined;
-  const catchRun = catching ? step.moves.find((m) => m.marker === catching.to) : undefined;
-  const catchStart = catching ? step.markers.find((m) => m.id === catching.to)?.cell : undefined;
+  const releasing = !catching && releasePass ? step.passes.find((p) => p.id === releasePass) : undefined;
+  const picking = catching?.to ?? releasing?.from;
+  const pickRun = picking ? step.moves.find((m) => m.marker === picking) : undefined;
+  const pickStart = picking ? step.markers.find((m) => m.id === picking)?.cell : undefined;
 
-  /** Catch at `at` (cell units) on the Run being picked. */
-  const pickCatch = (at: CellPoint | null) => {
-    if (catching && at && onEdit({ type: 'addCatchPoint', id: catching.id, at })) onCatchDone?.();
+  /** Catch or Release at `at` (cell units) on the Run being picked. */
+  const pick = (at: CellPoint | null) => {
+    if (!at) return;
+    if (catching && onEdit({ type: 'addCatchPoint', id: catching.id, at })) onCatchDone?.();
+    else if (releasing && onEdit({ type: 'addReleasePoint', id: releasing.id, at })) onReleaseDone?.();
   };
+
+  /** Where each pass changes hands on a Run: Release points on passers' Runs, catch points on receivers'. */
+  const handovers = step.passes.flatMap((pass) => {
+    const points: Array<{ key: string; kind: 'release' | 'catch'; x: number; y: number }> = [];
+    const from = step.moves.find((m) => m.marker === pass.from);
+    if (from && pass.release !== undefined && from.waypoints[pass.release]) {
+      points.push({ key: `release-${pass.id}`, kind: 'release', ...from.waypoints[pass.release] });
+    }
+    const to = pass.to === undefined ? undefined : step.moves.find((m) => m.marker === pass.to);
+    const caught = to?.waypoints[pass.at ?? to.waypoints.length - 1];
+    if (caught) points.push({ key: `catch-${pass.id}`, kind: 'catch', ...caught });
+    return points;
+  });
 
   /** A ball dropped within a marker's width of a player goes to them. */
   const reach = Math.max(radius / cellPx, 0.75);
 
   const tapBackground = (e: KonvaEventObject<Event>) => {
     const at = pointer(e);
-    if (!at || catching) return;
+    if (!at || picking) return;
     if (isPlaceTool(tool)) onEdit({ type: 'addMarker', kind: tool as MarkerKind, at, ...(tool === 'ball' && { reach }) });
     else if (tool === 'pass' && kick && selection.marker) {
       // Kick, then tap the ground: a Kick to space.
@@ -87,6 +123,7 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
       return;
     }
     onCatchDone?.();
+    onReleaseDone?.();
     onSelect({ marker: id, waypoint: null });
   };
 
@@ -99,16 +136,23 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
   return (
     <Layer>
       <Rect width={width} height={height} fill="transparent" onClick={tapBackground} onTap={tapBackground} />
-      {catchRun && catchStart && (
+      {handovers.map(({ key, kind, x, y }) =>
+        kind === 'release' ? (
+          <RegularPolygon key={key} x={px(x)} y={px(y)} sides={4} radius={7} fill={HIGHLIGHT} stroke="#111827" strokeWidth={1} listening={false} />
+        ) : (
+          <Circle key={key} x={px(x)} y={px(y)} radius={8} stroke={HIGHLIGHT} strokeWidth={2} listening={false} />
+        ),
+      )}
+      {pickRun && pickStart && (
         <Line
-          points={[catchStart, ...catchRun.waypoints].flatMap((c) => [px(c.x), px(c.y)])}
+          points={[pickStart, ...pickRun.waypoints].flatMap((c) => [px(c.x), px(c.y)])}
           stroke={HIGHLIGHT}
           strokeWidth={4}
           lineCap="round"
           lineJoin="round"
           hitStrokeWidth={Math.max(cellPx, 44)}
-          onClick={(e) => pickCatch(pointer(e))}
-          onTap={(e) => pickCatch(pointer(e))}
+          onClick={(e) => pick(pointer(e))}
+          onTap={(e) => pick(pointer(e))}
         />
       )}
       {handles.map((marker) => {
@@ -156,8 +200,8 @@ export function PracticeEditLayer({ step, geometry, tool, selection, ball, kick,
               onEdit({ type: 'moveWaypoint', marker: run.marker, index, at: toCell(e.target.position()) });
               onSelect({ marker: run.marker, waypoint: index });
             }}
-            onClick={() => (catching ? pickCatch(cell) : onSelect({ marker: run.marker, waypoint: index }))}
-            onTap={() => (catching ? pickCatch(cell) : onSelect({ marker: run.marker, waypoint: index }))}
+            onClick={() => (picking === run.marker ? pick(cell) : onSelect({ marker: run.marker, waypoint: index }))}
+            onTap={() => (picking === run.marker ? pick(cell) : onSelect({ marker: run.marker, waypoint: index }))}
           >
             <Circle radius={12} fill="transparent" />
             <Circle

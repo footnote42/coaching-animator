@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { resolveStep, validate, warnings, formatError } from '@/features/practice/engine';
+import { positionsAt, resolveStep, validate, warnings, formatError } from '@/features/practice/engine';
 import { HERO_SCRIPT } from '@/app/_components/heroScript';
 import { PRACTICE_TAGS } from '@/lib/practice-tags';
 
@@ -47,6 +47,19 @@ describe('skill worked examples', () => {
     expect(bag(0)?.lying).toBeUndefined();
     expect(bag(1)?.lying).toBe(true);
     expect(resolveStep(result.script, 1).markers.find((m) => m.id === 'ball')?.cell).toEqual(bag(1)?.cell);
+    expect(warnings(result.script)).toEqual([]);
+  });
+
+  it('09-pass-and-support.json releases on the run, the passer runs on in support, with no warning', () => {
+    const result = validate(readFileSync(path.join(EXAMPLES_DIR, '09-pass-and-support.json'), 'utf8'));
+    if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));
+    expect(result.script.base.passes[0].release).toBe(0);
+    const step = resolveStep(result.script, 0);
+    const [p1] = positionsAt(step, 0).passes;
+    // The ball leaves 1 on the release waypoint and 1 runs on to support.
+    expect(p1.start).toEqual({ x: 8, y: 13 });
+    expect(positionsAt(step, p1.land + 0.5).positions.a1.y).toBeLessThan(13);
+    expect(positionsAt(step, Infinity).positions.a1).toEqual({ x: 11, y: 11 });
     expect(warnings(result.script)).toEqual([]);
   });
 

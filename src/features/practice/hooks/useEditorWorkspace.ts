@@ -43,6 +43,8 @@ export function useEditorWorkspace() {
   const [passKind, setPassKind] = useState<'pass' | 'kick'>('pass');
   /** A pass was just added to a receiver with a Run: the next tap on that Run picks the catch point. */
   const [pendingCatch, setPendingCatch] = useState<{ count: number; to: string } | null>(null);
+  /** The pass whose Release point the Coach is picking: the next tap on the passer's Run sets it. */
+  const [pendingRelease, setPendingRelease] = useState<string | null>(null);
   const [ghost, setGhost] = useState(false);
   const [showCommentary, setShowCommentary] = useState(true);
   const [time, setTime] = useState(0);
@@ -103,6 +105,10 @@ export function useEditorWorkspace() {
       ? lastPass.id
       : undefined;
   const editing = step !== null && !playing && time === 0;
+  /** The pass whose Release point the Coach is picking, while its passer has a Run. */
+  const releasePassing = pendingRelease ? passes.find((p) => p.id === pendingRelease) : undefined;
+  const releasePass =
+    editing && releasePassing && step?.moves.some((m) => m.marker === releasePassing.from) ? releasePassing.id : undefined;
 
   useEffect(() => {
     if (!playing) return;
@@ -152,6 +158,7 @@ export function useEditorWorkspace() {
 
   const pickTool = (next: EditorTool) => {
     setTool(next);
+    setPendingRelease(null);
     setPassKind('pass');
     stopPlayback();
     if (next !== 'select' && next !== 'run' && next !== 'pass') setSelection(NO_SELECTION);
@@ -377,6 +384,12 @@ export function useEditorWorkspace() {
     catchPass,
     startCatch: (to: string) => setPendingCatch({ count: passes.length + 1, to }),
     endCatch: () => setPendingCatch(null),
+    releasePass,
+    startRelease: (id: string) => {
+      setPendingCatch(null);
+      setPendingRelease(id);
+    },
+    endRelease: () => setPendingRelease(null),
     coneColour,
     pickConeColour: (colour: ConeColour) => {
       setConeColour(colour);
