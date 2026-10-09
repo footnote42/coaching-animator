@@ -10,6 +10,8 @@ interface AreaControlProps {
   /** Direction of attack of the Practice; undefined shows as none. */
   direction?: Direction;
   onDirectionChange?: (direction: Direction) => void;
+  /** Keep the legend for screen readers only, when a heading above already says Area. */
+  hideLegend?: boolean;
 }
 
 const DIRECTION_NAMES = {
@@ -28,7 +30,7 @@ const inputClass =
  * Picking a template resets the size to the template's; sizes commit on blur or Enter.
  * Give it a key from the Area's size so it resets when the script changes.
  */
-export function AreaControl({ area, onChange, direction, onDirectionChange }: AreaControlProps) {
+export function AreaControl({ area, onChange, direction, onDirectionChange, hideLegend }: AreaControlProps) {
   const [width, setWidth] = useState(String(area.width));
   const [length, setLength] = useState(String(area.length));
 
@@ -46,7 +48,7 @@ export function AreaControl({ area, onChange, direction, onDirectionChange }: Ar
 
   return (
     <fieldset className="flex flex-wrap items-end gap-2 text-sm text-text-primary">
-      <legend className="mb-1 font-medium">Area</legend>
+      <legend className={hideLegend ? 'sr-only' : 'mb-1 font-medium'}>Area</legend>
       <label className="flex flex-col gap-1">
         <span>Template</span>
         <select

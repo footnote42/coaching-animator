@@ -51,20 +51,20 @@ export function EditorSection({
           aria-controls={panelId}
           onClick={() => setOpen(!isOpen)}
           className={cn(
-            'flex min-h-11 w-full items-center justify-between gap-2 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+            'flex min-h-11 w-full items-center justify-between gap-2 text-left font-heading font-extrabold uppercase focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
             phoneOnly && 'md:hidden',
           )}
         >
           <span>
             {title}
-            {meta && <span className="font-normal text-text-muted"> {meta}</span>}
+            {meta && <span className="font-sans font-normal normal-case text-text-muted"> {meta}</span>}
           </span>
           <ChevronDown aria-hidden className={cn('h-4 w-4 shrink-0 transition-transform', isOpen && 'rotate-180')} />
         </button>
         {phoneOnly && showTitle && (
           <span className="hidden min-h-11 items-center md:flex">
             {title}
-            {meta && <span className="font-normal text-text-muted">&nbsp;{meta}</span>}
+            {meta && <span className="font-sans font-normal normal-case text-text-muted">&nbsp;{meta}</span>}
           </span>
         )}
       </h2>

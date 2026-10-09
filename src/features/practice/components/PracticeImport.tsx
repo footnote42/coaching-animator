@@ -23,6 +23,7 @@ import { Button } from '@/shared/ui/button';
 import { stepCount } from '@/features/practice/engine';
 import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/components/GuestPracticeControls';
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
+import { useMediaQuery } from '@/features/practice/hooks/useMediaQuery';
 import { EditorSection } from '@/features/practice/components/EditorSection';
 import { MyPractices, PracticeDetails, SignInToSave, usePracticeSave } from '@/features/practice/components/PracticeLibrary';
 import { useUser } from '@/lib/contexts/UserContext';
@@ -114,6 +115,7 @@ export function PracticeImport() {
     problems,
     setDirection,
     stepWarnings,
+    passes,
     balls,
     activeBall,
     passKind,
@@ -169,6 +171,10 @@ export function PracticeImport() {
     </Button>
   );
 
+  const wide = useMediaQuery('(min-width: 1280px)');
+  const passMeta =
+    passes.length === 0 ? '(none)' : `(${passes.length})${stepWarnings.length > 0 ? ` · ${stepWarnings.length} to check` : ''}`;
+
   const placeKind = PALETTE.find((p) => p.kind === tool);
   const toolHint =
     tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
@@ -180,7 +186,7 @@ export function PracticeImport() {
 
   return (
     <main className="flex min-h-[calc(100dvh-57px)] flex-col gap-4 overflow-x-hidden p-4 md:h-[calc(100dvh-57px)] md:flex-row">
-      <section className="flex min-w-0 flex-col gap-2 md:w-80 md:shrink-0 md:overflow-y-auto lg:w-96">
+      <section className="flex min-w-0 flex-col gap-2 md:w-72 md:shrink-0 md:overflow-y-auto lg:w-80">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-xl font-heading font-bold text-text-primary">Practice editor</h1>
           <div className="flex gap-2">
@@ -194,12 +200,18 @@ export function PracticeImport() {
         
         <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
 
-        <EditorSection title="Area" meta={`${stepArea.width} × ${stepArea.length} m`} showTitle={false}>
-          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
+        <EditorSection title="Area" meta={`${stepArea.width} × ${stepArea.length} m`}>
+          <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} hideLegend onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
         </EditorSection>
 
-        <EditorSection title={stepTitle} meta="coaching points" showTitle={false}>
-          <StepDetails script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
+        {!wide && (
+          <EditorSection title="Passing and kicking" meta={passMeta}>
+            <PassList workspace={workspace} />
+          </EditorSection>
+        )}
+
+        <EditorSection title={stepTitle}>
+          <StepDetails hideLegend script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
         </EditorSection>
 
         <EditorSection
@@ -378,10 +390,6 @@ export function PracticeImport() {
 
         <SelectionPanel workspace={workspace} hint={hint} />
 
-        <div className="flex flex-wrap items-center gap-2 text-sm text-text-primary empty:hidden">
-          <PassList workspace={workspace} />
-        </div>
-
         <div className="relative h-[60dvh] min-h-64 md:h-auto md:min-h-0 md:flex-1">
           {step ? (
             <>
@@ -482,6 +490,18 @@ export function PracticeImport() {
           )}
         </div>
       </section>
+
+      {/* From xl up, passing and kicking get their own column beside the canvas. */}
+      <aside aria-label="Passing and kicking" className="hidden min-h-0 w-72 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
+        {wide && (
+          <>
+            <h2 className="flex min-h-11 items-center text-sm font-medium text-text-primary">
+              Passing and kicking&nbsp;<span className="font-sans font-normal normal-case text-text-muted">{passMeta}</span>
+            </h2>
+            <PassList workspace={workspace} />
+          </>
+        )}
+      </aside>
     </main>
   );
 }
