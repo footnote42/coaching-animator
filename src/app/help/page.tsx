@@ -100,16 +100,12 @@ export default function HelpPage() {
 
       <section className="mb-10">
         <h2 className="text-2xl font-heading font-bold mb-4">Using an AI assistant</h2>
-        <p className="mb-2">
-          Your AI can save Practices straight to your account. Create a personal token on your <Link href="/profile" className={LINK_CLASS}>Profile</Link> page and copy the ready-made setup for Claude Code or any other MCP client. It connects to <code>/api/mcp</code>.
+        <p className="mb-4">
+          Your AI assistant can draw a drill from your description and save it to your account. The guide explains how to connect it.
         </p>
-        <p>
-          Add the{' '}
-          <a href="https://github.com/footnote42/coaching-animator/tree/main/skill/coaching-animator" target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
-            Coaching Animator skill
-          </a>{' '}
-          so it writes valid Practice Scripts. Everything it saves is private until you publish it from the editor.
-        </p>
+        <Link href="/help/ai" className={LINK_CLASS}>
+          Read the AI assistant guide
+        </Link>
       </section>
 
       <section className="mb-10">

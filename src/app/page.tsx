@@ -3,8 +3,6 @@ import HeroBackground from './_components/HeroBackground';
 import HeroPractice from './_components/HeroPractice';
 import GalleryTeaser from './_components/GalleryTeaser';
 import { heroStep } from './_components/heroScript';
-import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
-import { positionsAt } from '@/features/practice/engine';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 
 export const dynamic = 'force-dynamic';
@@ -90,7 +88,6 @@ const STEPS = [
 
 export default function HomePage() {
   const step = heroStep();
-  const finished = step ? positionsAt(step, 0).duration : 0;
 
   return (
     <main className="landing page-texture-lined text-text-primary">
@@ -124,6 +121,13 @@ export default function HomePage() {
               </a>
             </div>
             <p className="text-[15px] text-text-primary/70">Free. No account needed to draw. Sign in to save and share.</p>
+            <p className="text-[15px] text-text-primary/80">
+              Prefer to describe a drill?{' '}
+              <a href="/help/ai" className="underline underline-offset-2 hover:text-text-primary">
+                Your AI assistant can draw it for you
+              </a>
+              .
+            </p>
           </div>
 
           {step && (
@@ -163,80 +167,6 @@ export default function HomePage() {
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      {/* AI route */}
-      <section className="border-t-2 border-border py-14" aria-labelledby="ai-heading">
-        <div className={`${WRAP} grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]`}>
-          <div className="grid min-w-0 gap-4">
-            <p className={EYEBROW}>Or describe it to your AI</p>
-            <h2 id="ai-heading" className={H2}>
-              Say the drill. It lands in your account.
-            </h2>
-            <p className="max-w-[46ch]">
-              Connect Claude or another AI once. Add the Coaching Animator skill so it knows how to write a Practice, and
-              the MCP server so it can save one to your account. Then describe a drill, or give it a link to a coaching
-              video, and it saves a private Practice to My Practices for you to check and share.
-            </p>
-            <ul className="grid max-w-[46ch] gap-1.5 pl-5 text-text-primary/80 [list-style:square]">
-              <li>
-                Get the skill from{' '}
-                <a
-                  href="https://github.com/footnote42/coaching-animator/tree/main/skill/coaching-animator"
-                  className="underline hover:text-text-primary"
-                >
-                  the project repository
-                </a>
-                .
-              </li>
-              <li>
-                The MCP endpoint is <code className="text-sm">/api/mcp</code>. Create a personal token on your profile and
-                the setup is shown there, ready to copy.
-              </li>
-              <li>
-                The{' '}
-                <a href="/practice-script/v1/guide" className="underline underline-offset-2">
-                  Practice Script guide
-                </a>{' '}
-                is what your AI reads to get the format right.
-              </li>
-            </ul>
-            <p className="text-[15px] text-text-primary/70">
-              It can create and change your own Practices. It can&apos;t publish or delete anything.
-            </p>
-            <div>
-              <a href="/profile" className={BTN_PLAIN}>
-                Connect your AI
-              </a>
-            </div>
-          </div>
-
-          <div className="grid min-w-0 gap-3" role="group" aria-label="Example conversation">
-            <div className="max-w-[46ch] justify-self-end border-2 border-border bg-background px-3.5 py-3">
-              <span className="mb-1 block font-heading text-xs font-bold uppercase tracking-[0.08em] text-text-primary/70">
-                Coach
-              </span>
-              Make me a 3 v 2 overlap Practice on 30 by 20 metres. Add a third defender as a Progression.
-            </div>
-            <div className="max-w-[46ch] border-2 border-border bg-surface px-3.5 py-3 shadow-[4px_4px_0_var(--line)]">
-              <span className="mb-1 block font-heading text-xs font-bold uppercase tracking-[0.08em] text-text-primary/70">
-                Your AI
-              </span>
-              Saved to My Practices as a private Practice, &ldquo;3 v 2 overlap&rdquo;, with one Progression.
-              {step && (
-                <div className="mt-2.5 flex items-center gap-2.5 border-t border-dashed border-border/40 pt-2.5 text-[15px]">
-                  <PracticeThumbnail
-                    step={step}
-                    showMoves={false}
-                    time={finished}
-                    className="h-[50px] w-[74px] flex-none border border-border"
-                  />
-                  <span>Open it from My Practices, then check it and share the link.</span>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </section>
 

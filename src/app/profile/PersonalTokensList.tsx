@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
+import Link from 'next/link';
 import { Copy } from 'lucide-react';
 import { McpSetup } from './McpSetup';
 
@@ -118,7 +119,11 @@ export function PersonalTokensList() {
     <div className="mt-8 bg-surface border border-border p-6">
       <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-6">AI Connections</h2>
       <p className="text-sm text-text-primary/80 mb-6">
-        Personal tokens let your AI (like Claude or ChatGPT) access your Practices via the MCP endpoint.
+        Personal tokens let your AI (like Claude or ChatGPT) access your Practices via the MCP endpoint.{' '}
+        <Link href="/help/ai" className="underline underline-offset-2 hover:text-text-primary">
+          How to connect your AI
+        </Link>
+        .
       </p>
 
       {error && (
