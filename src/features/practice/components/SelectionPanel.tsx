@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
-import { Trash2 } from 'lucide-react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
@@ -32,10 +32,12 @@ function markerName(marker: ResolvedMarker, balls: ResolvedMarker[]): string {
 }
 
 /**
- * The panel between the toolbar and the canvas. Its height never changes, so
- * selecting a marker never moves the canvas under the Coach's finger. It shows,
- * in order of priority: a pick in progress (catch, Release, Collect), the
- * selected marker's controls, or the hint for the current tool.
+ * The panel between the toolbar and the canvas. Its height never changes for a
+ * given state, so selecting a marker never moves the canvas under the Coach's
+ * finger. On a phone it is one line (the controls scroll sideways) until the
+ * Coach expands it, so the canvas starts higher. It shows, in order of priority:
+ * a pick in progress (catch, Release, Collect), the selected marker's controls,
+ * or the hint for the current tool.
  */
 export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace; hint: string }) {
   const {
@@ -60,6 +62,9 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
     endCollect,
   } = workspace;
   const [labelDraft, setLabelDraft] = useState<string | null>(null);
+  // Phone only: from md up the panel is always full size and the toggle is hidden.
+  const [expanded, setExpanded] = useState(false);
+  const bodyId = useId();
   useEffect(() => {
     setLabelDraft(null);
   }, [selectedMarker?.id]);
@@ -67,7 +72,7 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
   let body: ReactNode;
   if (!editing) {
     body = (
-      <p aria-live="polite" className="text-sm text-text-primary">
+      <p aria-live="polite" className={cn('text-sm text-text-primary', !expanded && 'truncate md:whitespace-normal')}>
         {playing ? 'Playing.' : 'Paused.'} Press Back to start to edit this Step.
       </p>
     );
@@ -78,9 +83,9 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
         ? ['Tap the passer’s Run where the ball is released.', 'Cancel', endRelease]
         : ['Tap the player who Collects the loose ball. Their Run goes to it.', 'Cancel', endCollect];
     body = (
-      <div className="flex flex-wrap items-center gap-2">
-        <p aria-live="polite" className="text-sm font-medium text-text-primary">{text}</p>
-        <Button type="button" variant="outline" className="h-11 min-w-11 px-3" onClick={onAction}>
+      <div className={cn('flex items-center gap-2', expanded ? 'flex-wrap' : 'flex-nowrap md:flex-wrap')}>
+        <p aria-live="polite" className={cn('text-sm font-medium text-text-primary', !expanded && 'truncate md:whitespace-normal')}>{text}</p>
+        <Button type="button" variant="outline" className="h-11 min-w-11 shrink-0 px-3" onClick={onAction}>
           {action}
         </Button>
       </div>
@@ -89,7 +94,7 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
     body = markerControls();
   } else {
     body = (
-      <p aria-live="polite" className="text-sm text-text-primary">
+      <p aria-live="polite" className={cn('text-sm text-text-primary', !expanded && 'truncate md:whitespace-normal')}>
         {hint}
       </p>
     );
@@ -112,15 +117,15 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
     const waypoint = selection.waypoint !== null && selectedMove?.waypoints[selection.waypoint] ? selection.waypoint : null;
 
     return (
-      <div className="flex flex-col gap-1">
-        <p className="flex min-w-0 items-baseline gap-2 text-sm">
+      <div className={cn('flex gap-1', expanded ? 'flex-col' : 'flex-row items-center md:flex-col md:items-stretch')}>
+        <p className="flex min-w-0 shrink-0 items-baseline gap-2 text-sm md:shrink">
           <span className="shrink-0 font-medium text-text-primary">
             {markerName(marker, balls)}
             {waypoint !== null && ` · point ${waypoint + 1}`}
           </span>
-          {next && <span aria-live="polite" className="truncate text-xs text-text-muted" title={next}>{next}</span>}
+          {next && <span aria-live="polite" className={cn('truncate text-xs text-text-muted', !expanded && 'hidden md:inline')} title={next}>{next}</span>}
         </p>
-        <div className="flex flex-wrap items-center gap-1.5 text-sm text-text-primary">
+        <div className={cn('flex items-center gap-1.5 text-sm text-text-primary', expanded ? 'flex-wrap' : 'flex-nowrap md:flex-wrap [&>*]:shrink-0 md:[&>*]:shrink')}>
           <label htmlFor="marker-label" className="sr-only">Label</label>
           <input
             id="marker-label"
@@ -265,9 +270,32 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
     <div
       role="region"
       aria-label="Selection"
-      className="h-44 shrink-0 overflow-y-auto overscroll-contain border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1.5 md:h-32"
+      className={cn(
+        'flex shrink-0 items-start border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1.5 md:h-32',
+        expanded ? 'h-44' : 'h-14',
+      )}
     >
-      {body}
+      {/* Collapsed, the body only scrolls sideways, so a vertical swipe on it scrolls the page. */}
+      <div
+        id={bodyId}
+        className={cn(
+          'min-w-0 flex-1 md:h-full md:overflow-y-auto md:overflow-x-hidden md:overscroll-contain',
+          expanded ? 'h-full overflow-y-auto overflow-x-hidden' : 'overflow-x-auto overflow-y-hidden',
+        )}
+      >
+        {body}
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        className="-my-1.5 -mr-2 h-11 w-11 shrink-0 md:hidden"
+        aria-expanded={expanded}
+        aria-controls={bodyId}
+        aria-label={expanded ? 'Show less' : 'Show more'}
+        onClick={() => setExpanded((e) => !e)}
+      >
+        {expanded ? <ChevronUp /> : <ChevronDown />}
+      </Button>
     </div>
   );
 }

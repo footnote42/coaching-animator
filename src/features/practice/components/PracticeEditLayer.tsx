@@ -156,7 +156,12 @@ export function PracticeEditLayer({
 
   return (
     <Layer>
-      <Rect width={width} height={height} fill="transparent" onClick={tapBackground} onTap={tapBackground} />
+      {/*
+        Empty canvas: not preventDefault-ed on touch, so a vertical swipe scrolls the page (#203). Only onClick:
+        without the touchstart preventDefault the browser sends an emulated click after a tap, so onTap too would
+        fire twice. Markers and handles keep Konva's default (touchstart is prevented) so a drag never scrolls.
+      */}
+      <Rect width={width} height={height} fill="transparent" preventDefault={false} onClick={tapBackground} />
       {handovers.map(({ key, kind, x, y }) =>
         kind === 'release' ? (
           <RegularPolygon key={key} x={px(x)} y={px(y)} sides={4} radius={7} fill={HIGHLIGHT} stroke="#111827" strokeWidth={1} listening={false} />

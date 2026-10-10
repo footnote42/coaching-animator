@@ -73,3 +73,35 @@ for (const [project, label] of [['phone', 'iPhone 13 WebKit'], ['chromium', 'des
     }
   })
 }
+
+// A vertical swipe that starts on empty canvas must be left to the page (#203): the touchstart is not
+// preventDefault-ed there, and the canvas sits in a touch-action: pan-y box. A tap there must still act, once.
+test.describe('page scroll from the canvas [iPhone 13 WebKit]', () => {
+  test.beforeEach(({}, testInfo) => test.skip(testInfo.project.name !== 'phone', 'runs in the phone project'))
+
+  test('touchstart on empty canvas is not prevented', async ({ page }) => {
+    await loadScript(page, PORTRAIT_20x30)
+    const result = await page.evaluate(() => {
+      const content = document.querySelector('.konvajs-content') as HTMLElement
+      const box = content.getBoundingClientRect()
+      // WebKit has no Touch constructor outside a real device: a plain event carrying the touch lists is enough for Konva.
+      const touch = { identifier: 1, clientX: box.left + 2, clientY: box.top + 2 }
+      const ev = new Event('touchstart', { bubbles: true, cancelable: true })
+      for (const list of ['touches', 'targetTouches', 'changedTouches']) Object.defineProperty(ev, list, { value: [touch] })
+      content.querySelector('canvas:last-of-type')!.dispatchEvent(ev)
+      return { touchAction: getComputedStyle(content.parentElement!.parentElement!).touchAction, prevented: ev.defaultPrevented }
+    })
+    expect(result.touchAction).toBe('pan-y')
+    expect(result.prevented, 'empty canvas leaves the swipe to the page').toBe(false)
+  })
+
+  test('a tap on empty canvas places one marker', async ({ page }) => {
+    await loadScript(page, PORTRAIT_20x30)
+    const markers = async () => JSON.parse(await page.locator('#practice-script').inputValue()).markers.length
+    const before = await markers()
+    await page.getByRole('button', { name: 'Place attacker' }).click()
+    const box = (await page.locator('.konvajs-content').first().boundingBox())!
+    await page.touchscreen.tap(box.x + 6, box.y + 6)
+    await expect.poll(markers).toBe(before + 1)
+  })
+})
