@@ -153,7 +153,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           {!loading && !user && (
             <Link
               href="/login"
-              className="inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
+              className="hidden sm:inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
             >
               Sign in
             </Link>
