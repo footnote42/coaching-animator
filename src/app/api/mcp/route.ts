@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { verifyPersonalToken } from '@/lib/server/personal-tokens';
-import { requireNotBanned } from '@/lib/server/auth';
+import { requireNotBanned, requireAgeConfirmed } from '@/lib/server/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { PracticeTagsSchema, SourceUrlSchema, SourceTitleSchema } from '@/lib/schemas/practices';
 import { PRACTICE_TAGS } from '@/lib/practice-tags';
@@ -340,6 +340,11 @@ export async function POST(request: NextRequest) {
 
     const banned = await requireNotBanned(ownerId);
     if (banned) return NextResponse.json(rpcError(null, ERR.unauthorized, 'Account suspended'), { status: 403 });
+
+    const ageUnconfirmed = await requireAgeConfirmed(ownerId);
+    if (ageUnconfirmed) {
+      return NextResponse.json(rpcError(null, ERR.unauthorized, 'AGE_NOT_CONFIRMED: confirm you are 18 or over on the website first'), { status: 403 });
+    }
 
     const limit = await checkRateLimit(`mcp:${ownerId}`, 'mcp');
     if (!limit.allowed) {

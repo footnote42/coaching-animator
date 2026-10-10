@@ -42,7 +42,10 @@ vi.mock('@/lib/supabase/admin', () => ({ createSupabaseAdminClient: () => ({ fro
 vi.mock('@/lib/server/personal-tokens', () => ({
   verifyPersonalToken: vi.fn(async (t: string) => (t === 'ca_pat_alice' ? 'alice' : t === 'ca_pat_bob' ? 'bob' : null)),
 }));
-vi.mock('@/lib/server/auth', () => ({ requireNotBanned: vi.fn(async () => null) }));
+vi.mock('@/lib/server/auth', () => ({
+  requireNotBanned: vi.fn(async () => null),
+  requireAgeConfirmed: vi.fn(async () => null),
+}));
 vi.mock('@/lib/server/rate-limit', () => ({
   checkRateLimit: vi.fn(async () => ({ allowed: true, remaining: 1, resetAt: new Date() })),
   getRateLimitHeaders: () => ({}),

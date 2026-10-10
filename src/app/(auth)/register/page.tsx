@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [confirmAdult, setConfirmAdult] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -43,12 +44,20 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!confirmAdult) {
+      setErrorMessage('You must confirm you are 18 or over to create an account');
+      setLoading(false);
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        // handle_new_user() turns this into user_profiles.age_confirmed_at (ADR 0003).
+        data: { age_confirmed: true },
       },
     });
 
@@ -162,6 +171,10 @@ export default function RegisterPage() {
         />
       </div>
 
+      <p className="-mt-3 mb-6 text-xs text-text-primary/70">
+        By continuing with Google you confirm you are 18 or over.
+      </p>
+
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 border-t border-border"></div>
         <div className="text-sm text-text-secondary">Or</div>
@@ -233,6 +246,19 @@ export default function RegisterPage() {
             <a href="/privacy" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
               Privacy Policy
             </a>
+          </label>
+        </div>
+
+        <div className="flex items-start gap-2">
+          <input
+            id="adult"
+            type="checkbox"
+            checked={confirmAdult}
+            onChange={(e) => setConfirmAdult(e.target.checked)}
+            className="mt-1"
+          />
+          <label htmlFor="adult" className="text-sm text-text-primary/80">
+            I am 18 or over
           </label>
         </div>
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { requireAuth, isAuthError, requireNotBanned } from '@/lib/server/auth';
+import { requireAuth, isAuthError, requireNotBanned, requireAgeConfirmed } from '@/lib/server/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { CreatePracticeSchema } from '@/lib/schemas/practices';
 import { validate, formatError, MAX_SCRIPT_BYTES } from '@/features/practice/engine';
@@ -50,6 +50,9 @@ export async function POST(request: NextRequest) {
 
     const banCheck = await requireNotBanned(user.id);
     if (banCheck) return banCheck;
+
+    const ageCheck = await requireAgeConfirmed(user.id);
+    if (ageCheck) return ageCheck;
 
     const rateLimit = await checkRateLimit(`user:${user.id}`, 'practice_save');
     if (!rateLimit.allowed) {

@@ -73,3 +73,29 @@ export async function requireNotBanned(userId: string) {
   }
   return null;
 }
+
+/**
+ * Server-side 18+ gate (ADR 0003): refuses with 403 AGE_NOT_CONFIRMED until
+ * user_profiles.age_confirmed_at is set. Uses the admin client so it also works
+ * for bearer-token callers (MCP) that have no cookie session. Fails closed.
+ */
+export async function requireAgeConfirmed(userId: string) {
+  const { data: profile } = await createSupabaseAdminClient()
+    .from('user_profiles')
+    .select('age_confirmed_at')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (!profile?.age_confirmed_at) {
+    return NextResponse.json(
+      {
+        error: {
+          code: 'AGE_NOT_CONFIRMED',
+          message: 'Confirm you are 18 or over to save or publish. Sign in on the website to confirm.',
+        },
+      },
+      { status: 403 }
+    );
+  }
+  return null;
+}

@@ -27,6 +27,7 @@ vi.mock('@/lib/server/auth', () => ({
   requireAuth: vi.fn(async () => ({ id: 'u1' })),
   isAuthError: () => false,
   requireNotBanned: vi.fn(async () => null),
+  requireAgeConfirmed: vi.fn(async () => null),
 }));
 vi.mock('@/lib/server/rate-limit', () => ({
   checkRateLimit: vi.fn(async () => ({ allowed: true })),

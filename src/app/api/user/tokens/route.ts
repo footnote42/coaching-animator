@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { requireAuth, requireNotBanned, isAuthError } from '@/lib/server/auth';
+import { requireAuth, requireNotBanned, requireAgeConfirmed, isAuthError } from '@/lib/server/auth';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { createTokenSchema } from '@/lib/schemas/tokens';
@@ -33,6 +33,9 @@ export async function POST(request: Request) {
 
   const notBanned = await requireNotBanned(user.id);
   if (isAuthError(notBanned)) return notBanned;
+
+  const ageCheck = await requireAgeConfirmed(user.id);
+  if (ageCheck) return ageCheck;
 
   const rateLimit = await checkRateLimit(user.id, 'tokens_api');
   if (!rateLimit.allowed) {
