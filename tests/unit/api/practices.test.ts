@@ -21,6 +21,10 @@ vi.mock('@/lib/server/rate-limit', () => ({
   checkRateLimit: mocks.checkRateLimit,
   getRateLimitHeaders: () => ({}),
 }));
+// Practice writes use the admin client (#175); both clients share one stub so call order is unchanged.
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: () => ({ from: mocks.from, rpc: mocks.rpc }),
+}));
 vi.mock('@/lib/supabase/server', () => ({
   createSupabaseServerClient: async () => ({ from: mocks.from, rpc: mocks.rpc }),
 }));

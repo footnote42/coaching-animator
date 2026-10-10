@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin, isAuthError } from '@/lib/server/auth';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { PracticeReportActionSchema } from '@/lib/schemas/practices';
 
 export const dynamic = 'force-dynamic';
@@ -77,10 +78,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Practice not found' } }, { status: 404 });
     }
 
+    // Practice writes need the admin client: direct REST writes are revoked (#175). requireAdmin() ran above.
+    const writer = createSupabaseAdminClient();
     switch (action) {
       case 'hide':
       case 'unhide': {
-        const { error } = await supabase
+        const { error } = await writer
           .from('practices')
           .update({ hidden: action === 'hide' })
           .eq('id', report.practice_id);
@@ -92,7 +95,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
       case 'delete': {
         // The report row goes with it (ON DELETE CASCADE).
-        const { error } = await supabase.from('practices').delete().eq('id', report.practice_id);
+        const { error } = await writer.from('practices').delete().eq('id', report.practice_id);
         if (error) {
           console.error('[Admin Practice Reports] Delete error:', error);
           return failed('Failed to delete practice');

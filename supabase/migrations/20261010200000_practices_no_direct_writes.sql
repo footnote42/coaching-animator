@@ -1,0 +1,15 @@
+-- #175: close direct PostgREST writes to public.practices.
+--
+-- A signed-in coach could INSERT/UPDATE/DELETE practices straight through
+-- /rest/v1/practices with the anon key plus their JWT, skipping the ban check,
+-- the 18+ check, the practice_save rate limit and the script schema and size
+-- validation, which all live in the API routes.
+--
+-- Every app writer is a server route (POST/PATCH/DELETE /api/practices,
+-- /api/mcp, /api/admin/practice-reports/[id]/action) and now uses the
+-- service-role client after its checks. service_role bypasses RLS and keeps
+-- its grants, so nothing else needs to change. SELECT stays as is (owner,
+-- public gallery and admin read policies). The leftover write policies become
+-- inert; they are left in place so a future re-grant fails closed on RLS only
+-- if someone deliberately restores the grants.
+REVOKE INSERT, UPDATE, DELETE ON public.practices FROM anon, authenticated;

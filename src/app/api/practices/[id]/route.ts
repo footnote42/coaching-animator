@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { requireAuth, isAuthError, requireNotBanned, requireAgeConfirmed } from '@/lib/server/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { UpdatePracticeSchema } from '@/lib/schemas/practices';
@@ -118,7 +118,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       update.schema_version = result.script.schemaVersion;
     }
 
-    const supabase = await createSupabaseServerClient();
+    // Admin client: direct REST writes are revoked (#175); every write is scoped by owner_id below.
+    const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from('practices')
       .update(update)
@@ -150,7 +151,8 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
 
-    const supabase = await createSupabaseServerClient();
+    // Admin client: direct REST writes are revoked (#175); every write is scoped by owner_id below.
+    const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from('practices')
       .delete()

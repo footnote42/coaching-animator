@@ -20,6 +20,10 @@ function query(result: unknown) {
   return q;
 }
 
+// Writes go through the admin client: direct REST writes are revoked (#175).
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(() => ({ from: () => query({ id: 'p1' }) })),
+}));
 vi.mock('@/lib/supabase/server', () => ({
   createSupabaseServerClient: vi.fn(async () => ({ from: () => query({ id: 'p1' }) })),
 }));

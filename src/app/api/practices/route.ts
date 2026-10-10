@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { requireAuth, isAuthError, requireNotBanned, requireAgeConfirmed } from '@/lib/server/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { CreatePracticeSchema } from '@/lib/schemas/practices';
@@ -102,7 +103,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createSupabaseServerClient();
+    // Writes use the admin client: direct REST writes are revoked from anon/authenticated (#175),
+    // so the checks above are the only way in. owner_id comes from the verified session.
+    const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from('practices')
       .insert({
