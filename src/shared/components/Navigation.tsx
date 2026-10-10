@@ -58,9 +58,12 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
     }
   }, [activeId, recordVisit]);
 
-  useEffect(() => {
+  // Close the mobile menu when the route changes (adjusted during render, not in an effect)
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
     setMenuOpen(false);
-  }, [pathname]);
+  }
 
   const handleSignOut = async () => {
     await signOut();

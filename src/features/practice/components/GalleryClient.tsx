@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/shared/ui/button';
 import { ReportPracticeDialog } from './ReportPracticeDialog';
 import { GalleryCardPreview } from './GalleryCardPreview';
 import type { ResolvedStep } from '@/features/practice/engine';
-import { PRACTICE_TAGS, type PracticeTag } from '@/lib/practice-tags';
+import { PRACTICE_TAGS } from '@/lib/practice-tags';
 
 interface PublicPractice {
   id: string;
@@ -36,34 +36,44 @@ export function GalleryClient() {
   const [page, setPage] = useState(1);
   const [practices, setPractices] = useState<PublicPractice[]>([]);
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+  /** Which request (query, tag, page) the list last finished, and which one failed; loading and failed derive from these. */
+  const requestKey = `${q}
+${tag ?? ''}
+${page}`;
+  const [settledKey, setSettledKey] = useState<string | null>(null);
+  const [failedKey, setFailedKey] = useState<string | null>(null);
+  const loading = settledKey !== requestKey;
+  const failed = failedKey === requestKey;
   const [reportingId, setReportingId] = useState<string | null>(null);
   /** The one card whose preview is playing. */
   const [playingId, setPlayingId] = useState<string | null>(null);
 
-  const load = useCallback(async (query: string, tagFilter: PracticeTag | null, p: number) => {
-    setLoading(true);
-    setFailed(false);
-    try {
-      const params = new URLSearchParams({ page: String(p) });
-      if (query) params.set('q', query);
-      if (tagFilter) params.set('tag', tagFilter);
-      const res = await fetch(`/api/practices/public?${params}`);
-      if (!res.ok) throw new Error('bad status');
-      const body = await res.json();
-      setPractices((prev) => (p === 1 ? body.practices : [...prev, ...body.practices]));
-      setHasMore(body.hasMore);
-    } catch {
-      setFailed(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    void load(q, tag, page);
-  }, [q, tag, page, load]);
+    let cancelled = false;
+    const key = `${q}
+${tag ?? ''}
+${page}`;
+    const params = new URLSearchParams({ page: String(page) });
+    if (q) params.set('q', q);
+    if (tag) params.set('tag', tag);
+    void (async () => {
+      try {
+        const res = await fetch(`/api/practices/public?${params}`);
+        if (!res.ok) throw new Error('bad status');
+        const body = await res.json();
+        if (cancelled) return;
+        setPractices((prev) => (page === 1 ? body.practices : [...prev, ...body.practices]));
+        setHasMore(body.hasMore);
+      } catch {
+        if (cancelled) return;
+        setFailedKey(key);
+      }
+      if (!cancelled) setSettledKey(key);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [q, tag, page]);
 
   const chooseTag = (value: string) => {
     setPage(1);

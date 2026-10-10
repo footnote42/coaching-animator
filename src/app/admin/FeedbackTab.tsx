@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface FeedbackItem {
   id: string;
@@ -21,26 +21,37 @@ export function FeedbackTab() {
   const [error, setError] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/feedback');
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch feedback');
-      setItems(data.feedback);
-      setTotal(data.total);
-    } catch (err) {
-      console.error('[Admin] Feedback error:', err);
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Bumped by event handlers to refetch; state updates in the effect happen only after the fetch resolves.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch('/api/admin/feedback');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch feedback');
+        if (cancelled) return;
+        setItems(data.feedback);
+        setTotal(data.total);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('[Admin] Feedback error:', err);
+        setError('Something went wrong. Please try again.');
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
+
+  // Refresh from an event handler: show the loading state, then refetch.
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    setReloadKey((k) => k + 1);
+  };
 
   const markRead = async (id: string) => {
     setProcessingId(id);
@@ -48,7 +59,7 @@ export function FeedbackTab() {
     try {
       const res = await fetch(`/api/admin/feedback/${id}/read`, { method: 'POST' });
       if (!res.ok) throw new Error('Mark read failed');
-      await load();
+      load();
     } catch (err) {
       console.error('[Admin] Feedback mark read error:', err);
       setError('That action failed. Please try again.');

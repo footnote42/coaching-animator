@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState('');
+  const [displayName, setDisplayName] = useState(profile?.display_name || '');
 
   // OAuth / Password Management State
   const [password, setPassword] = useState('');
@@ -35,12 +35,12 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  // Sync local display name with profile once loaded
-  useEffect(() => {
-    if (profile) {
-      setDisplayName(profile.display_name || '');
-    }
-  }, [profile]);
+  // Sync local display name with profile once loaded (adjusted during render, not in an effect)
+  const [syncedProfile, setSyncedProfile] = useState(profile);
+  if (profile !== syncedProfile) {
+    setSyncedProfile(profile);
+    if (profile) setDisplayName(profile.display_name || '');
+  }
 
   // Redirect if not logged in after auth finishes
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface PracticeReport {
@@ -33,26 +33,37 @@ export function PracticeReportsTab() {
   const [pending, setPending] = useState<{ reportId: string; action: PracticeAction } | null>(null);
   const [reason, setReason] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/practice-reports?status=${status}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch reports');
-      setReports(data.reports);
-      setTotal(data.total);
-    } catch (err) {
-      console.error('[Admin] Practice reports error:', err);
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [status]);
+  // Bumped by event handlers to refetch; state updates in the effect happen only after the fetch resolves.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch(`/api/admin/practice-reports?status=${status}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch reports');
+        if (cancelled) return;
+        setReports(data.reports);
+        setTotal(data.total);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('[Admin] Practice reports error:', err);
+        setError('Something went wrong. Please try again.');
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, reloadKey]);
+
+  // Refresh from an event handler: show the loading state, then refetch.
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    setReloadKey((k) => k + 1);
+  };
 
   const act = async (reportId: string, action: PracticeAction, why?: string) => {
     if ((action === 'hide' || action === 'ban_user') && !why) {
@@ -73,7 +84,7 @@ export function PracticeReportsTab() {
       if (!res.ok) throw new Error(data.error?.message || 'Action failed');
       setPending(null);
       setReason('');
-      await load();
+      load();
     } catch (err) {
       console.error('[Admin] Practice action error:', err);
       setError('That action failed. Please try again.');
@@ -92,7 +103,7 @@ export function PracticeReportsTab() {
           {(['open', 'actioned', 'dismissed'] as const).map((s) => (
             <button
               key={s}
-              onClick={() => setStatus(s)}
+              onClick={() => { setStatus(s); setLoading(true); setError(null); }}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 status === s ? 'bg-primary text-text-inverse' : 'bg-surface-warm text-text-primary'
               }`}
