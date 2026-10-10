@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useReducer, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -232,8 +232,7 @@ export function useEditorWorkspace() {
   };
 
   // Keyboard: undo/redo and delete, but never while typing in a field.
-  const onKey = useRef<(e: KeyboardEvent) => void>(() => {});
-  onKey.current = (e: KeyboardEvent) => {
+  const onKey = useEffectEvent((e: KeyboardEvent) => {
     const target = e.target as HTMLElement | null;
     if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
     const mod = e.ctrlKey || e.metaKey;
@@ -251,9 +250,9 @@ export function useEditorWorkspace() {
     } else if (e.key === 'Escape') {
       setSelection(NO_SELECTION);
     }
-  };
+  });
   useEffect(() => {
-    const listener = (e: KeyboardEvent) => onKey.current(e);
+    const listener = (e: KeyboardEvent) => onKey(e);
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
   }, []);
