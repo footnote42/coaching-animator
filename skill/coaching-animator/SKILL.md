@@ -37,6 +37,7 @@ On the MCP route, `create_practice` validates the script against the live schema
 - `examples/07-bag-clear-out.json`: a carry into an upright tackle bag (`"kind": "tackle-bag"`), then a People Progression lays the bag flat over the ball as the ruck, 2 clears out and 9 passes away.
 - `examples/08-kick-to-space.json`: 10 kicks to space (`"cell"` instead of `"to"` on a kick), the wingers chase as it lands and 14 Collects it where it stops (the next pass comes `"from": "a14"`, whose Run ends on that cell) and passes to 11; then an Equipment Progression starts the ball loose on the ground (`"cell"` instead of `"holder"`) under a Lying shield and 9 Collects it.
 - `examples/09-pass-and-support.json`: 1 passes on the run (`"release": 0` on the pass, the waypoint of 1's Run where the ball goes) and runs on in support while 2 catches on the run.
+- `examples/10-ruck-and-recycle.json`: a ruck with holds and reach: 1 holds at the contact with the ball until 9 has caught it, 2 and 3 arrive, hold over the ball until the second pass is caught, then walk back; 9's pass waits for 2 to reach the ruck. Progressions add a contesting defender (who holds too) and then sprint the supports.
 
 ## 1. Describe a drill, get a Practice Script
 
@@ -48,6 +49,9 @@ On the MCP route, `create_practice` validates the script against the live schema
    - A Kick to space is a kick with `"cell"` instead of `"to"`: `{ "id": "k1", "from": "a10", "cell": { "x": 16, "y": 12 }, "kick": true }`. The ball lands on the cell, rolls 2 m on in the kick's direction to the nearest cell and lies loose. Chasers set off as it lands with `"after": { "pass": "k1" }`. No `at` on it, and it is never a forward pass.
    - Collect a loose ball (kicked to space, or placed with a `cell`): the next pass or kick of that ball comes `"from"` the collector, whose Run must end on the cell where the ball lies (for a Kick to space, where it comes to rest; kicked straight up or down from a standing kicker, the landing cell moved 2 on; the validation error names the cell if you miss). The engine times the collector to the ball and they pick it up on arrival. No `release` on that pass. Either team can Collect; the other team then attacks the other way.
    - To pass part way along the carrier's own Run and run on in support, give the pass `"release"`: the index of a waypoint in the passer's move, mirroring `at` on the receiver's. `{ "id": "p1", "from": "a1", "to": "a2", "at": 0, "release": 0 }`. Only for a passer with a move; leave it out to pass as soon as the pass is ready.
+   - A player who must stop mid-Run and wait gets a `hold` on a waypoint: a ruck, a maul, a carrier going to ground, a support who arrives then stays over the ball. `{ "x": 6, "y": 8, "hold": { "pass": "p1" } }` stands on arrival until pass `p1` is caught, then runs the rest. Events only: never a time, so no "wait three seconds".
+   - An action triggered by someone arriving somewhere mid-Run uses `reach`: `{ "reach": { "marker": "a2", "waypoint": 0 } }` (waypoints count from 0). Put it in a pass's `after` (the ball goes when the first support reaches the ruck), another move's `after`, or a `hold`. It fires on arrival, before any hold at that waypoint.
+   - Every wait (a Run's `after`, a pass's `after`, a waypoint's `hold`) takes exactly one of `move`, `pass` or `reach`, never two, and waits may not loop. `setMove` replaces the whole Run, so repeat the holds in a Progression.
    - Labels are roles or shirt numbers, never player names.
    - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
    - Kit is `cone`, `tackle-shield` or `tackle-bag` (the tall cylindrical contact bag, bigger than a shield; never "tackle dummy").
@@ -117,13 +121,13 @@ Rules: everything you create is private; you cannot publish, share or delete. Yo
 **Claude Code skill**, user-level, works from any folder. Bash:
 
 ```bash
-B=https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator; D=~/.claude/skills/coaching-animator; mkdir -p "$D/examples" && for f in SKILL.md examples/01-passing-line.json examples/02-pass-and-follow-progressions.json examples/03-two-ball-square.json examples/04-attack-v-defence.json examples/05-kick-receipt.json examples/06-shield-to-ruck.json examples/07-bag-clear-out.json examples/08-kick-to-space.json examples/09-pass-and-support.json; do curl -fsSL "$B/$f" -o "$D/$f"; done
+B=https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator; D=~/.claude/skills/coaching-animator; mkdir -p "$D/examples" && for f in SKILL.md examples/01-passing-line.json examples/02-pass-and-follow-progressions.json examples/03-two-ball-square.json examples/04-attack-v-defence.json examples/05-kick-receipt.json examples/06-shield-to-ruck.json examples/07-bag-clear-out.json examples/08-kick-to-space.json examples/09-pass-and-support.json examples/10-ruck-and-recycle.json; do curl -fsSL "$B/$f" -o "$D/$f"; done
 ```
 
 PowerShell:
 
 ```powershell
-$B='https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator'; $D="$HOME/.claude/skills/coaching-animator"; New-Item -ItemType Directory -Force "$D/examples" | Out-Null; 'SKILL.md','examples/01-passing-line.json','examples/02-pass-and-follow-progressions.json','examples/03-two-ball-square.json','examples/04-attack-v-defence.json','examples/05-kick-receipt.json','examples/06-shield-to-ruck.json','examples/07-bag-clear-out.json','examples/08-kick-to-space.json','examples/09-pass-and-support.json' | ForEach-Object { Invoke-WebRequest "$B/$_" -OutFile "$D/$_" }
+$B='https://raw.githubusercontent.com/footnote42/coaching-animator/main/skill/coaching-animator'; $D="$HOME/.claude/skills/coaching-animator"; New-Item -ItemType Directory -Force "$D/examples" | Out-Null; 'SKILL.md','examples/01-passing-line.json','examples/02-pass-and-follow-progressions.json','examples/03-two-ball-square.json','examples/04-attack-v-defence.json','examples/05-kick-receipt.json','examples/06-shield-to-ruck.json','examples/07-bag-clear-out.json','examples/08-kick-to-space.json','examples/09-pass-and-support.json','examples/10-ruck-and-recycle.json' | ForEach-Object { Invoke-WebRequest "$B/$_" -OutFile "$D/$_" }
 ```
 
 **MCP tools** (so the AI saves Practices straight to your account). Sign in at https://coaching-animator.waynetellis.com/profile and create a personal token (starts with `ca_pat_`, shown once, revocable there). Then:

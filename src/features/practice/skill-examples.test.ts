@@ -72,6 +72,30 @@ describe('skill worked examples', () => {
     expect(warnings(result.script)).toEqual([]);
   });
 
+  it('10-ruck-and-recycle.json holds the ruck until the ball is away, in every Step, with no warning', () => {
+    const result = validate(readFileSync(path.join(EXAMPLES_DIR, '10-ruck-and-recycle.json'), 'utf8'));
+    if (!result.ok) throw new Error(result.errors.map(formatError).join(', '));
+    expect(warnings(result.script)).toEqual([]);
+    expect(result.script.progressions).toHaveLength(2);
+    for (let n = 0; n < 3; n++) {
+      const step = resolveStep(result.script, n);
+      const { duration, passes } = positionsAt(step, 0);
+      const [p1, p2] = passes;
+      const at = (t: number) => positionsAt(step, t).positions;
+      // 9 gets the ball only once the first support is at the ruck.
+      expect(p1.fire).toBeGreaterThan(2.5);
+      // The supports stand still at the ruck from arriving until 10 has caught the ball, then walk back.
+      for (const id of ['a2', 'a3']) {
+        expect(at(p1.fire)[id].y, id).toBeCloseTo(8, 5);
+        expect(at(p2.land - 0.05)[id], id).toEqual(at(p1.fire)[id]);
+        expect(at(duration)[id].y, id).toBeGreaterThan(10);
+      }
+      // The carrier stands with the ball until 9 has caught it, then walks back.
+      expect(at(p1.land - 0.05).a1).toEqual({ x: 6, y: 8 });
+      expect(at(duration).a1.y).toBeGreaterThan(10);
+    }
+  });
+
   it('the landing 3 v 2 attacks up, passes as D2 is drawn in, and raises no warning', () => {
     const result = validate(HERO_SCRIPT);
     if (!result.ok) throw new Error(result.errors.map(formatError).join('\n'));

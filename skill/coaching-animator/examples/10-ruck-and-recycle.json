@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "title": "Ruck and recycle",
+  "area": { "width": 14, "length": 14 },
+  "direction": "up",
+  "markers": [
+    { "id": "a1", "kind": "attacker", "label": "1" },
+    { "id": "a2", "kind": "attacker", "label": "2" },
+    { "id": "a3", "kind": "attacker", "label": "3" },
+    { "id": "a9", "kind": "attacker", "label": "9" },
+    { "id": "a10", "kind": "attacker", "label": "10" },
+    { "id": "ball", "kind": "ball" },
+    { "id": "shield1", "kind": "tackle-shield" },
+    { "id": "d1", "kind": "defender", "label": "D1" }
+  ],
+  "base": {
+    "placements": [
+      { "marker": "a1", "cell": { "x": 6, "y": 12 } },
+      { "marker": "a2", "cell": { "x": 4, "y": 12 } },
+      { "marker": "a3", "cell": { "x": 8, "y": 12 } },
+      { "marker": "a9", "cell": { "x": 3, "y": 9 } },
+      { "marker": "a10", "cell": { "x": 0, "y": 11 } },
+      { "marker": "ball", "holder": "a1" },
+      { "marker": "shield1", "cell": { "x": 6, "y": 7 }, "lying": true }
+    ],
+    "moves": [
+      {
+        "marker": "a1",
+        "pace": "jog",
+        "waypoints": [{ "x": 6, "y": 8, "hold": { "pass": "p1" } }, { "x": 6, "y": 11, "pace": "walk" }]
+      },
+      {
+        "marker": "a2",
+        "pace": "jog",
+        "waypoints": [{ "x": 5, "y": 8, "hold": { "pass": "p2" } }, { "x": 4, "y": 11, "pace": "walk" }]
+      },
+      {
+        "marker": "a3",
+        "pace": "jog",
+        "waypoints": [{ "x": 7, "y": 8, "hold": { "pass": "p2" } }, { "x": 8, "y": 11, "pace": "walk" }]
+      },
+      { "marker": "a10", "pace": "jog", "waypoints": [{ "x": 1, "y": 10 }] }
+    ],
+    "passes": [
+      { "id": "p1", "from": "a1", "to": "a9", "after": { "reach": { "marker": "a2", "waypoint": 0 } } },
+      { "id": "p2", "from": "a9", "to": "a10" }
+    ],
+    "commentary": {
+      "points": [
+        "1 carries to the contact and stays down with the ball, presented back",
+        "2 and 3 arrive, bind over the ball and hold the ruck",
+        "9 only gets the ball once the first support is at the ruck, then passes to 10",
+        "The ruck breaks up only when the ball is away: then everyone walks back"
+      ]
+    }
+  },
+  "progressions": [
+    {
+      "lever": "people",
+      "commentary": {
+        "points": [
+          "A defender contests the ruck and holds there until 9 has the ball: supports must arrive first and stay over it",
+          "Speed of arrival decides whether the ball is won cleanly"
+        ]
+      },
+      "changes": [
+        { "type": "addMarker", "marker": "d1", "cell": { "x": 6, "y": 2 } },
+        {
+          "type": "setMove",
+          "marker": "d1",
+          "pace": "jog",
+          "waypoints": [{ "x": 6, "y": 6, "hold": { "pass": "p1" } }, { "x": 6, "y": 3, "pace": "walk" }]
+        }
+      ]
+    },
+    {
+      "lever": "time",
+      "commentary": {
+        "points": [
+          "2 and 3 now sprint to the ruck: beat the defender to the ball and clear them out",
+          "Every second the ball stays on the floor is a second for the defence"
+        ]
+      },
+      "changes": [
+        {
+          "type": "setMove",
+          "marker": "a2",
+          "pace": "sprint",
+          "waypoints": [{ "x": 5, "y": 8, "hold": { "pass": "p2" } }, { "x": 4, "y": 11, "pace": "walk" }]
+        },
+        {
+          "type": "setMove",
+          "marker": "a3",
+          "pace": "sprint",
+          "waypoints": [{ "x": 7, "y": 8, "hold": { "pass": "p2" } }, { "x": 8, "y": 11, "pace": "walk" }]
+        }
+      ]
+    }
+  ]
+}

@@ -84,7 +84,7 @@ Each entry in `markers` is `{ "id", "kind", "team"?, "label"? }`.
 A move is a run by one marker: `{ "marker", "waypoints", "pace"?, "after"? }`.
 
 - At most one move per marker per Step.
-- `waypoints` is a list of 1 to {{MAX_WAYPOINTS}} cells, each `{ "x", "y", "pace"? }`. The marker runs from its starting cell through each waypoint in order, in straight lines, without stopping, and rests on the last one.
+- `waypoints` is a list of 1 to {{MAX_WAYPOINTS}} cells, each `{ "x", "y", "pace"?, "hold"? }`. The marker runs from its starting cell through each waypoint in order, in straight lines, without stopping (unless a waypoint has a `hold`), and rests on the last one.
 - The ball never has a move. It travels with its holder or on a pass, or lies loose.
 - A move with no `after` starts at time zero.
 
@@ -202,7 +202,7 @@ To show draw and pass, give the pass `"after": { "move": "<marker>" }`: it waits
 
 - The pass goes once the previous pass is caught and the named Run has finished; the receiver is timed to meet it at the catch point (`at`, or the end of its Run).
 - The named marker must have a Run in the Step. Waits may not loop, for example a Run that waits on this very pass.
-- Only `move` is allowed. A Progression's `setPass` carries `after` too.
+- A pass's `after` is a full wait: `move`, `pass` or `reach` (see "Waits: `after`, `hold` and `reach`"). A Progression's `setPass` carries `after` too.
 
 ### Receive, pass, run, receive again
 
@@ -222,14 +222,54 @@ A script may declare up to {{MAX_BALLS}} markers of kind `ball`, for example two
 - A player cannot hold two balls at once. Two balls cannot start with the same holder, and a player must pass on the ball they hold before catching another (checked against the timing of the Step).
 - A Progression adds a ball with `{ "type": "addMarker", "marker": "ball2", "holder": "a4" }` and its passes with `setPass`, giving each `"ball": "ball2"`.
 
-## `after`: chaining moves
+## Waits: `after`, `hold` and `reach`
 
-`after` makes a move wait. Give exactly one of:
+Three places can wait, and all three take the same shape: a move's `after` (the Run starts late), a pass's `after` (the ball goes late) and a waypoint's `hold` (the marker stands on arriving there). Give **exactly one** of `move`, `pass` or `reach`, never two:
 
-- `{ "move": "a2" }`: start when the move of marker `a2` has finished. `a2` must have a move in this Step.
-- `{ "pass": "p1" }`: start when pass `p1` has been caught. `p1` must exist in this Step.
+- `{ "move": "a2" }`: wait until the whole move of marker `a2` has finished, holds included. `a2` must have a move in this Step.
+- `{ "pass": "p1" }`: wait until pass `p1` has been caught. `p1` must exist in this Step.
+- `{ "reach": { "marker": "a2", "waypoint": 0 } }`: wait until marker `a2` arrives at waypoint 0 of its move. Waypoint indices count from 0 in the script: the first waypoint is 0. `a2` must have a move in this Step with that waypoint.
 
-Waits must not form a loop (A waits for B, which waits for A), counting the waits passes make on their receivers. A Step ends when its last move finishes and its last pass is caught.
+Waits must not form a loop (A waits for B, which waits for A), counting the waits passes make on their receivers and the waits holds make. A Step ends when its last move finishes and its last pass is caught.
+
+### `hold`: stand on a waypoint until something happens
+
+Use a hold when a player must stop and wait part way through a Run: a carrier going to ground at a ruck, supports arriving and staying over the ball, a player waiting on a maul. On arriving at a waypoint with a `hold`, the marker stands there (with the ball, if it has it) until the wait is over, then runs the rest of its move at its Pace.
+
+```json
+{ "x": 6, "y": 8, "hold": { "pass": "p1" } }
+```
+
+- A hold is an event, never a time: there is no "wait three seconds", because durations are never typed.
+- A Run may have several holds, each waiting for one event.
+- A hold on the last waypoint keeps the move from finishing until it is over, so anything waiting on that `move` waits for the hold too.
+- A carrier can hold with the ball. A pass from it goes as soon as it is ready, from where the carrier stands, or at its `release` waypoint.
+- A receiver is slowed to meet the ball only on the segments after its last hold before the catch point; a hold already takes up the timing.
+- Progressions carry holds forward with the waypoints. `setMove` replaces the whole Run, so give the holds again.
+
+### `reach`: do something when a player arrives
+
+Use a reach when an action should be triggered by someone arriving somewhere mid-run: the ball goes when the first support gets to the ruck, a defender leaves when the carrier arrives. A reach is a wait you name in another move's `after`, a pass's `after` or a `hold`. It is not a field you add to the waypoint.
+
+- Reach fires on arrival, before any hold at that waypoint. So one player can start one action at waypoint 1 and another at waypoint 3, even if they hold at waypoint 1.
+- A reach waits on that waypoint only, not on the marker's whole Run.
+- Waits may not loop: a hold cannot wait on a pass that itself waits on that same hold.
+
+### Worked example: a ruck and recycle
+
+1 carries into a ruck at waypoint 0 and holds there with the ball until 9 has caught it. 2 and 3 are supports: each arrives at the ruck, holds until 10 has caught 9's pass, then walks back. 9's pass waits for 2 to reach the ruck, so the ball cannot go before a support is over it. (Only the parts that matter are shown.)
+
+```json
+"moves": [
+  { "marker": "a1", "pace": "jog", "waypoints": [{ "x": 6, "y": 8, "hold": { "pass": "p1" } }, { "x": 6, "y": 11, "pace": "walk" }] },
+  { "marker": "a2", "pace": "jog", "waypoints": [{ "x": 5, "y": 8, "hold": { "pass": "p2" } }, { "x": 4, "y": 11, "pace": "walk" }] },
+  { "marker": "a3", "pace": "jog", "waypoints": [{ "x": 7, "y": 8, "hold": { "pass": "p2" } }, { "x": 8, "y": 11, "pace": "walk" }] }
+],
+"passes": [
+  { "id": "p1", "from": "a1", "to": "a9", "after": { "reach": { "marker": "a2", "waypoint": 0 } } },
+  { "id": "p2", "from": "a9", "to": "a10" }
+]
+```
 
 ## Commentary
 
