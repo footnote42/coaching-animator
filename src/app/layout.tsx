@@ -77,10 +77,10 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col bg-background antialiased" suppressHydrationWarning>
         <UserProvider>
           <Navigation variant="full" />
-          {children}
+          <div className="flex-1">{children}</div>
           <Footer />
           <AgeConfirmationDialog />
         </UserProvider>

@@ -70,6 +70,13 @@ export function GalleryClient() {
     router.replace(value ? `${pathname}?tag=${encodeURIComponent(value)}` : pathname, { scroll: false });
   };
 
+  const clearFilters = () => {
+    setInput('');
+    setQ('');
+    setPage(1);
+    if (tag) router.replace(pathname, { scroll: false });
+  };
+
   const search = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
@@ -109,9 +116,14 @@ export function GalleryClient() {
       {failed && <p role="alert" className="text-sm text-text-primary">Could not load Practices. Try again shortly.</p>}
 
       {!failed && !loading && practices.length === 0 && (
-        <p className="text-sm text-text-primary">
-          {q || tag ? 'No public Practices match.' : 'No public Practices yet.'}
-        </p>
+        q || tag ? (
+          <div className="flex flex-col items-start gap-3">
+            <p className="text-sm text-text-primary">No Practices match that search.</p>
+            <Button variant="outline" className="min-h-[44px]" onClick={clearFilters}>Clear filters</Button>
+          </div>
+        ) : (
+          <p className="text-sm text-text-primary">No public Practices yet.</p>
+        )
       )}
 
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
