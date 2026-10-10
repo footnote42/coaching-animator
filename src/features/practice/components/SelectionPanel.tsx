@@ -36,11 +36,11 @@ export const TOOL_HELP: Record<string, ToolHelp> = {
   },
   run: {
     name: 'Run',
-    description: 'tap a player, then tap cells to draw their run.',
+    description: 'tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it.',
   },
   pass: {
     name: 'Pass',
-    description: 'tap the player with the ball, then the player receiving.',
+    description: 'tap the player with the ball, then the player receiving. If the receiver has a run, tap it to catch on the run.',
   },
   kick: {
     name: 'Kick',
