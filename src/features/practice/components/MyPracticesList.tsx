@@ -105,7 +105,14 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {practices.length === 0 ? (
-        <p className="text-sm text-text-primary">Nothing saved yet.</p>
+        <div className="text-sm text-text-primary">
+          <p>Nothing saved yet.</p>
+          {!onOpen && (
+            <Link href="/practice" className="mt-2 inline-flex min-h-[44px] items-center underline">
+              Create a Practice
+            </Link>
+          )}
+        </div>
       ) : (
         <ul className="space-y-1">
           {practices.map((p) => (

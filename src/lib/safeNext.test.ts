@@ -11,13 +11,13 @@ describe('safeNext', () => {
   it.each(['//evil.example', '@evil.example', '/\\evil.example', 'https://evil.example', '', 'practice', '/a\\b', '/a\nb', '/a\tb', '/a\u0000b'])(
     'rejects %j',
     (bad) => {
-      expect(safeNext(bad)).toBe('/practice');
+      expect(safeNext(bad)).toBe('/my-practices');
     }
   );
 
   it('falls back for null and undefined', () => {
-    expect(safeNext(null)).toBe('/practice');
-    expect(safeNext(undefined)).toBe('/practice');
+    expect(safeNext(null)).toBe('/my-practices');
+    expect(safeNext(undefined)).toBe('/my-practices');
   });
 
   it('uses a custom fallback', () => {

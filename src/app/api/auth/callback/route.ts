@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { safeNext } from '@/lib/safeNext';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -8,7 +9,7 @@ export const runtime = 'nodejs';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/practice';
+  const next = safeNext(searchParams.get('next'));
 
   if (code) {
     const cookieStore = await cookies();

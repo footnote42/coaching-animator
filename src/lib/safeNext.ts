@@ -1,4 +1,5 @@
-export const DEFAULT_NEXT = '/practice';
+/** Where a successful sign-in lands when no explicit destination was asked for. */
+export const DEFAULT_NEXT = '/my-practices';
 
 /**
  * Returns `next` only if it is a same-origin path: a single leading slash, no
