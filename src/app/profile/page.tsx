@@ -34,6 +34,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLinking, setIsLinking] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Sync local display name with profile once loaded
   useEffect(() => {
@@ -159,6 +160,29 @@ export default function ProfilePage() {
       return;
     }
     await signOut(); // clears local session and returns to the home page
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/user/export');
+      if (!res.ok) throw new Error(`Export failed (${res.status})`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `coaching-animator-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('[Profile] Export error:', err);
+      setError('We could not prepare your data. Please try again. You can download it up to 5 times an hour.');
+    } finally {
+      setExporting(false);
+    }
   };
 
   // Helper to check if user has a password set (email provider exists)
@@ -363,6 +387,21 @@ export default function ProfilePage() {
         </div>
 
         <PersonalTokensList />
+
+        <div className="mt-6 bg-surface border border-border p-6">
+          <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-4">Your Data</h2>
+          <p className="text-sm text-text-primary/70 mb-4">
+            Download a copy of your profile, your Practices and your access tokens (names and dates only) as a JSON file.
+          </p>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={exporting}
+            className="px-4 py-2 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {exporting ? 'Preparing...' : 'Download my data'}
+          </button>
+        </div>
 
         <div className="mt-6 bg-surface border border-border p-6">
           <h2 className="text-sm uppercase tracking-widest text-text-primary/70 mb-4">Delete Account</h2>

@@ -6,7 +6,7 @@ let profile: { age_confirmed_at: string | null } | null = null;
 
 vi.mock('@/lib/supabase/admin', () => ({
   createSupabaseAdminClient: () => ({
-    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: profile, error: null }) }) }) }),
+    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: profile, error: null }), single: async () => ({ data: { banned_at: null }, error: null }) }) }) }),
   }),
 }));
 vi.mock('@/lib/supabase/server', () => ({

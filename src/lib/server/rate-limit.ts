@@ -30,6 +30,7 @@ const DEFAULT_CONFIGS: Record<string, RateLimitConfig> = {
   'practice_report': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
   'feedback': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
   'tokens_api': { maxRequests: 20, windowMs: 60 * 60 * 1000 },
+  'data_export': { maxRequests: 5, windowMs: 60 * 60 * 1000 },
   'mcp': { maxRequests: 120, windowMs: 60 * 60 * 1000 },
 };
 

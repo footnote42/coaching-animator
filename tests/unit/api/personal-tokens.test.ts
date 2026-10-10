@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/server/auth', () => ({
   requireAuth: mocks.requireAuth,
   requireNotBanned: mocks.requireNotBanned,
+  requireAgeConfirmed: vi.fn(async () => null),
   isAuthError: (r: unknown) => r instanceof NextResponse,
 }));
 
