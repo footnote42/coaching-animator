@@ -154,6 +154,18 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
 
+    // Per user, generous: stops scripted bulk deletes without getting in a coach's way.
+    const rateLimit = await checkRateLimit(`user:${authResult.id}`, 'practice_delete', {
+      maxRequests: 30,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimit) }
+      );
+    }
+
     // Admin client: direct REST writes are revoked (#175); every write is scoped by owner_id below.
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase

@@ -36,7 +36,7 @@ export async function GET(_request: NextRequest) {
   } catch (err) {
     console.error('[Profile API] Fatal GET Error:', err);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: err instanceof Error ? err.message : 'An unexpected error occurred' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } },
       { status: 500 }
     );
   }
@@ -106,19 +106,8 @@ export async function PUT(request: NextRequest) {
   } catch (err) {
     console.error('[Profile API] Fatal PUT Error:', err);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: err instanceof Error ? err.message : 'An unexpected error occurred' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' } },
       { status: 500 }
     );
   }
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
 }

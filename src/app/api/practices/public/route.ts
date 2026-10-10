@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PublicPracticesQuerySchema } from '@/lib/schemas/practices';
+import { rateLimitKey } from '@/lib/server/client-key';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { resolveStep, validate, stepCount, type ResolvedStep } from '@/features/practice/engine';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 const PAGE_SIZE = 12;
+
+/**
+ * The list is the same for every caller (public, non-hidden rows only, no per-user fields), so the CDN may
+ * share it. A short s-maxage bounds the staleness of a newly hidden or unpublished Practice to about a minute
+ * (plus stale-while-revalidate); the per-IP limit below covers requests that miss the cache.
+ */
+const CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=300';
+const PUBLIC_LIST_LIMIT = { maxRequests: 120, windowMs: 60 * 1000 };
 
 /** The base Step resolved for the card thumbnail, or null if the stored script no longer validates. */
 function toThumbnail(script: unknown): ResolvedStep | null {
@@ -29,6 +39,14 @@ function toSummary(script: unknown) {
 /** GET /api/practices/public?q=&tag=&page=: public Practices, newest first. No auth. */
 export async function GET(request: NextRequest) {
   try {
+    const rateLimit = await checkRateLimit(rateLimitKey(request), 'public_list', PUBLIC_LIST_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' } },
+        { status: 429, headers: getRateLimitHeaders(rateLimit) }
+      );
+    }
+
     const parsed = PublicPracticesQuerySchema.safeParse({
       q: request.nextUrl.searchParams.get('q') ?? undefined,
       page: request.nextUrl.searchParams.get('page') ?? undefined,
@@ -90,7 +108,10 @@ export async function GET(request: NextRequest) {
       ...toSummary(row.script),
       thumbnail: toThumbnail(row.script),
     }));
-    return NextResponse.json({ practices, page, hasMore: rows.length > PAGE_SIZE });
+    return NextResponse.json(
+      { practices, page, hasMore: rows.length > PAGE_SIZE },
+      { headers: { 'Cache-Control': CACHE_CONTROL } }
+    );
   } catch (err) {
     console.error('[Practices API] Fatal public GET Error:', err);
     return NextResponse.json(
