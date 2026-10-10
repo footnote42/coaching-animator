@@ -313,3 +313,31 @@ describe('hold: waits that need care', () => {
     expect(duration).toBeGreaterThanOrEqual(arrival(step, 'a3', { x: 15, y: 20 }));
   });
 });
+
+describe('hold: a second group set off by the pass out', () => {
+  // a2 is set off by p1 and holds until p3; a3 is set off by p1 too and catches p2 on the run.
+  // The only route from a3's start to p2 runs through p1's catch, which p1 drops because a2 sets off on it.
+  const moves = [
+    { marker: 'a2', after: { pass: 'p1' }, waypoints: [{ x: 10, y: 9, hold: { pass: 'p3' } }, { x: 10, y: 5 }] },
+    { marker: 'a3', after: { pass: 'p1' }, waypoints: [{ x: 15, y: 9 }] },
+  ];
+  const passes = [
+    { id: 'p1', from: 'a1', to: 'a2' },
+    { id: 'p2', from: 'a2', to: 'a3', at: 0 },
+    { id: 'p3', from: 'a3', to: 'a4' },
+  ];
+
+  it('lets the receiver catch on the run', () => {
+    expect(errors(play(moves, passes))).toEqual([]);
+  });
+
+  it('catches p2 where the receiver arrives', () => {
+    const step = stepOf(play(moves, passes));
+    const ready = arrival(step, 'a3', { x: 15, y: 9 });
+    // The ball goes straight on to a4, so look for it passing a3's cell rather than resting there.
+    const { duration } = positionsAt(step, 0);
+    let caught = -1;
+    for (let t = 0; t <= duration && caught < 0; t += 0.0025) if (near(at(step, 'ball', t), { x: 15, y: 9 }, 0.1)) caught = t;
+    expect(caught).toBeGreaterThanOrEqual(ready - 0.05);
+  });
+});

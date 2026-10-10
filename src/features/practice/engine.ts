@@ -493,14 +493,14 @@ function waitEdges(moves: Map<string, Move>, passes: BallPass[], collects: Reado
     const receiver = pass.to === undefined ? undefined : moves.get(pass.to);
     if (receiver) edges.get(`pass:${pass.id}`)!.push(catchNode(receiver, pass.at));
   }
-  // A receiver that sets off on its own pass, directly or not, would make a loop.
+  // A receiver that sets off on its own pass, directly or not, would make a loop. Drop each such
+  // catch as it is found, in pass order, so a later pass is not judged through a catch already dropped.
   const inPlace = new Set<string>();
   for (const pass of passes) {
-    if (pass.to !== undefined && moves.has(pass.to) && waitsOn(edges, `start:${pass.to}`, new Set([`pass:${pass.id}`]))) inPlace.add(pass.id);
-  }
-  for (const id of inPlace) {
-    const waits = edges.get(`pass:${id}`)!;
-    waits.splice(waits.length - 1, 1);
+    if (pass.to !== undefined && moves.has(pass.to) && waitsOn(edges, `start:${pass.to}`, new Set([`pass:${pass.id}`]))) {
+      inPlace.add(pass.id);
+      edges.get(`pass:${pass.id}`)!.pop();
+    }
   }
   return { edges, inPlace };
 }
