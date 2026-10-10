@@ -24,7 +24,7 @@ export default defineConfig([
             // existing, working patterns (26 hits), so they are off here rather than refactoring
             // component code inside a framework upgrade. Re-enable with a dedicated clean-up.
             "react-hooks/set-state-in-effect": "error",
-            "react-hooks/immutability": "off",
+            "react-hooks/immutability": "error",
             "react-hooks/refs": "off",
             "@next/next/no-img-element": "warn",
 
