@@ -24,9 +24,6 @@ Then: re-author seeded Practice #1 (963b2f3c...) with Release and receiver timin
 ## Waiting on you
 - #121 Google sign-in: decide whether Google's script loading on login/register/profile fits docs/constraints.md; if yes, add the site origin to the Google OAuth client's JavaScript origins, add the client ID to Supabase's Google Authorized Client IDs (and enable manual identity linking), set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel, then test in a private window. Then submit Google branding verification.
 - Best Practices is 77 on every route because Cloudflare injects its bot-detection script (`/cdn-cgi/challenge-platform`). Turn off JavaScript detections / Bot Fight Mode if you want it gone.
-- Rotate the DeepSeek API key, and the staging Supabase keys if `.env.staging` held real values.
-- Remove the old Vercel env vars `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_BASE_URL`.
-- Optional: delete the `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` GitHub secrets.
 - Local leftovers safe to delete: `.specify/`, `archive/`, `prototype/*.html`, the `restart` branch, the locked folders under `.claude/worktrees/` (including `agent-af04391760a756731`) and the empty `../ca-s84` folder (after a reboot).
 
 ## Context
