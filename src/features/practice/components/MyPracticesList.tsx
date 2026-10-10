@@ -32,14 +32,13 @@ interface Props {
   /** Change this to refetch the list, e.g. after a save. */
   refreshKey?: number;
   /** Open a Practice in place. Without it, each title links to the editor. */
-  onOpen?: (id: string) => void;
 }
 
 /**
  * The signed-in Coach's Practices, with visibility and delete. Used inside the
  * editor and on its own on /my-practices. Callers check sign-in first.
  */
-export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
+export function MyPracticesList({ refreshKey = 0 }: Props) {
   const [practices, setPractices] = useState<PracticeSummary[] | null>(null);
   const [publishing, setPublishing] = useState<string | null>(null);
   const [deletingPractice, setDeletingPractice] = useState<PracticeSummary | null>(null);
@@ -108,7 +107,12 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {practices.length === 0 ? (
-        <p className="text-sm text-text-primary">Nothing saved yet.</p>
+        <div className="text-sm text-text-primary">
+          <p>Nothing saved yet.</p>
+          <Link href="/practice" className="mt-2 inline-flex min-h-[44px] items-center underline">
+            Create a Practice
+          </Link>
+        </div>
       ) : (
         <ul className="flex flex-col gap-3">
           {practices.map((p) => (
@@ -116,28 +120,16 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
               key={p.id}
               className="flex flex-col gap-3 border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
             >
-              {onOpen ? (
-                <button type="button" onClick={() => onOpen(p.id)} className="min-w-0 truncate text-left text-base font-medium underline">
-                  {p.title}
-                </button>
-              ) : (
-                <Link href={`/practice?id=${p.id}`} className="min-w-0 truncate text-base font-medium underline">
-                  {p.title}
-                </Link>
-              )}
+              <Link href={`/practice?id=${p.id}`} className="min-w-0 truncate text-base font-medium underline">
+                {p.title}
+              </Link>
               {/* One action row: primary first, visibility, destructive last and quiet. Every control is 44px tall. */}
               <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center">
-                {onOpen ? (
-                  <Button className={ACTION} onClick={() => onOpen(p.id)} aria-label={`Open ${p.title}`}>
+                <Button asChild className={ACTION}>
+                  <Link href={`/practice?id=${p.id}`} aria-label={`Open ${p.title}`}>
                     Open
-                  </Button>
-                ) : (
-                  <Button asChild className={ACTION}>
-                    <Link href={`/practice?id=${p.id}`} aria-label={`Open ${p.title}`}>
-                      Open
-                    </Link>
-                  </Button>
-                )}
+                  </Link>
+                </Button>
                 <Button variant="outline" className={ACTION} onClick={() => share(p)} aria-label={`Share ${p.title}`}>
                   <Share2 />
                   Share

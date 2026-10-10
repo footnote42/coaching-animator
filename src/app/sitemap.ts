@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/terms',
     '/privacy',
     '/contact',
+    '/practice-script/v1/guide',
   ];
 
   const staticRoutes: MetadataRoute.Sitemap = staticPages.map((route) => ({

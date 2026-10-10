@@ -283,7 +283,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
           <BrandIcon variant="share-viewer" />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-center">
-          <h1 className="truncate font-heading text-sm font-bold sm:text-base md:text-lg">{title}</h1>
+          <h1 className="line-clamp-2 break-words font-heading text-sm font-bold sm:text-base md:text-lg">{title}</h1>
           <p className="truncate text-xs text-text-muted" aria-live="polite">
             {stepLabel} ({stepIndex + 1}/{steps})
           </p>

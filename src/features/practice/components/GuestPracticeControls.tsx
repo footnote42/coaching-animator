@@ -78,7 +78,7 @@ export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest
 }
 
 /** After sign-in, offers to move the device Practice into the account, asking for its details first. */
-export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
+export function DevicePracticeOffer({ onSaved }: { onSaved?: () => void }) {
   const { user } = useUser();
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -132,7 +132,7 @@ export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
       clearDevicePractice();
       setSaved(null);
       toast.success('Practice saved to your account.');
-      onSaved();
+      onSaved?.();
     } else {
       toast.error("Couldn't save it to your account. It is still on this device.");
     }

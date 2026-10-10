@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import { useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import {
   Play,
   Pause,
@@ -25,7 +24,7 @@ import { PracticeScriptActions, DevicePracticeOffer } from '@/features/practice/
 import { useEditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
 import { useMediaQuery } from '@/features/practice/hooks/useMediaQuery';
 import { EditorSection } from '@/features/practice/components/EditorSection';
-import { MyPractices, PracticeDetails, SignInToSave, usePracticeSave } from '@/features/practice/components/PracticeLibrary';
+import { PracticeDetails, SignInToSave, usePracticeSave } from '@/features/practice/components/PracticeLibrary';
 import { useUser } from '@/lib/contexts/UserContext';
 import { AreaControl } from '@/features/practice/components/AreaControl';
 import { ConeSplitButton } from '@/features/practice/components/ConeSplitButton';
@@ -71,7 +70,6 @@ const TOOL_BUTTON = 'h-11 min-w-11 px-2';
  * A Step strip picks the base or a Progression; Commentary shows over the canvas.
  */
 export function PracticeImport() {
-  const router = useRouter();
   const workspace = useEditorWorkspace();
 
   const {
@@ -131,8 +129,6 @@ export function PracticeImport() {
     redo,
     applyText,
     setArea,
-    libraryKey,
-    setLibraryKey,
     isGuest,
     newPractice,
     saved,
@@ -199,7 +195,7 @@ export function PracticeImport() {
         </div>
         {!loading && !user && <SignInToSave />}
         
-        <DevicePracticeOffer onSaved={() => setLibraryKey((k) => k + 1)} />
+        <DevicePracticeOffer />
 
         <EditorSection title="Area" meta={`${stepArea.width} × ${stepArea.length} m`}>
           <AreaControl key={`${shownStep}-${stepArea.template}-${stepArea.width}x${stepArea.length}`} area={stepArea} hideLegend onChange={setArea} direction={script.direction} onDirectionChange={setDirection} />
@@ -242,7 +238,6 @@ export function PracticeImport() {
             {saveButton}
           </EditorSection>
         )}
-        {signedIn && <MyPractices refreshKey={saver.refreshKey + libraryKey} onOpen={(id) => router.push(`/practice?id=${id}`)} />}
 
         <EditorSection
           title="Advanced: Practice Script (for AI tools)"

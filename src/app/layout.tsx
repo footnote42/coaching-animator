@@ -45,8 +45,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Coaching Animator',
-    description: 'Create and share animated rugby plays',
+    title: 'Coaching Animator - Rugby Play Visualisation',
+    description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   },
   robots: {
     index: true,
@@ -74,13 +74,11 @@ export default function RootLayout({
     <html lang="en" className={`${archivo.variable} ${atkinson.variable} ${caveat.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col bg-background antialiased" suppressHydrationWarning>
         <UserProvider>
           <Navigation variant="full" />
-          {children}
+          <div className="flex-1">{children}</div>
           <Footer />
           <AgeConfirmationDialog />
         </UserProvider>

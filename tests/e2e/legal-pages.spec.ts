@@ -29,7 +29,8 @@ test.describe('Legal Compliance: Legal Pages', () => {
 
     await expect(page.getByText(/You must be 18 or over to create an account/)).toBeVisible();
     await expect(page.getByText(/at least 13 years old/)).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'No names or identifying details of players' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'No names or images of children' })).toBeVisible();
+    await expect(page.getByText(/do not put the names or identifying details of players/)).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Publishing to the Gallery' })).toBeVisible();
     await expect(page.getByText(/you give everyone permission to view it/)).toBeVisible();
   });
@@ -62,9 +63,9 @@ test.describe('Legal Compliance: Legal Pages', () => {
     await expect(page.getByRole('heading', { name: /No Telemetry, Analytics, or Tracking/ })).toBeVisible();
     await expect(page.getByText(/We do not collect telemetry data/)).toBeVisible();
     await expect(page.getByText(/Supabase/).first()).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Data Storage/ })).toBeVisible();
-    await expect(page.getByText(/Email address/).first()).toBeVisible();
-    await expect(page.getByText(/within 30 days/).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Where Your Data Is Stored/ })).toBeVisible();
+    await expect(page.getByText(/email address/).first()).toBeVisible();
+    await expect(page.getByText(/We reply within one month/)).toBeVisible();
     await expect(page.getByRole('heading', { name: /Cookies & Browser Storage/ })).toBeVisible();
   });
 

@@ -3,7 +3,7 @@
 import { useState, type Ref } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { MyPracticesList, type Visibility } from './MyPracticesList';
+import type { Visibility } from './MyPracticesList';
 import { TagPicker } from './TagPicker';
 
 interface SaveInput {
@@ -24,7 +24,6 @@ interface SaveInput {
 export function usePracticeSave({ scriptText, practiceId, title, description, tags, sourceUrl, sourceTitle, onSaved }: SaveInput) {
   const [visibility, setVisibility] = useState<Visibility>('private');
   const [saving, setSaving] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const save = async () => {
     let script: unknown;
@@ -51,7 +50,6 @@ export function usePracticeSave({ scriptText, practiceId, title, description, ta
       toast.success(practiceId ? 'Practice updated.' : 'Practice saved.');
       const id: string | undefined = body?.practice?.id ?? practiceId ?? undefined;
       if (id) onSaved(id);
-      setRefreshKey((n) => n + 1);
     } else {
       const body = await res?.json().catch(() => null);
       const details: string[] = body?.error?.details ?? [];
@@ -59,7 +57,7 @@ export function usePracticeSave({ scriptText, practiceId, title, description, ta
     }
   };
 
-  return { save, saving, visibility, setVisibility, refreshKey };
+  return { save, saving, visibility, setVisibility };
 }
 
 /** Enter in a single-line field must never submit or trigger anything. */
@@ -171,17 +169,8 @@ export function PracticeDetails({
 export function SignInToSave() {
   return (
     <p className="text-sm text-text-primary">
-      <Link href="/login?redirect=/practice" className="underline">Sign in</Link> to save Practices and see My Practices.
+      {/* py-3/-my-3 and px-1/-mx-1: a 44px hit area with no change to the line's layout or the text position. */}
+      <Link href="/login?redirect=/practice" className="inline-block px-1 py-3 -mx-1 -my-3 underline">Sign in</Link> to save Practices and see My Practices.
     </p>
-  );
-}
-
-/** The Coach's saved Practices (hidden on a phone, where it takes too much room). */
-export function MyPractices({ refreshKey, onOpen }: { refreshKey: number; onOpen: (id: string) => void }) {
-  return (
-    <section className="hidden border-t border-[var(--color-border)] pt-3 md:block">
-      <h2 className="mb-1 text-sm font-medium text-text-primary">My Practices</h2>
-      <MyPracticesList refreshKey={refreshKey} onOpen={onOpen} />
-    </section>
   );
 }
