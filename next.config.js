@@ -77,15 +77,9 @@ const nextConfig = {
     ];
   },
 
-  // Image optimization for Supabase storage
+  // #177: optimizer disabled to remove the _next/image attack surface until the Next 16 upgrade.
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    unoptimized: true,
   },
 
   // Experimental features
