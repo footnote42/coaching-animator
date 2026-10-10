@@ -1,12 +1,13 @@
 # NOW — coaching-animator
 
 ## Status
-IN PROGRESS — making it ready for co-coaches. LIVE at coaching-animator.waynetellis.com. Holds and reach (#192: #204-#208) shipped 2026-10-10, plus the polish batch (#193-#202, #195, #199, #201, #203) and the desktop Selection panel fix (#210). Two agent-built test Practices prove realistic plays work: "Ruck, pass out and reset (with holds)" (f91aa50d) and "Now v Target: after the tackle (U11 9v9)" (2a911fad), both adjusted by the Coach.
+IN PROGRESS — making it ready for co-coaches. LIVE at coaching-animator.waynetellis.com. Holds and reach (#192: #204-#208) shipped 2026-10-10, plus the polish batch (#193-#202, #195, #199, #201, #203) and the desktop Selection panel fix (#210). Two agent-built test Practices prove realistic plays work: "Ruck, pass out and reset (with holds)" (f91aa50d) and "Now v Target: after the tackle (U11 9v9)" (2a911fad), both adjusted by the Coach. A third, "Square passing: run, switch, file round" (352097e7), took 3 rounds; lessons from agent-built Practices now go to the Practice Lab.
 
 ## Next
 Settle the pending decisions on #188 and #191, then start the polish audit (#93).
 
 ## Open
+- Practice Lab: watch 352097e7 play (defender Progression, team A filing round vs team B's run) before publishing. First skill change waiting for a review: ask which end the ball starts on and whether a line holds until its first player has the ball (conflicts with the skill's "let receivers set off at time zero").
 - #209: Coach rebuilds the original ruck Practice (fb67f1e5) with holds in the editor, eventually. The new desktop layout (#210) is ready for it.
 - #203: phone panel and canvas scroll need a real-iPhone check; no iPhone available, so rely on the WebKit phone E2E or find a device.
 - Between 768 and 1279px the Selection panel stays above the canvas and can still scroll for a busy waypoint; fine for now, revisit if tablet Coaches complain.
@@ -20,6 +21,7 @@ Settle the pending decisions on #188 and #191, then start the polish audit (#93)
 - Local leftovers safe to delete: `.specify/`, `archive/`, `prototype/*.html`, the `restart` branch, old folders under `.claude/worktrees/` (use `scripts/worktree-remove.sh`), possibly `../ca-pro` and `../ca-flash`.
 
 ## Context
+- Practice Lab: `/practice-debrief` after each agent-built Practice, `/practice-debrief review` every 5 raw debriefs or monthly; notes in Obsidian `03-Practice-Lab/` (attempts, CONVENTIONS, PROMPTS, reviews). Skill edits come from reviews only, into `skill/coaching-animator/SKILL.md`.
 - Holds and reach: ADR `docs/adr/0007-holds-and-reach.md`; guide section "Waits: after, hold and reach"; skill example `10-ruck-and-recycle.json`. The skill at `~/.claude/skills/coaching-animator` links to the repo, so it updates on pull.
 - Glossary `CONTEXT.md`, ADRs `docs/adr/`, constraints `docs/constraints.md`, `SECURITY.md`.
 - Code: `src/features/practice/`; editor state in `hooks/useEditorWorkspace.ts`; wait pickers in `components/WaitPicker.tsx`.
@@ -35,4 +37,4 @@ Settle the pending decisions on #188 and #191, then start the polish audit (#93)
 None.
 
 ## Last session
-2026-10-10 — #210: the Selection panel moved beside the canvas from 1280px up (stacked label/control, full-row wait pickers), so the canvas gained about 135px; the new E2E test passes.
+2026-10-10 — Built the square-passing Practice with an agent (3 rounds: ball starts outside, line holds for B1), then set up the Practice Lab and the /practice-debrief skill; first debrief written.
