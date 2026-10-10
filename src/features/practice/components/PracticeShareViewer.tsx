@@ -468,7 +468,12 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
           ))}
         </div>
       </nav>
-      {reporting && practiceId && <ReportPracticeDialog practiceId={practiceId} onClose={() => setReporting(false)} />}
+      <p className="pb-[max(0.25rem,env(safe-area-inset-bottom))] text-center text-[11px] leading-4 text-text-muted">
+        <Link href="/terms" className="underline underline-offset-2 hover:text-text-primary">Terms</Link>
+        <span aria-hidden="true"> · </span>
+        <Link href="/privacy" className="underline underline-offset-2 hover:text-text-primary">Privacy</Link>
+      </p>
+      {reporting && practiceId &&<ReportPracticeDialog practiceId={practiceId} onClose={() => setReporting(false)} />}
     </div>
   );
 }
