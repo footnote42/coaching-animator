@@ -342,7 +342,10 @@ export const ChangeSchema = z
 
 export const ProgressionSchema = z
   .strictObject({
-    lever: z.enum(LEVERS).describe('The STEP lever this Progression pulls: Space, Time, Equipment or People.'),
+    lever: z
+      .enum(LEVERS)
+      .optional()
+      .describe('Optional. The STEP lever this Progression pulls: Space, Time, Equipment or People. Leave it out if the change fits none of them.'),
     commentary: CommentarySchema.default({ points: [] }),
     changes: z.array(ChangeSchema).describe('What this Step changes over the previous Step, applied in order. Empty while a Progression is being built.'),
   })

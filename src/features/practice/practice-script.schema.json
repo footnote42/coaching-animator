@@ -387,14 +387,14 @@
         "type": "object",
         "properties": {
           "lever": {
+            "description": "Optional. The STEP lever this Progression pulls: Space, Time, Equipment or People. Leave it out if the change fits none of them.",
             "type": "string",
             "enum": [
               "space",
               "time",
               "equipment",
               "people"
-            ],
-            "description": "The STEP lever this Progression pulls: Space, Time, Equipment or People."
+            ]
           },
           "commentary": {
             "default": {
@@ -805,7 +805,6 @@
           }
         },
         "required": [
-          "lever",
           "changes"
         ],
         "additionalProperties": false,

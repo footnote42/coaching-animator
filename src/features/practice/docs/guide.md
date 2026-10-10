@@ -237,13 +237,13 @@ Waits must not form a loop (A waits for B, which waits for A), counting the wait
 
 ## Progressions, Levers and changes
 
-A Progression is a Step that develops the previous Step by pulling one STEP Lever. It stores only its changes; everything else carries forward from the previous Step, so an edit to an earlier Step flows into every later one.
+A Progression is a Step that develops the previous Step by pulling one STEP Lever, if it fits. It stores only its changes; everything else carries forward from the previous Step, so an edit to an earlier Step flows into every later one.
 
 ```json
 { "lever": "people", "commentary": { "points": ["..."] }, "changes": [ ... ] }
 ```
 
-- `lever`: `space`, `time`, `equipment` or `people`. Space changes the Area or distances; Time changes how long players have (timing, crossing runs, Pace); Equipment changes balls, cones or shields; People adds, removes or moves players, such as a defender.
+- `lever` (optional): leave it out if the change fits none of these. Otherwise `space`, `time`, `equipment` or `people`. Space changes the Area or distances; Time changes how long players have (timing, crossing runs, Pace); Equipment changes balls, cones or shields; People adds, removes or moves players, such as a defender.
 - `changes`: at least one change, applied in order to a copy of the previous Step.
 - Progressions are optional: a match play is a Practice with no Progressions. Coaching Practices normally have at least two.
 
@@ -258,7 +258,7 @@ Change types (each is an object with a `type`):
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
 | `setPass` | `id`, `from`, `to` or (Kick to space) `cell`, `ball`?, `at`?, `after`?, `kick`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
 | `removePass` | `id` | Remove a pass. It must exist in the previous Step. |
-| `setArea` | `width`, `length`, `template`? | Replace the Area from this Step on. Only allowed when `lever` is `space`. Every cell used from this Step on, including cells carried forward, must fit the new Area. |
+| `setArea` | `width`, `length`, `template`? | Replace the Area from this Step on. Only allowed when `lever` is `space` or left out. Every cell used from this Step on, including cells carried forward, must fit the new Area. |
 
 When a Space Progression narrows the Area, markers and waypoints carried forward from the previous Step are not moved for you. Re-place every marker that would fall outside the new Area with `placeMarker`, and change or remove any move that runs outside it with `setMove` or `removeMove`, in the same Progression; validation reports each one left outside at the `setArea` change.
 
@@ -307,7 +307,7 @@ Read the rules at {{ORIGIN}}/practice-script/v1/guide.md
 and the JSON Schema at {{ORIGIN}}/practice-script/v1/schema.json.
 Output only the JSON object, with no comments or extra text.
 Use whole-number cells inside the Area, a holder for the ball, and Paces
-instead of durations. Give each Progression one Lever and a first coaching
+instead of durations. Give each Progression a Lever where one fits, and a first coaching
 point saying why it is harder.
 
 My Practice:

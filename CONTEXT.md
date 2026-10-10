@@ -13,11 +13,11 @@ One stage of a Practice. Step 0 is the base; every later Step is a Progression.
 _Avoid_: frame, slide, level
 
 **Progression**:
-A Step that develops the previous Step to stretch players further, by pulling a STEP lever (Space, Time, Equipment, People; RAM defines these): a passing pattern, then crossovers, then a defender. Progressions chain: each one is the previous Step plus its change, so an edit to an earlier Step carries forward. Required by the Trojans Coaching Framework for every activity, so a Progression is never optional decoration. Exists only inside its Practice, never on its own.
+A Step that develops the previous Step to stretch players further, usually by pulling a STEP lever (Space, Time, Equipment, People; RAM defines these), though naming one is optional: a passing pattern, then crossovers, then a defender. Progressions chain: each one is the previous Step plus its change, so an edit to an earlier Step carries forward. Required by the Trojans Coaching Framework for every activity, so a Progression is never optional decoration. Exists only inside its Practice, never on its own.
 _Avoid_: variant, version, level, child animation
 
 **Lever**:
-The STEP element a Progression changes, recorded with one coaching point saying why the Step is harder.
+The STEP element a Progression changes, when the coach names one, recorded with one coaching point saying why the Step is harder.
 _Avoid_: modifier, tweak
 
 **Commentary**:

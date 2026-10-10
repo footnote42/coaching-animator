@@ -26,7 +26,7 @@ A browser tool for rugby coaches. You draw a Practice on an Area, animate it, bu
 
 ## 4. Progressions
 
-Choose **Add Progression**, then pick the STEP lever it pulls: Space, Time, Equipment or People. Change the new Step and add a coaching point saying why it is harder. A Progression stores only its change, so edits to an earlier Step carry forward. Coaching points are shown as Commentary.
+Choose **Add Progression**, then, if you like, pick the STEP lever it changes: Space, Time, Equipment or People (or leave it blank). Change the new Step and add a coaching point saying why it is harder. A Progression stores only its change, so edits to an earlier Step carry forward. Coaching points are shown as Commentary.
 
 ## 5. Save
 

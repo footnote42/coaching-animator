@@ -181,7 +181,7 @@ export function PracticeImport() {
   const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
   const stepArea = step?.area ?? script.area;
   const stepLever = shownStep > 0 ? script.progressions[shownStep - 1]?.lever : undefined;
-  const stepTitle = stepLever ? `Step ${shownStep}: ${LEVER_NAMES[stepLever]}` : 'Base Step';
+  const stepTitle = shownStep === 0 ? 'Base Step' : stepLever ? `Step ${shownStep}: ${LEVER_NAMES[stepLever]}` : `Step ${shownStep}`;
   const forwardIds = new Set(stepWarnings.filter((w) => w.kind === 'forward').map((w) => w.pass));
 
   return (
@@ -306,7 +306,7 @@ export function PracticeImport() {
                 aria-pressed={n === shownStep}
                 onClick={() => playStep(n)}
               >
-                {lever ? `${n}. ${LEVER_NAMES[lever]}` : 'Base'}
+                {n === 0 ? 'Base' : lever ? `${n}. ${LEVER_NAMES[lever]}` : `${n}`}
               </Button>
             );
           })}
@@ -434,7 +434,7 @@ export function PracticeImport() {
                   className="pointer-events-none absolute left-2 top-2 max-w-xs bg-black/70 p-2 text-sm text-white"
                 >
                   <p className="font-medium">
-                    {step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : 'Base Step'}
+                    {step.index === 0 ? 'Base Step' : step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : `Step ${step.index}`}
                   </p>
                   {step.commentary.points.length > 0 && (
                     <ul className="mt-1 list-disc space-y-1 pl-5">

@@ -755,7 +755,7 @@ function checkReferences(script: PracticeScript): ValidationError[] {
     const set = new Set<string>();
     progression.changes.forEach((change, c) => {
       const path = `progressions[${p}].changes[${c}]`;
-      if (change.type === 'setArea' && progression.lever !== 'space') {
+      if (change.type === 'setArea' && progression.lever !== undefined && progression.lever !== 'space') {
         errors.push({ path: `${path}.type`, message: 'only a Progression that pulls the Space lever can change the Area' });
       }
       if (change.type === 'addMarker' || change.type === 'placeMarker') set.add(`cell:${change.marker}`);

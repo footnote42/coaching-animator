@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
@@ -35,7 +35,7 @@ interface AddProgressionProps {
 /** "Add Progression": asks for the Lever, then adds an empty Step after the last one. */
 export function AddProgressionButton({ script, onAdd }: AddProgressionProps) {
   const [open, setOpen] = useState(false);
-  const [lever, setLeverChoice] = useState<Lever>('people');
+  const [lever, setLeverChoice] = useState<Lever | ''>('');
   return (
     <>
       <Button variant="outline" className="h-11" onClick={() => setOpen(true)}>
@@ -45,11 +45,12 @@ export function AddProgressionButton({ script, onAdd }: AddProgressionProps) {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Add a Progression</DialogTitle>
-            <DialogDescription>Which STEP lever does it pull to make the Practice harder?</DialogDescription>
+            <DialogDescription>What does it change? Space, Time, Equipment, People, or leave blank.</DialogDescription>
           </DialogHeader>
           <label className="flex flex-col gap-1 text-sm text-text-primary">
-            <span>Lever</span>
-            <select value={lever} onChange={(e) => setLeverChoice(e.target.value as Lever)} className={FIELD}>
+            <span>Lever (optional)</span>
+            <select value={lever} onChange={(e) => setLeverChoice(e.target.value as Lever | '')} className={FIELD}>
+              <option value="">Leave blank</option>
               {LEVERS.map((l) => (
                 <option key={l} value={l}>{LEVER_NAMES[l]}</option>
               ))}
@@ -60,7 +61,7 @@ export function AddProgressionButton({ script, onAdd }: AddProgressionProps) {
             <Button
               className="h-11"
               onClick={() => {
-                onAdd(addProgression(script, lever));
+                onAdd(addProgression(script, lever || undefined));
                 setOpen(false);
               }}
             >
@@ -98,12 +99,13 @@ export function StepDetails({ script, step, onChange, onSelectStep, hideLegend }
       {progression && (
         <div className="flex flex-wrap items-end gap-2">
           <label className="flex flex-col gap-1">
-            <span>Lever</span>
+            <span>Lever (optional)</span>
             <select
-              value={progression.lever}
-              onChange={(e) => onChange(setLever(script, step, e.target.value as Lever))}
+              value={progression.lever ?? ''}
+              onChange={(e) => onChange(setLever(script, step, (e.target.value || undefined) as Lever | undefined))}
               className={FIELD}
             >
+              <option value="">None</option>
               {LEVERS.map((l) => (
                 <option key={l} value={l}>{LEVER_NAMES[l]}</option>
               ))}

@@ -52,7 +52,7 @@ On the MCP route, `create_practice` validates the script against the live schema
    - Cones may carry a `colour` (`yellow` default, `red`, `amber`, `green`, `white`, `blue`); use it to mark zones, e.g. red, amber and green for a traffic-light layout. Only cones take a colour.
    - Kit is `cone`, `tackle-shield` or `tackle-bag` (the tall cylindrical contact bag, bigger than a shield; never "tackle dummy").
    - A tackle shield or tackle bag can be Lying (laid flat, for a ruck or a ball under a pad): add `"lying": true` to its placement, `addMarker` or `placeMarker`. A ball on that cell, loose or with its holder standing there, is drawn beneath it. `placeMarker` replaces the whole start, so give the cell again, and leave `lying` out to stand the kit back up. Only tackle shields and tackle bags take `lying`.
-3. Add Progressions (each pulls one Lever: space, time, equipment or people, with a first coaching point saying why it is harder) unless the Practice is a match play.
+3. Add Progressions (each may pull one Lever: space, time, equipment or people; `lever` is optional, so leave it out if none fits, with a first coaching point saying why it is harder) unless the Practice is a match play.
 4. Check it (step 3 below) before you hand it over.
 
 ## 2. Turn a video or page into a Practice

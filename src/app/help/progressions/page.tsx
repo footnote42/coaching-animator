@@ -27,6 +27,13 @@ export default function ProgressionsHelpPage() {
         A Practice is a chain of Steps. Step 0 is the base. Every later Step is a <strong>Progression</strong>: the previous Step plus one change that stretches players further.
       </p>
 
+      <section className="mb-8">
+        <h2 className="text-2xl font-heading font-bold mb-2">What is a Progression?</h2>
+        <p>
+          A Progression is the same Practice made a bit harder, one small change at a time. Add one when you want players to do the same thing with more pressure, less time or less space. You do not copy the Practice; the Progression only stores what is different.
+        </p>
+      </section>
+
       <p className="mb-8 p-4 bg-surface-warm border border-border">
         <strong>Example:</strong> a passing square<br />
         Base: a passing pattern &nbsp;·&nbsp;
@@ -35,9 +42,9 @@ export default function ProgressionsHelpPage() {
       </p>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-heading font-bold mb-4">Pick a lever</h2>
+        <h2 className="text-2xl font-heading font-bold mb-4">A tip: pick a lever</h2>
         <p className="mb-4">
-          Each Progression pulls one STEP lever, with a coaching point saying why the Step is harder.
+          STEP is a tip, not a rule. If your change fits one of these, you can say which; if it does not, leave it blank. Add a coaching point saying why the Step is harder.
         </p>
         <ul className="space-y-2">
           {LEVERS.map((lever) => (

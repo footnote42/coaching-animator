@@ -1059,7 +1059,7 @@ export function applyStepArea(script: PracticeScript, n: number, area: Area): Pr
   }
   const progression = script.progressions[n - 1];
   if (!progression) return stepMissing(n);
-  if (progression.lever !== 'space') {
+  if (progression.lever !== undefined && progression.lever !== 'space') {
     return 'Only a Progression that pulls the Space lever can change the Area. Set its Lever to Space first.';
   }
   return editProgression(script, n, (step) => (same(step.area, area) ? step : { ...step, area }));
@@ -1071,8 +1071,8 @@ export function applyDirection(script: PracticeScript, direction: Direction): Pr
 }
 
 /** Add an empty Progression after the last Step. */
-export function addProgression(script: PracticeScript, lever: Lever): PracticeScript {
-  return { ...script, progressions: [...script.progressions, { lever, commentary: { points: [] }, changes: [] }] };
+export function addProgression(script: PracticeScript, lever?: Lever): PracticeScript {
+  return { ...script, progressions: [...script.progressions, { ...(lever ? { lever } : {}), commentary: { points: [] }, changes: [] }] };
 }
 
 /**
@@ -1096,12 +1096,17 @@ export function removeProgression(script: PracticeScript, n: number): PracticeSc
   return keepValid(script, next, 'That Step can’t be deleted');
 }
 
-/** Change the Lever of Progression n (Step n). */
-export function setLever(script: PracticeScript, n: number, lever: Lever): PracticeScript | string {
+function withLever<T extends { lever?: Lever }>(p: T, lever: Lever | undefined): T {
+  const { lever: _old, ...rest } = p;
+  return (lever ? { ...rest, lever } : rest) as T;
+}
+
+/** Change the Lever of Progression n (Step n); undefined clears it. */
+export function setLever(script: PracticeScript, n: number, lever: Lever | undefined): PracticeScript | string {
   const progression = script.progressions[n - 1];
   if (!progression) return stepMissing(n);
   if (progression.lever === lever) return script;
-  const progressions = script.progressions.map((p, i) => (i === n - 1 ? { ...p, lever } : p));
+  const progressions = script.progressions.map((p, i) => (i === n - 1 ? withLever(p, lever) : p));
   return keepValid(script, { ...script, progressions }, 'That Lever doesn’t fit this Step');
 }
 

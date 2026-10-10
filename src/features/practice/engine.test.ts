@@ -356,10 +356,10 @@ describe('Progressions', () => {
     ]);
   });
 
-  it('rejects a Progression without a Lever', () => {
+  it('accepts a Progression without a Lever', () => {
     const script = clone(withProgressions) as { progressions: Array<Record<string, unknown>> };
     delete script.progressions[1].lever;
-    expect(errorsOf(script)).toEqual(['progressions[1].lever: is required']);
+    expect(validate(script).ok).toBe(true);
   });
 });
 

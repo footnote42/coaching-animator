@@ -34,7 +34,7 @@ export default function HowToPage() {
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">3. Add a Progression</h3>
-              <p>Choose <strong>Add Progression</strong> and pick the STEP lever it pulls: Space, Time, Equipment or People. Then change the Step and add a coaching point saying why it is harder. Edits to an earlier Step carry forward.</p>
+              <p>Choose <strong>Add Progression</strong> and, if you like, pick the STEP lever it changes: Space, Time, Equipment or People (or leave it blank). Then change the Step and add a coaching point saying why it is harder. Edits to an earlier Step carry forward.</p>
             </li>
             <li>
               <h3 className="text-lg font-heading font-semibold mb-1">4. Save</h3>

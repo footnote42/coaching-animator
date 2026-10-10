@@ -263,7 +263,8 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
   };
 
   const hasCommentary = Boolean(step.lever) || step.commentary.points.length > 0;
-  const stepLabel = step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : 'Base Step';
+  const stepLabel =
+    step.index === 0 ? 'Base Step' : step.lever ? `Step ${step.index}: ${LEVER_NAMES[step.lever]} lever` : `Step ${step.index}`;
 
   return (
     <div
