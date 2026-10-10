@@ -29,14 +29,13 @@ interface Props {
   /** Change this to refetch the list, e.g. after a save. */
   refreshKey?: number;
   /** Open a Practice in place. Without it, each title links to the editor. */
-  onOpen?: (id: string) => void;
 }
 
 /**
  * The signed-in Coach's Practices, with visibility and delete. Used inside the
  * editor and on its own on /my-practices. Callers check sign-in first.
  */
-export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
+export function MyPracticesList({ refreshKey = 0 }: Props) {
   const [practices, setPractices] = useState<PracticeSummary[] | null>(null);
   const [publishing, setPublishing] = useState<string | null>(null);
   const [deletingPractice, setDeletingPractice] = useState<PracticeSummary | null>(null);
@@ -107,25 +106,17 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
       {practices.length === 0 ? (
         <div className="text-sm text-text-primary">
           <p>Nothing saved yet.</p>
-          {!onOpen && (
-            <Link href="/practice" className="mt-2 inline-flex min-h-[44px] items-center underline">
-              Create a Practice
-            </Link>
-          )}
+          <Link href="/practice" className="mt-2 inline-flex min-h-[44px] items-center underline">
+            Create a Practice
+          </Link>
         </div>
       ) : (
         <ul className="space-y-1">
           {practices.map((p) => (
             <li key={p.id} className="flex items-center gap-2 text-sm">
-              {onOpen ? (
-                <button type="button" onClick={() => onOpen(p.id)} className="flex-1 truncate text-left underline">
-                  {p.title}
-                </button>
-              ) : (
-                <Link href={`/practice?id=${p.id}`} className="flex-1 truncate underline">
-                  {p.title}
-                </Link>
-              )}
+              <Link href={`/practice?id=${p.id}`} className="flex-1 truncate underline">
+                {p.title}
+              </Link>
               <select
                 aria-label={`Visibility of ${p.title}`}
                 value={p.visibility}

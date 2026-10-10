@@ -70,7 +70,9 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await offer.getByRole('button', { name: 'Save', exact: true }).click()
   await expect(page.getByText('Practice saved to your account.')).toBeVisible()
 
-  await page.getByRole('button', { name: EXAMPLE_TITLE, exact: true }).click()
+  // Reopen it from My Practices (the editor does not list Practices).
+  await page.goto('/my-practices')
+  await page.getByRole('link', { name: EXAMPLE_TITLE, exact: true }).click()
   await page.waitForURL(/\/practice\?id=/)
   const id = new URL(page.url()).searchParams.get('id')
   expect(id).toBeTruthy()
@@ -91,6 +93,7 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await expect(page.getByText('Practice updated.')).toBeVisible()
 
   // Share: anyone with the link can watch it.
+  await page.goto('/my-practices')
   const shared = page.waitForResponse(
     (res) => res.url().endsWith(`/api/practices/${id}`) && res.request().method() === 'PATCH',
   )

@@ -307,7 +307,6 @@ export function useEditorWorkspace() {
 
   /** Set the Direction of attack as one undoable edit. */
   const setDirection = (direction: Direction) => commit(applyDirection(script, direction));
-  const [libraryKey, setLibraryKey] = useState(0);
 
   // A Guest's device slot holds the script once there is something in it.
   const deviceText = script.markers.length > 0 || text !== scriptText ? text : '';
@@ -469,8 +468,6 @@ export function useEditorWorkspace() {
     setArea,
     setDirection,
     stepWarnings,
-    libraryKey,
-    setLibraryKey,
     isGuest,
     newPractice,
     saved,
