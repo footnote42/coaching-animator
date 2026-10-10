@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
 export async function verifyPersonalToken(plaintext: string): Promise<string | null> {
   const hash = createHash('sha256').update(plaintext).digest('hex');
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   
   const { data, error } = await supabase.rpc('verify_personal_token', { p_hash: hash });
 

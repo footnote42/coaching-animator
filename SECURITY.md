@@ -29,7 +29,7 @@ Implemented in `src/lib/server/rate-limit.ts` and the migration `20260401000000_
 - It fails open: if the store errors, the request is allowed and the error is logged with the `[RateLimit]` prefix. Availability is preferred over blocking real users.
 - The `rate_limits` table has RLS enabled with no policies, and `anon` and `authenticated` have no table privileges.
 
-Known ceiling: `rate_limit_hit` is `SECURITY DEFINER` and executable by `anon` and `authenticated` with any key. A caller could therefore inflate someone else's counter. The worst case is a temporary lockout of that key until its window ends; it does not expose data. Upgrade path: revoke execute from `anon` and `authenticated` and call the function only with the service role.
+`rate_limit_hit` is `SECURITY DEFINER` and EXECUTE is revoked from `anon`, `authenticated` and `PUBLIC` (`20261011000000_privilege_hardening.sql`, #178). Only the service-role client calls it, so a caller cannot inflate another coach's counter through `/rest/v1/rpc`. `cleanup_rate_limits()` is closed the same way.
 
 ## Access rules (row-level security)
 

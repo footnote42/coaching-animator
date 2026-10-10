@@ -8,7 +8,7 @@
  * If the store errors, the limiter fails OPEN (request allowed, error logged).
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
 export interface RateLimitConfig {
   maxRequests: number;
@@ -42,7 +42,7 @@ export async function checkRateLimit(
   const { maxRequests, windowMs } = config ?? DEFAULT_CONFIGS[endpoint] ?? { maxRequests: 100, windowMs: 60 * 60 * 1000 };
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase.rpc('rate_limit_hit', {
       p_key: `${key}:${endpoint}`,
       p_window_seconds: Math.max(1, Math.ceil(windowMs / 1000)),
