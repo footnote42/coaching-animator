@@ -4,7 +4,10 @@ import React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const signUp = vi.fn(async (_args: unknown) => ({ error: null }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: () => new URLSearchParams('redirect=/practice'),
+}));
 vi.mock('@/lib/supabase/client', () => ({ createSupabaseBrowserClient: () => ({ auth: { signUp } }) }));
 vi.mock('@/lib/api-client', () => ({ postWithRetry: vi.fn() }));
 
@@ -43,7 +46,8 @@ describe('register page 18+ declaration', () => {
     fireEvent.click(screen.getByLabelText('I am 18 or over'));
     fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
     await waitFor(() => expect(signUp).toHaveBeenCalled());
-    const arg = signUp.mock.calls[0][0] as { options: { data: unknown } };
+    const arg = signUp.mock.calls[0][0] as { options: { data: unknown; emailRedirectTo: string } };
+    expect(arg.options.emailRedirectTo).toBe(`${window.location.origin}/auth/confirm?next=%2Fpractice`);
     expect(arg.options.data).toEqual({ age_confirmed: true });
   });
 
