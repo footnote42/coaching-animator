@@ -66,7 +66,7 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className={H2}>3. Signing In with Google</h2>
+        <h2 className={H2}>3. Signing in with Google</h2>
         <p className={P}>
           You can sign in with your Google account instead of an email and password. You do this on Google&apos;s own
           sign-in page. If you do, Google shares the following with us, and only after you agree on Google&apos;s consent screen:

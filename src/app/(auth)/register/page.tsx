@@ -101,7 +101,7 @@ function RegisterForm() {
 
   return (
     <div>
-      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h1>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create account</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-danger-surface border border-danger/40 text-danger text-sm">
@@ -267,7 +267,7 @@ function RegisterForm() {
           disabled={loading}
           className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {loading ? 'Creating account...' : 'Create Account'}
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
       </form>
 
