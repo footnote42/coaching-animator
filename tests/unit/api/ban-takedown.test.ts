@@ -97,7 +97,7 @@ describe('route guards', () => {
     mocks.from.mockReturnValue(builder(() => ({ data: [{ id: 'p1' }], error: null })));
     const { DELETE } = await import('@/app/api/practices/[id]/route');
     const res = await DELETE(new NextRequest('http://localhost/api/practices/p1', { method: 'DELETE' }), {
-      params: { id: 'p1' },
+      params: Promise.resolve({ id: 'p1' }),
     });
     expect(res.status).toBe(200);
     expect(mocks.requireNotBanned).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe('route guards', () => {
   it('ban_user hides every Practice the owner has', async () => {
     const tables = banTables(null);
     const { POST } = await import('@/app/api/admin/practice-reports/[id]/action/route');
-    const res = await POST(banReq(), { params: { id: 'r1' } });
+    const res = await POST(banReq(), { params: Promise.resolve({ id: 'r1' }) });
     expect(res.status).toBe(200);
     expect(tables.practices.update).toHaveBeenCalledWith({ hidden: true });
     expect(tables.practices.eq).toHaveBeenCalledWith('owner_id', 'owner-1');
@@ -116,7 +116,7 @@ describe('route guards', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     banTables({ message: 'x' });
     const { POST } = await import('@/app/api/admin/practice-reports/[id]/action/route');
-    const res = await POST(banReq(), { params: { id: 'r1' } });
+    const res = await POST(banReq(), { params: Promise.resolve({ id: 'r1' }) });
     expect(res.status).toBe(500);
   });
 });

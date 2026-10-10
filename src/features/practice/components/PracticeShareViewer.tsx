@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import {
   ChevronLeft,

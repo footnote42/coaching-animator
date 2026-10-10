@@ -49,7 +49,7 @@ const script = {
 const req = (body: unknown) =>
   new NextRequest('http://localhost/api/practices', { method: 'POST', body: JSON.stringify(body) });
 const post = (extra: object) => POST(req({ title: 'T', script, ...extra }));
-const patch = (extra: object) => PATCH(req(extra), { params: { id: 'p1' } });
+const patch = (extra: object) => PATCH(req(extra), { params: Promise.resolve({ id: 'p1' }) });
 
 describe('Tags on save and update', () => {
   beforeEach(() => {

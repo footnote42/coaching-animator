@@ -10,14 +10,15 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
  * POST /api/practices/[id]/report: report a link or public Practice.
  * Signed-out viewers may report (rate limited by IP); banned accounts may not.
  */
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const user = await getUser();
 

@@ -173,6 +173,8 @@ export function UserProvider({ children }: UserProviderProps) {
     } finally {
       setUser(null);
       setProfile(null);
+      // Full reload on purpose: sign out must drop all client state.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/';
     }
   };

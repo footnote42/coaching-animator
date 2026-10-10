@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const failed = (message: string) =>
@@ -19,7 +19,8 @@ const failed = (message: string) =>
  * dismiss | hide | unhide | delete | ban_user. Open reports move to dismissed
  * (dismiss) or actioned (hide, delete, ban_user); unhide never changes a report.
  */
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const authResult = await requireAdmin();
     if (isAuthError(authResult)) return authResult;

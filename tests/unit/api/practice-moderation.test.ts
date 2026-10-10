@@ -66,7 +66,7 @@ beforeEach(() => {
 });
 
 describe('POST /api/practices/[id]/report', () => {
-  const ctx = { params: { id } };
+  const ctx = { params: Promise.resolve({ id }) };
   const url = `http://localhost/api/practices/${id}/report`;
   const visible = (extra = {}) =>
     mocks.rpc.mockReturnValue(builder({ data: { id, owner_id: 'owner-1', visibility: 'public', ...extra }, error: null }));
@@ -143,7 +143,7 @@ describe('banned accounts cannot save or publish', () => {
       method: 'PATCH',
       body: JSON.stringify({ visibility: 'public' }),
     });
-    expect((await PATCH(req, { params: { id } })).status).toBe(403);
+    expect((await PATCH(req, { params: Promise.resolve({ id }) })).status).toBe(403);
     expect(mocks.from).not.toHaveBeenCalled();
   });
 });
@@ -192,7 +192,7 @@ describe('GET /api/admin/practice-reports', () => {
 });
 
 describe('POST /api/admin/practice-reports/[id]/action', () => {
-  const ctx = { params: { id: reportId } };
+  const ctx = { params: Promise.resolve({ id: reportId }) };
   const act = (body: unknown) => ACTION(json(`http://localhost/api/admin/practice-reports/${reportId}/action`, body), ctx);
 
   function setup(reportStatus = 'open') {

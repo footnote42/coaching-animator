@@ -6,11 +6,12 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /** POST /api/admin/feedback/[id]/read: mark a submission as read. Admin only. */
-export async function POST(_request: NextRequest, { params }: RouteParams) {
+export async function POST(_request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const authResult = await requireAdmin();
     if (isAuthError(authResult)) return authResult;

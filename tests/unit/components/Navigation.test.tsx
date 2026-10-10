@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { Navigation } from '@/shared/components/Navigation';
 
 vi.mock('next/navigation', () => ({

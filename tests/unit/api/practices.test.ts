@@ -121,7 +121,7 @@ describe('GET /api/practices', () => {
 
 describe('/api/practices/[id]', () => {
   const id = '11111111-2222-4333-8444-555555555555';
-  const ctx = { params: { id } };
+  const ctx = { params: Promise.resolve({ id }) };
   const req = new NextRequest(`http://localhost/api/practices/${id}`);
 
   it('GET reads through get_shared_practice', async () => {
@@ -144,7 +144,7 @@ describe('/api/practices/[id]', () => {
   });
 
   it('GET returns 404 for an id that is not a uuid without querying', async () => {
-    const res = await GET_ONE(req, { params: { id: 'p1' } });
+    const res = await GET_ONE(req, { params: Promise.resolve({ id: 'p1' }) });
     expect(res.status).toBe(404);
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
@@ -175,7 +175,7 @@ describe('/api/practices/[id]', () => {
 });
 
 describe('PATCH /api/practices/[id]', () => {
-  const ctx = { params: { id: 'p1' } };
+  const ctx = { params: Promise.resolve({ id: 'p1' }) };
   const patch = (body: unknown) =>
     new NextRequest('http://localhost/api/practices/p1', { method: 'PATCH', body: JSON.stringify(body) });
 

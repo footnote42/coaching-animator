@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Copy } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { CANONICAL_ORIGIN } from '@/lib/site-origin';

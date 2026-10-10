@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { validate, resolveStep } from '@/features/practice/engine';
 import { addProgression, setLever } from '@/features/practice/editing';
 import type { PracticeScript } from '@/features/practice/schema';

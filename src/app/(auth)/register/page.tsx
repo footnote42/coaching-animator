@@ -87,7 +87,7 @@ export default function RegisterPage() {
       }
 
       setSuccessMessage('Verification email sent! Please check your inbox.');
-    } catch (error) {
+    } catch {
       setErrorMessage('Failed to resend verification email. Please try again.');
     } finally {
       setResendingVerification(false);

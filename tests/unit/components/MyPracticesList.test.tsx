@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { toast } from 'sonner';
 import { MyPracticesList } from '@/features/practice/components/MyPracticesList';
 

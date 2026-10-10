@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const notFound = () =>
@@ -21,7 +21,8 @@ const notFound = () =>
  * GET /api/practices/[id]: full Practice including script, read through
  * get_shared_practice(): the owner at any visibility, anyone for link and public.
  */
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const practice = await getSharedPractice(params.id);
     if (!practice) return notFound();
@@ -38,7 +39,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 const LIST_COLUMNS = 'id, title, description, visibility, tags, source_url, source_title, schema_version, created_at, updated_at';
 
 /** PATCH /api/practices/[id]: owner only; partial { title, description, visibility, tags, sourceUrl, sourceTitle, script }. */
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
@@ -149,7 +151,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  * DELETE /api/practices/[id]: owner only. Deliberately no ban check (#176): a banned user may remove
  * their own content (it only reduces what is live). Banned users still cannot create or edit.
  */
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, props: RouteParams) {
+  const params = await props.params;
   try {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;

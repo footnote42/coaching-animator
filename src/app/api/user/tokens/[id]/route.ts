@@ -6,10 +6,8 @@ import { requireAuth, requireNotBanned, isAuthError } from '@/lib/server/auth';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await requireAuth();
   if (isAuthError(user)) return user;
 
