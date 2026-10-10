@@ -111,15 +111,16 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   // Home brand link
   await expect(viewer.getByRole('link', { name: 'Coaching Animator home' })).toHaveAttribute('href', '/')
 
-  // Report label
-  await expect(viewer.getByRole('button', { name: 'Report' })).toBeVisible()
+  // Report and Full screen fold into the More menu on phones (title needs the room)
+  await expect(viewer.getByRole('button', { name: 'Report' })).toBeHidden()
+  await expect(viewer.getByRole('button', { name: 'Full screen' })).toBeHidden()
+  const titleBox = await viewer.getByRole('heading', { name: EXAMPLE_TITLE }).boundingBox()
+  expect(titleBox?.width ?? 0).toBeGreaterThanOrEqual(200)
 
   // Share copies link on fallback and confirms
   await viewer.getByRole('button', { name: 'Share' }).click()
   await expect(viewer.getByText('Link copied.')).toBeVisible()
 
-  // Full screen button exists in Chromium
-  await expect(viewer.getByRole('button', { name: 'Full screen' })).toBeVisible()
 
   const next = viewer.getByRole('button', { name: 'Next Step' })
   for (let n = 0; n < 3; n++) await next.click()
@@ -141,6 +142,8 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await viewer.getByRole('button', { name: 'More options' }).click()
   await expect(viewer.getByRole('menu')).toBeVisible()
   await expect(viewer.getByText('Copy the Practice Script to adapt or hand to an AI.')).toBeVisible()
+  await expect(viewer.getByRole('menuitem', { name: 'Report' })).toBeVisible()
+  await expect(viewer.getByRole('menuitem', { name: 'Full screen' })).toBeVisible()
   await viewer.getByRole('menuitem', { name: /Copy script/ }).click()
   await expect(viewer.getByText('Script copied.')).toBeVisible()
 

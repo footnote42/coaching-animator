@@ -278,7 +278,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
           {fullscreenAvailable && (
             <Button
               variant="outline"
-              className={CONTROL}
+              className={`${CONTROL} max-sm:hidden`}
               aria-label={isFullscreen ? 'Exit full screen' : 'Full screen'}
               title={isFullscreen ? 'Exit full screen' : 'Full screen'}
               onClick={toggleFullscreen}
@@ -289,7 +289,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
           {practiceId && (
             <Button
               variant="outline"
-              className={`${CONTROL} gap-1.5`}
+              className={`${CONTROL} gap-1.5 max-sm:hidden`}
               aria-label="Report"
               title="Report"
               onClick={() => setReporting(true)}
@@ -315,6 +315,34 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
                 role="menu"
                 className="absolute right-0 top-full z-50 mt-1 w-64 rounded-md border border-border bg-surface p-2 text-text-primary shadow-xl"
               >
+                {fullscreenAvailable && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="flex min-h-11 w-full items-center gap-2 rounded p-2 text-left text-sm font-medium hover:bg-text-primary/10 focus:bg-text-primary/10 focus:outline-none sm:hidden"
+                    onClick={async () => {
+                      setMenuOpen(false);
+                      await toggleFullscreen();
+                    }}
+                  >
+                    {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                    {isFullscreen ? 'Exit full screen' : 'Full screen'}
+                  </button>
+                )}
+                {practiceId && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="flex min-h-11 w-full items-center gap-2 rounded p-2 text-left text-sm font-medium hover:bg-text-primary/10 focus:bg-text-primary/10 focus:outline-none sm:hidden"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setReporting(true);
+                    }}
+                  >
+                    <Flag className="h-4 w-4" />
+                    Report
+                  </button>
+                )}
                 <button
                   type="button"
                   role="menuitem"
