@@ -111,7 +111,7 @@ export function ConeSplitButton({
       <Button
         ref={arrowRef}
         variant={active ? 'default' : 'outline'}
-        className="h-11 w-7 min-w-7 px-0"
+        className="h-11 w-11 min-w-11 px-0"
         aria-label="Cone colour"
         title="Cone colour"
         aria-haspopup="dialog"

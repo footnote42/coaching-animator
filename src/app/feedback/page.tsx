@@ -70,9 +70,12 @@ export default function FeedbackPage() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Name</label>
+          <label htmlFor="feedback-name" className="block text-sm font-medium mb-1">Name</label>
           <input
+            id="feedback-name"
+            name="name"
             type="text"
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -82,11 +85,14 @@ export default function FeedbackPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">
+          <label htmlFor="feedback-email" className="block text-sm font-medium mb-1">
             Email <span className="font-normal text-text-muted">(optional — for follow-up)</span>
           </label>
           <input
+            id="feedback-email"
+            name="email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border border-border focus:border-primary focus:outline-none"
@@ -95,8 +101,10 @@ export default function FeedbackPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Area</label>
+          <label htmlFor="feedback-area" className="block text-sm font-medium mb-1">Area</label>
           <select
+            id="feedback-area"
+            name="area"
             value={area}
             onChange={(e) => setArea(e.target.value)}
             required
@@ -114,8 +122,10 @@ export default function FeedbackPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">What happened / what you expected</label>
+          <label htmlFor="feedback-what" className="block text-sm font-medium mb-1">What happened / what you expected</label>
           <textarea
+            id="feedback-what"
+            name="what"
             value={what}
             onChange={(e) => setWhat(e.target.value)}
             required
@@ -126,8 +136,10 @@ export default function FeedbackPage() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Overall</label>
+          <label htmlFor="feedback-rating" className="block text-sm font-medium mb-1">Overall</label>
           <select
+            id="feedback-rating"
+            name="rating"
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             required

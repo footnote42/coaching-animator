@@ -188,7 +188,9 @@ export default function RegisterPage() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -203,7 +205,9 @@ export default function RegisterPage() {
           </label>
           <input
             id="password"
+            name="password"
             type="password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -220,7 +224,9 @@ export default function RegisterPage() {
           </label>
           <input
             id="confirmPassword"
+            name="confirmPassword"
             type="password"
+            autoComplete="new-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -232,6 +238,7 @@ export default function RegisterPage() {
         <div className="flex items-start gap-2">
           <input
             id="terms"
+            name="terms"
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setAcceptTerms(e.target.checked)}
@@ -249,18 +256,19 @@ export default function RegisterPage() {
           </label>
         </div>
 
-        <div className="flex items-start gap-2">
+        <label
+          htmlFor="adult"
+          className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm text-text-primary/80"
+        >
           <input
             id="adult"
+            name="adult"
             type="checkbox"
             checked={confirmAdult}
             onChange={(e) => setConfirmAdult(e.target.checked)}
-            className="mt-1"
           />
-          <label htmlFor="adult" className="text-sm text-text-primary/80">
-            I am 18 or over
-          </label>
-        </div>
+          <span>I am 18 or over</span>
+        </label>
 
         <button
           type="submit"
