@@ -8,9 +8,11 @@ import { validate, formatError } from '@/features/practice/engine';
 import { buildAskAiPrompt } from '@/features/practice/askAi';
 import {
   clearDevicePractice,
+  deviceTitle,
   readDevicePractice,
-  titleFor,
 } from '@/features/practice/hooks/useGuestPractice';
+import { PracticeDetails } from '@/features/practice/components/PracticeLibrary';
+import type { Visibility } from '@/features/practice/components/MyPracticesList';
 
 function isEmptyPractice(text: string): boolean {
   try {
@@ -75,11 +77,18 @@ export function PracticeScriptActions({ text, isGuest }: { text: string; isGuest
   );
 }
 
-/** After sign-in, offers to move the device Practice into the account. */
+/** After sign-in, offers to move the device Practice into the account, asking for its details first. */
 export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
   const { user } = useUser();
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [sourceUrl, setSourceUrl] = useState('');
+  const [sourceTitle, setSourceTitle] = useState('');
+  const [visibility, setVisibility] = useState<Visibility>('private');
 
   useEffect(() => {
     setSaved(user ? readDevicePractice() : null);
@@ -87,7 +96,16 @@ export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
 
   if (!saved) return null;
 
+  const start = () => {
+    setTitle(deviceTitle(saved));
+    setEditing(true);
+  };
+
   const accept = async () => {
+    if (!title.trim()) {
+      toast.info('Give the Practice a title, then save.');
+      return;
+    }
     let script: unknown;
     try {
       script = JSON.parse(saved);
@@ -99,13 +117,21 @@ export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
     const res = await fetch('/api/practices', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: titleFor(saved), visibility: 'private', script }),
+      body: JSON.stringify({
+        title: title.trim(),
+        description: description || null,
+        visibility,
+        tags,
+        sourceUrl: sourceUrl.trim() || null,
+        sourceTitle: sourceTitle.trim() || null,
+        script,
+      }),
     }).catch(() => null);
     setBusy(false);
     if (res?.ok) {
       clearDevicePractice();
       setSaved(null);
-      toast.success('Saved to your account as a private Practice.');
+      toast.success('Practice saved to your account.');
       onSaved();
     } else {
       toast.error("Couldn't save it to your account. It is still on this device.");
@@ -114,13 +140,40 @@ export function DevicePracticeOffer({ onSaved }: { onSaved: () => void }) {
 
   return (
     <div role="dialog" aria-label="Save device Practice" className="border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm">
-      <p className="mb-2 text-text-primary">
-        There is a Practice on this device. Save it to your account as a private Practice?
-      </p>
-      <div className="flex gap-2">
-        <Button size="sm" onClick={accept} disabled={busy}>Save to account</Button>
-        <Button size="sm" variant="outline" onClick={() => setSaved(null)}>Not now</Button>
-      </div>
+      {editing ? (
+        <>
+          <p className="mb-2 text-text-primary">Name this Practice before it moves to your account.</p>
+          <PracticeDetails
+            practiceId={null}
+            title={title}
+            description={description}
+            tags={tags}
+            sourceUrl={sourceUrl}
+            sourceTitle={sourceTitle}
+            visibility={visibility}
+            onTitleChange={setTitle}
+            onDescriptionChange={setDescription}
+            onTagsChange={setTags}
+            onSourceUrlChange={setSourceUrl}
+            onSourceTitleChange={setSourceTitle}
+            onVisibilityChange={setVisibility}
+          />
+          <div className="mt-2 flex gap-2">
+            <Button size="sm" onClick={accept} disabled={busy || !title.trim()}>Save</Button>
+            <Button size="sm" variant="outline" onClick={() => setEditing(false)} disabled={busy}>Cancel</Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="mb-2 text-text-primary">
+            There is a Practice on this device. Save it to your account?
+          </p>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={start}>Save to account</Button>
+            <Button size="sm" variant="outline" onClick={() => setSaved(null)}>Not now</Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

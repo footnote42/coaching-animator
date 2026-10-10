@@ -46,15 +46,20 @@ export function clearDevicePractice(store: Store | null = deviceStore()): void {
   }
 }
 
-/** Title for saving a device Practice into an account. */
-export function titleFor(text: string): string {
+/** The title written in a device Practice's script, or '' if it has none. */
+export function deviceTitle(text: string): string {
   try {
     const title = JSON.parse(text)?.title;
     if (typeof title === 'string' && title.trim()) return title.trim().slice(0, 100);
   } catch {
     // fall through
   }
-  return 'Untitled Practice';
+  return '';
+}
+
+/** Title for saving a device Practice into an account. */
+export function titleFor(text: string): string {
+  return deviceTitle(text) || 'Untitled Practice';
 }
 
 /**
