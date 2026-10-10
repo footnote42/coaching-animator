@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 import fs from 'fs'
 import path from 'path'
+import { openScriptBox } from './script-box'
 
 /**
  * The Konva canvas must fit inside its box and leave the playback row tappable (#172).
@@ -19,14 +20,7 @@ const CASES = [
 
 async function loadScript(page: Page, script: unknown) {
   await page.goto('/practice', { waitUntil: 'load' })
-  const fold = page.locator('main h2 button[aria-controls]').filter({ hasText: /^Advanced: Practice Script/ }).first()
-  const details = page.locator('details', { has: page.locator('#practice-script') })
-  // A click before hydration is lost, so retry until the script box shows.
-  await expect(async () => {
-    if ((await fold.isVisible()) && (await fold.getAttribute('aria-expanded')) === 'false') await fold.click()
-    await expect(details.locator('summary')).toBeVisible({ timeout: 1000 })
-  }).toPass({ timeout: 20_000 })
-  if (!(await details.evaluate((d) => (d as HTMLDetailsElement).open))) await details.locator('summary').click()
+  await openScriptBox(page)
   await page.locator('#practice-script').fill(JSON.stringify(script))
   await page.getByRole('button', { name: 'Apply script' }).click()
   await page.locator('.konvajs-content').first().waitFor()

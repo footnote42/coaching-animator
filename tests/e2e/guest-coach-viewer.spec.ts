@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { openScriptBox } from './script-box'
 
 /**
  * The restart's end-to-end path (#66): a Guest tries the editor, signs in and keeps
@@ -38,7 +39,7 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   // Guest: import the worked example and play it.
   await page.goto('/practice')
   await expect(page.getByRole('heading', { name: 'Practice editor' })).toBeVisible({ timeout: 60_000 })
-  await page.getByText('Practice Script', { exact: true }).click()
+  await openScriptBox(page)
   await page.getByRole('button', { name: 'Use example' }).click()
 
   const steps = page.getByRole('group', { name: 'Steps' })

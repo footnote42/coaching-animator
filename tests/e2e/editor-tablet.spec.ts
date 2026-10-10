@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openScriptBox } from './script-box';
 
 test('tablet landscape offers full editor and touch sizes', async ({ page }) => {
   await page.goto('/practice');
@@ -36,7 +37,7 @@ test('tablet landscape offers full editor and touch sizes', async ({ page }) => 
   await canvas.click({ position: { x: 150, y: 100 } });
 
   // Check that the script reflects 6 players and a ball, 1 move, 1 pass
-  await page.getByText('Practice Script').click();
+  await openScriptBox(page);
   const scriptContent = await page.locator('textarea#practice-script').inputValue();
   const script = JSON.parse(scriptContent);
   expect(script.markers.length).toBe(7);
