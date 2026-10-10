@@ -184,6 +184,38 @@ describe('reach wait: timing', () => {
   });
 });
 
+describe('reach wait: depends on the run starting, not the whole run', () => {
+  it('lets the passer set off when its receiver reaches an early waypoint', () => {
+    // a1 passes to a2, and a1's own run waits on a2 reaching point 0: a2 does not wait for the whole of a1's run.
+    const receiver = { marker: 'a2', waypoints: [{ x: 10, y: 1 }, { x: 10, y: 3 }] };
+    const passer = { marker: 'a1', waypoints: [{ x: 0, y: 5 }], after: { reach: { marker: 'a2', waypoint: 0 } } };
+    const pass = { id: 'p1', from: 'a1', to: 'a2', at: 1 };
+    const step = stepOf(play([receiver, passer], [pass]));
+    expect(setOff(step, 'a1')).toBeCloseTo(arrival(step, 'a2', { x: 10, y: 1 }), 1);
+  });
+
+  it('does not time a receiver that the ball itself waits on through a reach (a real loop), and plays it at its own Paces', () => {
+    // a2 would be slowed to meet p1, but p1 waits on a3, which waits on a2 reaching point 0: timing a2 would loop.
+    const receiver = { marker: 'a2', waypoints: [{ x: 10, y: 1 }, { x: 10, y: 3 }] };
+    const other = { marker: 'a3', waypoints: [{ x: 20, y: 5 }], after: { reach: { marker: 'a2', waypoint: 0 } } };
+    const pass = { id: 'p1', from: 'a1', to: 'a2', at: 1, after: { move: 'a3' } };
+    const untouched = stepOf(play([receiver, other]));
+    const step = stepOf(play([receiver, other], [pass]));
+    expect(arrival(step, 'a2', { x: 10, y: 3 })).toBeCloseTo(arrival(untouched, 'a2', { x: 10, y: 3 }), 1);
+    expect(positionsAt(step, 0).passes[0].fire).toBeGreaterThan(0);
+  });
+
+  it('still times a receiver that nobody waits on through a reach', () => {
+    const receiver = { marker: 'a2', waypoints: [{ x: 10, y: 1 }, { x: 10, y: 3 }] };
+    const slow = { marker: 'a4', waypoints: [{ x: 30, y: 25 }] };
+    const pass = { id: 'p1', from: 'a1', to: 'a2', at: 1, after: { move: 'a4' } };
+    const untouched = stepOf(play([receiver, slow]));
+    const step = stepOf(play([receiver, slow], [pass]));
+    // The ball is held up by a4's long run, so a2 is slowed to meet it.
+    expect(arrival(step, 'a2', { x: 10, y: 3 })).toBeGreaterThan(arrival(untouched, 'a2', { x: 10, y: 3 }) + 1);
+  });
+});
+
 describe('reach wait: picker options', () => {
   const scriptOf = (input: unknown): { script: PracticeScript; step: ResolvedStep } => {
     const result = validate(input);

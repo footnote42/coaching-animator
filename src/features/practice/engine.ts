@@ -371,16 +371,37 @@ function collectPasses(passes: BallPass[], loose: ReadonlySet<string>): Set<stri
 
 /**
  * The graph node a wait points at, or none for no wait: `move:<marker>` for a
- * Run ending, `pass:<id>` for a catch. A reach points at the marker's `move:`
- * node too: arriving at a waypoint needs what starting that Run needs (its own
- * wait and any timing to a pass), which that node's edges already hold.
+ * Run ending, `pass:<id>` for a catch, `reach:<marker>:<waypoint>` for an
+ * arrival. A reach is its own node, not the marker's whole Run: arriving at a
+ * waypoint needs only what getting there needs (see `addRunNodes`), so a Run can
+ * wait on an early waypoint of another that, as a whole, waits on it.
  */
 function waitNode(wait: Wait | undefined): string | undefined {
   if (!wait) return undefined;
   if (wait.move !== undefined) return `move:${wait.move}`;
   if (wait.pass !== undefined) return `pass:${wait.pass}`;
-  if (wait.reach !== undefined) return `move:${wait.reach.marker}`;
+  if (wait.reach !== undefined) return reachNode(wait.reach.marker, wait.reach.waypoint);
   return undefined;
+}
+
+function reachNode(marker: string, waypoint: number): string {
+  return `reach:${marker}:${waypoint}`;
+}
+
+/**
+ * Adds a Run's nodes to a wait graph: `start:<marker>` is when the Run sets off
+ * (its own `after`), `reach:<marker>:<i>` its arrival at waypoint i and
+ * `move:<marker>` the whole Run ending. Each lists what it needs.
+ */
+function addRunNodes(graph: Map<string, string[]>, marker: string, move: Move) {
+  graph.set(`start:${marker}`, waitNeeds(move.after));
+  move.waypoints.forEach((_, i) => graph.set(reachNode(marker, i), [`start:${marker}`]));
+  graph.set(`move:${marker}`, [reachNode(marker, move.waypoints.length - 1)]);
+}
+
+/** The arrival node of a receiver's catch point (waypoint `at`, else its last). */
+function catchNode(move: Move, at: number | undefined): string {
+  return reachNode(move.marker, Math.min(at ?? move.waypoints.length - 1, move.waypoints.length - 1));
 }
 
 /** The nodes a wait adds to what a node needs: none, or the one it points at. */
@@ -417,20 +438,19 @@ function checkWait(wait: Wait, target: Target, state: StepState, issues: StepIss
 }
 
 /**
- * What waits for what, as a graph of `move:<marker>` and `pass:<id>` nodes.
- * A move waits for its `after`. A pass waits for the previous pass of the same
- * ball to be caught and for the receiver's move (to finish, or reach the catch
- * waypoint), and a pass with a Release waits for the passer's move (to reach
- * the release waypoint), as does a pass that Collects a loose ball (the
- * collector's move reaching the ball). The exception is a receiver whose move waits on this
- * very pass, directly or not: it has not set off, so the pass does not wait for
- * it and is caught on its starting cell. Those passes are returned in `inPlace`.
+ * What waits for what, as a graph of `start:`, `reach:` and `move:` nodes for
+ * each Run and `pass:<id>` nodes. A Run waits for its `after`. A pass waits for
+ * the previous pass of the same ball to be caught and for the receiver to
+ * arrive at the catch point, and a pass with a Release waits for the passer to
+ * arrive at the release waypoint, as does a pass that Collects a loose ball
+ * (the collector arriving at the ball). The exception is a receiver whose Run
+ * sets off on this very pass, directly or not: it has not set off, so the pass
+ * does not wait for it and is caught on its starting cell. Those passes are
+ * returned in `inPlace`.
  */
 function waitEdges(moves: Map<string, Move>, passes: BallPass[], collects: ReadonlySet<string> = new Set()) {
   const edges = new Map<string, string[]>();
-  for (const [marker, { after }] of moves) {
-    edges.set(`move:${marker}`, waitNeeds(after));
-  }
+  for (const [marker, move] of moves) addRunNodes(edges, marker, move);
   const lastOfBall = new Map<string, string>();
   for (const pass of passes) {
     const previous = lastOfBall.get(pass.ball);
@@ -438,16 +458,20 @@ function waitEdges(moves: Map<string, Move>, passes: BallPass[], collects: Reado
     lastOfBall.set(pass.ball, pass.id);
   }
   for (const pass of passes) {
-    edges.get(`pass:${pass.id}`)!.push(...waitNeeds(pass.after));
-    if ((pass.release !== undefined || collects.has(pass.id)) && moves.has(pass.from)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.from}`);
+    const needs = edges.get(`pass:${pass.id}`)!;
+    needs.push(...waitNeeds(pass.after));
+    const passer = moves.get(pass.from);
+    if (passer && pass.release !== undefined) needs.push(reachNode(pass.from, Math.min(pass.release, passer.waypoints.length - 1)));
+    else if (passer && collects.has(pass.id)) needs.push(reachNode(pass.from, passer.waypoints.length - 1));
   }
   for (const pass of passes) {
-    if (pass.to !== undefined && moves.has(pass.to)) edges.get(`pass:${pass.id}`)!.push(`move:${pass.to}`);
+    const receiver = pass.to === undefined ? undefined : moves.get(pass.to);
+    if (receiver) edges.get(`pass:${pass.id}`)!.push(catchNode(receiver, pass.at));
   }
-  // A receiver that waits on its own pass, directly or not, would make a loop.
+  // A receiver that sets off on its own pass, directly or not, would make a loop.
   const inPlace = new Set<string>();
   for (const pass of passes) {
-    if (pass.to !== undefined && moves.has(pass.to) && waitsOn(edges, `move:${pass.to}`, new Set([`pass:${pass.id}`]))) inPlace.add(pass.id);
+    if (pass.to !== undefined && moves.has(pass.to) && waitsOn(edges, `start:${pass.to}`, new Set([`pass:${pass.id}`]))) inPlace.add(pass.id);
   }
   for (const id of inPlace) {
     const waits = edges.get(`pass:${id}`)!;
@@ -505,6 +529,17 @@ interface StepIssue {
   /** Field within the placement, move, pass or change, e.g. `from`. */
   field: string;
   message: string;
+}
+
+/** A loop as the player reads it: a Run's start and arrivals are all "the move of" that marker, and a run of them is one. */
+function shownLoop(loop: string[]): string[] {
+  const shown: string[] = [];
+  for (const node of loop) {
+    const [kind, ...rest] = node.split(':');
+    const label = kind === 'start' ? `move:${rest.join(':')}` : kind === 'reach' ? `move:${rest.slice(0, -1).join(':')}` : node;
+    if (shown[shown.length - 1] !== label) shown.push(label);
+  }
+  return shown;
 }
 
 function splitNode(node: string): Target {
@@ -641,9 +676,9 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     const loose = new Set(state.loose.keys());
     const collects = collectPasses(passes, loose);
     const { edges, inPlace } = waitEdges(state.moves, passes, collects);
-    // A passer whose move waits on its own pass has not set off when it is thrown.
+    // A passer whose move sets off on its own pass has not set off when it is thrown.
     for (const pass of passes) {
-      if (!waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]))) continue;
+      if (!waitsOn(edges, `start:${pass.from}`, new Set([`pass:${pass.id}`]))) continue;
       if (collects.has(pass.id)) {
         issues.push({
           target: { kind: 'move', id: pass.from },
@@ -660,11 +695,14 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
     }
     const loop = issues.length === 0 ? findLoop(edges) : null;
     if (loop) {
-      const [first, ...rest] = loop.map(splitNode);
+      const [first, ...rest] = shownLoop(loop).map(splitNode);
       issues.push({
         target: first,
         field: first.kind === 'move' ? 'after' : 'to',
-        message: `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for ${rest.map(targetLabel).join(', which waits for ')}`,
+        message:
+          rest.length === 0
+            ? `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for itself`
+            : `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for ${rest.map(targetLabel).join(', which waits for ')}`,
       });
     } else if (issues.length === 0) {
       for (const pass of passes) {
@@ -1186,8 +1224,12 @@ function rollAt(flight: PassFlight, time: number): Point {
  * it would loop: the pass would then wait, through the ball, a Run or where the
  * passer is, on the very Run it times. Decided in list order, so it is deterministic.
  *
- * Nodes: `start:<marker>` is when a Run would start untimed, `move:<marker>` the
- * Run as played, `pass:<id>` a flight. Each lists what it is computed from.
+ * Nodes: `start:<marker>` is when a Run would start untimed, `reach:<marker>:<i>`
+ * its arrival at waypoint i and `move:<marker>` its end, both as played, and
+ * `pass:<id>` a flight. Each lists what it is computed from. A Run timed to a
+ * ball has every arrival depend on that ball (it starts late and is slowed), so
+ * a Run that waits on its arrival, while the ball waits on that Run, is a loop
+ * and the Run is not timed.
  *
  * A collector's Run is timed the same way to the loose ball it Collects (ADR
  * 0006): to the moment it comes to rest, so the Run needs the Kick to space
@@ -1195,10 +1237,15 @@ function rollAt(flight: PassFlight, time: number): Point {
  */
 function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map<string, string[]>, inPlace: Set<string>, collects: ReadonlySet<string>) {
   const graph = new Map<string, string[]>();
-  for (const [marker, { after }] of moves) {
-    graph.set(`start:${marker}`, waitNeeds(after));
-    graph.set(`move:${marker}`, [`start:${marker}`]);
-  }
+  for (const [marker, move] of moves) addRunNodes(graph, marker, move);
+  /** Makes a Run's arrivals (from waypoint `first`) need `node`, as when it is timed to a ball; returns the undo. */
+  const waitRun = (marker: string, node: string, first = 0) => {
+    const reaches = moves.get(marker)!.waypoints.map((_, i) => graph.get(reachNode(marker, i))!).slice(first);
+    for (const needs of reaches) needs.push(node);
+    return () => {
+      for (const needs of reaches) needs.pop();
+    };
+  };
   const lastOfBall = new Map<string, string>();
   for (const pass of passes) {
     const node = `pass:${pass.id}`;
@@ -1206,8 +1253,9 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
     const needs = previous === undefined ? [] : [`pass:${previous}`];
     lastOfBall.set(pass.ball, pass.id);
     needs.push(...waitNeeds(pass.after));
-    if (moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([node]))) needs.push(`move:${pass.from}`);
-    if (pass.to !== undefined && moves.has(pass.to) && !inPlace.has(pass.id)) needs.push(`move:${pass.to}`);
+    if (moves.has(pass.from) && !waitsOn(edges, `start:${pass.from}`, new Set([node]))) needs.push(`move:${pass.from}`);
+    const receiver = pass.to === undefined ? undefined : moves.get(pass.to);
+    if (receiver && !inPlace.has(pass.id)) needs.push(catchNode(receiver, pass.at));
     graph.set(node, needs);
   }
   const timed = new Map<string, number>();
@@ -1219,9 +1267,9 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
       if (previous < 0) {
         timed.set(from, i);
       } else {
-        const run = graph.get(`move:${from}`)!;
-        run.push(`pass:${passes[previous].id}`);
-        if (waitsOn(graph, `move:${from}`, new Set([`move:${from}`]))) run.pop();
+        const before = `pass:${passes[previous].id}`;
+        const undo = waitRun(from, before);
+        if (waitsOn(graph, before, new Set([before]))) undo();
         else timed.set(from, i);
       }
     }
@@ -1230,16 +1278,16 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
     const node = `pass:${pass.id}`;
     const needs = graph.get(node)!;
     const to = pass.to;
-    const run = graph.get(`move:${to}`)!;
-    // Timed, the pass needs only when the receiver would start, and the Run needs the pass.
-    // Only the receiver wait (added last) is swapped: a pass that waits on the receiver's move itself (`after`) keeps that wait, so the loop is seen.
+    const arrival = catchNode(moves.get(to)!, pass.at);
+    // Timed, the pass needs only when the receiver would set off, and the Run's arrivals need the pass.
+    // Only the receiver wait (added last) is swapped: a pass that waits on the receiver's arrival itself (`after`) keeps that wait, so the loop is seen.
     const swapped = needs.slice();
-    swapped[swapped.lastIndexOf(`move:${to}`)] = `start:${to}`;
+    swapped[swapped.lastIndexOf(arrival)] = `start:${to}`;
     graph.set(node, swapped);
-    run.push(node);
+    const undo = waitRun(to, node);
     if (waitsOn(graph, node, new Set([node]))) {
       graph.set(node, needs);
-      run.pop();
+      undo();
     } else {
       timed.set(to, i);
     }
@@ -1361,7 +1409,7 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     const caught = pickup ?? (previous >= 0 ? flight(previous).land : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
-    const passerRuns = moves.has(pass.from) && !waitsOn(edges, `move:${pass.from}`, new Set([`pass:${pass.id}`]));
+    const passerRuns = moves.has(pass.from) && !waitsOn(edges, `start:${pass.from}`, new Set([`pass:${pass.id}`]));
     // A Release holds the ball until the passer reaches that waypoint of their Run.
     const released = passerRuns && pass.release !== undefined ? endOf(pass.from, pass.release) : 0;
     const ready = Math.max(caught, waitOver(pass.after), released);
