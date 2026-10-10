@@ -1,16 +1,15 @@
 # NOW — coaching-animator
 
 ## Status
-IN PROGRESS — making it ready for co-coaches. LIVE at coaching-animator.waynetellis.com. Holds and reach (#192: #204-#208) shipped 2026-10-10, plus the polish batch (#193-#202, #195, #199, #201, #203). Two agent-built test Practices prove realistic plays work: "Ruck, pass out and reset (with holds)" (f91aa50d) and "Now v Target: after the tackle (U11 9v9)" (2a911fad), both adjusted by the Coach.
+IN PROGRESS — making it ready for co-coaches. LIVE at coaching-animator.waynetellis.com. Holds and reach (#192: #204-#208) shipped 2026-10-10, plus the polish batch (#193-#202, #195, #199, #201, #203) and the desktop Selection panel fix (#210). Two agent-built test Practices prove realistic plays work: "Ruck, pass out and reset (with holds)" (f91aa50d) and "Now v Target: after the tackle (U11 9v9)" (2a911fad), both adjusted by the Coach.
 
 ## Next
-#210: on desktop, show every waypoint control (Pace, Start when..., Hold until..., Delete) without scrolling: the Selection panel is fixed at `md:h-32` in `SelectionPanel.tsx`.
+Settle the pending decisions on #188 and #191, then start the polish audit (#93).
 
 ## Open
-- #209: Coach rebuilds the original ruck Practice (fb67f1e5) with holds in the editor, eventually.
+- #209: Coach rebuilds the original ruck Practice (fb67f1e5) with holds in the editor, eventually. The new desktop layout (#210) is ready for it.
 - #203: phone panel and canvas scroll need a real-iPhone check; no iPhone available, so rely on the WebKit phone E2E or find a device.
-- #188, #191: decisions pending.
-- Then the polish audit (#93).
+- Between 768 and 1279px the Selection panel stays above the canvas and can still scroll for a busy waypoint; fine for now, revisit if tablet Coaches complain.
 - Hold friction settled 2026-10-10: plays wait until a ball is caught (fine for teaching); a defender meeting the ball carrier reads as a tackle; `setMove` replacing `after` is documented for AI authors, with no code change.
 
 ## Waiting on you
@@ -30,9 +29,10 @@ IN PROGRESS — making it ready for co-coaches. LIVE at coaching-animator.waynet
 - Production test login `e2e-test@waynetellis.com`: credentials in gitignored `.env.e2e`. Node fetch to supabase.co times out here; use curl or the Supabase MCP.
 - Obsidian: `C:/Users/kenho/Obsidian/Second Brain/Projects/Coaching Animator/`.
 - MCP: one user-scope `coaching-animator` registration only.
+- Selection panel: from xl (1280px) it renders in the right column (`SelectionPanel side`), otherwise above the canvas; `tests/e2e/selection-panel-desktop.spec.ts` guards it at 1440x900.
 
 ## Blocker
 None.
 
 ## Last session
-2026-10-10 — shipped holds and reach (#204-#208) and the Antigravity polish batch; two agent-built test Practices found a false wait-loop error (fixed, 6b9659e); filed #210 for the cramped desktop waypoint panel.
+2026-10-10 — #210: the Selection panel moved beside the canvas from 1280px up (stacked label/control, full-row wait pickers), so the canvas gained about 135px; the new E2E test passes.
