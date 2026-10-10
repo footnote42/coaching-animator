@@ -21,7 +21,7 @@ export async function GET(_request: Request) {
 
   if (error) {
     console.error('[Tokens API] Error listing tokens:', error);
-    return NextResponse.json({ error: 'Failed to list tokens' }, { status: 500 });
+    return NextResponse.json({ error: { code: 'DB_ERROR', message: 'Failed to list tokens' } }, { status: 500 });
   }
 
   return NextResponse.json({ tokens: data });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const rateLimit = await checkRateLimit(user.id, 'tokens_api');
   if (!rateLimit.allowed) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, {
+    return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Rate limit exceeded' } }, {
       status: 429,
       headers: getRateLimitHeaders(rateLimit),
     });
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     const result = createTokenSchema.safeParse(json);
     if (!result.success) {
       return NextResponse.json(
-        { error: 'Invalid data', details: result.error.flatten() },
+        { error: { code: 'VALIDATION_ERROR', message: 'Invalid data', details: result.error.flatten() } },
         { status: 400, headers: getRateLimitHeaders(rateLimit) }
       );
     }
@@ -66,12 +66,12 @@ export async function POST(request: Request) {
 
     if (countError) {
       console.error('[Tokens API] Error checking token cap:', countError);
-      return NextResponse.json({ error: 'Failed to create token' }, { status: 500 });
+      return NextResponse.json({ error: { code: 'DB_ERROR', message: 'Failed to create token' } }, { status: 500 });
     }
 
     if ((count ?? 0) >= 10) {
       return NextResponse.json(
-        { error: 'Maximum of 10 active tokens allowed' },
+        { error: { code: 'TOKEN_LIMIT', message: 'Maximum of 10 active tokens allowed' } },
         { status: 400, headers: getRateLimitHeaders(rateLimit) }
       );
     }
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('[Tokens API] Error inserting token:', error);
-      return NextResponse.json({ error: 'Failed to create token' }, { status: 500 });
+      return NextResponse.json({ error: { code: 'DB_ERROR', message: 'Failed to create token' } }, { status: 500 });
     }
 
     // Return plaintext exactly once
@@ -101,6 +101,6 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error('[Tokens API] Create token failed:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } }, { status: 500 });
   }
 }

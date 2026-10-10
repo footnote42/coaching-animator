@@ -72,7 +72,7 @@ export function PersonalTokensList() {
       });
       const data = await res.json();
       
-      if (!res.ok) throw new Error(data.error || 'Failed to create token');
+      if (!res.ok) throw new Error(data.error?.message || 'Failed to create token');
       
       setNewPlaintext(data.plaintext);
       setNewName('');
@@ -94,7 +94,7 @@ export function PersonalTokensList() {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to revoke token');
+        throw new Error(data.error?.message || 'Failed to revoke token');
       }
       setDialogOpen(false);
       setRevokingId(null);

@@ -161,6 +161,13 @@ describe('/api/practices/[id]', () => {
     expect(b.eq).toHaveBeenCalledWith('owner_id', 'user-1');
   });
 
+  it('DELETE is rate limited per user', async () => {
+    mocks.checkRateLimit.mockResolvedValue({ allowed: false, remaining: 0, resetAt: new Date() });
+    expect((await DELETE(req, ctx)).status).toBe(429);
+    expect(mocks.checkRateLimit).toHaveBeenCalledWith('user:user-1', 'practice_delete', expect.any(Object));
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+
   it('DELETE removes the own practice', async () => {
     mocks.from.mockReturnValue(builder({ data: [{ id: 'p1' }], error: null }));
     expect((await DELETE(req, ctx)).status).toBe(200);
@@ -248,6 +255,18 @@ describe('GET /api/practices/public', () => {
     expect(body.practices[0].thumbnail.markers.length).toBe(passingSquareProgressions.base.placements.length);
     expect(body.practices[0].script).toBeUndefined();
     expect(body.hasMore).toBe(false);
+  });
+
+  it('is cacheable by the CDN and rate limited per IP', async () => {
+    mocks.from.mockReturnValue(builder({ data: [row('a')], error: null }));
+    const ok = await GET_PUBLIC(new NextRequest('http://localhost/api/practices/public', { headers: { 'x-forwarded-for': '1.2.3.4' } }));
+    expect(ok.headers.get('Cache-Control')).toBe('public, s-maxage=60, stale-while-revalidate=300');
+    expect(mocks.checkRateLimit).toHaveBeenCalledWith('ip:1.2.3.4', 'public_list', expect.any(Object));
+
+    mocks.checkRateLimit.mockResolvedValue({ allowed: false, remaining: 0, resetAt: new Date() });
+    const limited = await GET_PUBLIC(get());
+    expect(limited.status).toBe(429);
+    expect(limited.headers.get('Cache-Control')).toBeNull();
   });
 
   it('gives a null thumbnail for a stored script that no longer validates', async () => {

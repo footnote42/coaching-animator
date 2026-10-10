@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getUser, requireNotBanned } from '@/lib/server/auth';
+import { rateLimitKey } from '@/lib/server/client-key';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { FeedbackSchema } from '@/lib/schemas/feedback';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return forwarded || request.headers.get('x-real-ip') || 'unknown';
-}
 
 /**
  * POST /api/feedback: send feedback. Signed-out visitors may submit (rate
@@ -25,7 +21,7 @@ export async function POST(request: NextRequest) {
       if (banCheck) return banCheck;
     }
 
-    const rateLimit = await checkRateLimit(user ? `user:${user.id}` : `ip:${clientIp(request)}`, 'feedback');
+    const rateLimit = await checkRateLimit(rateLimitKey(request, user?.id), 'feedback');
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: { code: 'RATE_LIMITED', message: 'Too many submissions. Please try again later.' } },

@@ -77,7 +77,7 @@ describe('Tokens API', () => {
       mocks.from.mockReturnValue(b);
       const res = await POST(postReq({ name: 'my token' }));
       expect(res.status).toBe(400);
-      expect((await res.json()).error).toContain('Maximum');
+      expect((await res.json()).error.message).toContain('Maximum');
     });
 
     it('returns plaintext once and stores only hash', async () => {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getUser, requireNotBanned } from '@/lib/server/auth';
+import { rateLimitKey } from '@/lib/server/client-key';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 import { PracticeReportSchema } from '@/lib/schemas/practices';
 import { getSharedPractice } from '@/lib/server/practices';
@@ -10,11 +11,6 @@ export const runtime = 'nodejs';
 
 interface RouteParams {
   params: { id: string };
-}
-
-function clientIp(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return forwarded || request.headers.get('x-real-ip') || 'unknown';
 }
 
 /**
@@ -30,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       if (banCheck) return banCheck;
     }
 
-    const rateLimit = await checkRateLimit(user ? `user:${user.id}` : `ip:${clientIp(request)}`, 'practice_report');
+    const rateLimit = await checkRateLimit(rateLimitKey(request, user?.id), 'practice_report');
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: { code: 'RATE_LIMITED', message: 'Too many reports. Please try again later.' } },

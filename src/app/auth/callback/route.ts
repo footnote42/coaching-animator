@@ -1,11 +1,12 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { safeNext } from '@/lib/safeNext';
 
 export async function GET(request: NextRequest) {
     const requestUrl = new URL(request.url);
     const code = requestUrl.searchParams.get('code');
-    const next = requestUrl.searchParams.get('next') ?? '/practice';
+    const next = safeNext(requestUrl.searchParams.get('next'));
 
     if (code) {
         const cookieStore = cookies();
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
 
                 // If no profile exists, this is a new user
                 if (!profile) {
-                    return NextResponse.redirect(`${requestUrl.origin}/app?welcome=true`);
+                    return NextResponse.redirect(`${requestUrl.origin}/practice`);
                 }
             }
 

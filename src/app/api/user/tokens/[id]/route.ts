@@ -18,7 +18,7 @@ export async function DELETE(
 
   const rateLimit = await checkRateLimit(user.id, 'tokens_api');
   if (!rateLimit.allowed) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, {
+    return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Rate limit exceeded' } }, {
       status: 429,
       headers: getRateLimitHeaders(rateLimit),
     });
@@ -34,7 +34,7 @@ export async function DELETE(
   if (error) {
     console.error('[Tokens API] Error revoking token:', error);
     return NextResponse.json(
-      { error: 'Failed to revoke token' },
+      { error: { code: 'DB_ERROR', message: 'Failed to revoke token' } },
       { status: 500, headers: getRateLimitHeaders(rateLimit) }
     );
   }
