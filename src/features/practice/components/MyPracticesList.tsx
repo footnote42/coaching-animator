@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,6 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
+
+/** Shared by every control in a card's action row: one height, one type size, one width rule. */
+const ACTION = 'h-11 min-h-[44px] w-full px-3 text-sm sm:w-auto sm:px-4';
 
 export type Visibility = 'private' | 'link' | 'public';
 
@@ -40,15 +43,19 @@ export function MyPracticesList({ refreshKey = 0 }: Props) {
   const [publishing, setPublishing] = useState<string | null>(null);
   const [deletingPractice, setDeletingPractice] = useState<PracticeSummary | null>(null);
 
-  const refresh = useCallback(async () => {
-    const res = await fetch('/api/practices').catch(() => null);
-    if (res?.ok) setPractices((await res.json()).practices);
-    else setPractices((list) => list ?? []);
-  }, []);
-
   useEffect(() => {
-    void refresh();
-  }, [refresh, refreshKey]);
+    let cancelled = false;
+    void (async () => {
+      const res = await fetch('/api/practices').catch(() => null);
+      const list = res?.ok ? (await res.json()).practices : null;
+      if (cancelled) return;
+      if (list) setPractices(list);
+      else setPractices((prev) => prev ?? []);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey]);
 
   const remove = async (id: string) => {
     setDeletingPractice(null);
@@ -111,29 +118,45 @@ export function MyPracticesList({ refreshKey = 0 }: Props) {
           </Link>
         </div>
       ) : (
-        <ul className="space-y-1">
+        <ul className="flex flex-col gap-3">
           {practices.map((p) => (
-            <li key={p.id} className="flex items-center gap-2 text-sm">
-              <Link href={`/practice?id=${p.id}`} className="flex-1 truncate underline">
+            <li
+              key={p.id}
+              className="flex flex-col gap-3 border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
+            >
+              <Link href={`/practice?id=${p.id}`} className="min-w-0 truncate text-base font-medium underline">
                 {p.title}
               </Link>
-              <select
-                aria-label={`Visibility of ${p.title}`}
-                value={p.visibility}
-                onChange={(e) => pickVisibility(p.id, e.target.value as Visibility)}
-                className="border border-[var(--color-border)] bg-[var(--color-surface)] p-1 text-xs"
-              >
-                <option value="private">Private</option>
-                <option value="link">Anyone with the link</option>
-                <option value="public">Public</option>
-              </select>
-              <Button variant="outline" size="sm" className="min-h-[44px] gap-1.5" onClick={() => share(p)} aria-label={`Share ${p.title}`}>
-                <Share2 className="h-4 w-4" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setDeletingPractice(p)} aria-label={`Delete ${p.title}`}>
-                Delete
-              </Button>
+              {/* One action row: primary first, visibility, destructive last and quiet. Every control is 44px tall. */}
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center">
+                <Button asChild className={ACTION}>
+                  <Link href={`/practice?id=${p.id}`} aria-label={`Open ${p.title}`}>
+                    Open
+                  </Link>
+                </Button>
+                <Button variant="outline" className={ACTION} onClick={() => share(p)} aria-label={`Share ${p.title}`}>
+                  <Share2 />
+                  Share
+                </Button>
+                <select
+                  aria-label={`Visibility of ${p.title}`}
+                  value={p.visibility}
+                  onChange={(e) => pickVisibility(p.id, e.target.value as Visibility)}
+                  className="order-2 col-span-3 h-11 min-h-[44px] w-full min-w-0 border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm sm:order-none sm:w-auto sm:min-w-[11rem]"
+                >
+                  <option value="private">Private</option>
+                  <option value="link">Anyone with the link</option>
+                  <option value="public">Public</option>
+                </select>
+                <Button
+                  variant="ghost"
+                  className={`${ACTION} order-1 text-[var(--color-danger)] hover:bg-[var(--color-danger-surface)] hover:text-[var(--color-danger)] sm:order-none sm:ml-auto`}
+                  onClick={() => setDeletingPractice(p)}
+                  aria-label={`Delete ${p.title}`}
+                >
+                  Delete
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

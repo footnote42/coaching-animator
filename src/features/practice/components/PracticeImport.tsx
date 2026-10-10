@@ -289,7 +289,7 @@ export function PracticeImport() {
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
-        <div role="group" aria-label="Steps" className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+        <div role="group" aria-label="Steps" className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 xl:justify-center">
           {Array.from({ length: stepCount(script) }, (_, n) => {
             const lever = n > 0 ? script.progressions[n - 1].lever : undefined;
             return (
@@ -312,7 +312,7 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 lg:gap-x-2">
+        <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-2 lg:gap-x-2 xl:justify-center">
           <div role="group" aria-label="Mode" className="flex shrink-0 items-center gap-1">
             {(
               [
@@ -501,7 +501,7 @@ export function PracticeImport() {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 xl:justify-center">
           {step && (
           <>
             <Button

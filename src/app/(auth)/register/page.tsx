@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 import { postWithRetry } from '@/lib/api-client';
+import { safeNext } from '@/lib/safeNext';
+import { authPageHref, buildCallbackUrl, buildConfirmUrl } from '@/lib/authUrls';
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const redirect = safeNext(searchParams.get('redirect'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,7 +57,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        emailRedirectTo: buildConfirmUrl(window.location.origin, redirect),
         // handle_new_user() turns this into user_profiles.age_confirmed_at (ADR 0003).
         data: { age_confirmed: true },
       },
@@ -96,7 +101,7 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create Account</h1>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Create account</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-danger-surface border border-danger/40 text-danger text-sm">
@@ -128,7 +133,7 @@ export default function RegisterPage() {
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/auth/callback`,
+                  redirectTo: buildCallbackUrl(window.location.origin, redirect),
                   scopes: 'openid email profile',
                 },
               });
@@ -262,16 +267,24 @@ export default function RegisterPage() {
           disabled={loading}
           className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {loading ? 'Creating account...' : 'Create Account'}
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
       </form>
 
       <div className="mt-6 text-center text-sm text-text-primary/70">
         Already have an account?{' '}
-        <a href="/login" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
+        <a href={authPageHref('/login', redirect)} className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign in
         </a>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

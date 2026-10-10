@@ -43,9 +43,10 @@ export function GalleryCardPreview({ step, title, playing, onPlayingChange, onOp
   const lastPointer = useRef('mouse');
   const reduced = usePrefersReducedMotion();
   const [visible, setVisible] = useState(true);
-  const [time, setTime] = useState(0);
+  const [playTime, setPlayTime] = useState(0);
   const duration = useMemo(() => positionsAt(step, 0).duration, [step]);
   const active = playing && visible && !reduced;
+  const time = active ? playTime : 0;
 
   useEffect(() => {
     const el = ref.current;
@@ -61,15 +62,12 @@ export function GalleryCardPreview({ step, title, playing, onPlayingChange, onOp
   }, [playing, visible, onPlayingChange]);
 
   useEffect(() => {
-    if (!active) {
-      setTime(0);
-      return;
-    }
+    if (!active) return;
     let raf = 0;
     let startedAt: number | null = null;
     const tick = (now: number) => {
       if (startedAt === null) startedAt = now;
-      setTime(previewTime((now - startedAt) / 1000, duration));
+      setPlayTime(previewTime((now - startedAt) / 1000, duration));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);

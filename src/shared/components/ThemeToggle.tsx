@@ -1,24 +1,43 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { applyTheme, readStoredTheme, storeTheme, type Theme } from '@/shared/theme';
 
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('light');
+const listeners = new Set<() => void>();
 
-  // The inline script in <head> has usually applied the theme already; this syncs state and covers the case where it did not run.
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+// The inline script in <head> normally sets data-theme before first paint; fall back to the stored choice if it did not run.
+function getSnapshot(): Theme {
+  const applied = document.documentElement.dataset.theme;
+  return applied === 'dark' || applied === 'light' ? applied : readStoredTheme();
+}
+
+function getServerSnapshot(): Theme {
+  return 'light';
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  // Covers the case where the head script did not run: make the DOM match the theme shown.
   useEffect(() => {
-    const stored = readStoredTheme();
-    applyTheme(stored);
-    setTheme(stored);
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const toggle = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     applyTheme(next);
     storeTheme(next);
-    setTheme(next);
+    listeners.forEach((l) => l());
   };
 
   const dark = theme === 'dark';

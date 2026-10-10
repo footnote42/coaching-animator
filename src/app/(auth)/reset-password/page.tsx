@@ -1,8 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+
+function subscribeHash(onChange: () => void) {
+  window.addEventListener('hashchange', onChange);
+  return () => window.removeEventListener('hashchange', onChange);
+}
+
+function hashTokens(hash: string) {
+  const params = new URLSearchParams(hash.substring(1));
+  return { accessToken: params.get('access_token'), refreshToken: params.get('refresh_token') };
+}
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -11,25 +21,20 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [hasToken, setHasToken] = useState<boolean | null>(null);
+
+  // The email link carries the tokens in the URL hash; null on the server and first render (shows the loading state).
+  const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
+  const { accessToken, refreshToken } = hash === null ? { accessToken: null, refreshToken: null } : hashTokens(hash);
+  const hasToken = hash === null ? null : Boolean(accessToken && refreshToken);
 
   useEffect(() => {
-    // Check if we have access token in URL hash (from email link)
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const refreshToken = hashParams.get('refresh_token');
-
-    if (accessToken && refreshToken) {
-      setHasToken(true);
-      const supabase = createSupabaseBrowserClient();
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-    } else {
-      setHasToken(false);
-    }
-  }, []);
+    if (!accessToken || !refreshToken) return;
+    const supabase = createSupabaseBrowserClient();
+    supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+  }, [accessToken, refreshToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

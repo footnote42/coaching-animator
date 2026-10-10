@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Create an account',
+  title: 'Create account',
   description: 'Create a free Coaching Animator account to save Practices to the cloud and share them with your squad.',
 };
 

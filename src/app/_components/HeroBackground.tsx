@@ -10,6 +10,7 @@ const Variation1 = () => (
     aria-hidden="true"
     focusable="false"
     viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
     className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -87,6 +88,7 @@ const Variation2 = () => (
     aria-hidden="true"
     focusable="false"
     viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
     className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -183,6 +185,7 @@ const Variation3 = () => (
     aria-hidden="true"
     focusable="false"
     viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
     className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -255,6 +258,7 @@ const RugbyDiagramCornerAttack = () => {
       aria-hidden="true"
       focusable="false"
       viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
       className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -322,6 +326,7 @@ const RugbyDiagramScrumFocus = () => {
       aria-hidden="true"
       focusable="false"
       viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
       className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -384,6 +389,7 @@ const RugbyDiagramLineoutHook = () => {
       aria-hidden="true"
       focusable="false"
       viewBox="0 0 800 500"
+    preserveAspectRatio="xMidYMid slice"
       className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -469,7 +475,7 @@ export default function HeroBackground() {
       {variants.map((Variant, i) => (
         <div 
           key={i} 
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${
+          className={`absolute bottom-0 right-0 top-[18.5rem] left-[64%] lg:top-0 lg:left-[58%] transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${
             active === i ? 'opacity-100' : 'opacity-0'
           }`}
         >

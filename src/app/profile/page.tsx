@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState('');
+  const [displayName, setDisplayName] = useState(profile?.display_name || '');
 
   // OAuth / Password Management State
   const [password, setPassword] = useState('');
@@ -35,12 +35,12 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  // Sync local display name with profile once loaded
-  useEffect(() => {
-    if (profile) {
-      setDisplayName(profile.display_name || '');
-    }
-  }, [profile]);
+  // Sync local display name with profile once loaded (adjusted during render, not in an effect)
+  const [syncedProfile, setSyncedProfile] = useState(profile);
+  if (profile !== syncedProfile) {
+    setSyncedProfile(profile);
+    if (profile) setDisplayName(profile.display_name || '');
+  }
 
   // Redirect if not logged in after auth finishes
   useEffect(() => {
@@ -293,7 +293,7 @@ export default function ProfilePage() {
 
             {/* Connected Accounts */}
             <div className="pt-6 border-t border-border">
-              <h3 className="text-base font-medium text-text-primary mb-4">Login Methods</h3>
+              <h3 className="text-base font-medium text-text-primary mb-4">Sign-in methods</h3>
               <div className="space-y-4">
                 {/* Google Account */}
                 <div className="flex items-center justify-between p-4 border border-border rounded-none">
@@ -340,7 +340,7 @@ export default function ProfilePage() {
               <p className="text-sm text-text-primary/70 mb-4">
                 {hasEmailProvider
                   ? 'Update your password associated with your email address.'
-                  : 'Set a password to log in with your email address as a backup.'}
+                  : 'Set a password to sign in with your email address as a backup.'}
               </p>
 
               <form onSubmit={handleSetPassword} className="space-y-4">

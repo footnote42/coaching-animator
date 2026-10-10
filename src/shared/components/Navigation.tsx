@@ -15,17 +15,16 @@ interface TabSection {
   id: NavigationSectionId;
   label: string;
   href: string;
-  cssVar: string;
   requiresAuth: boolean;
 }
 
 const TAB_SECTIONS: TabSection[] = [
-  { id: 'home',      label: 'Home',        href: '/',          cssVar: '--c-tab-home',      requiresAuth: false },
-  { id: 'gallery',   label: 'Gallery',     href: '/gallery',   cssVar: '--c-tab-gallery',   requiresAuth: false },
-  { id: 'playbook',  label: 'My Practices', href: '/my-practices', cssVar: '--c-tab-playbook', requiresAuth: true  },
-  { id: 'create',    label: 'Create',      href: '/practice',  cssVar: '--c-tab-create',    requiresAuth: false },
-  { id: 'help',      label: 'Help',        href: '/help',      cssVar: '--c-tab-help',      requiresAuth: false },
-  { id: 'profile',   label: 'Profile',     href: '/profile',   cssVar: '--c-tab-profile',   requiresAuth: true  },
+  { id: 'home',      label: 'Home',        href: '/',      requiresAuth: false },
+  { id: 'gallery',   label: 'Gallery',     href: '/gallery',   requiresAuth: false },
+  { id: 'playbook',  label: 'My Practices', href: '/my-practices', requiresAuth: true  },
+  { id: 'create',    label: 'Create',      href: '/practice',    requiresAuth: false },
+  { id: 'help',      label: 'Help',        href: '/help',      requiresAuth: false },
+  { id: 'profile',   label: 'Profile',     href: '/profile',   requiresAuth: true  },
 ];
 
 interface NavigationProps {
@@ -43,7 +42,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
   const [menuOpen, setMenuOpen] = useState(false);
 
   const sectionIds = useMemo(() => TAB_SECTIONS.map(s => s.id), []);
-  const [visitOrder, recordVisit] = useTabOrder(sectionIds);
+  const [, recordVisit] = useTabOrder(sectionIds);
   
   const currentSection = TAB_SECTIONS.find(sec =>
     pathname === sec.href ||
@@ -58,9 +57,12 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
     }
   }, [activeId, recordVisit]);
 
-  useEffect(() => {
+  // Close the mobile menu when the route changes (adjusted during render, not in an effect)
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
     setMenuOpen(false);
-  }, [pathname]);
+  }
 
   const handleSignOut = async () => {
     await signOut();
@@ -109,11 +111,8 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
                   <Link
                     key={sec.id}
                     href={sec.href}
-                    className={`nav-tab text-white text-sm font-medium flex items-center justify-center ${active ? 'nav-tab-active' : ''}`}
-                    style={{
-                      backgroundColor: `var(${sec.cssVar})`,
-                      zIndex: 10 - visitOrder.indexOf(sec.id)
-                    }}
+                    aria-current={active ? 'page' : undefined}
+                    className={`nav-tab flex items-center justify-center whitespace-nowrap ${active ? 'nav-tab-active' : ''}`}
                   >
                     <span>{sec.label}</span>
                   </Link>
@@ -157,7 +156,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
           {!loading && !user && (
             <Link
               href="/login"
-              className="inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
+              className="hidden sm:inline-flex items-center min-h-[44px] text-sm font-medium text-white/80 hover:text-white transition-colors shrink-0"
             >
               Sign in
             </Link>
@@ -185,13 +184,11 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               const active = sec.id === activeId;
               return (
                 <div key={sec.id} className="flex items-center gap-3 min-h-[44px]">
-                  <div 
-                    className="w-1 self-stretch" 
-                    style={{ backgroundColor: `var(${sec.cssVar})` }} 
-                  />
+                  <div className={`w-1 self-stretch ${active ? 'bg-[var(--amber)]' : 'bg-white/20'}`} />
                   <Link
                     href={sec.href}
-                    className={`text-sm transition-colors ${active ? 'text-white font-medium' : 'text-white/70 hover:text-white'}`}
+                    aria-current={active ? 'page' : undefined}
+                    className={`text-sm transition-colors ${active ? 'text-white font-bold' : 'text-white/70 hover:text-white'}`}
                   >
                     {sec.label}
                   </Link>

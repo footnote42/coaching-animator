@@ -20,12 +20,9 @@ export default defineConfig([
 
             "react-hooks/exhaustive-deps": "warn",
 
-            // New in eslint-plugin-react-hooks 7 (bundled by eslint-config-next 16). These flag
-            // existing, working patterns (26 hits), so they are off here rather than refactoring
-            // component code inside a framework upgrade. Re-enable with a dedicated clean-up.
-            "react-hooks/set-state-in-effect": "off",
-            "react-hooks/immutability": "off",
-            "react-hooks/refs": "off",
+            "react-hooks/set-state-in-effect": "error",
+            "react-hooks/immutability": "error",
+            "react-hooks/refs": "error",
             "@next/next/no-img-element": "warn",
 
             "no-restricted-imports": ["error", {

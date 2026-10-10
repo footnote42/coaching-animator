@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { useUser } from '@/lib/contexts/UserContext';
@@ -90,9 +90,13 @@ export function DevicePracticeOffer({ onSaved }: { onSaved?: () => void }) {
   const [sourceTitle, setSourceTitle] = useState('');
   const [visibility, setVisibility] = useState<Visibility>('private');
 
-  useEffect(() => {
-    setSaved(user ? readDevicePractice() : null);
-  }, [user]);
+  // Re-read the device Practice when the signed-in user changes (adjusted during render, not in an effect).
+  const userId = user?.id ?? null;
+  const [seenUserId, setSeenUserId] = useState<string | null>(null);
+  if (userId !== seenUserId) {
+    setSeenUserId(userId);
+    setSaved(userId ? readDevicePractice() : null);
+  }
 
   if (!saved) return null;
 

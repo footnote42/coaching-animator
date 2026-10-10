@@ -60,7 +60,7 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await page.getByText('to save Practices').getByRole('link', { name: 'Sign in' }).click()
   await page.getByLabel('Email').fill(coach.email)
   await page.getByLabel('Password').fill(coach.password)
-  await page.getByRole('button', { name: 'Sign In', exact: true }).click()
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click()
   await page.waitForURL((url) => url.pathname === '/practice', { timeout: 60_000 })
 
   const offer = page.getByRole('dialog', { name: 'Save device Practice' })

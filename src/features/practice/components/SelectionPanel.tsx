@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { WaitPicker } from '@/features/practice/components/WaitPicker';
@@ -155,9 +155,13 @@ export function SelectionPanel({
   // Phone only: from md up the panel is always full size and the toggle is hidden.
   const [expanded, setExpanded] = useState(false);
   const bodyId = useId();
-  useEffect(() => {
+  // Drop the label draft when the selection moves to another marker (adjusted during render, not in an effect).
+  const selectedMarkerId = selectedMarker?.id;
+  const [draftMarkerId, setDraftMarkerId] = useState(selectedMarkerId);
+  if (draftMarkerId !== selectedMarkerId) {
+    setDraftMarkerId(selectedMarkerId);
     setLabelDraft(null);
-  }, [selectedMarker?.id]);
+  }
 
   let body: ReactNode;
   if (preview) {

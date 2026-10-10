@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 import { safeNext } from '@/lib/safeNext';
+import { authPageHref, buildCallbackUrl } from '@/lib/authUrls';
 
 function LoginForm() {
   const router = useRouter();
@@ -66,7 +67,7 @@ function LoginForm() {
 
   return (
     <div>
-      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Sign In</h1>
+      <h1 className="text-xl font-heading font-semibold text-text-primary mb-6">Sign in</h1>
 
       {errorMessage && (
         <div className="mb-4 p-3 bg-danger-surface border border-danger/40 text-danger text-sm">
@@ -81,7 +82,7 @@ function LoginForm() {
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+                  redirectTo: buildCallbackUrl(window.location.origin, redirect),
                   scopes: 'openid email profile',
                 },
               });
@@ -156,7 +157,7 @@ function LoginForm() {
           className="w-full py-3 px-4 bg-primary text-text-inverse font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           data-testid="login-submit"
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
 
@@ -168,8 +169,8 @@ function LoginForm() {
 
       <div className="mt-4 text-center text-sm text-text-primary/70">
         Don&apos;t have an account?{' '}
-        <a href="/register" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
-          Sign up
+        <a href={authPageHref('/register', redirect)} className="inline-flex items-center min-h-[44px] text-primary hover:underline">
+          Create account
         </a>
       </div>
     </div>

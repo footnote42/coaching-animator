@@ -49,7 +49,7 @@ export default function TermsPage() {
         </p>
         <ul className={UL}>
           <li>You must provide accurate information when creating an account</li>
-          <li>You must be 18 or over to create an account, and you confirm this when you sign up. Players under 18 can use the editor as a Guest without an account</li>
+          <li>You must be 18 or over to create an account, and you confirm this when you create it. Players under 18 can use the editor as a Guest without an account</li>
           <li>One person per account; do not share your account</li>
           <li>Tell us straight away at {EMAIL} if you think someone else has used your account</li>
         </ul>
