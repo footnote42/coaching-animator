@@ -56,6 +56,14 @@ _Avoid_: mid-run pass, early catch
 The waypoint part way along the carrier's own Run where a Pass or Kick leaves their hands; the carrier runs on without the ball, and the receiver is timed to meet it. Leave it out and the ball goes as soon as the Pass is ready, from wherever the carrier has run to.
 _Avoid_: pass point, throw point
 
+**Hold**:
+A waypoint where a player stands on arrival until an event happens (a Run ends, a Pass is caught, or another player Reaches a waypoint), then runs the rest of their Run. A Run can have several Holds. Events only, never a timed pause (ADR 0007).
+_Avoid_: pause, delay, wait time
+
+**Reach**:
+The event of a player arriving at a given waypoint of their Run. Other Runs, Passes and Holds can wait on it, and it fires on arrival, before any Hold there (ADR 0007).
+_Avoid_: arrive trigger, checkpoint
+
 **Kick to space**:
 A Kick aimed at a cell rather than a player. The ball lands, rolls a short way and lies loose until someone Collects it (ADR 0006).
 _Avoid_: grubber, chip, loose kick (as separate things)

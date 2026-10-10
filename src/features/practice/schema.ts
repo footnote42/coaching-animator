@@ -162,12 +162,18 @@ export const PlacementSchema = z
   })
   .describe('Where a marker starts in the Step: a cell, or for the ball a holder or a cell to lie loose on, and whether kit is Lying.');
 
-export const AfterSchema = z
+/**
+ * The one wait shape (ADR 0007): what a run waits for before it starts. A move's
+ * `after` uses it today; a pass's `after` and a waypoint's hold will share it.
+ */
+export const WaitSchema = z
   .strictObject({
     move: MarkerIdSchema.optional().describe('Start when the move of this marker has finished.'),
     pass: MarkerIdSchema.optional().describe('Start when the pass with this id has been caught.'),
   })
   .describe('What a move waits for before it starts. Give exactly one of move or pass. Waits may not loop.');
+
+export const AfterSchema = WaitSchema;
 
 export const MoveSchema = z
   .strictObject({
@@ -386,6 +392,7 @@ export type Team = (typeof TEAMS)[number];
 export type Direction = (typeof DIRECTIONS)[number];
 export type Marker = z.infer<typeof MarkerSchema>;
 export type Placement = z.infer<typeof PlacementSchema>;
+export type Wait = z.infer<typeof WaitSchema>;
 export type Move = z.infer<typeof MoveSchema>;
 export type Pace = (typeof PACES)[number];
 export type Pass = z.infer<typeof PassSchema>;
