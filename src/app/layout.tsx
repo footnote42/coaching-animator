@@ -74,8 +74,6 @@ export default function RootLayout({
     <html lang="en" className={`${archivo.variable} ${atkinson.variable} ${caveat.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
         <UserProvider>
