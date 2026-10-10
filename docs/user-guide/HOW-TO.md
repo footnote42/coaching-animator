@@ -43,7 +43,7 @@ Saved Practices are listed in **My Practices** (`/my-practices`), where you can 
 A shared link (`/p/[id]`) opens the share view. It has:
 
 - **Play all Steps**, **Previous Step**, **Next Step**, and a **Speed** control.
-- **Show Commentary** / **Close Commentary** for the coaching points.
+- **Show Commentary** / **Hide Commentary** for the coaching points.
 - **Full screen**, where the device supports it.
 - **Share**, using the device share sheet or copying the link.
 - **Report**, for Practices that should not be public.

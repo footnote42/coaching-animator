@@ -108,14 +108,19 @@ describe('PracticeShareViewer', () => {
     expect(screen.getByText(point)).toBeTruthy();
   });
 
-  it('dismisses Commentary with close X and restores with nav button, persisting across visit', () => {
+  it('toggles Commentary with single playback bar button (aria-pressed), persisting across visit', () => {
+    window.sessionStorage.clear();
     render(<PracticeShareViewer title="Passing square" script={script} />);
     const point = script.base.commentary.points[0];
     expect(screen.getByText(point)).toBeTruthy();
 
-    const closeBtn = screen.getByRole('button', { name: 'Close Commentary' });
-    expect(closeBtn.getAttribute('title')).toBe('Close Commentary');
-    fireEvent.click(closeBtn);
+    // No close X button on the overlay
+    expect(screen.queryByRole('button', { name: 'Close Commentary' })).toBeNull();
+
+    // Dismiss with single playback bar toggle
+    const toggleBtn = screen.getByRole('button', { name: 'Hide Commentary' });
+    expect(toggleBtn.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(toggleBtn);
 
     expect(screen.queryByText(point)).toBeNull();
     expect(window.sessionStorage.getItem('ca_share_show_commentary')).toBe('false');
@@ -126,10 +131,32 @@ describe('PracticeShareViewer', () => {
 
     // Restore with nav button
     const restoreBtn = screen.getByRole('button', { name: 'Show Commentary' });
+    expect(restoreBtn.getAttribute('aria-pressed')).toBe('false');
     expect(restoreBtn.getAttribute('title')).toBe('Show Commentary');
     fireEvent.click(restoreBtn);
 
     expect(window.sessionStorage.getItem('ca_share_show_commentary')).toBe('true');
+  });
+
+  it('starts with Commentary collapsed on phones when no saved state exists', () => {
+    window.sessionStorage.clear();
+    const origMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('max-width'),
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })) as unknown as typeof window.matchMedia;
+
+    try {
+      render(<PracticeShareViewer title="Passing square" script={script} />);
+      const point = script.base.commentary.points[0];
+      expect(screen.queryByText(point)).toBeNull();
+      const showBtn = screen.getByRole('button', { name: 'Show Commentary' });
+      expect(showBtn.getAttribute('aria-pressed')).toBe('false');
+    } finally {
+      window.matchMedia = origMatchMedia;
+    }
   });
 
   it('uses navigator.share when available', async () => {

@@ -15,7 +15,6 @@ import {
   Maximize,
   Minimize,
   MoreVertical,
-  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { sharePracticeLink } from '@/shared/share';
@@ -85,7 +84,9 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
     if (typeof window === 'undefined') return true;
     try {
       const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
-      return saved !== null ? saved === 'true' : true;
+      if (saved !== null) return saved === 'true';
+      const isPhone = (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768;
+      return !isPhone;
     } catch {
       return true;
     }
@@ -376,18 +377,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
             aria-live="polite"
             className="pointer-events-auto absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded border border-border bg-surface/95 p-3 text-sm text-text-primary shadow-lg backdrop-blur-sm sm:max-w-sm"
           >
-            <div className="flex items-center justify-between gap-2">
-              <p className="font-medium">{stepLabel}</p>
-              <button
-                type="button"
-                className="inline-flex h-7 w-7 items-center justify-center rounded text-text-muted hover:bg-text-primary/10 hover:text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                aria-label="Close Commentary"
-                title="Close Commentary"
-                onClick={() => updateCommentary(false)}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+            <p className="font-medium">{stepLabel}</p>
             {step.commentary.points.length > 0 && (
               <ul className="mt-1.5 list-disc space-y-1 pl-5 text-text-primary">
                 {step.commentary.points.map((point, i) => (

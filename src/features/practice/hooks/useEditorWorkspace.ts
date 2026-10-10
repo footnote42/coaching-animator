@@ -56,8 +56,32 @@ export function useEditorWorkspace() {
   const [pendingRelease, setPendingRelease] = useState<string | null>(null);
   /** The loose ball the Coach is picking a collector for: the next tap on a player sends them to it. */
   const [pendingCollect, setPendingCollect] = useState<string | null>(null);
+const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
+
   const [ghost, setGhost] = useState(false);
-  const [showCommentary, setShowCommentary] = useState(true);
+  const [showCommentary, setShowCommentaryState] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
+      if (saved !== null) return saved === 'true';
+      const isPhone = (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768;
+      return !isPhone;
+    } catch {
+      return true;
+    }
+  });
+
+  const setShowCommentary = (next: boolean | ((prev: boolean) => boolean)) => {
+    setShowCommentaryState((prev) => {
+      const val = typeof next === 'function' ? next(prev) : next;
+      try {
+        window.sessionStorage.setItem(COMMENTARY_STORAGE_KEY, String(val));
+      } catch {
+        // sessionStorage failure fallback
+      }
+      return val;
+    });
+  };
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const lastFrame = useRef<number | null>(null);

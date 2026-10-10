@@ -25,7 +25,7 @@ Use a saved Practice with at least two Steps and Commentary, shared by link or p
 6. **Share.** Tap Share. Expected: the native share sheet opens with the Practice title and link; without a share sheet, the link is copied and a confirmation shows.
 7. **Build on a tablet** (signed in, `/practice`). Add 6 markers, Draw a run for one, Add a pass between two attackers, Add a Progression, then Save. Expected: every control is tappable with a finger, the Practice saves, and it reopens from My Practices unchanged.
 
-On every device also check: touch targets at least 44px, no horizontal page scroll, Commentary closes with Close Commentary.
+On every device also check: touch targets at least 44px, no horizontal page scroll, Commentary closes with Hide Commentary.
 
 ## What to record
 

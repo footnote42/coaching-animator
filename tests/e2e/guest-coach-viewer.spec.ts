@@ -122,15 +122,16 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
   await expect(viewer.getByText('Step 3: Time lever (4/4)')).toBeVisible()
   await expect(next).toBeDisabled()
 
-  // Commentary shows the new coaching point, dismisses with close X, and restores with nav button.
-  await expect(viewer.getByText(NEW_POINT)).toBeVisible()
-  await viewer.getByRole('button', { name: 'Close Commentary' }).click()
+  // Commentary starts collapsed on phones; playback bar button toggles it.
   await expect(viewer.getByText(NEW_POINT)).toBeHidden()
   await expect(viewer.getByRole('button', { name: 'Show Commentary' })).toHaveAttribute('aria-pressed', 'false')
 
   await viewer.getByRole('button', { name: 'Show Commentary' }).click()
   await expect(viewer.getByText(NEW_POINT)).toBeVisible()
   await expect(viewer.getByRole('button', { name: 'Hide Commentary' })).toHaveAttribute('aria-pressed', 'true')
+
+  await viewer.getByRole('button', { name: 'Hide Commentary' }).click()
+  await expect(viewer.getByText(NEW_POINT)).toBeHidden()
 
   // Overflow menu: Copy script with explanation
   await viewer.getByRole('button', { name: 'More options' }).click()
@@ -170,7 +171,7 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
 
   // Commentary dismiss and restore.
   await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeVisible()
-  await tabletViewer.getByRole('button', { name: 'Close Commentary' }).click()
+  await tabletViewer.getByRole('button', { name: 'Hide Commentary' }).click()
   await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeHidden()
   await tabletViewer.getByRole('button', { name: 'Show Commentary' }).click()
   await expect(tabletViewer.getByText('Base Step', { exact: true })).toBeVisible()

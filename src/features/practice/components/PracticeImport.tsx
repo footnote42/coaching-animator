@@ -525,10 +525,11 @@ export function PracticeImport() {
               <RotateCcw />
             </Button>
             <Button
-              variant="outline"
+              variant={showCommentary ? 'default' : 'outline'}
               size="icon"
               className="h-11 w-11"
               aria-label={showCommentary ? 'Hide Commentary' : 'Show Commentary'}
+              title={showCommentary ? 'Hide Commentary' : 'Show Commentary'}
               aria-pressed={showCommentary}
               onClick={() => setShowCommentary((v) => !v)}
             >
