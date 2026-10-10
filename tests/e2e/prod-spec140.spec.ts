@@ -716,11 +716,9 @@ test.describe('prod spec #140', () => {
             expect((await posted).status()).toBe(201)
             await expect(page.getByText('Practice saved.')).toBeVisible()
 
-            // It appears in My Practices (the page on a phone, where the editor hides the list).
-            if (profile.phone) {
-              await page.waitForURL(/\/practice\?id=/) // saving re-opens the Practice by id
-              await page.goto('/my-practices', { waitUntil: 'load' })
-            }
+            // It appears in My Practices (the editor does not list Practices).
+            await page.waitForURL(/\/practice\?id=/) // saving re-opens the Practice by id
+            await page.goto('/my-practices', { waitUntil: 'load' })
             await expect(page.getByRole('button', { name: `Delete ${title}`, exact: true })).toBeVisible()
             await shot(page, 'save-listed', profile)
 
