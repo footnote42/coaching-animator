@@ -95,7 +95,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 py-2">
           <BrandIcon variant="header" priority />
-          <span className="font-heading font-bold text-lg text-white">Coaching Animator</span>
+          <span className="font-heading font-bold text-base md:text-lg text-white whitespace-nowrap">Coaching Animator</span>
         </Link>
 
         <div className="flex items-center gap-4 h-full">
