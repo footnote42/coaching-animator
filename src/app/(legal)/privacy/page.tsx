@@ -7,13 +7,14 @@ const P = 'text-text-primary/80 mb-4';
 const H2 = 'text-xl font-heading font-semibold text-text-primary mb-4';
 const H3 = 'text-lg font-semibold text-text-primary mb-2';
 const UL = 'list-disc pl-6 text-text-primary/80 space-y-2 mb-4';
+const EMAIL = <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>;
 
 export default function PrivacyPage() {
   return (
     <article className="prose prose-slate max-w-none">
       <h1 className="text-3xl font-heading font-bold text-text-primary mb-8">Privacy Policy</h1>
 
-      <p className="text-text-primary/70 mb-8">Last updated: 3 October 2026</p>
+      <p className="text-text-primary/70 mb-8">Last updated: 10 October 2026</p>
 
       <section className="mb-8 p-4 bg-surface-warm border-l-4 border-primary">
         <h2 className="text-lg font-heading font-semibold text-text-primary mb-2">No Telemetry, Analytics, or Tracking</h2>
@@ -28,42 +29,48 @@ export default function PrivacyPage() {
         <p className={P}>
           Coaching Animator (<a href="https://coaching-animator.waynetellis.com" className="text-primary hover:underline">coaching-animator.waynetellis.com</a>)
           is a free tool for rugby coaches to draw, animate and share coaching Practices. It is run by Wayne Ellis, an
-          individual based in the United Kingdom, who is the data controller for the personal data described here.
-          Contact: <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
+          individual based in the United Kingdom. He is the data controller for the personal data described here.
+          Contact: {EMAIL}.
         </p>
+        {/* MAINTAINER: confirm you are happy being named as the controller, and whether you need to pay the ICO data protection fee (use the ICO self-assessment; some individuals running a free hobby service may be exempt). */}
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>2. What Personal Data We Collect</h2>
-        <p className={P}>We collect only what is needed to run the service.</p>
+        <p className={P}>We collect only what we need to run the service.</p>
         <h3 className={H3}>When you create an account</h3>
         <ul className={UL}>
-          <li>Email address</li>
-          <li>Your name, shown as your display name on Practices you publish (you can change it)</li>
-          <li>A password, if you sign up with email (stored only as a secure hash by our authentication provider)</li>
+          <li>Your email address</li>
+          <li>A display name, if you give one. It is shown on Practices you publish, and you can change it</li>
+          <li>A password, if you sign up with email. Our authentication provider stores only a secure hash of it</li>
           <li>The date you confirmed you are 18 or over</li>
         </ul>
         <h3 className={H3}>What you create</h3>
         <ul className={UL}>
           <li>The Practices you save, with their titles, descriptions, Tags and Source links</li>
-          <li>Reports you make about a Practice, and feedback you send through the feedback form</li>
+          <li>Personal tokens, if you make any for AI assistant access. We keep the token&apos;s name, when it was made, when it was last used and whether it is revoked. The token itself is stored only as a hash, so we cannot read it back</li>
+          <li>Reports you make about a Practice. We store who made the report, the reason and any details you wrote</li>
+          <li>Feedback you send through the feedback form: the message, plus the name and email you give us. If you were signed in, it is linked to your account</li>
         </ul>
         <h3 className={H3}>Technical information</h3>
         <ul className={UL}>
-          <li>Your IP address, used only to limit request rates and prevent abuse; it is not kept long-term</li>
+          <li>Rate-limit keys. To stop abuse, we count requests against a key made from your account ID, or from your IP address if you are signed out. These counters are deleted after 2 days, or straight away when you delete your account</li>
           <li>Session cookies that keep you signed in (see section 9)</li>
+          <li>Our hosting and security providers keep their own short-term request logs, which include IP addresses (see section 5)</li>
         </ul>
         <p className={P}>
-          <strong>What we explicitly do NOT collect:</strong> usage analytics, device or browser fingerprints, behavioural
-          tracking, or advertising cookies.
+          <strong>What we do not collect:</strong> usage analytics, behavioural tracking, or advertising cookies. We do not
+          profile you. Our security provider, Cloudflare, runs a bot check to tell people from automated traffic (see
+          section 9). It is there for security, and we do not use it to track you.
         </p>
+        {/* MAINTAINER: issue #179. The Cloudflare JavaScript Detections script and NEL headers are still on. Either turn them off in the Cloudflare dashboard and then trim the Cloudflare wording here and in sections 5 and 9, or keep them and decide (ADR) whether they fit docs/constraints.md "no device fingerprinting". This wording calls them security only; confirm that is accurate. */}
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>3. Signing In with Google</h2>
         <p className={P}>
-          You can sign in with your Google account instead of an email and password. If you do, Google shares the
-          following with us, and only after you agree on Google&apos;s consent screen:
+          You can sign in with your Google account instead of an email and password. You do this on Google&apos;s own
+          sign-in page. If you do, Google shares the following with us, and only after you agree on Google&apos;s consent screen:
         </p>
         <ul className={UL}>
           <li>Your email address</li>
@@ -75,6 +82,10 @@ export default function PrivacyPage() {
           your name becomes your display name; your profile picture link is stored by our authentication provider with
           your account. We use this data only to sign you in and run your account.
         </p>
+        <p className={P}>
+          Our sign-in and sign-up pages do not load any Google code. If that ever changes, we will say so here first.
+        </p>
+        {/* MAINTAINER: issue #183. The sentence above is true only while NEXT_PUBLIC_GOOGLE_CLIENT_ID is unset. If you set it, Google's script loads on /login, /register and /profile for every visitor, and this paragraph and section 9 must change (or load the script only after the click). */}
         <p className={P}>
           We do not request access to your Gmail, Google Drive, Calendar, Contacts or any other Google data, and we never
           receive your Google password. We do not sell Google user data, use it for advertising, share it with anyone
@@ -102,22 +113,31 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className={H2}>4. How We Use Your Information</h2>
+        <h2 className={H2}>4. Why We Use Your Information</h2>
+        <p className={P}>UK GDPR says we need a lawful basis for each use. These are ours.</p>
+        <h3 className={H3}>Contract: running your account</h3>
         <ul className={UL}>
-          <li>To create and run your account and keep you signed in</li>
-          <li>To save your Practices and show them to you on any device</li>
-          <li>To show Practices you choose to publish in the public Gallery, with your display name</li>
-          <li>To send emails about your account, such as confirming your address or resetting your password</li>
-          <li>To review reports and feedback, enforce our Terms of Service and protect against abuse</li>
+          <li>Creating your account and keeping you signed in</li>
+          <li>Saving your Practices and showing them to you on any device</li>
+          <li>Showing Practices you choose to publish in the public Gallery, or share by link, with your display name</li>
+          <li>Sending emails about your account, such as confirming your address or resetting your password</li>
+          <li>Personal tokens you create for AI assistant access</li>
+        </ul>
+        <h3 className={H3}>Legitimate interests: keeping the service safe</h3>
+        <ul className={UL}>
+          <li>Rate limiting, by IP address or account ID, to stop abuse and keep the service free for everyone</li>
+          <li>Reading reports and feedback, hiding or deleting Practices, and banning accounts under our Terms of Service</li>
+          <li>Keeping the date of your 18+ confirmation, so we can show that we ask for it</li>
+          <li>Security checks run by Cloudflare and our hosting provider</li>
         </ul>
         <p className={P}>
-          Our lawful bases under UK GDPR are performance of our agreement with you (running your account) and our
-          legitimate interest in keeping the service safe.
+          We think these uses are fair and low-impact. You can object to them (see section 8).
         </p>
+        {/* MAINTAINER: issue #185 item 6. Confirm the mapping of purposes to lawful bases above (especially feedback handling, moderation records and the 18+ record as legitimate interests), and that you are content with a short legitimate interests assessment on file. */}
       </section>
 
       <section className="mb-8">
-        <h2 className={H2}>5. Data Storage &amp; Residency</h2>
+        <h2 className={H2}>5. Where Your Data Is Stored and Who Handles It</h2>
         <p className={P}>
           <strong>Accounts:</strong> your account and Practices are stored by Supabase in the European Union
           (Frankfurt, Germany), encrypted in transit and at rest.
@@ -128,71 +148,112 @@ export default function PrivacyPage() {
         </p>
         <h3 className={H3}>Service providers</h3>
         <ul className={UL}>
-          <li><strong>Supabase</strong>: database and sign-in</li>
-          <li><strong>Vercel</strong>: hosts the website</li>
-          <li><strong>Cloudflare</strong>: domain and network security</li>
-          <li><strong>Resend</strong>: sends account emails (your email address only)</li>
+          <li><strong>Supabase</strong>: database and sign-in. Data is held in the EU</li>
+          <li><strong>Vercel</strong>: hosts the website and runs our code. It handles requests, including IP addresses, and keeps short-term request logs. Vercel is a US company and may process data in the US</li>
+          <li><strong>Resend</strong>: sends account emails such as confirmations and password resets. It receives your email address. Resend is a US company and may process data in the US</li>
+          <li><strong>Cloudflare</strong>: our domain, network and security layer. Requests pass through it, so it sees IP addresses and keeps short-term logs of its own. It also runs the bot check described in section 9. It operates worldwide, including in the US</li>
         </ul>
-        <p className={P}>Each processes data only to provide its service to us.</p>
+        <p className={P}>
+          Each processes data only to provide its service to us. Where data goes to a country without a UK adequacy
+          decision, the provider relies on standard contractual clauses approved for transfers from the UK, or the UK
+          extension to the EU standard contractual clauses.
+        </p>
+        {/* MAINTAINER: issue #185 items 7 and 8. (a) Confirm the actual transfer safeguard for Vercel, Resend and Cloudflare (standard contractual clauses with the UK extension, or the UK-US data bridge if they are certified) and name it here. (b) Confirm Resend really is the SMTP sender; it is set in the Supabase dashboard, not in the repo. (c) Confirm you have accepted each provider's data processing terms. (d) Add the providers' log retention periods if you want to be specific. */}
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>6. Data Sharing &amp; Sales</h2>
         <p className={P}>
           <strong>We do not sell, rent, or trade your personal data.</strong> We share it only with the service providers
-          above, when required by law, and as public content: Practices you publish are visible to everyone.
+          above, when the law requires it, and as public content: Practices you publish are visible to everyone, with your
+          display name. Other users cannot read your profile. Only your display name is visible, and only next to your
+          published Practices.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className={H2}>7. Data Retention &amp; Deletion</h2>
+        <h2 className={H2}>7. How Long We Keep Your Data</h2>
+        <ul className={UL}>
+          <li><strong>Account data and Practices:</strong> until you delete your account.</li>
+          <li><strong>Rate-limit counters:</strong> 2 days. Counters tied to your account are deleted when you delete it.</li>
+          <li><strong>Provider request logs</strong> (Vercel, Cloudflare): the short periods those providers set.</li>
+        </ul>
         <p className={P}>
-          We keep your data while your account is active. You can delete your account from your profile page, or ask us
-          to by email. We then delete your personal data, including any data received from Google, within 30 days,
-          except where the law requires us to keep it.
+          You can delete your account yourself with <strong>Delete my account</strong> on your profile page, or ask us to by
+          email. Deletion is immediate in our database. It removes your account, your Practices, your personal tokens and
+          your rate-limit counters, including any data received from Google.
         </p>
+        <p className={P}>
+          Some things stay, with your details removed. Feedback you sent keeps its message but loses your name, email
+          and account link. Reports you made keep their reason but lose the details you wrote and your identity.
+          This lets us still act on what was reported.
+        </p>
+        <p className={P}>
+          Our database provider keeps backups for a limited time. Your data ages out of them on the provider&apos;s
+          schedule. We do not restore deleted accounts from backups. We keep nothing for longer than this unless the law
+          requires it.
+        </p>
+        {/* MAINTAINER: confirm the Supabase backup retention for this project (it depends on the plan; state the number of days here if you want to be exact), and that "immediate" holds for the delete route in production. */}
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>8. Your Rights</h2>
+        <p className={P}>Under UK GDPR you can:</p>
+        <ul className={UL}>
+          <li><strong>See and take your data.</strong> Use <strong>Download my data</strong> on your profile page. It gives you a file with your account details, Practices, token names and reports. For anything else, such as feedback you sent, email us.</li>
+          <li><strong>Delete it.</strong> Use <strong>Delete my account</strong> on your profile page (see section 7).</li>
+          <li><strong>Correct it.</strong> Change your display name on your profile page, or email us for anything else.</li>
+          <li><strong>Object</strong> to uses based on our legitimate interests, or ask us to restrict how we use your data. Email us.</li>
+        </ul>
         <p className={P}>
-          You can access, correct, export or delete your data, and object to or restrict how we use it. Use your profile
-          page or email <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
-          You can also complain to the UK Information Commissioner&apos;s Office (ico.org.uk).
+          Email {EMAIL} for anything you cannot do yourself. We reply within one month.
+        </p>
+        <p className={P}>
+          If you are unhappy with how we handle your data, please tell us first. You can also complain to the UK
+          Information Commissioner&apos;s Office at{' '}
+          <a href="https://ico.org.uk/make-a-complaint/" className="text-primary hover:underline" rel="noopener noreferrer" target="_blank">
+            ico.org.uk/make-a-complaint
+          </a>
+          .
         </p>
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>9. Cookies &amp; Browser Storage</h2>
         <p className={P}>
-          We only set cookies and use on-device storage that the Service needs to work. Nothing else is set.
+          We only set cookies and use on-device storage that the site needs to work or to stay secure. We set no
+          analytics, advertising or tracking cookies.
         </p>
-        <h3 className={H3}>Cookies set when you sign in</h3>
-        <p className={P}>
-          Signing in sets Supabase session cookies, whose names start with <code>sb-</code>. They keep you signed in
-          between page loads and are removed when you sign out or they expire. They are not set for Guests.
-        </p>
-        <h3 className={H3}>On-device storage for Guests</h3>
-        <p className={P}>
-          If you use the editor without signing in, your work is kept in your browser&apos;s localStorage under the key{' '}
-          <code>practice.device</code>. It stays on your device and is not sent to us. You can clear it at any time
-          from your browser settings.
-        </p>
+        <h3 className={H3}>Cookies</h3>
+        <ul className={UL}>
+          <li><strong>Sign-in cookie.</strong> When you sign in, Supabase sets a session cookie whose name starts with <code>sb-</code>. It keeps you signed in between page loads and is removed when you sign out or it expires. It is not set for Guests.</li>
+          <li><strong>Cloudflare security.</strong> Cloudflare runs a script that checks whether a visitor is a person or a bot, and it may set its own security cookie for that. It is used for security only. Cloudflare also asks browsers to report network errors to it.</li>
+        </ul>
+        <h3 className={H3}>Storage on your device</h3>
+        <p className={P}>These stay in your browser and are not sent to us. You can clear them from your browser settings.</p>
+        <ul className={UL}>
+          <li><code>practice.device</code> (localStorage): your work, if you use the editor without signing in.</li>
+          <li><code>ca-theme</code> (localStorage): your light or dark theme choice.</li>
+          <li><code>nav_mru_v1</code> (localStorage): the order of the navigation tabs, so the ones you use most come first.</li>
+          <li><code>ca_share_show_commentary</code> (sessionStorage): whether you chose to show Commentary on a shared Practice. It is cleared when you close the tab.</li>
+          <li>The sign-in library may also keep your session in localStorage, under keys starting with <code>sb-</code>.</li>
+        </ul>
         <h3 className={H3}>No consent banner</h3>
         <p className={P}>
-          We do not show a cookie consent banner because we set no non-essential cookies: no analytics, advertising or tracking.
-          Strictly necessary cookies are exempt from the consent requirement in the Privacy and Electronic Communications
-          Regulations (PECR). If that ever changes, we will ask for your consent first.
+          We do not show a cookie consent banner because we set no non-essential cookies. Cookies and storage that are
+          strictly necessary for the service, or for its security, are exempt from the consent requirement in the Privacy and
+          Electronic Communications Regulations (PECR). If that ever changes, we will ask for your consent first.
         </p>
+        {/* MAINTAINER: issues #179 and #185 item 1. Check in a real browser which cookie names Cloudflare sets, and name them here. Check the storage key list is complete before each release. Confirm you are content to rely on the PECR "strictly necessary" exemption for the Cloudflare cookie, or turn JS Detections off and delete that bullet. */}
       </section>
 
       <section className="mb-8">
         <h2 className={H2}>10. Children&apos;s Privacy</h2>
         <p className={P}>
-          Accounts are for people aged 18 or over, and we ask you to confirm this when you sign up.
-          We do not knowingly collect personal information from anyone under 18. Players under 18 can use the editor as a Guest,
-          where their work stays on their own device. If you believe a child has an account, please email{' '}
-          <a href="mailto:hello@waynetellis.com" className="text-primary hover:underline">hello@waynetellis.com</a>.
+          Accounts are for people aged 18 or over. Every sign-up route, email or Google, asks you to confirm this, and we
+          keep the date you did. We do not knowingly collect personal information from anyone under 18. Players under 18
+          can use the editor as a Guest, where their work stays on their own device. If you believe a child has an
+          account, please email {EMAIL}.
         </p>
       </section>
 
