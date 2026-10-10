@@ -4,6 +4,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 const nextConfig = {
   reactStrictMode: false,
 
+  // Do not advertise the framework in an X-Powered-By header.
+  poweredByHeader: false,
+
   // Routes of the retired animation model. Old share and replay ids no longer
   // exist, so those land on the share view's friendly not-found page.
   async redirects() {
@@ -18,7 +21,7 @@ const nextConfig = {
 
   // Security headers per FR-SEC-01
   async headers() {
-    // CSP directives: Supabase, the Vercel preview toolbar, inline styles.
+    // CSP directives: Supabase and inline scripts and styles.
     // 'unsafe-eval' is dev only: Next.js uses eval for fast refresh and source
     // maps. Konva, react-konva and marked need no eval in production.
     // A local Supabase (e2e, CI) is not under *.supabase.co, so allow its origin too.
@@ -33,12 +36,12 @@ const nextConfig = {
     }
     const cspDirectives = [
       "default-src 'self'",
-      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline' https://vercel.live https://accounts.google.com/gsi/client`,
-      "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
+      `script-src 'self'${isDev ? " 'unsafe-eval'" : ''} 'unsafe-inline'`,
+      "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.supabase.co",
       "font-src 'self' data:",
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live https://accounts.google.com/gsi/${localSupabase}`,
-      "frame-src 'self' https://accounts.google.com/gsi/",
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co${localSupabase}`,
+      "frame-src 'self'",
       "frame-ancestors 'none'",
       "form-action 'self'",
       "base-uri 'self'",
@@ -53,6 +56,10 @@ const nextConfig = {
             value: cspDirectives,
           },
           {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains',
+          },
+          {
             key: 'X-Frame-Options',
             value: 'DENY',
           },
@@ -63,10 +70,6 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
           },
           {
             key: 'Permissions-Policy',

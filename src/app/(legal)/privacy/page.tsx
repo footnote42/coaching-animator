@@ -84,7 +84,6 @@ export default function PrivacyPage() {
         <p className={P}>
           Our sign-in and sign-up pages do not load any Google code. If that ever changes, we will say so here first.
         </p>
-        {/* MAINTAINER: issue #183. The sentence above is true only while NEXT_PUBLIC_GOOGLE_CLIENT_ID is unset. If you set it, Google's script loads on /login, /register and /profile for every visitor, and this paragraph and section 9 must change (or load the script only after the click). */}
         <p className={P}>
           We do not request access to your Gmail, Google Drive, Calendar, Contacts or any other Google data, and we never
           receive your Google password. We do not sell Google user data, use it for advertising, share it with anyone

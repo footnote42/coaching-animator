@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/contexts/UserContext';
 import { putWithRetry, deleteWithRetry } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { getInitials } from './profileUtils';
 import { PersonalTokensList } from './PersonalTokensList';
 import {
@@ -87,19 +86,21 @@ export default function ProfilePage() {
     }
   };
 
-  // Fallback only (no NEXT_PUBLIC_GOOGLE_CLIENT_ID): the redirect flow.
-  // With a client ID, GoogleSignInButton links through linkIdentity with an ID
-  // token instead (supported by the installed supabase-js).
+  // Redirect flow: linkIdentity sends the signed-in user through Google and
+  // back to /auth/callback (needs manual identity linking enabled in Supabase).
   const handleLinkGoogle = async () => {
     setIsLinking(true);
+    setError(null);
     const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signInWithOAuth({
+    const { error: linkError } = await supabase.auth.linkIdentity({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: 'openid email profile',
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
+    if (linkError) {
+      console.error('[Profile] Link Google error:', linkError.message);
+      setError('We could not connect Google. Please try again.');
+      setIsLinking(false);
+    }
   };
 
   const handleUnlink = async (identityId: string) => {
@@ -319,21 +320,13 @@ export default function ProfilePage() {
                       Unlink
                     </button>
                   ) : (
-                    <GoogleSignInButton
-                      mode="link"
-                      text="continue_with"
-                      onSuccess={() => window.location.reload()}
-                      onError={setError}
-                      fallback={
-                        <button
-                          onClick={handleLinkGoogle}
-                          disabled={isLinking}
-                          className="px-3 py-1 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm"
-                        >
-                          Connect
-                        </button>
-                      }
-                    />
+                    <button
+                      onClick={handleLinkGoogle}
+                      disabled={isLinking}
+                      className="px-3 py-1 text-sm border border-border rounded-none text-text-primary hover:bg-surface-warm"
+                    >
+                      Connect
+                    </button>
                   )}
                 </div>
               </div>
