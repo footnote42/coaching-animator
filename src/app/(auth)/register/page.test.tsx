@@ -6,7 +6,6 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 const signUp = vi.fn(async (_args: unknown) => ({ error: null }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
 vi.mock('@/lib/supabase/client', () => ({ createSupabaseBrowserClient: () => ({ auth: { signUp } }) }));
-vi.mock('@/features/auth/GoogleSignInButton', () => ({ GoogleSignInButton: () => null }));
 vi.mock('@/lib/api-client', () => ({ postWithRetry: vi.fn() }));
 
 import RegisterPage from './page';

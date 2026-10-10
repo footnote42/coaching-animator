@@ -8,13 +8,17 @@ Use the contact form at `/contact`. The form has no dedicated security subject, 
 
 ## Content Security Policy
 
-Security headers are set for every route in `next.config.js` (`headers()`): a Content Security Policy, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a `Permissions-Policy` that disables camera, microphone and geolocation. The CSP also sets `frame-ancestors 'none'`, `form-action 'self'`, `base-uri 'self'`, and limits images and network connections to this origin and Supabase (`*.supabase.co`).
+Security headers are set for every route in `next.config.js` (`headers()`): a Content Security Policy, `Strict-Transport-Security: max-age=63072000; includeSubDomains` (no `preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a `Permissions-Policy` that disables camera, microphone and geolocation. `X-XSS-Protection` is not sent (obsolete) and `poweredByHeader` is off, so there is no `X-Powered-By`. The CSP also sets `frame-ancestors 'none'`, `form-action 'self'`, `base-uri 'self'`, and limits images and network connections to this origin and Supabase (`*.supabase.co`).
 
 ### Trade-off: `unsafe-inline`
 
-In production `script-src` is `'self' 'unsafe-inline' https://vercel.live`. `'unsafe-eval'` is added only in development, where Next.js uses eval for fast refresh and source maps; Konva, react-konva and marked need no eval. `'unsafe-inline'` stays because Next.js injects inline bootstrap scripts, and removing it needs a nonce-based CSP through middleware, which makes pages dynamically rendered. That has not been done.
+In production `script-src` is `'self' 'unsafe-inline'`, `style-src` is `'self' 'unsafe-inline'`, `connect-src` is `'self' https://*.supabase.co wss://*.supabase.co` (plus a local Supabase origin in e2e and CI) and `frame-src` is `'self'`. No third-party script, style or frame origin is allowed. `'unsafe-eval'` is added only in development, where Next.js uses eval for fast refresh and source maps; Konva, react-konva and marked need no eval. `'unsafe-inline'` stays because Next.js injects inline bootstrap scripts, and removing it needs a nonce-based CSP through middleware, which makes pages dynamically rendered. That has not been done.
 
 Mitigations: all user content is rendered through React (escaped by default), inputs are validated with Zod schemas, and the app accepts no user-supplied HTML. `style-src` keeps `'unsafe-inline'` for inline styles.
+
+### Google sign-in
+
+Google sign-in uses only the Supabase PKCE redirect flow (`signInWithOAuth`, and `linkIdentity` on `/profile`). The Google Identity Services script and button were removed (issue #183), so no Google code runs on `/login`, `/register` or `/profile` and the CSP has no `accounts.google.com` entries. The Vercel preview toolbar origin (`vercel.live`) was also dropped from the CSP.
 
 ## Rate limiting
 

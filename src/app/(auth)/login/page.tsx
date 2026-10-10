@@ -3,7 +3,6 @@
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 
 function LoginForm() {
@@ -75,14 +74,6 @@ function LoginForm() {
       )}
 
       <div className="mb-6">
-        <GoogleSignInButton
-          onSuccess={() => {
-            router.push(redirect);
-            router.refresh();
-          }}
-          onError={setErrorMessage}
-          text="signin_with"
-          fallback={
           <button
             onClick={async () => {
               const supabase = createSupabaseBrowserClient();
@@ -117,8 +108,6 @@ function LoginForm() {
             </svg>
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
-          }
-        />
       </div>
 
       <div className="flex items-center gap-4 mb-6">

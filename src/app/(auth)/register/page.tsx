@@ -1,14 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 import { postWithRetry } from '@/lib/api-client';
 
 export default function RegisterPage() {
-  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -125,14 +122,6 @@ export default function RegisterPage() {
       )}
 
       <div className="mb-6">
-        <GoogleSignInButton
-          onSuccess={() => {
-            router.push('/practice');
-            router.refresh();
-          }}
-          onError={setErrorMessage}
-          text="continue_with"
-          fallback={
           <button
             onClick={async () => {
               const supabase = createSupabaseBrowserClient();
@@ -167,8 +156,6 @@ export default function RegisterPage() {
             </svg>
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
-          }
-        />
       </div>
 
       <p className="-mt-3 mb-6 text-xs text-text-primary/70">
