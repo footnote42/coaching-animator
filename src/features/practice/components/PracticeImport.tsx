@@ -35,9 +35,20 @@ import { type MarkerKind } from '@/features/practice/schema';
 import { SelectionPanel } from '@/features/practice/components/SelectionPanel';
 import { PassList } from '@/features/practice/components/PassList';
 import { cn } from '@/lib/utils';
-import example from '@/features/practice/examples/passing-square-progressions.json';
+import { DESIGN_TOKENS } from '@/shared/design-tokens';
+
+/** Holds the canvas's place, in its colour, while the Konva code loads: the box is already sized, so nothing shifts. */
+const CanvasPlaceholder = () => (
+  <div aria-hidden className="absolute inset-0" style={{ backgroundColor: DESIGN_TOKENS.colours.primary }} />
+);
 
 const PracticeCanvas = dynamic(() => import('@/features/practice/components/PracticeCanvas'), {
+  ssr: false,
+  loading: CanvasPlaceholder,
+});
+
+// The script box's textarea, buttons and example load when the box is first opened.
+const ScriptBox = dynamic(() => import('@/features/practice/components/ScriptBox').then((m) => m.ScriptBox), {
   ssr: false,
 });
 
@@ -139,6 +150,8 @@ export function PracticeImport() {
   const { user, loading } = useUser();
   const signedIn = !loading && !!user;
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [scriptOpen, setScriptOpen] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const [previewTool, setPreviewTool] = useState<string | null>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startLongPress = (id: string) => {
@@ -242,31 +255,16 @@ export function PracticeImport() {
         <EditorSection
           title="Advanced: Practice Script (for AI tools)"
           collapse="always"
+          open={scriptOpen}
+          onOpenChange={(next) => {
+            setScriptOpen(next);
+            if (next) setScriptLoaded(true);
+          }}
           meta={errors.length > 0 ? '(can’t load)' : problems.length > 0 ? `(${problems.length} to fix)` : undefined}
         >
           <PracticeScriptActions text={scriptText} isGuest={isGuest} />
           <Link href="/practice-script/v1/guide" className="text-sm text-primary underline">How to write a script, or have an AI write it</Link>
-          <details className="flex flex-col gap-2">
-            <summary className="cursor-pointer py-2 text-sm font-medium text-text-primary">Practice Script</summary>
-            <label htmlFor="practice-script" className="text-sm text-text-primary">
-              The script for this Practice. Paste one (JSON) and apply it, or edit on the canvas.
-            </label>
-            <textarea
-              id="practice-script"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              spellCheck={false}
-              className="mt-2 h-48 w-full resize-y border border-[var(--color-border)] bg-[var(--color-surface)] p-2 font-mono text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            />
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Button onClick={() => applyText(text)} disabled={!text.trim() || text === scriptText}>
-                Apply script
-              </Button>
-              <Button variant="outline" onClick={() => applyText(JSON.stringify(example))}>
-                Use example
-              </Button>
-            </div>
-          </details>
+          {scriptLoaded && <ScriptBox text={text} setText={setText} scriptText={scriptText} applyText={applyText} />}
           {errors.length > 0 && (
             <div role="alert" className="border border-destructive p-2 text-sm">
               <p className="mb-1 font-medium text-destructive">This script can&apos;t be loaded:</p>
