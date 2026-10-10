@@ -38,6 +38,30 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
+ * Read the error from a parsed API error body.
+ *
+ * Routes return either `{ error: "message" }` or `{ error: { code, message } }`.
+ * Falls back to a status-based message when neither shape is present.
+ */
+export function readApiError(
+  body: unknown,
+  status: number
+): { error: string; code?: string } {
+  const fallback = `Request failed with status ${status}`;
+  const err = (body as { error?: unknown } | null | undefined)?.error;
+  if (typeof err === 'string' && err) return { error: err };
+  if (err && typeof err === 'object') {
+    const { message, code } = err as { message?: unknown; code?: unknown };
+    const result: { error: string; code?: string } = {
+      error: typeof message === 'string' && message ? message : fallback,
+    };
+    if (typeof code === 'string' && code) result.code = code;
+    return result;
+  }
+  return { error: fallback };
+}
+
+/**
  * Fetch with automatic retry on transient failures
  * 
  * @param url - URL to fetch
@@ -120,7 +144,7 @@ export async function postWithRetry<T>(
   url: string,
   data: unknown,
   retryOptions?: RetryOptions
-): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
+): Promise<{ ok: boolean; status: number; data?: T; error?: string; code?: string }> {
   try {
     const response = await fetchWithRetry(
       url,
@@ -145,7 +169,7 @@ export async function postWithRetry<T>(
       return {
         ok: false,
         status: response.status,
-        error: responseData?.error || `Request failed with status ${response.status}`,
+        ...readApiError(responseData, response.status),
       };
     }
 
@@ -165,7 +189,7 @@ export async function postWithRetry<T>(
 export async function getWithRetry<T>(
   url: string,
   retryOptions?: RetryOptions
-): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
+): Promise<{ ok: boolean; status: number; data?: T; error?: string; code?: string }> {
   try {
     const response = await fetchWithRetry(url, { method: 'GET', credentials: 'include' }, retryOptions);
     const isJson = response.headers.get('content-type')?.includes('application/json');
@@ -180,7 +204,7 @@ export async function getWithRetry<T>(
       return {
         ok: false,
         status: response.status,
-        error: responseData?.error || `Request failed with status ${response.status}`,
+        ...readApiError(responseData, response.status),
       };
     }
 
@@ -201,7 +225,7 @@ export async function putWithRetry<T>(
   url: string,
   data: unknown,
   retryOptions?: RetryOptions
-): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
+): Promise<{ ok: boolean; status: number; data?: T; error?: string; code?: string }> {
   try {
     const response = await fetchWithRetry(
       url,
@@ -226,7 +250,7 @@ export async function putWithRetry<T>(
       return {
         ok: false,
         status: response.status,
-        error: responseData?.error || `Request failed with status ${response.status}`,
+        ...readApiError(responseData, response.status),
       };
     }
 
@@ -246,7 +270,7 @@ export async function putWithRetry<T>(
 export async function deleteWithRetry(
   url: string,
   retryOptions?: RetryOptions
-): Promise<{ ok: boolean; status: number; error?: string }> {
+): Promise<{ ok: boolean; status: number; error?: string; code?: string }> {
   try {
     const response = await fetchWithRetry(url, { method: 'DELETE', credentials: 'include' }, retryOptions);
 
@@ -261,7 +285,7 @@ export async function deleteWithRetry(
       return {
         ok: false,
         status: response.status,
-        error: responseData?.error || `Request failed with status ${response.status}`,
+        ...readApiError(responseData, response.status),
       };
     }
 
