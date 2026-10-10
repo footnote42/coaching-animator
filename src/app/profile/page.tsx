@@ -293,7 +293,7 @@ export default function ProfilePage() {
 
             {/* Connected Accounts */}
             <div className="pt-6 border-t border-border">
-              <h3 className="text-base font-medium text-text-primary mb-4">Login Methods</h3>
+              <h3 className="text-base font-medium text-text-primary mb-4">Sign-in methods</h3>
               <div className="space-y-4">
                 {/* Google Account */}
                 <div className="flex items-center justify-between p-4 border border-border rounded-none">
@@ -340,7 +340,7 @@ export default function ProfilePage() {
               <p className="text-sm text-text-primary/70 mb-4">
                 {hasEmailProvider
                   ? 'Update your password associated with your email address.'
-                  : 'Set a password to log in with your email address as a backup.'}
+                  : 'Set a password to sign in with your email address as a backup.'}
               </p>
 
               <form onSubmit={handleSetPassword} className="space-y-4">

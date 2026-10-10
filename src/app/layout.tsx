@@ -28,7 +28,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Coaching Animator - Rugby Play Visualisation',
+    default: 'Coaching Animator | Rugby Play Visualisation',
     template: '%s | Coaching Animator',
   },
   description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
@@ -40,12 +40,12 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_GB',
     siteName: 'Coaching Animator',
-    title: 'Coaching Animator - Rugby Play Visualisation',
+    title: 'Coaching Animator | Rugby Play Visualisation',
     description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Coaching Animator - Rugby Play Visualisation',
+    title: 'Coaching Animator | Rugby Play Visualisation',
     description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   },
   robots: {

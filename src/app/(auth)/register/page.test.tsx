@@ -35,7 +35,7 @@ describe('register page 18+ declaration', () => {
   it('blocks sign-up until ticked', async () => {
     render(<RegisterPage />);
     fill();
-    fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create account' }));
     expect(await screen.findByText(/18 or over to create an account/)).toBeTruthy();
     expect(signUp).not.toHaveBeenCalled();
   });
@@ -44,7 +44,7 @@ describe('register page 18+ declaration', () => {
     render(<RegisterPage />);
     fill();
     fireEvent.click(screen.getByLabelText('I am 18 or over'));
-    fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create account' }));
     await waitFor(() => expect(signUp).toHaveBeenCalled());
     const arg = signUp.mock.calls[0][0] as { options: { data: unknown; emailRedirectTo: string } };
     expect(arg.options.emailRedirectTo).toBe(`${window.location.origin}/auth/confirm?next=%2Fpractice`);
