@@ -969,7 +969,7 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
 export function waitOptions(
   script: PracticeScript,
   step: ResolvedStep,
-  subject: { move: string } | { pass: string },
+  subject: WaitSubject,
   kinds: ReadonlyArray<'move' | 'pass' | 'reach'> = ['move', 'pass', 'reach'],
 ): Wait[] {
   const base = stepAsBase(script, step);
@@ -979,12 +979,28 @@ export function waitOptions(
   if (kinds.includes('reach')) {
     for (const m of step.moves) m.waypoints.forEach((_, waypoint) => candidates.push({ reach: { marker: m.marker, waypoint } }));
   }
-  const current = 'move' in subject ? step.moves.find((m) => m.marker === subject.move)?.after : step.passes.find((p) => p.id === subject.pass)?.after;
+  const current = currentWait(step, subject);
   return candidates.filter((wait) => {
     if (current && same(current, wait)) return false;
-    const next = applyEdit(base, 'move' in subject ? { type: 'setStartAfter', marker: subject.move, wait } : { type: 'setPassAfter', id: subject.pass, wait });
+    const next = applyEdit(base, waitEdit(subject, wait));
     return typeof next !== 'string' && validate(next).ok;
   });
+}
+
+/** What a wait is for: a run's start, a pass, or the hold on a run's waypoint. */
+export type WaitSubject = { move: string } | { pass: string } | { hold: { marker: string; index: number } };
+
+/** The wait `subject` has in `step`, if any. */
+export function currentWait(step: ResolvedStep, subject: WaitSubject): Wait | undefined {
+  if ('move' in subject) return step.moves.find((m) => m.marker === subject.move)?.after;
+  if ('pass' in subject) return step.passes.find((p) => p.id === subject.pass)?.after;
+  return step.moves.find((m) => m.marker === subject.hold.marker)?.waypoints[subject.hold.index]?.hold;
+}
+
+function waitEdit(subject: WaitSubject, wait: Wait | null): Edit {
+  if ('move' in subject) return { type: 'setStartAfter', marker: subject.move, wait };
+  if ('pass' in subject) return { type: 'setPassAfter', id: subject.pass, wait };
+  return { type: 'setWaypointHold', marker: subject.hold.marker, index: subject.hold.index, hold: wait };
 }
 
 /**

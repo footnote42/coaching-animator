@@ -240,6 +240,7 @@ export function PracticeEditLayer({
               stroke="#111827"
               strokeWidth={1}
             />
+            {cell.hold && <HoldBadge x={-(Math.max(radius * 0.45, 6) + 8)} y={-14} />}
             <Text
               text={cell.pace ? `${index + 1} ${cell.pace}` : String(index + 1)}
               x={Math.max(radius * 0.45, 6) + 2}
@@ -252,6 +253,17 @@ export function PracticeEditLayer({
         );
       })}
     </Layer>
+  );
+}
+
+/** A small pause mark (two bars) on a waypoint that holds; shown in the editor only. */
+export function HoldBadge({ x, y }: { x: number; y: number }) {
+  return (
+    <Group x={x} y={y} listening={false} name="hold-badge">
+      <Rect width={10} height={10} fill="#111827" cornerRadius={2} />
+      <Rect x={2.5} y={2} width={2} height={6} fill="#FFFFFF" />
+      <Rect x={5.5} y={2} width={2} height={6} fill="#FFFFFF" />
+    </Group>
   );
 }
 

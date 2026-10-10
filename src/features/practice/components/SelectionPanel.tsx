@@ -36,7 +36,7 @@ export const TOOL_HELP: Record<string, ToolHelp> = {
   },
   run: {
     name: 'Run',
-    description: 'tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it.',
+    description: 'tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it, or hold there until something happens.',
   },
   pass: {
     name: 'Pass',
@@ -201,7 +201,7 @@ export function SelectionPanel({
     const passesOn = !carriedBall && passes.some((p) => p.from === marker.id);
     const next =
       tool === 'run'
-        ? 'Tap cells to extend the run, or a waypoint to set its Pace.'
+        ? 'Tap cells to extend the run, or a waypoint to set its Pace or hold.'
         : tool === 'pass'
           ? passKind === 'kick'
             ? 'Tap the player to kick to, or the ground to kick to space.'
@@ -323,6 +323,20 @@ export function SelectionPanel({
                       <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
                     ))}
                   </select>
+                  {step && (
+                    <>
+                      <label htmlFor="waypoint-hold" className="pl-1">Hold until…</label>
+                      <WaitPicker
+                        id="waypoint-hold"
+                        ariaLabel="Hold until"
+                        script={script}
+                        step={step}
+                        subject={{ hold: { marker: selectedMove.marker, index: waypoint } }}
+                        none="No hold"
+                        onChange={(hold) => edit({ type: 'setWaypointHold', marker: selectedMove.marker, index: waypoint, hold })}
+                      />
+                    </>
+                  )}
                 </>
               )}
               <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMove', marker: selectedMove.marker })}>

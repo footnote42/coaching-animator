@@ -1,6 +1,6 @@
 'use client';
 
-import { waitOptions } from '@/features/practice/editing';
+import { currentWait, waitOptions, type WaitSubject } from '@/features/practice/editing';
 import type { ResolvedStep } from '@/features/practice/engine';
 import type { PracticeScript, Wait } from '@/features/practice/schema';
 
@@ -34,7 +34,7 @@ export function waitLabel(wait: Wait, name: (id: string) => string, passName: (i
 }
 
 /**
- * The wait choices for a run's start or a pass: the current one, then every
+ * The wait choices for a run's start, a pass or a waypoint's hold: the current one, then every
  * other wait that would not make waits loop.
  */
 export function WaitPicker({
@@ -51,7 +51,7 @@ export function WaitPicker({
   ariaLabel: string;
   script: PracticeScript;
   step: ResolvedStep;
-  subject: { move: string } | { pass: string };
+  subject: WaitSubject;
   kinds?: ReadonlyArray<'move' | 'pass' | 'reach'>;
   /** Text of the choice that waits for nothing. */
   none: string;
@@ -62,7 +62,7 @@ export function WaitPicker({
     const p = step.passes.find((x) => x.id === pass);
     return p ? `the pass from ${name(p.from)} to ${p.to === undefined ? 'space' : name(p.to)}` : `pass ${pass}`;
   };
-  const current = 'move' in subject ? step.moves.find((m) => m.marker === subject.move)?.after : step.passes.find((p) => p.id === subject.pass)?.after;
+  const current = currentWait(step, subject);
   const options = [...(current ? [current] : []), ...waitOptions(script, step, subject, kinds)];
   return (
     <select
