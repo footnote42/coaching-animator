@@ -1,13 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
-import { safeNext } from '@/lib/safeNext';
+import { DEFAULT_NEXT, safeNext } from '@/lib/safeNext';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type') as 'signup' | 'recovery' | 'email' | 'invite' | null;
-  const next = safeNext(searchParams.get('next'), type === 'recovery' ? '/reset-password' : '/practice');
+  const next = safeNext(searchParams.get('next'), type === 'recovery' ? '/reset-password' : DEFAULT_NEXT);
 
   if (token_hash && type) {
     const cookieStore = await cookies();

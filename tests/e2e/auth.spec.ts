@@ -50,7 +50,7 @@ test.describe('Auth Flow', () => {
     // 6. Navigate to confirmation link
     await page.goto(confirmUrl);
     
-    // Wait for redirect to happen (usually goes to /practice or similar)
+    // Wait for redirect to happen (goes to /my-practices)
     await page.waitForURL(/\/(practice|my-practices|profile|login)/, { timeout: 15000 });
     
     // 7. If logged in, logout so we can test explicit sign in

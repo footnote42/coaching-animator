@@ -4,11 +4,12 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
+import { safeNext } from '@/lib/safeNext';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') ?? '/practice';
+  const redirect = safeNext(searchParams.get('redirect'));
   const error = searchParams.get('error');
 
   const [email, setEmail] = useState('');
@@ -80,7 +81,7 @@ function LoginForm() {
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/auth/callback`,
+                  redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
                   scopes: 'openid email profile',
                 },
               });
