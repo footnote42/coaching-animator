@@ -27,6 +27,8 @@ import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
 import { areaTemplate, defaultDirection } from '@/features/practice/area';
 import { type Area, type ConeColour, type Direction, type PracticeScript } from '@/features/practice/schema';
 
+const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
+
 export function useEditorWorkspace() {
   const router = useRouter();
   const openId = useSearchParams().get('id');
@@ -56,20 +58,18 @@ export function useEditorWorkspace() {
   const [pendingRelease, setPendingRelease] = useState<string | null>(null);
   /** The loose ball the Coach is picking a collector for: the next tap on a player sends them to it. */
   const [pendingCollect, setPendingCollect] = useState<string | null>(null);
-const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
-
   const [ghost, setGhost] = useState(false);
-  const [showCommentary, setShowCommentaryState] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
+  // Starts shown to match the server render; the saved choice, or collapsed on phones, applies after hydration.
+  const [showCommentary, setShowCommentaryState] = useState(true);
+  useEffect(() => {
     try {
       const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
-      if (saved !== null) return saved === 'true';
-      const isPhone = (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768;
-      return !isPhone;
+      if (saved !== null) setShowCommentaryState(saved === 'true');
+      else setShowCommentaryState(!((typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768));
     } catch {
-      return true;
+      // sessionStorage blocked: keep it shown
     }
-  });
+  }, []);
 
   const setShowCommentary = (next: boolean | ((prev: boolean) => boolean)) => {
     setShowCommentaryState((prev) => {

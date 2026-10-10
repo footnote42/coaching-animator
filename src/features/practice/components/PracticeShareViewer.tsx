@@ -80,17 +80,17 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
   const menuRef = useRef<HTMLDivElement>(null);
   const lastFrame = useRef<number | null>(null);
 
-  const [showCommentary, setShowCommentary] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true;
+  // Starts shown to match the server render; the saved choice, or collapsed on phones, applies after hydration.
+  const [showCommentary, setShowCommentary] = useState(true);
+  useEffect(() => {
     try {
       const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
-      if (saved !== null) return saved === 'true';
-      const isPhone = (typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768;
-      return !isPhone;
+      if (saved !== null) setShowCommentary(saved === 'true');
+      else setShowCommentary(!((typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768));
     } catch {
-      return true;
+      // sessionStorage blocked: keep it shown
     }
-  });
+  }, []);
 
   const updateCommentary = (next: boolean | ((prev: boolean) => boolean)) => {
     setShowCommentary((prev) => {
