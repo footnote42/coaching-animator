@@ -982,6 +982,8 @@ export function waitOptions(
   const current = currentWait(step, subject);
   return candidates.filter((wait) => {
     if (current && same(current, wait)) return false;
+    // A hold waiting on its own run reaching this point or an earlier one is over at once: not worth offering.
+    if ('hold' in subject && wait.reach?.marker === subject.hold.marker && wait.reach.waypoint <= subject.hold.index) return false;
     const next = applyEdit(base, waitEdit(subject, wait));
     return typeof next !== 'string' && validate(next).ok;
   });
