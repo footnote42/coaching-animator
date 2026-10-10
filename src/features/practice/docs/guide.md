@@ -294,7 +294,7 @@ Change types (each is an object with a `type`):
 | `addMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Put a declared marker on the Area. It must not be on the Area in the previous Step. A ball given a `cell` lies loose there. |
 | `removeMarker` | `marker` | Take a marker and its move off the Area. It must be on the Area. Remove or change any pass that used it. |
 | `placeMarker` | `marker`, `cell` or (ball) `holder`, `lying`? | Change where a marker starts, or who holds the ball (or, with `cell`, drop it loose on that cell), and whether a tackle shield or tackle bag is Lying. It replaces the whole start: give the cell even if it is unchanged, add `"lying": true` to lay the kit flat, and leave `lying` out to stand Lying kit back up. Its move is kept and runs from the new cell. |
-| `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. |
+| `setMove` | `marker`, `waypoints`, `pace`?, `after`? | Add a move, or replace the marker's existing move. The marker must be on the Area. It replaces the whole move: leave out `after` and the move starts at once, so copy `after` (and any `hold`) across to keep it. |
 | `removeMove` | `marker` | Remove a marker's move. It must have one. |
 | `setPass` | `id`, `from`, `to` or (Kick to space) `cell`, `ball`?, `at`?, `after`?, `kick`? | Replace the pass with this id where it stands in the order, or add it after the existing passes. |
 | `removePass` | `id` | Remove a pass. It must exist in the previous Step. |
