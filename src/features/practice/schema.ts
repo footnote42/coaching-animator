@@ -131,14 +131,37 @@ const MarkerIdSchema = z.string().min(1).max(32);
 
 const PaceSchema = z.enum(PACES);
 
+/**
+ * The one wait shape (ADR 0007): what a run or a pass waits for. A move's `after`
+ * and a pass's `after` use it, and so does a waypoint's hold.
+ */
+export const WaitSchema = z
+  .strictObject({
+    move: MarkerIdSchema.optional().describe('Wait until the move of this marker has finished.'),
+    pass: MarkerIdSchema.optional().describe('Wait until the pass with this id has been caught.'),
+    reach: z
+      .strictObject({
+        marker: MarkerIdSchema.describe('The marker whose move to watch. It needs a move in the Step.'),
+        waypoint: z.number().int().min(0).max(MAX_WAYPOINTS - 1).describe('Index (from 0) of the waypoint in that marker’s move.'),
+      })
+      .optional()
+      .describe('Wait until this marker arrives at this waypoint of its move.'),
+  })
+  .describe(
+    'What a move, a pass or a hold waits for. Give exactly one of move, pass or reach. Waits may not loop. Reach fires on arrival at the waypoint, so one player can trigger one action at waypoint n and another at waypoint n+k.',
+  );
+
 export const WaypointSchema = z
   .strictObject({
     ...CellSchema.shape,
     pace: PaceSchema.optional().describe(
       "Pace of the segment arriving at this waypoint: walk, jog or sprint. Leave out to use the move's pace. Lets a player jog into position then sprint onto the ball; the engine blends smoothly between Paces.",
     ),
+    hold: WaitSchema.optional().describe(
+      'Hold: on arriving at this waypoint the marker stands (with the ball, if it has it) until this is over, then runs the rest of its move at its Pace. Leave out to run straight on. Events only, never a timed pause. Reach on this waypoint fires on arrival, before the hold. A hold on the last waypoint keeps the move from finishing until it is over.',
+    ),
   })
-  .describe('A cell the marker runs to, optionally with its own Pace for the segment arriving at it.');
+  .describe('A cell the marker runs to, optionally with its own Pace for the segment arriving at it and a Hold on arrival.');
 
 const StartShape = {
   cell: CellSchema.optional().describe(
@@ -162,26 +185,6 @@ export const PlacementSchema = z
   })
   .describe('Where a marker starts in the Step: a cell, or for the ball a holder or a cell to lie loose on, and whether kit is Lying.');
 
-/**
- * The one wait shape (ADR 0007): what a run or a pass waits for. A move's `after`
- * and a pass's `after` use it today; a waypoint's hold will share it.
- */
-export const WaitSchema = z
-  .strictObject({
-    move: MarkerIdSchema.optional().describe('Wait until the move of this marker has finished.'),
-    pass: MarkerIdSchema.optional().describe('Wait until the pass with this id has been caught.'),
-    reach: z
-      .strictObject({
-        marker: MarkerIdSchema.describe('The marker whose move to watch. It needs a move in the Step.'),
-        waypoint: z.number().int().min(0).max(MAX_WAYPOINTS - 1).describe('Index (from 0) of the waypoint in that marker’s move.'),
-      })
-      .optional()
-      .describe('Wait until this marker arrives at this waypoint of its move.'),
-  })
-  .describe(
-    'What a move or a pass waits for. Give exactly one of move, pass or reach. Waits may not loop. Reach fires on arrival at the waypoint, so one player can trigger one action at waypoint n and another at waypoint n+k.',
-  );
-
 export const AfterSchema = WaitSchema;
 
 export const MoveSchema = z
@@ -191,7 +194,7 @@ export const MoveSchema = z
       .array(WaypointSchema)
       .min(1)
       .max(MAX_WAYPOINTS)
-      .describe('Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last.'),
+      .describe('Cells the marker runs to, in order. The marker passes through them without stopping (unless a waypoint has a hold) and rests on the last.'),
     pace: PaceSchema.optional().describe(
       'How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.',
     ),

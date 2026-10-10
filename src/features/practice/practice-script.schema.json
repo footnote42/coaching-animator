@@ -211,6 +211,48 @@
                         "jog",
                         "sprint"
                       ]
+                    },
+                    "hold": {
+                      "description": "Hold: on arriving at this waypoint the marker stands (with the ball, if it has it) until this is over, then runs the rest of its move at its Pace. Leave out to run straight on. Events only, never a timed pause. Reach on this waypoint fires on arrival, before the hold. A hold on the last waypoint keeps the move from finishing until it is over.",
+                      "type": "object",
+                      "properties": {
+                        "move": {
+                          "description": "Wait until the move of this marker has finished.",
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "pass": {
+                          "description": "Wait until the pass with this id has been caught.",
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "reach": {
+                          "description": "Wait until this marker arrives at this waypoint of its move.",
+                          "type": "object",
+                          "properties": {
+                            "marker": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 32,
+                              "description": "The marker whose move to watch. It needs a move in the Step."
+                            },
+                            "waypoint": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 49,
+                              "description": "Index (from 0) of the waypoint in that marker’s move."
+                            }
+                          },
+                          "required": [
+                            "marker",
+                            "waypoint"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "required": [
@@ -218,9 +260,9 @@
                     "y"
                   ],
                   "additionalProperties": false,
-                  "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it."
+                  "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it and a Hold on arrival."
                 },
-                "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+                "description": "Cells the marker runs to, in order. The marker passes through them without stopping (unless a waypoint has a hold) and rests on the last."
               },
               "pace": {
                 "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.",
@@ -631,6 +673,48 @@
                               "jog",
                               "sprint"
                             ]
+                          },
+                          "hold": {
+                            "description": "Hold: on arriving at this waypoint the marker stands (with the ball, if it has it) until this is over, then runs the rest of its move at its Pace. Leave out to run straight on. Events only, never a timed pause. Reach on this waypoint fires on arrival, before the hold. A hold on the last waypoint keeps the move from finishing until it is over.",
+                            "type": "object",
+                            "properties": {
+                              "move": {
+                                "description": "Wait until the move of this marker has finished.",
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "pass": {
+                                "description": "Wait until the pass with this id has been caught.",
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 32
+                              },
+                              "reach": {
+                                "description": "Wait until this marker arrives at this waypoint of its move.",
+                                "type": "object",
+                                "properties": {
+                                  "marker": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "description": "The marker whose move to watch. It needs a move in the Step."
+                                  },
+                                  "waypoint": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 49,
+                                    "description": "Index (from 0) of the waypoint in that marker’s move."
+                                  }
+                                },
+                                "required": [
+                                  "marker",
+                                  "waypoint"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
                           }
                         },
                         "required": [
@@ -638,9 +722,9 @@
                           "y"
                         ],
                         "additionalProperties": false,
-                        "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it."
+                        "description": "A cell the marker runs to, optionally with its own Pace for the segment arriving at it and a Hold on arrival."
                       },
-                      "description": "Cells the marker runs to, in order. The marker passes through them without stopping and rests on the last."
+                      "description": "Cells the marker runs to, in order. The marker passes through them without stopping (unless a waypoint has a hold) and rests on the last."
                     },
                     "pace": {
                       "description": "How fast the marker runs: walk, jog or sprint. Defaults to jog. A waypoint with its own pace overrides it for the segment arriving at that waypoint. All Paces are slower than real time.",

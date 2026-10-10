@@ -11,6 +11,7 @@ A player's Run could only wait at its start, so nothing could pause mid-run and 
 - **A carrier can hold with the ball.** Passes behave as now: `release` at a later waypoint, or from where the carrier holds.
 - **Receiver slowing** applies only to the segments after the receiver's last hold before the catch point. Earlier segments keep their Pace, because a hold already absorbs the timing; the engine cannot slow a player who is standing.
 - **Loops are refused.** `validate` rejects a script whose waits loop, with a plain message, in line with "Waits may not loop". The editor's pickers leave out any choice that would make a loop.
+- **Reach is the arrival as played.** A Run timed to a ball is started late and slowed only on the stretch after its last hold before the catch, so a reach on an arrival in that stretch (or later) depends on the ball, and a reach on an earlier arrival does not. A reach waits on that waypoint, never on the marker's whole Run. If a Run waiting on such an arrival is what the ball waits for, timing would loop, so that Run is not timed (it plays at its own Paces); waits themselves are never refused for this.
 - **Holds carry through Progressions** like a waypoint's Pace: set, changed or removed per Step and carried forward with the other waypoint edits.
 - **Optional fields only.** `schemaVersion` stays 1 and every existing script stays valid and plays unchanged.
 

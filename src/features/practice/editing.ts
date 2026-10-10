@@ -28,6 +28,7 @@ import {
   type Placement,
   type PracticeScript,
   type Wait,
+  type Waypoint,
 } from '@/features/practice/schema';
 
 /** A point in cell units; fractions allowed (a drop between cells). */
@@ -53,6 +54,8 @@ export type Edit =
   | { type: 'setPace'; marker: string; pace: Pace }
   /** Pace of the segment arriving at waypoint `index` of the marker's run; null goes back to the run's Pace. */
   | { type: 'setWaypointPace'; marker: string; index: number; pace: Pace | null }
+  /** Hold on arriving at waypoint `index` of the marker's run until `hold` is over (ADR 0007); null runs straight on. */
+  | { type: 'setWaypointHold'; marker: string; index: number; hold: Wait | null }
   | { type: 'removeMove'; marker: string }
   /** `ball` is the ball passed; left out, it is the first ball. `kick` makes it a Kick. */
   | { type: 'addPass'; from: string; to: string; ball?: string; kick?: boolean }
@@ -411,12 +414,31 @@ function shiftWait(wait: Wait | undefined, s: WaypointShift): Wait | undefined {
   return { reach: { marker: s.marker, waypoint: wait.reach.waypoint + s.by } };
 }
 
-function shiftMoveWait(move: Move, s: WaypointShift): Move {
+function withoutHold(waypoint: Waypoint): Waypoint {
+  const { hold: _dropped, ...rest } = waypoint;
+  void _dropped;
+  return rest;
+}
+
+/**
+ * Keep a Run's waits on their waypoints after a shift of the watched Run: its `after`
+ * and every hold. A wait on a removed waypoint goes (the Run starts at once, or does not stop).
+ * Works on a move or a `setMove` change; the same object when nothing changes.
+ */
+function shiftMoveWait<M extends { after?: Wait; waypoints: Waypoint[] }>(move: M, s: WaypointShift): M {
   const after = shiftWait(move.after, s);
-  if (after === move.after) return move;
+  let waypoints = move.waypoints;
+  if (waypoints.some((w) => w.hold && shiftWait(w.hold, s) !== w.hold)) {
+    waypoints = waypoints.map((w) => {
+      if (!w.hold) return w;
+      const hold = shiftWait(w.hold, s);
+      return hold === w.hold ? w : hold ? { ...w, hold } : withoutHold(w);
+    });
+  }
+  if (after === move.after && waypoints === move.waypoints) return move;
   const { after: _old, ...rest } = move;
   void _old;
-  return after ? { ...rest, after } : rest;
+  return { ...rest, waypoints, ...(after && { after }) } as M;
 }
 
 /**
@@ -466,7 +488,8 @@ function shiftLaterSteps(script: PracticeScript, n: number, s: WaypointShift): P
       replaced = true;
       return p;
     }
-    const changes = p.changes.map((c) => (c.type === 'setPass' ? shiftPass(c, s) : c));
+    // A later Step's setPass and setMove (its waits on this Run: a start `after` and holds) keep the waypoints they named.
+    const changes = p.changes.map((c) => (c.type === 'setPass' ? shiftPass(c, s) : c.type === 'setMove' ? shiftMoveWait(c, s) : c));
     return changes.every((c, j) => c === p.changes[j]) ? p : { ...p, changes };
   });
   return { ...script, progressions };
@@ -483,13 +506,19 @@ function cleanWaits(input: PracticeScript): PracticeScript {
     (after.pass !== undefined && !passIds.has(after.pass)) ||
     (after.reach !== undefined && after.reach.waypoint >= (waypointCount.get(after.reach.marker) ?? 0));
   let changed = false;
-  const moves = script.base.moves.map((move) => {
-    const after = move.after;
-    if (!after || !broken(after)) return move;
-    changed = true;
-    const { after: _dropped, ...rest } = move;
-    void _dropped;
-    return rest;
+  const moves = script.base.moves.map((original) => {
+    let move = original;
+    if (move.after && broken(move.after)) {
+      const { after: _dropped, ...rest } = move;
+      void _dropped;
+      move = rest;
+    }
+    // A hold waiting on something that is gone goes too: the player runs straight on.
+    if (move.waypoints.some((w) => w.hold && broken(w.hold))) {
+      move = { ...move, waypoints: move.waypoints.map((w) => (w.hold && broken(w.hold) ? withoutHold(w) : w)) };
+    }
+    if (move !== original) changed = true;
+    return move;
   });
   let passesChanged = false;
   const passes = script.base.passes.map((pass) => {
@@ -680,6 +709,16 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const { pace: _old, ...cell } = waypoint;
       void _old;
       const next = edit.pace === null ? cell : { ...cell, pace: edit.pace };
+      return mapMove(script, edit.marker, (m) => ({ ...m, waypoints: m.waypoints.map((w, i) => (i === edit.index ? next : w)) }));
+    }
+
+    case 'setWaypointHold': {
+      const move = script.base.moves.find((m) => m.marker === edit.marker);
+      if (!move) return 'That player has no run.';
+      const waypoint = move.waypoints[edit.index];
+      if (!waypoint) return 'That point is not on the run.';
+      if (same(waypoint.hold ?? null, edit.hold)) return script;
+      const next = edit.hold === null ? withoutHold(waypoint) : { ...waypoint, hold: edit.hold };
       return mapMove(script, edit.marker, (m) => ({ ...m, waypoints: m.waypoints.map((w, i) => (i === edit.index ? next : w)) }));
     }
 

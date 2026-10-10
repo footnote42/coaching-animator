@@ -395,13 +395,38 @@ function reachNode(marker: string, waypoint: number): string {
  */
 function addRunNodes(graph: Map<string, string[]>, marker: string, move: Move) {
   graph.set(`start:${marker}`, waitNeeds(move.after));
-  move.waypoints.forEach((_, i) => graph.set(reachNode(marker, i), [`start:${marker}`]));
-  graph.set(`move:${marker}`, [reachNode(marker, move.waypoints.length - 1)]);
+  move.waypoints.forEach((_, i) => graph.set(reachNode(marker, i), [`start:${marker}`, ...holdNeeds(move, i)]));
+  const last = move.waypoints.length - 1;
+  graph.set(`move:${marker}`, [reachNode(marker, last), ...waitNeeds(move.waypoints[last].hold)]);
+}
+
+/**
+ * What a Run needs to get to waypoint `upto`: the holds on the waypoints before
+ * it. A hold on the waypoint itself comes after arriving, so it is not needed
+ * (reach fires before the hold there).
+ */
+function holdNeeds(move: Move, upto: number): string[] {
+  return move.waypoints.slice(0, upto).flatMap((w) => waitNeeds(w.hold));
+}
+
+/**
+ * The first waypoint of the stretch of a Run that ends at waypoint `c`: one
+ * after the last hold before `c`, or the start. Only this stretch is slowed when
+ * the Run is timed to a ball (ADR 0007); the holds before it already absorb the timing.
+ */
+function stretchStart(move: Move, c: number): number {
+  for (let i = c - 1; i >= 0; i--) if (move.waypoints[i].hold !== undefined) return i + 1;
+  return 0;
 }
 
 /** The arrival node of a receiver's catch point (waypoint `at`, else its last). */
 function catchNode(move: Move, at: number | undefined): string {
-  return reachNode(move.marker, Math.min(at ?? move.waypoints.length - 1, move.waypoints.length - 1));
+  return reachNode(move.marker, catchIndex(move, at));
+}
+
+/** The waypoint a receiver catches on: `at`, else its last. */
+function catchIndex(move: Move, at: number | undefined): number {
+  return Math.min(at ?? move.waypoints.length - 1, move.waypoints.length - 1);
 }
 
 /** The nodes a wait adds to what a node needs: none, or the one it points at. */
@@ -411,26 +436,26 @@ function waitNeeds(wait: Wait | undefined): string[] {
 }
 
 /** Checks a wait against the Step, adding an issue for each thing wrong with it. */
-function checkWait(wait: Wait, target: Target, state: StepState, issues: StepIssue[]) {
+function checkWait(wait: Wait, target: Target, state: StepState, issues: StepIssue[], field = 'after') {
   const given = [wait.move, wait.pass, wait.reach].filter((x) => x !== undefined).length;
   if (given !== 1) {
     // Scripts without a reach keep the long-standing wording (pinned by the example snapshot).
     const message = wait.reach === undefined ? 'give exactly one of "move" or "pass"' : 'give exactly one of "move", "pass" or "reach"';
-    issues.push({ target, field: 'after', message });
+    issues.push({ target, field, message });
   } else if (wait.move !== undefined && !state.moves.has(wait.move)) {
-    issues.push({ target, field: 'after.move', message: `marker "${wait.move}" has no move in this Step` });
+    issues.push({ target, field: `${field}.move`, message: `marker "${wait.move}" has no move in this Step` });
   } else if (wait.pass !== undefined && !state.passes.has(wait.pass)) {
-    issues.push({ target, field: 'after.pass', message: `no pass "${wait.pass}" in this Step` });
+    issues.push({ target, field: `${field}.pass`, message: `no pass "${wait.pass}" in this Step` });
   } else if (wait.reach !== undefined) {
     const { marker, waypoint } = wait.reach;
     const move = state.moves.get(marker);
     if (!move) {
-      issues.push({ target, field: 'after.reach', message: `marker "${marker}" has no move in this Step, so it cannot reach a waypoint` });
+      issues.push({ target, field: `${field}.reach`, message: `marker "${marker}" has no move in this Step, so it cannot reach a waypoint` });
     } else if (waypoint >= move.waypoints.length) {
       const count = move.waypoints.length;
       issues.push({
         target,
-        field: 'after.reach',
+        field: `${field}.reach`,
         message: `waypoint ${waypoint} is outside the move of "${marker}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})`,
       });
     }
@@ -542,6 +567,20 @@ function shownLoop(loop: string[]): string[] {
   return shown;
 }
 
+/** The field to fault for a loop that starts at its first node: a pass's `to`, a Run's `after`, or the hold the loop goes through. */
+function loopField(loop: string[], moves: Map<string, Move>): string {
+  const [from, next] = loop;
+  if (from.startsWith('pass:')) return 'to';
+  const reaches = from.startsWith('reach:');
+  const marker = reaches ? from.slice(6, from.lastIndexOf(':')) : from.slice(from.indexOf(':') + 1);
+  const move = moves.get(marker);
+  if (from.startsWith('start:') || !move) return 'after';
+  // A reach needs the holds before its waypoint, a whole Run all of them.
+  const upto = reaches ? Number(from.slice(from.lastIndexOf(':') + 1)) : move.waypoints.length;
+  const hold = move.waypoints.findIndex((w, i) => i < upto && waitNode(w.hold) === next);
+  return hold < 0 ? 'after' : `waypoints[${hold}].hold`;
+}
+
 function splitNode(node: string): Target {
   const at = node.indexOf(':');
   return { kind: node.slice(0, at) as Target['kind'], id: node.slice(at + 1) };
@@ -582,12 +621,15 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
   const kickCollects: Array<{ pass: Pass; kick: string }> = [];
   const cellText = (cell: Cell) => `cell (${cell.x}, ${cell.y})`;
 
-  for (const [marker, { after }] of state.moves) {
+  for (const [marker, { after, waypoints }] of state.moves) {
     const target: Target = { kind: 'move', id: marker };
     if (kinds.get(marker) === 'ball') {
       issues.push({ target, field: 'marker', message: 'the ball does not run on its own; it moves with its holder or on a pass' });
     }
     if (after) checkWait(after, target, state, issues);
+    waypoints.forEach((w, j) => {
+      if (w.hold) checkWait(w.hold, target, state, issues, `waypoints[${j}].hold`);
+    });
   }
 
   for (const pass of state.passes.values()) {
@@ -698,7 +740,7 @@ function checkStep(state: StepState, kinds: Map<string, MarkerKind>): StepIssue[
       const [first, ...rest] = shownLoop(loop).map(splitNode);
       issues.push({
         target: first,
-        field: first.kind === 'move' ? 'after' : 'to',
+        field: loopField(loop, state.moves),
         message:
           rest.length === 0
             ? `moves and passes wait on each other in a loop: ${targetLabel(first)} waits for itself`
@@ -1146,19 +1188,38 @@ function slowedProfile(profile: SpeedProfile, scale: number): SpeedProfile {
   };
 }
 
-/** A Run's path from its start cell through its waypoints, and how it moves along it. */
+/**
+ * A stretch of a Run between holds: waypoints `first` to `last`, run from rest to
+ * rest (a hold makes the player stand on its waypoint, and the next stretch sets
+ * off from rest). Timed on its own profile.
+ */
+interface Leg {
+  first: number;
+  last: number;
+  /** Cells from the Run's start to where the leg begins. */
+  cells: number;
+  profile: SpeedProfile;
+}
+
+/**
+ * A Run's path from its start cell through its waypoints, and how it moves along
+ * it. A Run with no holds is one leg.
+ */
 interface Run {
   start: Point;
   move: Move;
   /** Cells from the start to each waypoint. */
   reach: number[];
-  profile: SpeedProfile;
+  legs: Leg[];
 }
 
 function runOf(start: Point, move: Move): Run {
   const reach: number[] = [];
-  const segments: Segment[] = [];
+  const legs: Leg[] = [];
+  let segments: Segment[] = [];
   let cells = 0;
+  let legCells = 0;
+  let first = 0;
   let from: Point = start;
   move.waypoints.forEach((to, i) => {
     const leg = distance(from, to);
@@ -1166,19 +1227,25 @@ function runOf(start: Point, move: Move): Run {
     reach.push(cells);
     segments.push({ metres: leg * CELL_SIZE_M, speed: segmentSpeed(move, i) });
     from = to;
+    if (to.hold !== undefined || i === move.waypoints.length - 1) {
+      legs.push({ first, last: i, cells: legCells, profile: easedProfile(segments) });
+      segments = [];
+      first = i + 1;
+      legCells = cells;
+    }
   });
-  return { start, move, reach, profile: easedProfile(segments) };
+  return { start, move, reach, legs };
 }
 
-/** Seconds a Run takes from its start to waypoint `upto` (default: the last). */
-function runDuration(run: Run, upto?: number): number {
-  if (upto === undefined) return run.profile.duration;
-  return run.profile.timeAt(run.reach[Math.min(upto, run.reach.length - 1)]);
+/** The leg of a Run that arrives at waypoint `w`. */
+function legOf(run: Run, w: number): number {
+  const k = run.legs.findIndex((leg) => w <= leg.last);
+  return k < 0 ? run.legs.length - 1 : k;
 }
 
-/** Position along a Run `elapsed` seconds after it starts. */
-function pointAlong(run: Run, elapsed: number): Point {
-  let remaining = run.profile.distanceAt(elapsed);
+/** Position `cells` along a Run's path from its start. */
+function pointAlong(run: Run, cells: number): Point {
+  let remaining = cells;
   let from = run.start;
   for (const to of run.move.waypoints) {
     const leg = distance(from, to);
@@ -1253,7 +1320,13 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
     const needs = previous === undefined ? [] : [`pass:${previous}`];
     lastOfBall.set(pass.ball, pass.id);
     needs.push(...waitNeeds(pass.after));
-    if (moves.has(pass.from) && !waitsOn(edges, `start:${pass.from}`, new Set([node]))) needs.push(`move:${pass.from}`);
+    const passer = moves.get(pass.from);
+    if (passer && !waitsOn(edges, `start:${pass.from}`, new Set([node]))) {
+      // The ball leaves from where the passer is, so the pass needs the Run as played, up to
+      // any hold that waits on this very pass (the passer stands there until it is caught).
+      const held = passer.waypoints.findIndex((w) => w.hold !== undefined && (waitNode(w.hold) === node || waitsOn(edges, waitNode(w.hold)!, new Set([node]))));
+      needs.push(held < 0 ? `move:${pass.from}` : reachNode(pass.from, held));
+    }
     const receiver = pass.to === undefined ? undefined : moves.get(pass.to);
     if (receiver && !inPlace.has(pass.id)) needs.push(catchNode(receiver, pass.at));
     graph.set(node, needs);
@@ -1268,7 +1341,8 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
         timed.set(from, i);
       } else {
         const before = `pass:${passes[previous].id}`;
-        const undo = waitRun(from, before);
+        const collector = moves.get(from)!;
+        const undo = waitRun(from, before, stretchStart(collector, collector.waypoints.length - 1));
         if (waitsOn(graph, before, new Set([before]))) undo();
         else timed.set(from, i);
       }
@@ -1278,13 +1352,15 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
     const node = `pass:${pass.id}`;
     const needs = graph.get(node)!;
     const to = pass.to;
-    const arrival = catchNode(moves.get(to)!, pass.at);
+    const receiver = moves.get(to)!;
+    const arrival = catchNode(receiver, pass.at);
     // Timed, the pass needs only when the receiver would set off, and the Run's arrivals need the pass.
     // Only the receiver wait (added last) is swapped: a pass that waits on the receiver's arrival itself (`after`) keeps that wait, so the loop is seen.
     const swapped = needs.slice();
     swapped[swapped.lastIndexOf(arrival)] = `start:${to}`;
     graph.set(node, swapped);
-    const undo = waitRun(to, node);
+    // Only the stretch after the receiver's last hold before the catch is slowed (or started late).
+    const undo = waitRun(to, node, stretchStart(receiver, catchIndex(receiver, pass.at)));
     if (waitsOn(graph, node, new Set([node]))) {
       graph.set(node, needs);
       undo();
@@ -1321,16 +1397,27 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
   const { edges, inPlace } = waitEdges(moves, passes, collects);
   const timedBy = timedReceivers(moves, passes, edges, inPlace, collects);
   const naturalStarts = new Map<string, number>();
-  const played = new Map<string, { run: Run; start: number }>();
+  const played = new Map<string, Array<{ start: number; profile: SpeedProfile } | undefined>>();
   const flights: PassFlight[] = [];
+
+  /**
+   * Flights being worked out, as graph nodes. A Run's position is asked for while
+   * its passer's flight is being worked out; a hold that waits on that very flight
+   * has not ended yet then (the flight lands no earlier than it fires).
+   */
+  const working = new Set<string>();
+  const waitsOnWorking = (wait: Wait | undefined): boolean => {
+    const node = waitNode(wait);
+    return node !== undefined && working.size > 0 && (working.has(node) || waitsOn(edges, node, working));
+  };
 
   /** When a wait is over: its Run has ended, its pass has been caught or its marker has arrived; no wait is over at once. */
   const waitOver = (wait: Wait | undefined): number => {
     if (!wait) return 0;
     if (wait.move !== undefined) return endOf(wait.move);
     if (wait.pass !== undefined) return flight(passIndex.get(wait.pass)!).land;
-    // A reach is over on arrival, by the Run as played (slowed if it is timed to a pass).
-    if (wait.reach !== undefined) return endOf(wait.reach.marker, wait.reach.waypoint);
+    // A reach is over on arrival (before any hold there), by the Run as played.
+    if (wait.reach !== undefined) return arrivalOf(wait.reach.marker, wait.reach.waypoint);
     return 0;
   };
 
@@ -1344,42 +1431,104 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     return start;
   };
 
-  /** A Run as played: slowed and started late if it is timed to a pass it would reach early. */
-  const playedRun = (marker: string): { run: Run; start: number } => {
-    let result = played.get(marker);
+  /** The hold on the waypoint that ends leg `k` of a Run, if any. */
+  const holdAfter = (marker: string, k: number): Wait | undefined => moves.get(marker)!.waypoints[runs.get(marker)!.legs[k].last].hold;
+
+  /** The leg of a Run that is timed to a ball (the stretch after its last hold before the catch), or -1. */
+  const timedLeg = (marker: string): number => {
+    const i = timedBy.get(marker);
+    if (i === undefined) return -1;
+    const run = runs.get(marker)!;
+    // A collector is timed to the ball coming to rest, at the end of its Run; a receiver to the catch.
+    return passes[i].from === marker ? run.legs.length - 1 : legOf(run, catchIndex(run.move, passes[i].at));
+  };
+
+  /**
+   * When leg `k` of a Run would set off if it were not slowed to a ball: the first
+   * leg when the Run starts; a later one once the one before has ended and the
+   * hold between them is over.
+   */
+  const naturalLegStart = (marker: string, k: number): number => {
+    if (k === 0) return naturalStartOf(marker);
+    const before = legPlay(marker, k - 1);
+    return Math.max(before.start + before.profile.duration, waitOver(holdAfter(marker, k - 1)));
+  };
+
+  /**
+   * Leg `k` of a Run as played. Only the leg a ball times the Run to is slowed and
+   * started late (ADR 0007): the legs before it, after the receiver's last hold
+   * before the catch, keep their Paces, and so do the legs after it. A reach on an
+   * arrival in that leg or a later one therefore depends on the ball (see
+   * `timedReceivers`, which leaves the Run untimed when that would loop), while a
+   * reach on an earlier arrival does not.
+   */
+  const legPlay = (marker: string, k: number): { start: number; profile: SpeedProfile } => {
+    let legs = played.get(marker);
+    if (legs === undefined) {
+      legs = [];
+      played.set(marker, legs);
+    }
+    let result = legs[k];
     if (result === undefined) {
       const run = runs.get(marker)!;
-      const start = naturalStartOf(marker);
-      result = { run, start };
+      const leg = run.legs[k];
+      const start = naturalLegStart(marker, k);
+      result = { start, profile: leg.profile };
       const i = timedBy.get(marker);
-      if (i !== undefined) {
-        // A collector is timed to the ball coming to rest, at the end of its Run; a receiver to the catch.
+      if (i !== undefined && timedLeg(marker) === k) {
         const collector = passes[i].from === marker;
         const land = collector ? restOf(i) : flight(i).land;
-        const reach = runDuration(run, collector ? undefined : passes[i].at);
+        const at = passes[i].at;
+        const reach = collector || at === undefined ? leg.profile.duration : leg.profile.timeAt(run.reach[catchIndex(run.move, at)] - leg.cells);
         if (land - (start + reach) > 1e-9) {
           // Slowed no further than its slowest segment at walk (ADR 0005), so no
           // segment ever runs below walk; a later start takes the rest.
-          const slowestPace = Math.min(...run.move.waypoints.map((_, w) => segmentSpeed(run.move, w)));
+          let slowestPace = Infinity;
+          for (let w = leg.first; w <= leg.last; w++) slowestPace = Math.min(slowestPace, segmentSpeed(run.move, w));
           const slowest = slowestPace / PACE_SPEEDS_MPS.walk;
           const scale = reach > 0 ? Math.min(slowest, (land - start) / reach) : 1;
-          result = { run: { ...run, profile: slowedProfile(run.profile, scale) }, start: land - reach * scale };
+          result = { start: land - reach * scale, profile: slowedProfile(leg.profile, scale) };
         }
       }
-      played.set(marker, result);
+      legs[k] = result;
     }
     return result;
   };
 
-  const endOf = (marker: string, upto?: number): number => {
-    const { run, start } = playedRun(marker);
-    return start + runDuration(run, upto);
+  /** When a Run arrives at waypoint `upto` (default: its last), as played; before any hold there. */
+  const arrivalOf = (marker: string, upto?: number): number => {
+    const run = runs.get(marker)!;
+    const w = upto === undefined ? run.reach.length - 1 : Math.min(upto, run.reach.length - 1);
+    const k = legOf(run, w);
+    const { start, profile } = legPlay(marker, k);
+    return start + (upto === undefined ? profile.duration : profile.timeAt(run.reach[w] - run.legs[k].cells));
+  };
+
+  /** When a Run arrives at waypoint `upto` (default: its last) if it were not slowed to a ball. */
+  const naturalArrival = (marker: string, upto?: number): number => {
+    const run = runs.get(marker)!;
+    const w = upto === undefined ? run.reach.length - 1 : Math.min(upto, run.reach.length - 1);
+    const k = legOf(run, w);
+    const leg = run.legs[k];
+    return naturalLegStart(marker, k) + (upto === undefined ? leg.profile.duration : leg.profile.timeAt(run.reach[w] - leg.cells));
+  };
+
+  /** When a Run has ended: it has arrived at its last waypoint and any hold there is over. */
+  const endOf = (marker: string): number => {
+    const arrived = arrivalOf(marker);
+    const run = runs.get(marker)!;
+    const hold = moves.get(marker)!.waypoints[run.reach.length - 1].hold;
+    return hold === undefined ? arrived : Math.max(arrived, waitOver(hold));
   };
 
   const pointAt = (marker: string, t: number): Point => {
     if (moves.has(marker)) {
-      const { run, start } = playedRun(marker);
-      return pointAlong(run, t - start);
+      const run = runs.get(marker)!;
+      // The leg under way at `t`: the last that has set off, stopping at a hold that waits on a flight being worked out.
+      let k = 0;
+      while (k + 1 < run.legs.length && !waitsOnWorking(holdAfter(marker, k)) && legPlay(marker, k + 1).start <= t) k++;
+      const { start, profile } = legPlay(marker, k);
+      return pointAlong(run, run.legs[k].cells + profile.distanceAt(t - start));
     }
     const cell = cells.get(marker)!;
     return { x: cell.x, y: cell.y };
@@ -1402,16 +1551,26 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
 
   const flight = (i: number): PassFlight => {
     if (flights[i]) return flights[i];
+    const node = `pass:${passes[i].id}`;
+    working.add(node);
+    try {
+      return flightOf(i);
+    } finally {
+      working.delete(node);
+    }
+  };
+
+  const flightOf = (i: number): PassFlight => {
     const pass = passes[i];
     const previous = previousOf(i);
     // A Collect: the passer takes the loose ball on reaching it, never before it comes to rest.
-    const pickup = collects.has(pass.id) ? Math.max(restOf(i), moves.has(pass.from) ? endOf(pass.from) : 0) : undefined;
+    const pickup = collects.has(pass.id) ? Math.max(restOf(i), moves.has(pass.from) ? arrivalOf(pass.from) : 0) : undefined;
     const caught = pickup ?? (previous >= 0 ? flight(previous).land : 0);
     // A passer whose own move waits on this pass has not set off yet.
     const fromCell = cells.get(pass.from)!;
     const passerRuns = moves.has(pass.from) && !waitsOn(edges, `start:${pass.from}`, new Set([`pass:${pass.id}`]));
     // A Release holds the ball until the passer reaches that waypoint of their Run.
-    const released = passerRuns && pass.release !== undefined ? endOf(pass.from, pass.release) : 0;
+    const released = passerRuns && pass.release !== undefined ? arrivalOf(pass.from, pass.release) : 0;
     const ready = Math.max(caught, waitOver(pass.after), released);
     const startAt = (t: number): Point => (passerRuns ? pointAt(pass.from, t) : { x: fromCell.x, y: fromCell.y });
     const speed = pass.kick ? KICK_SPEED_MPS : PASS_SPEED_MPS;
@@ -1447,7 +1606,7 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
     const catchPoint = { x: point.x, y: point.y };
     const timed = timedBy.get(to) === i;
     // When the receiver reaches the catch point: at its own Paces if its Run is timed to this pass.
-    const arrival = timed ? naturalStartOf(to) + runDuration(runs.get(to)!, pass.at) : endOf(to, pass.at);
+    const arrival = timed ? naturalArrival(to, pass.at) : arrivalOf(to, pass.at);
     let fire = ready;
     let start = startAt(fire);
     if (arrival - (fire + flightTime(start, catchPoint)) > 1e-9) {
@@ -1472,7 +1631,7 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
   };
 
   passes.forEach((_, i) => flight(i));
-  return { flights, endOf, pointAt };
+  return { flights, endOf, arrivalOf, pointAt };
 }
 
 /** The first pair of holds of different balls by one player that overlap in time, as a fault on the later catch. */
@@ -1550,7 +1709,7 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
   const found: ValidationWarning[] = [];
   for (let n = 0; n < stepCount(script); n++) {
     const step = resolveStep(script, n);
-    const { flights, endOf } = stepTimeline(step);
+    const { flights, arrivalOf } = stepTimeline(step);
     const label = (id: string) => step.markers.find((m) => m.id === id)?.label ?? id;
     const marker = (id: string) => step.markers.find((m) => m.id === id);
     /** The Direction of attack belongs to the team holding each ball at the start. */
@@ -1567,7 +1726,7 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
       if (pass.at === undefined || pass.to === undefined || !step.moves.some((m) => m.marker === pass.to)) return;
       const sameBall = flights.filter((f) => f.ball === flight.ball);
       const previous = sameBall[sameBall.indexOf(flight) - 1];
-      const reaches = endOf(pass.to, pass.at);
+      const reaches = arrivalOf(pass.to, pass.at);
       // The passer has the ball once the previous pass is caught or, for a loose ball, once they Collect it.
       const has = flight.pickup ?? previous?.land;
       if (has !== undefined && reaches < has - 1e-9) {
@@ -1578,7 +1737,7 @@ export function warnings(script: PracticeScript): ValidationWarning[] {
           message: `${label(pass.to)} reaches the catch point before ${label(pass.from)} has the ball`,
           ...(flight.pickup === undefined && previous && { fix: { marker: pass.to, afterPass: previous.id } }),
         });
-      } else if (pass.release !== undefined && step.moves.some((m) => m.marker === pass.from) && reaches < endOf(pass.from, pass.release) - 1e-9) {
+      } else if (pass.release !== undefined && step.moves.some((m) => m.marker === pass.from) && reaches < arrivalOf(pass.from, pass.release) - 1e-9) {
         found.push({
           step: n,
           pass: pass.id,
