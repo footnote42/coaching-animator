@@ -19,7 +19,7 @@ const CASES = [
 
 async function loadScript(page: Page, script: unknown) {
   await page.goto('/practice', { waitUntil: 'load' })
-  const fold = page.locator('main h2 button[aria-controls]').filter({ hasText: /^Script and AI/ }).first()
+  const fold = page.locator('main h2 button[aria-controls]').filter({ hasText: /^Advanced: Practice Script/ }).first()
   const details = page.locator('details', { has: page.locator('#practice-script') })
   // A click before hydration is lost, so retry until the script box shows.
   await expect(async () => {

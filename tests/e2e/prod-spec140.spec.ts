@@ -157,7 +157,7 @@ async function openSection(page: Page, title: RegExp) {
 
 /** Paste a Practice Script into the editor and apply it. */
 async function applyScript(page: Page, script: unknown) {
-  await openSection(page, /^Script and AI/)
+  await openSection(page, /^Advanced: Practice Script/)
   const summary = page.locator('details', { has: page.locator('#practice-script') }).locator('summary')
   const open = await page.locator('details', { has: page.locator('#practice-script') }).evaluate((d) => (d as HTMLDetailsElement).open)
   if (!open) await summary.click()
@@ -354,15 +354,15 @@ test.describe('prod spec #140', () => {
         // Phone: each group folds; desktop: all open, no fold buttons.
         const folds = page.locator('main h2 button[aria-controls]')
         const count = await folds.count()
-        // Area, Step and Script and AI (plus Passing and kicking, which sits in its own column from xl up).
+        // Area, Step and Advanced: Practice Script (plus Passing and kicking, which sits in its own column from xl up).
         expect(count).toBeGreaterThanOrEqual(3)
         if (profile.phone) {
-          // Folded by default (Script and AI was opened above to paste the script).
-          for (const title of [/^Area/, /^Passing and kicking/, /^Script and AI/]) {
+          // Folded by default (Advanced was opened above to paste the script).
+          for (const title of [/^Area/, /^Passing and kicking/, /^Advanced: Practice Script/]) {
             const btn = folds.filter({ hasText: title }).first()
             await btn.scrollIntoViewIfNeeded()
             const panel = page.locator(`[id="${await btn.getAttribute('aria-controls')}"]`)
-            if (!/Script/.test(String(title))) {
+            if (!/Advanced/.test(String(title))) {
               await expect(btn).toHaveAttribute('aria-expanded', 'false')
               await expect(panel).toBeHidden()
             }
@@ -374,11 +374,14 @@ test.describe('prod spec #140', () => {
             await expect(btn).toHaveAttribute('aria-expanded', String(was))
           }
         } else {
-          for (const title of [/^Area/, /^Script and AI/]) {
+          for (const title of [/^Area/]) {
             const btn = folds.filter({ hasText: title }).first()
             await expect(btn).toBeHidden()
           }
           await expect(page.locator('main h2').filter({ hasText: /^Area/ })).toBeVisible()
+          // Advanced: Practice Script folds at every width (collapse="always")
+          const advancedBtn = folds.filter({ hasText: /^Advanced: Practice Script/ }).first()
+          await expect(advancedBtn).toBeVisible()
         }
         note('2 editor', profile, 'canvas box unmoved; groups Mode|Place|History ok; ' + (profile.phone ? 'phone groups fold' : 'no folds on desktop'))
       })

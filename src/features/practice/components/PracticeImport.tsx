@@ -215,8 +215,38 @@ export function PracticeImport() {
           <StepDetails hideLegend script={script} step={shownStep} onChange={commit} onSelectStep={playStep} />
         </EditorSection>
 
+        {signedIn && (
+          <EditorSection
+            title="Details and save"
+            meta={title.trim() ? `· ${title.trim()}` : '· untitled'}
+            collapse="always"
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+          >
+            <PracticeDetails
+              practiceId={practiceId}
+              title={title}
+              description={description}
+              tags={tags}
+              sourceUrl={sourceUrl}
+              sourceTitle={sourceTitle}
+              visibility={saver.visibility}
+              onTitleChange={setTitle}
+              onDescriptionChange={setDescription}
+              onTagsChange={setTags}
+              onSourceUrlChange={setSourceUrl}
+              onSourceTitleChange={setSourceTitle}
+              onVisibilityChange={saver.setVisibility}
+              titleRef={titleRef}
+            />
+            {saveButton}
+          </EditorSection>
+        )}
+        {signedIn && <MyPractices refreshKey={saver.refreshKey + libraryKey} onOpen={(id) => router.push(`/practice?id=${id}`)} />}
+
         <EditorSection
-          title="Script and AI"
+          title="Advanced: Practice Script (for AI tools)"
+          collapse="always"
           meta={errors.length > 0 ? '(can’t load)' : problems.length > 0 ? `(${problems.length} to fix)` : undefined}
         >
           <PracticeScriptActions text={scriptText} isGuest={isGuest} />
@@ -263,35 +293,6 @@ export function PracticeImport() {
             </div>
           )}
         </EditorSection>
-
-        {signedIn && (
-          <EditorSection
-            title="Details and save"
-            meta={title.trim() ? `· ${title.trim()}` : '· untitled'}
-            collapse="always"
-            open={detailsOpen}
-            onOpenChange={setDetailsOpen}
-          >
-            <PracticeDetails
-              practiceId={practiceId}
-              title={title}
-              description={description}
-              tags={tags}
-              sourceUrl={sourceUrl}
-              sourceTitle={sourceTitle}
-              visibility={saver.visibility}
-              onTitleChange={setTitle}
-              onDescriptionChange={setDescription}
-              onTagsChange={setTags}
-              onSourceUrlChange={setSourceUrl}
-              onSourceTitleChange={setSourceTitle}
-              onVisibilityChange={saver.setVisibility}
-              titleRef={titleRef}
-            />
-            {saveButton}
-          </EditorSection>
-        )}
-        {signedIn && <MyPractices refreshKey={saver.refreshKey + libraryKey} onOpen={(id) => router.push(`/practice?id=${id}`)} />}
       </section>
 
       <section className="order-first flex min-w-0 flex-col gap-2 md:order-none md:min-h-0 md:flex-1">
