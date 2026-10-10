@@ -62,13 +62,6 @@ const PALETTE: Array<{ kind: MarkerKind; name: string }> = [
   { kind: 'coach', name: 'Coach' },
 ];
 
-const TOOL_HINTS: Record<'select' | 'run' | 'pass' | 'place', string> = {
-  select: 'Drag a marker to move it. Tap one to select it.',
-  run: 'Tap a player, then tap cells to draw their run. Drag a waypoint to move it, or tap it to set the Pace into it.',
-  pass: 'Tap the player with the ball, then the player receiving. If the receiver has a Run, tap it to catch on the run.',
-  place: 'Tap the Area to place it. Tap on a player to give them the ball, or on the ground to leave it loose.',
-};
-
 /** Toolbar buttons: at least 44 px square for touch. */
 const TOOL_BUTTON = 'h-11 min-w-11 px-2';
 
@@ -150,6 +143,17 @@ export function PracticeImport() {
   const { user, loading } = useUser();
   const signedIn = !loading && !!user;
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [previewTool, setPreviewTool] = useState<string | null>(null);
+  const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const startLongPress = (id: string) => {
+    previewTimer.current = setTimeout(() => setPreviewTool(id), 400);
+  };
+  const cancelLongPress = () => {
+    if (previewTimer.current) {
+      clearTimeout(previewTimer.current);
+      previewTimer.current = null;
+    }
+  };
   const titleRef = useRef<HTMLInputElement>(null);
   const saver = usePracticeSave({ scriptText, practiceId, title, description, tags, sourceUrl, sourceTitle, onSaved: saved });
   /** Save, or open the details first when the Practice has no title yet. */
@@ -175,10 +179,6 @@ export function PracticeImport() {
   const passMeta =
     passes.length === 0 ? '(none)' : `(${passes.length})${stepWarnings.length > 0 ? ` · ${stepWarnings.length} to check` : ''}`;
 
-  const placeKind = PALETTE.find((p) => p.kind === tool);
-  const toolHint =
-    tool === 'pass' && passKind === 'kick' ? 'Tap the player to kick to, or the ground to kick to space.' : TOOL_HINTS[placeKind ? 'place' : (tool as 'select' | 'run' | 'pass')];
-  const hint = shownStep > 0 ? `${toolHint} Edits here change Step ${shownStep} and the Steps after it.` : toolHint;
   const stepArea = step?.area ?? script.area;
   const stepLever = shownStep > 0 ? script.progressions[shownStep - 1]?.lever : undefined;
   const stepTitle = shownStep === 0 ? 'Base Step' : stepLever ? `Step ${shownStep}: ${LEVER_NAMES[stepLever]}` : `Step ${shownStep}`;
@@ -336,6 +336,16 @@ export function PracticeImport() {
                 aria-pressed={tool === id}
                 title={name}
                 onClick={() => pickTool(id)}
+                onPointerEnter={() => setPreviewTool(id)}
+                onPointerLeave={() => {
+                  cancelLongPress();
+                  setPreviewTool(null);
+                }}
+                onPointerDown={() => startLongPress(id)}
+                onPointerUp={cancelLongPress}
+                onPointerCancel={cancelLongPress}
+                onFocus={() => setPreviewTool(id)}
+                onBlur={() => setPreviewTool(null)}
               >
                 {icon}
               </Button>
@@ -352,6 +362,7 @@ export function PracticeImport() {
                 onPlace={() => pickTool(kind)}
                 onPickColour={pickConeColour}
                 className={TOOL_BUTTON}
+                onPreview={(p) => setPreviewTool(p ? 'cone' : null)}
               />
             ) : (
               <Button
@@ -362,6 +373,16 @@ export function PracticeImport() {
                 aria-pressed={tool === kind}
                 title={`Place ${name.toLowerCase()}`}
                 onClick={() => pickTool(kind)}
+                onPointerEnter={() => setPreviewTool(kind)}
+                onPointerLeave={() => {
+                  cancelLongPress();
+                  setPreviewTool(null);
+                }}
+                onPointerDown={() => startLongPress(kind)}
+                onPointerUp={cancelLongPress}
+                onPointerCancel={cancelLongPress}
+                onFocus={() => setPreviewTool(kind)}
+                onBlur={() => setPreviewTool(null)}
               >
                 <span
                   aria-hidden
@@ -381,16 +402,50 @@ export function PracticeImport() {
           </div>
           <span className="hidden h-8 w-px bg-[var(--color-border)] lg:block" aria-hidden />
           <div role="group" aria-label="History" className="order-1 ml-auto flex items-center gap-1 lg:order-none lg:ml-0">
-            <Button variant="outline" className={TOOL_BUTTON} aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={editor.past.length === 0}>
+            <Button
+              variant="outline"
+              className={TOOL_BUTTON}
+              aria-label="Undo"
+              title="Undo (Ctrl+Z)"
+              onClick={undo}
+              disabled={editor.past.length === 0}
+              onPointerEnter={() => setPreviewTool('undo')}
+              onPointerLeave={() => {
+                cancelLongPress();
+                setPreviewTool(null);
+              }}
+              onPointerDown={() => startLongPress('undo')}
+              onPointerUp={cancelLongPress}
+              onPointerCancel={cancelLongPress}
+              onFocus={() => setPreviewTool('undo')}
+              onBlur={() => setPreviewTool(null)}
+            >
               <Undo2 />
             </Button>
-            <Button variant="outline" className={TOOL_BUTTON} aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={editor.future.length === 0}>
+            <Button
+              variant="outline"
+              className={TOOL_BUTTON}
+              aria-label="Redo"
+              title="Redo (Ctrl+Shift+Z)"
+              onClick={redo}
+              disabled={editor.future.length === 0}
+              onPointerEnter={() => setPreviewTool('redo')}
+              onPointerLeave={() => {
+                cancelLongPress();
+                setPreviewTool(null);
+              }}
+              onPointerDown={() => startLongPress('redo')}
+              onPointerUp={cancelLongPress}
+              onPointerCancel={cancelLongPress}
+              onFocus={() => setPreviewTool('redo')}
+              onBlur={() => setPreviewTool(null)}
+            >
               <Redo2 />
             </Button>
           </div>
         </div>
 
-        <SelectionPanel workspace={workspace} hint={hint} />
+        <SelectionPanel workspace={workspace} preview={previewTool} />
 
         {/* On a phone the box takes the Area's shape, so the playback controls sit right under the pitch. */}
         <div

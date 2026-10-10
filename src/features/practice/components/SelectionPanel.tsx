@@ -24,6 +24,71 @@ const KIND_NAMES: Record<MarkerKind, string> = {
 
 const SELECT = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
 
+export interface ToolHelp {
+  name: string;
+  description: string;
+}
+
+export const TOOL_HELP: Record<string, ToolHelp> = {
+  select: {
+    name: 'Select',
+    description: 'drag a marker to move it, or tap one to select it.',
+  },
+  run: {
+    name: 'Run',
+    description: 'tap a player, then tap cells to draw their run.',
+  },
+  pass: {
+    name: 'Pass',
+    description: 'tap the player with the ball, then the player receiving.',
+  },
+  kick: {
+    name: 'Kick',
+    description: 'tap the player to kick to, or the pitch to kick to space.',
+  },
+  attacker: {
+    name: 'Attacker',
+    description: 'tap the pitch to place a player.',
+  },
+  defender: {
+    name: 'Defender',
+    description: 'tap the pitch to place a defending player.',
+  },
+  ball: {
+    name: 'Ball',
+    description: 'tap a player to give them the ball, or the pitch to leave it loose.',
+  },
+  cone: {
+    name: 'Cone',
+    description: 'tap the pitch to place a cone.',
+  },
+  'tackle-shield': {
+    name: 'Tackle shield',
+    description: 'tap the pitch to place a tackle shield.',
+  },
+  'tackle-bag': {
+    name: 'Tackle bag',
+    description: 'tap the pitch to place a tackle bag.',
+  },
+  coach: {
+    name: 'Coach',
+    description: 'tap the pitch to place a coach.',
+  },
+  undo: {
+    name: 'Undo',
+    description: 'reverse the last edit.',
+  },
+  redo: {
+    name: 'Redo',
+    description: 'restore the last undone edit.',
+  },
+};
+
+export function getToolHelp(tool: string, passKind?: 'pass' | 'kick'): ToolHelp {
+  if (tool === 'pass' && passKind === 'kick') return TOOL_HELP.kick;
+  return TOOL_HELP[tool] ?? { name: tool, description: '' };
+}
+
 /** "Attacker 1", "Cone · red", "Ball 2": what the Coach has selected, in words. */
 function markerName(marker: ResolvedMarker, balls: ResolvedMarker[]): string {
   const kind = KIND_NAMES[marker.kind];
@@ -40,10 +105,19 @@ function markerName(marker: ResolvedMarker, balls: ResolvedMarker[]): string {
  * a pick in progress (catch, Release, Collect), the selected marker's controls,
  * or the hint for the current tool.
  */
-export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace; hint: string }) {
+export function SelectionPanel({
+  workspace,
+  hint,
+  preview,
+}: {
+  workspace: EditorWorkspace;
+  hint?: string;
+  preview?: string | null;
+}) {
   const {
     editing,
     playing,
+    shownStep,
     selectedMarker,
     selectedMove,
     script,
@@ -73,7 +147,14 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
   }, [selectedMarker?.id]);
 
   let body: ReactNode;
-  if (!editing) {
+  if (preview) {
+    const previewHelp = getToolHelp(preview, passKind);
+    body = (
+      <p aria-live="polite" className="text-sm text-text-primary">
+        <span className="font-semibold text-text-primary">{previewHelp.name}:</span> {previewHelp.description}
+      </p>
+    );
+  } else if (!editing) {
     body = (
       <p aria-live="polite" className={cn('text-sm text-text-primary', !expanded && 'truncate md:whitespace-normal')}>
         {playing ? 'Playing.' : 'Paused.'} Press Back to start to edit this Step.
@@ -96,9 +177,18 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
   } else if (selectedMarker) {
     body = markerControls();
   } else {
+    const activeHelp = getToolHelp(tool, passKind);
+    const stepNote = shownStep > 0 ? ` Edits here change Step ${shownStep} and the Steps after it.` : '';
     body = (
       <p aria-live="polite" className={cn('text-sm text-text-primary', !expanded && 'truncate md:whitespace-normal')}>
-        {hint}
+        {hint ? (
+          hint
+        ) : (
+          <>
+            <span className="font-semibold text-text-primary">{activeHelp.name}:</span> {activeHelp.description}
+            {stepNote}
+          </>
+        )}
       </p>
     );
   }

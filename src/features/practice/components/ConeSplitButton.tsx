@@ -22,6 +22,7 @@ export function ConeSplitButton({
   onPlace,
   onPickColour,
   className,
+  onPreview,
 }: {
   /** Whether the cone tool is armed. */
   active: boolean;
@@ -30,6 +31,7 @@ export function ConeSplitButton({
   onPlace: () => void;
   onPickColour: (colour: ConeColour) => void;
   className?: string;
+  onPreview?: (preview: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,12 @@ export function ConeSplitButton({
     <div
       ref={rootRef}
       className="relative flex"
+      onPointerEnter={() => onPreview?.(true)}
+      onPointerLeave={() => onPreview?.(false)}
+      onFocusCapture={() => onPreview?.(true)}
+      onBlurCapture={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) onPreview?.(false);
+      }}
     >
       <Button
         variant={active ? 'default' : 'outline'}
