@@ -7,6 +7,16 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { sharePracticeLink } from '@/shared/share';
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog';
+
 export type Visibility = 'private' | 'link' | 'public';
 
 interface PracticeSummary {
@@ -29,6 +39,7 @@ interface Props {
 export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
   const [practices, setPractices] = useState<PracticeSummary[] | null>(null);
   const [publishing, setPublishing] = useState<string | null>(null);
+  const [deletingPractice, setDeletingPractice] = useState<PracticeSummary | null>(null);
 
   const refresh = useCallback(async () => {
     const res = await fetch('/api/practices').catch(() => null);
@@ -41,6 +52,7 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
   }, [refresh, refreshKey]);
 
   const remove = async (id: string) => {
+    setDeletingPractice(null);
     const res = await fetch(`/api/practices/${id}`, { method: 'DELETE' });
     if (res.ok) setPractices((list) => (list ?? []).filter((p) => p.id !== id));
     else toast.error('Could not delete that Practice.');
@@ -106,12 +118,33 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
                   Share
                 </Button>
               )}
-              <Button variant="outline" size="sm" onClick={() => remove(p.id)} aria-label={`Delete ${p.title}`}>
+              <Button variant="outline" size="sm" onClick={() => setDeletingPractice(p)} aria-label={`Delete ${p.title}`}>
                 Delete
               </Button>
             </li>
           ))}
         </ul>
+      )}
+
+      {deletingPractice && (
+        <Dialog open={!!deletingPractice} onOpenChange={(open) => { if (!open) setDeletingPractice(null); }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete {deletingPractice.title}?</DialogTitle>
+              <DialogDescription>
+                This can&apos;t be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button variant="destructive" onClick={() => remove(deletingPractice.id)}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
       {publishing && (

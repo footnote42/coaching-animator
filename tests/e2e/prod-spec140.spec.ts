@@ -723,6 +723,7 @@ test.describe('prod spec #140', () => {
 
             // Delete through the UI.
             await page.getByRole('button', { name: `Delete ${title}`, exact: true }).click()
+            await page.getByRole('dialog').getByRole('button', { name: 'Delete', exact: true }).click()
             await expect(page.getByRole('button', { name: `Delete ${title}`, exact: true })).toHaveCount(0)
             const left = await page.evaluate(async () => (await (await fetch('/api/practices')).json()).practices.length)
             expect(left, 'no Practices left after the delete').toBe(0)

@@ -39,4 +39,45 @@ describe('MyPracticesList share action', () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/p/b2`));
     expect(toast.success).toHaveBeenCalledWith('Link copied.');
   });
+
+  it('asks first before deleting, and Cancel leaves the Practice', async () => {
+    render(<MyPracticesList />);
+    await screen.findByText('Private drill');
+    const deleteBtn = screen.getByRole('button', { name: 'Delete Private drill' });
+    fireEvent.click(deleteBtn);
+
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    expect(screen.getByText('Delete Private drill?')).toBeTruthy();
+    expect(screen.getByText("This can't be undone.")).toBeTruthy();
+
+    const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+    fireEvent.click(cancelBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    expect(screen.getByText('Private drill')).toBeTruthy();
+  });
+
+  it('confirms delete and removes the Practice', async () => {
+    const fetchMock = vi.fn().mockImplementation((_url: string, init?: RequestInit) => {
+      if (init?.method === 'DELETE') {
+        return Promise.resolve({ ok: true });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ practices }) });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<MyPracticesList />);
+    await screen.findByText('Private drill');
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Private drill' }));
+
+    const dialog = screen.getByRole('dialog');
+    const confirmDeleteBtn = dialog.querySelector('button.bg-destructive, button[class*="destructive"]') || screen.getAllByRole('button', { name: 'Delete' })[0];
+    fireEvent.click(confirmDeleteBtn);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/api/practices/a1', { method: 'DELETE' });
+    });
+  });
 });
