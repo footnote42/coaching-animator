@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getFriendlyErrorMessage } from '@/lib/error-messages';
 import { safeNext } from '@/lib/safeNext';
+import { authPageHref, buildCallbackUrl } from '@/lib/authUrls';
 
 function LoginForm() {
   const router = useRouter();
@@ -81,7 +82,7 @@ function LoginForm() {
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                  redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+                  redirectTo: buildCallbackUrl(window.location.origin, redirect),
                   scopes: 'openid email profile',
                 },
               });
@@ -168,7 +169,7 @@ function LoginForm() {
 
       <div className="mt-4 text-center text-sm text-text-primary/70">
         Don&apos;t have an account?{' '}
-        <a href="/register" className="inline-flex items-center min-h-[44px] text-primary hover:underline">
+        <a href={authPageHref('/register', redirect)} className="inline-flex items-center min-h-[44px] text-primary hover:underline">
           Sign up
         </a>
       </div>
