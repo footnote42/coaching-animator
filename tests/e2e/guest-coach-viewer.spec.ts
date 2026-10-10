@@ -64,7 +64,10 @@ test('Guest to Coach to viewer', async ({ browser, page, context, request }) => 
 
   const offer = page.getByRole('dialog', { name: 'Save device Practice' })
   await offer.getByRole('button', { name: 'Save to account' }).click()
-  await expect(page.getByText('Saved to your account as a private Practice.')).toBeVisible()
+  // Details open first (#195); the title comes from the script.
+  await expect(offer.getByLabel('Title', { exact: true })).toHaveValue(EXAMPLE_TITLE)
+  await offer.getByRole('button', { name: 'Save', exact: true }).click()
+  await expect(page.getByText('Practice saved to your account.')).toBeVisible()
 
   await page.getByRole('button', { name: EXAMPLE_TITLE, exact: true }).click()
   await page.waitForURL(/\/practice\?id=/)
