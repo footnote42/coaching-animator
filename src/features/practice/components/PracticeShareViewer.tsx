@@ -375,7 +375,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
         {showCommentary && hasCommentary && (
           <div
             aria-live="polite"
-            className="pointer-events-auto absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded border border-border bg-surface/95 p-3 text-sm text-text-primary shadow-lg backdrop-blur-sm sm:max-w-sm"
+            className="pointer-events-auto absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded border border-border bg-surface/95 p-3 text-sm text-text-primary shadow-lg backdrop-blur-sm sm:max-w-sm xl:left-auto xl:right-3 xl:max-h-[calc(100%-1rem)] xl:max-w-[22rem] xl:overflow-y-auto"
           >
             <p className="font-medium">{stepLabel}</p>
             {step.commentary.points.length > 0 && (
