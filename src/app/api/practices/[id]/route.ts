@@ -145,7 +145,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/** DELETE /api/practices/[id]: owner only. */
+/**
+ * DELETE /api/practices/[id]: owner only. Deliberately no ban check (#176): a banned user may remove
+ * their own content (it only reduces what is live). Banned users still cannot create or edit.
+ */
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const authResult = await requireAuth();

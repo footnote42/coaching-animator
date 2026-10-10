@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { requireAuth, isAuthError } from '@/lib/server/auth';
+import { requireAuth, requireNotBanned, isAuthError } from '@/lib/server/auth';
 import { UpdateProfileSchema } from '@/lib/schemas/users';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/server/rate-limit';
 
@@ -47,6 +47,8 @@ export async function PUT(request: NextRequest) {
     const authResult = await requireAuth();
     if (isAuthError(authResult)) return authResult;
     const user = authResult;
+    const banCheck = await requireNotBanned(user.id);
+    if (banCheck) return banCheck;
 
     // Rate limit: prevent profile update spam
     const rateLimitResult = await checkRateLimit(user.id, 'profile_update');

@@ -111,6 +111,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           console.error('[Admin Practice Reports] Ban error:', error);
           return failed('Failed to ban user');
         }
+        // A ban takes the owner's content down: hide every Practice they own (#176).
+        // Unban is not an action here; hidden stays true until an admin runs unhide per Practice.
+        const { error: hideError } = await writer
+          .from('practices')
+          .update({ hidden: true })
+          .eq('owner_id', practice!.owner_id);
+        if (hideError) {
+          console.error('[Admin Practice Reports] Ban hide-all error:', hideError);
+          return failed('User banned but hiding their Practices failed; retry the ban');
+        }
         break;
       }
       case 'dismiss':

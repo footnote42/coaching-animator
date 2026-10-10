@@ -49,15 +49,22 @@ export function isAuthError(result: unknown): result is NextResponse {
 }
 
 // Reads with the admin client: callers such as /api/mcp have no session, and profiles are not publicly readable (#174).
-export async function checkBanned(userId: string): Promise<{ banned: boolean; reason?: string }> {
+// Fails closed: a lookup error or missing row is reported as `unavailable`, never as not banned (#176).
+export async function checkBanned(
+  userId: string
+): Promise<{ banned: boolean; reason?: string; unavailable?: boolean }> {
   const supabase = createSupabaseAdminClient();
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('user_profiles')
     .select('banned_at, ban_reason')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
-  if (profile?.banned_at) {
+  if (error || !profile) {
+    console.error('[Auth] Ban lookup failed, failing closed:', error);
+    return { banned: true, unavailable: true, reason: 'Account status unavailable' };
+  }
+  if (profile.banned_at) {
     return { banned: true, reason: profile.ban_reason || 'Account suspended' };
   }
   return { banned: false };
@@ -65,6 +72,12 @@ export async function checkBanned(userId: string): Promise<{ banned: boolean; re
 
 export async function requireNotBanned(userId: string) {
   const banStatus = await checkBanned(userId);
+  if (banStatus.unavailable) {
+    return NextResponse.json(
+      { error: { code: 'SERVICE_UNAVAILABLE', message: 'Could not verify account status. Please try again.' } },
+      { status: 503 }
+    );
+  }
   if (banStatus.banned) {
     return NextResponse.json(
       { error: { code: 'ACCOUNT_BANNED', message: banStatus.reason || 'Your account has been suspended' } },
