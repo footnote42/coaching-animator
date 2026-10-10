@@ -16,6 +16,7 @@ const nextConfig = {
       { source: '/my-gallery', destination: '/my-practices', permanent: true },
       { source: '/share/:id', destination: '/p/:id', permanent: true },
       { source: '/replay/:id', destination: '/p/:id', permanent: true },
+      { source: '/sitemap-page', destination: '/', permanent: true },
     ];
   },
 
