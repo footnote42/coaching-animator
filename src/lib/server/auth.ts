@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 
 export async function getUser() {
@@ -47,8 +48,9 @@ export function isAuthError(result: unknown): result is NextResponse {
   return result instanceof NextResponse;
 }
 
+// Reads with the admin client: callers such as /api/mcp have no session, and profiles are not publicly readable (#174).
 export async function checkBanned(userId: string): Promise<{ banned: boolean; reason?: string }> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('banned_at, ban_reason')

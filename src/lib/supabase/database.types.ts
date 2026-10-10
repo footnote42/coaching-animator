@@ -253,6 +253,10 @@ export type Database = {
     }
     Functions: {
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      public_display_names: {
+        Args: { ids: string[] }
+        Returns: { id: string; display_name: string | null }[]
+      }
       verify_personal_token: {
         Args: { p_hash: string }
         Returns: string | null

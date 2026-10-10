@@ -71,12 +71,12 @@ export async function GET(request: NextRequest) {
     const rows = data ?? [];
     const pageRows = rows.slice(0, PAGE_SIZE);
 
-    // Coach display names (publicly readable); a failed lookup just leaves the name off.
+    // Coach display names (only names are public, via public_display_names); a failed lookup just leaves the name off.
     const names = new Map<string, string | null>();
     const ownerIds = [...new Set(pageRows.map((r) => r.owner_id as string))];
     if (ownerIds.length > 0) {
-      const { data: profiles } = await supabase.from('user_profiles').select('id, display_name').in('id', ownerIds);
-      profiles?.forEach((p) => names.set(p.id, p.display_name));
+      const { data: profiles } = await supabase.rpc('public_display_names', { ids: ownerIds });
+      (profiles as { id: string; display_name: string | null }[] | null)?.forEach((p) => names.set(p.id, p.display_name));
     }
 
     const practices = pageRows.map((row) => ({
