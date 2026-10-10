@@ -77,7 +77,8 @@ function Brand({ children }: { children?: React.ReactNode }) {
 }
 
 /** Share card for /p/[id]: the base Step drawn through the engine, beside the title. */
-export default async function Image({ params }: { params: { id: string } }) {
+export default async function Image(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const loaded = await loadPractice(params.id);
   if (!loaded) {
     return new ImageResponse(

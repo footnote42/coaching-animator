@@ -46,7 +46,7 @@ Vocabulary is in `CONTEXT.md`; the decision is ADR 0002.
 
 ### Authentication Flow
 
-1. **Middleware** (`src/middleware.ts`) calls `updateSession` on every request and guards `/my-practices` and `/admin`.
+1. **Proxy** (`src/proxy.ts`, the Next 16 name for middleware) calls `updateSession` on every request and guards `/my-practices` and `/admin`.
 2. **`UserContext`** (`src/lib/contexts/UserContext.tsx`) exposes `user`, `profile`, `loading`, `isAdmin`, `signOut`.
 3. **API routes** use `requireAuth()`, `requireNotBanned()` and `requireAdmin()` from `src/lib/server/auth.ts`, always with the server Supabase client.
 4. **Guest mode**: the editor works signed out; saving needs an account.

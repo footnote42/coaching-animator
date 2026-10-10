@@ -130,7 +130,7 @@ describe('GET /api/admin/feedback', () => {
 });
 
 describe('POST /api/admin/feedback/[id]/read', () => {
-  const ctx = { params: { id: 'f1' } };
+  const ctx = { params: Promise.resolve({ id: 'f1' }) };
   const req = () => new NextRequest('http://localhost/api/admin/feedback/f1/read', { method: 'POST' });
 
   it('is admin only', async () => {

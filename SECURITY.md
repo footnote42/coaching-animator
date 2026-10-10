@@ -12,7 +12,7 @@ Security headers are set for every route in `next.config.js` (`headers()`): a Co
 
 ### Trade-off: `unsafe-inline`
 
-In production `script-src` is `'self' 'unsafe-inline'`, `style-src` is `'self' 'unsafe-inline'`, `connect-src` is `'self' https://*.supabase.co wss://*.supabase.co` (plus a local Supabase origin in e2e and CI) and `frame-src` is `'self'`. No third-party script, style or frame origin is allowed. `'unsafe-eval'` is added only in development, where Next.js uses eval for fast refresh and source maps; Konva, react-konva and marked need no eval. `'unsafe-inline'` stays because Next.js injects inline bootstrap scripts, and removing it needs a nonce-based CSP through middleware, which makes pages dynamically rendered. That has not been done.
+In production `script-src` is `'self' 'unsafe-inline'`, `style-src` is `'self' 'unsafe-inline'`, `connect-src` is `'self' https://*.supabase.co wss://*.supabase.co` (plus a local Supabase origin in e2e and CI) and `frame-src` is `'self'`. No third-party script, style or frame origin is allowed. `'unsafe-eval'` is added only in development, where Next.js uses eval for fast refresh and source maps; Konva, react-konva and marked need no eval. `'unsafe-inline'` stays because Next.js injects inline bootstrap scripts, and removing it needs a nonce-based CSP through the proxy, which makes pages dynamically rendered. That has not been done.
 
 Mitigations: all user content is rendered through React (escaped by default), inputs are validated with Zod schemas, and the app accepts no user-supplied HTML. `style-src` keeps `'unsafe-inline'` for inline styles.
 
@@ -65,7 +65,7 @@ The legacy tables (`saved_animations`, `content_reports`, `upvotes`, `collection
 ## Authentication and authorisation
 
 - Sign-in is Supabase Auth with the PKCE flow. Permitted OAuth providers are Google, Apple and GitHub, with email and password always available (`docs/constraints.md`). OAuth tokens are not stored.
-- Middleware (`src/middleware.ts`) refreshes the Supabase session cookies on each request. These are strictly necessary cookies.
+- The proxy (`src/proxy.ts`, formerly middleware) refreshes the Supabase session cookies on each request. These are strictly necessary cookies.
 - API routes call the helpers in `src/lib/server/auth.ts`: `requireAuth()` returns the user or a 401; `requireNotBanned(userId)` returns a 403 for suspended accounts (`user_profiles.banned_at`) and is used on write actions; `requireAdmin()` checks `user_profiles.role = 'admin'` and returns a 403 otherwise. Route handlers use the server Supabase client, never the browser client.
 - Admin is a role on the user profile. The database enforces it again through `is_admin()` in RLS, so UI checks are not the only gate.
 - Accounts are 18+ by self-declaration (`docs/adr/0003-accounts-are-18-plus.md`). Players use Guest mode, which stores nothing on the server.

@@ -120,7 +120,7 @@ describe('Tokens API', () => {
       mocks.from.mockReturnValue(b);
       
       const req = new NextRequest('http://localhost/api/user/tokens/123', { method: 'DELETE' });
-      const res = await DELETE(req, { params: { id: '123' } });
+      const res = await DELETE(req, { params: Promise.resolve({ id: '123' }) });
       
       expect(res.status).toBe(200);
       expect(b.update).toHaveBeenCalledWith({ revoked_at: expect.any(String) });
