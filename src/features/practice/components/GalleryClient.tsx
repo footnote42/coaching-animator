@@ -134,7 +134,7 @@ export function GalleryClient() {
                 className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="p-3">
-                  <h2 className="truncate font-heading text-base font-bold text-text-primary">{p.title}</h2>
+                  <h2 className="line-clamp-2 break-words font-heading text-base font-bold text-text-primary">{p.title}</h2>
                   <p className="text-xs text-text-primary">
                     {[
                       p.playerCount !== null && `${p.playerCount} ${p.playerCount === 1 ? 'player' : 'players'}`,
