@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { validate, resolveStep } from '@/features/practice/engine';
 import passingSquare from '@/features/practice/examples/passing-square.json';

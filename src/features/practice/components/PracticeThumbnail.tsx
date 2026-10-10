@@ -1,4 +1,3 @@
-import React from 'react';
 import { DESIGN_TOKENS } from '@/shared/design-tokens';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';

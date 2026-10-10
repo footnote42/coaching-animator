@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { applyTheme, readStoredTheme, storeTheme, type Theme } from '@/shared/theme';
 

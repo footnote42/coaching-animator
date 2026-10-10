@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { previewTime } from '@/features/practice/preview';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';

@@ -19,7 +19,7 @@ interface CanvasSize {
  * - Otherwise, constrain by width.
  */
 export function useShareCanvasSize(
-  containerRef: RefObject<HTMLElement>,
+  containerRef: RefObject<HTMLElement | null>,
   aspectRatio = 4 / 3,
 ): CanvasSize {
   const [size, setSize] = useState<CanvasSize>(() => {

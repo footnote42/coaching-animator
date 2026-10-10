@@ -124,7 +124,6 @@ export default function GlobalError({
                 )}
                 <p style={{ fontSize: 14, opacity: 0.8, margin: '32px 0 0', maxWidth: 420 }}>
                     If this keeps happening, paste the details into the{' '}
-                    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                     <a href="/feedback" style={{ color: '#fff', textDecoration: 'underline' }}>
                         feedback form
                     </a>

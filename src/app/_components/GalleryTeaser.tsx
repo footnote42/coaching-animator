@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ResolvedStep } from '@/features/practice/engine';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
 

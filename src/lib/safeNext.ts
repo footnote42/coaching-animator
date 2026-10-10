@@ -11,7 +11,6 @@ export const DEFAULT_NEXT = '/practice';
 export function safeNext(next: string | null | undefined, fallback: string = DEFAULT_NEXT): string {
   if (typeof next !== 'string' || next === '') return fallback;
   if (!/^\/(?!\/)/.test(next)) return fallback;
-  // eslint-disable-next-line no-control-regex
   if (/[\\\u0000-\u001f\u007f]/.test(next)) return fallback;
   return next;
 }

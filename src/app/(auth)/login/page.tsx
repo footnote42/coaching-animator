@@ -55,7 +55,7 @@ function LoginForm() {
       // Now navigate - cookies should be synchronized
       router.push(redirect);
       router.refresh();
-    } catch (timeoutError) {
+    } catch {
       // Fallback: navigate anyway after timeout
       console.warn('Session confirmation timeout, navigating anyway');
       router.push(redirect);

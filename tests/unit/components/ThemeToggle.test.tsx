@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import { THEME_INIT_SCRIPT } from '@/shared/theme';
 

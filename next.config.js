@@ -93,20 +93,13 @@ const nextConfig = {
     },
   },
 
-  // Webpack config for react-konva compatibility
-  webpack: (config, { isServer }) => {
-    // Prevent konva from trying to load canvas (Node.js module) on server
-    if (isServer) {
-      config.externals = [...(config.externals || []), 'canvas'];
-    }
-
-    // Ensure konva uses browser build
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      canvas: false,
-    };
-
-    return config;
+  // Next 16 builds with Turbopack. This replaces the former webpack block, which aliased the
+  // Node-only 'canvas' module to false so konva (react-konva) resolves without it. The share
+  // view server-renders PracticeCanvas, whose konva Node entry requires 'canvas'.
+  turbopack: {
+    resolveAlias: {
+      canvas: './src/lib/empty-module.js',
+    },
   },
 };
 

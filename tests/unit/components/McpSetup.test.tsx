@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { McpSetup, MCP_URL, TOKEN_PLACEHOLDER, SKILL_URL } from '@/app/profile/McpSetup';
 
 afterEach(() => {
