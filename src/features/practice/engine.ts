@@ -1191,7 +1191,9 @@ function timedReceivers(moves: Map<string, Move>, passes: BallPass[], edges: Map
     const to = pass.to;
     const run = graph.get(`move:${to}`)!;
     // Timed, the pass needs only when the receiver would start, and the Run needs the pass.
-    const swapped = needs.map((n) => (n === `move:${to}` ? `start:${to}` : n));
+    // Only the receiver wait (added last) is swapped: a pass that waits on the receiver's move itself (`after`) keeps that wait, so the loop is seen.
+    const swapped = needs.slice();
+    swapped[swapped.lastIndexOf(`move:${to}`)] = `start:${to}`;
     graph.set(node, swapped);
     run.push(node);
     if (waitsOn(graph, node, new Set([node]))) {

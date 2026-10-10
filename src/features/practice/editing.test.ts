@@ -16,7 +16,7 @@ import {
   type Edit,
   type EditorState,
 } from '@/features/practice/editing';
-import { resolveStep, validate } from '@/features/practice/engine';
+import { positionsAt, resolveStep, validate } from '@/features/practice/engine';
 import type { PracticeScript } from '@/features/practice/schema';
 
 function ok(result: PracticeScript | string): PracticeScript {
@@ -614,5 +614,29 @@ describe('applyEdit: more than one ball', () => {
     const next = stepEdits(withStep, 1, { type: 'addPass', from: 'a2', to: 'a3', ball: 'ball1' });
     expect(resolveStep(next, 1).passes).toEqual([{ id: 'p1', from: 'a2', to: 'a3', ball: 'ball1' }]);
     expect(validate(next).ok).toBe(true);
+  });
+});
+
+describe('applyStepEdit: pass timing on the receiver (#187)', () => {
+  const players: Edit[] = [
+    { type: 'addMarker', kind: 'attacker', at: at(1, 1) },
+    { type: 'addMarker', kind: 'attacker', at: at(8, 1) },
+    { type: 'addMarker', kind: 'ball', at: at(1, 1) },
+  ];
+  const pass: Edit[] = [
+    { type: 'addPass', from: 'a1', to: 'a2' },
+    { type: 'addWaypoint', marker: 'a2', at: at(8, 6) },
+    { type: 'addWaypoint', marker: 'a2', at: at(9, 8) },
+    { type: 'setCatch', id: 'p1', at: 0 },
+  ];
+
+  it.each([0, 1])('Step %i plays after "Pass when the receiver arrives" instead of looping', (n) => {
+    const start = stepEdits(emptyScript(), 0, ...players);
+    const script = n === 0 ? stepEdits(start, 0, ...pass) : stepEdits(addProgression(start, 'people'), 1, ...pass);
+    const next = ok(applyStepEdit(script, n, { type: 'setPassWait', id: 'p1', move: 'a2' }));
+    expect(validate(next).ok).toBe(true);
+    const step = resolveStep(next, n);
+    expect(() => positionsAt(step, 0)).not.toThrow();
+    expect(positionsAt(step, 0).passes[0].land).toBeGreaterThan(0);
   });
 });
