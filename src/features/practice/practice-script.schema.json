@@ -236,16 +236,39 @@
                 "type": "object",
                 "properties": {
                   "move": {
-                    "description": "Start when the move of this marker has finished.",
+                    "description": "Wait until the move of this marker has finished.",
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 32
                   },
                   "pass": {
-                    "description": "Start when the pass with this id has been caught.",
+                    "description": "Wait until the pass with this id has been caught.",
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 32
+                  },
+                  "reach": {
+                    "description": "Wait until this marker arrives at this waypoint of its move.",
+                    "type": "object",
+                    "properties": {
+                      "marker": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "description": "The marker whose move to watch. It needs a move in the Step."
+                      },
+                      "waypoint": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 49,
+                        "description": "Index (from 0) of the waypoint in that marker’s move."
+                      }
+                    },
+                    "required": [
+                      "marker",
+                      "waypoint"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "additionalProperties": false
@@ -323,19 +346,45 @@
                 "maximum": 49
               },
               "after": {
-                "description": "Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.",
+                "description": "Also wait for this before the pass fires: a move finishing (draw and pass), another pass being caught, or a marker reaching a waypoint of its move. Leave out to wait for nothing extra. Waits may not loop.",
                 "type": "object",
                 "properties": {
                   "move": {
+                    "description": "Wait until the move of this marker has finished.",
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 32,
-                    "description": "Fire when the move of this marker has finished."
+                    "maxLength": 32
+                  },
+                  "pass": {
+                    "description": "Wait until the pass with this id has been caught.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "reach": {
+                    "description": "Wait until this marker arrives at this waypoint of its move.",
+                    "type": "object",
+                    "properties": {
+                      "marker": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "description": "The marker whose move to watch. It needs a move in the Step."
+                      },
+                      "waypoint": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 49,
+                        "description": "Index (from 0) of the waypoint in that marker’s move."
+                      }
+                    },
+                    "required": [
+                      "marker",
+                      "waypoint"
+                    ],
+                    "additionalProperties": false
                   }
                 },
-                "required": [
-                  "move"
-                ],
                 "additionalProperties": false
               },
               "kick": {
@@ -607,16 +656,39 @@
                       "type": "object",
                       "properties": {
                         "move": {
-                          "description": "Start when the move of this marker has finished.",
+                          "description": "Wait until the move of this marker has finished.",
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 32
                         },
                         "pass": {
-                          "description": "Start when the pass with this id has been caught.",
+                          "description": "Wait until the pass with this id has been caught.",
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 32
+                        },
+                        "reach": {
+                          "description": "Wait until this marker arrives at this waypoint of its move.",
+                          "type": "object",
+                          "properties": {
+                            "marker": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 32,
+                              "description": "The marker whose move to watch. It needs a move in the Step."
+                            },
+                            "waypoint": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 49,
+                              "description": "Index (from 0) of the waypoint in that marker’s move."
+                            }
+                          },
+                          "required": [
+                            "marker",
+                            "waypoint"
+                          ],
+                          "additionalProperties": false
                         }
                       },
                       "additionalProperties": false
@@ -712,19 +784,45 @@
                       "maximum": 49
                     },
                     "after": {
-                      "description": "Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.",
+                      "description": "Also wait for this before the pass fires: a move finishing (draw and pass), another pass being caught, or a marker reaching a waypoint of its move. Leave out to wait for nothing extra. Waits may not loop.",
                       "type": "object",
                       "properties": {
                         "move": {
+                          "description": "Wait until the move of this marker has finished.",
                           "type": "string",
                           "minLength": 1,
-                          "maxLength": 32,
-                          "description": "Fire when the move of this marker has finished."
+                          "maxLength": 32
+                        },
+                        "pass": {
+                          "description": "Wait until the pass with this id has been caught.",
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 32
+                        },
+                        "reach": {
+                          "description": "Wait until this marker arrives at this waypoint of its move.",
+                          "type": "object",
+                          "properties": {
+                            "marker": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 32,
+                              "description": "The marker whose move to watch. It needs a move in the Step."
+                            },
+                            "waypoint": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 49,
+                              "description": "Index (from 0) of the waypoint in that marker’s move."
+                            }
+                          },
+                          "required": [
+                            "marker",
+                            "waypoint"
+                          ],
+                          "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "move"
-                      ],
                       "additionalProperties": false
                     },
                     "kick": {

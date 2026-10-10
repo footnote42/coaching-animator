@@ -3,6 +3,7 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { WaitPicker } from '@/features/practice/components/WaitPicker';
 import { CONE_OUTLINE, markerColour } from '@/features/practice/markerColour';
 import { BALL_CARRIER_KINDS, CONE_COLOURS, LYING_KINDS, MAX_BALLS, PACES, type MarkerKind, type Pace } from '@/features/practice/schema';
 import type { ResolvedMarker } from '@/features/practice/engine';
@@ -45,6 +46,8 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
     playing,
     selectedMarker,
     selectedMove,
+    script,
+    step,
     selection,
     balls,
     passes,
@@ -194,6 +197,20 @@ export function SelectionPanel({ workspace, hint }: { workspace: EditorWorkspace
                   <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
                 ))}
               </select>
+              {step && (
+                <>
+                  <label htmlFor="run-start" className="pl-1">Start when…</label>
+                  <WaitPicker
+                    id="run-start"
+                    ariaLabel="Start when"
+                    script={script}
+                    step={step}
+                    subject={{ move: selectedMove.marker }}
+                    none="Start at the beginning"
+                    onChange={(wait) => edit({ type: 'setStartAfter', marker: selectedMove.marker, wait })}
+                  />
+                </>
+              )}
               {waypoint !== null && (
                 <>
                   <label htmlFor="segment-pace" className="pl-1">Into point {waypoint + 1}</label>

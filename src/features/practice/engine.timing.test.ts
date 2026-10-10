@@ -221,7 +221,7 @@ function waiting(step: ResolvedStep): string[] {
       found.push(`${to} stands at the catch point of ${flight.id}`);
     }
     const previous = passes.slice(0, i).filter((f) => f.ball === flight.ball).pop();
-    const ready = Math.max(previous?.land ?? 0, pass.after ? finish(pass.after.move) : 0);
+    const ready = Math.max(previous?.land ?? 0, pass.after?.move ? finish(pass.after.move) : 0);
     if (!runners.has(flight.from)) return;
     for (let t = ready; t < flight.fire - 0.05; t += 0.1) {
       if (near(pos(flight.from, t), pos(flight.from, t + 0.05))) {

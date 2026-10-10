@@ -27,6 +27,7 @@ import {
   type Pass,
   type Placement,
   type PracticeScript,
+  type Wait,
 } from '@/features/practice/schema';
 
 /** A point in cell units; fractions allowed (a drop between cells). */
@@ -83,6 +84,10 @@ export type Edit =
   | { type: 'addReleasePoint'; id: string; at: CellPoint }
   /** Start a marker's run once pass `pass` is caught; null starts it at the beginning of the Step. */
   | { type: 'startAfterPass'; marker: string; pass: string | null }
+  /** Make a marker's run start once `wait` is over (a run ending, a pass caught, or a marker reaching a waypoint); null starts it at the beginning of the Step. */
+  | { type: 'setStartAfter'; marker: string; wait: Wait | null }
+  /** Make a pass also wait for `wait`; null waits for nothing extra. */
+  | { type: 'setPassAfter'; id: string; wait: Wait | null }
   | { type: 'setLabel'; marker: string; label: string | undefined }
   /** Colour a cone; yellow clears it. Other kinds are left alone. */
   | { type: 'setColour'; marker: string; colour: ConeColour }
@@ -384,8 +389,9 @@ function insertWaypoint(script: PracticeScript, marker: string, index: number, c
     const added = pace === undefined ? cell : { ...cell, pace };
     return { ...m, waypoints: [...m.waypoints.slice(0, index), added, ...m.waypoints.slice(index)] };
   });
-  const passes = script.base.passes.map((p) => shiftPass(p, { marker, index, by: 1 }));
-  return withBase(script, { moves, passes });
+  const shift: WaypointShift = { marker, index, by: 1 };
+  const passes = script.base.passes.map((p) => shiftPass(p, shift));
+  return withBase(script, { moves: moves.map((m) => shiftMoveWait(m, shift)), passes });
 }
 
 /** A waypoint added (`by` 1) or removed (`by` -1) at `index` of `marker`'s Run. */
@@ -396,20 +402,40 @@ interface WaypointShift {
 }
 
 /**
- * Keep a pass's catch (`at`) and Release on their waypoints after a shift of
- * the receiver's or passer's Run: later ones move by one, one on a removed
- * waypoint goes. Returns the same pass when nothing changes.
+ * A wait's reach waypoint after a shift of that marker's Run: later ones move by
+ * one; a wait on a removed waypoint goes (undefined). The same wait when nothing changes.
+ */
+function shiftWait(wait: Wait | undefined, s: WaypointShift): Wait | undefined {
+  if (!wait?.reach || wait.reach.marker !== s.marker || wait.reach.waypoint < s.index) return wait;
+  if (s.by === -1 && wait.reach.waypoint === s.index) return undefined;
+  return { reach: { marker: s.marker, waypoint: wait.reach.waypoint + s.by } };
+}
+
+function shiftMoveWait(move: Move, s: WaypointShift): Move {
+  const after = shiftWait(move.after, s);
+  if (after === move.after) return move;
+  const { after: _old, ...rest } = move;
+  void _old;
+  return after ? { ...rest, after } : rest;
+}
+
+/**
+ * Keep a pass's catch (`at`), Release and `after` reach on their waypoints after
+ * a shift of the receiver's, passer's or watched Run: later ones move by one,
+ * one on a removed waypoint goes. Returns the same pass when nothing changes.
  */
 function shiftPass<P extends Pass>(p: P, s: WaypointShift): P {
   const shift = (index: number | undefined) =>
     index === undefined || index < s.index ? index : s.by === -1 && index === s.index ? undefined : index + s.by;
   const at = p.to === s.marker ? shift(p.at) : p.at;
   const release = p.from === s.marker ? shift(p.release) : p.release;
-  if (at === p.at && release === p.release) return p;
-  const { at: _at, release: _release, ...rest } = p;
+  const after = shiftWait(p.after, s);
+  if (at === p.at && release === p.release && after === p.after) return p;
+  const { at: _at, release: _release, after: _after, ...rest } = p;
   void _at;
   void _release;
-  return { ...rest, ...(at !== undefined && { at }), ...(release !== undefined && { release }) } as P;
+  void _after;
+  return { ...rest, ...(at !== undefined && { at }), ...(release !== undefined && { release }), ...(after !== undefined && { after }) } as P;
 }
 
 /** The shift `edit` makes to a Run's waypoints in `step` (a base-only script), if any. */
@@ -451,12 +477,15 @@ function cleanWaits(input: PracticeScript): PracticeScript {
   const script = cleanCatches(input);
   const moved = new Set(script.base.moves.map((m) => m.marker));
   const passIds = new Set(script.base.passes.map((p) => p.id));
+  const waypointCount = new Map(script.base.moves.map((m) => [m.marker, m.waypoints.length]));
+  const broken = (after: Wait) =>
+    (after.move !== undefined && !moved.has(after.move)) ||
+    (after.pass !== undefined && !passIds.has(after.pass)) ||
+    (after.reach !== undefined && after.reach.waypoint >= (waypointCount.get(after.reach.marker) ?? 0));
   let changed = false;
   const moves = script.base.moves.map((move) => {
     const after = move.after;
-    if (!after) return move;
-    const broken = (after.move !== undefined && !moved.has(after.move)) || (after.pass !== undefined && !passIds.has(after.pass));
-    if (!broken) return move;
+    if (!after || !broken(after)) return move;
     changed = true;
     const { after: _dropped, ...rest } = move;
     void _dropped;
@@ -464,7 +493,7 @@ function cleanWaits(input: PracticeScript): PracticeScript {
   });
   let passesChanged = false;
   const passes = script.base.passes.map((pass) => {
-    if (!pass.after || moved.has(pass.after.move)) return pass;
+    if (!pass.after || !broken(pass.after)) return pass;
     passesChanged = true;
     const { after: _dropped, ...rest } = pass;
     void _dropped;
@@ -628,8 +657,10 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       const move = script.base.moves.find((m) => m.marker === edit.marker);
       if (!move || !move.waypoints[edit.index]) return script;
       // Catches and Releases on later waypoints shift down one; one on the removed waypoint goes.
-      const passes = script.base.passes.map((p) => shiftPass(p, { marker: edit.marker, index: edit.index, by: -1 }));
-      return mapMove(withBase(script, { passes }), edit.marker, (m) =>
+      const shift: WaypointShift = { marker: edit.marker, index: edit.index, by: -1 };
+      const passes = script.base.passes.map((p) => shiftPass(p, shift));
+      const shifted = withBase(script, { passes, moves: script.base.moves.map((m) => shiftMoveWait(m, shift)) });
+      return mapMove(shifted, edit.marker, (m) =>
         m.waypoints.length === 1 ? null : { ...m, waypoints: m.waypoints.filter((_, i) => i !== edit.index) },
       );
     }
@@ -660,6 +691,26 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
         void _old;
         return edit.pass === null ? rest : { ...rest, after: { pass: edit.pass } };
       });
+    }
+
+    case 'setStartAfter': {
+      const move = script.base.moves.find((m) => m.marker === edit.marker);
+      if (!move) return 'That player has no run.';
+      if (same(move.after ?? null, edit.wait)) return script;
+      return mapMove(script, edit.marker, ({ after: _old, ...rest }) => {
+        void _old;
+        return edit.wait === null ? rest : { ...rest, after: edit.wait };
+      });
+    }
+
+    case 'setPassAfter': {
+      const pass = script.base.passes.find((p) => p.id === edit.id);
+      if (!pass) return script;
+      if (same(pass.after ?? null, edit.wait)) return script;
+      const { after: _old, ...rest } = pass;
+      void _old;
+      const next = edit.wait === null ? rest : { ...rest, after: edit.wait };
+      return withBase(script, { passes: script.base.passes.map((p) => (p.id === edit.id ? next : p)) });
     }
 
     case 'removeMove':
@@ -868,6 +919,33 @@ export function applyEdit(script: PracticeScript, edit: Edit): PracticeScript | 
       return withBase(script, { placements: script.base.placements.map((p) => (p === placement ? next : p)) });
     }
   }
+}
+
+/**
+ * The waits a run (`{ move }`) or a pass (`{ pass }`) can be given in `step`:
+ * another run ending, a pass caught, or a marker reaching a waypoint. A choice
+ * that would make waits loop (or is otherwise refused) is left out, as is the
+ * wait it already has. `kinds` limits which kinds are offered.
+ */
+export function waitOptions(
+  script: PracticeScript,
+  step: ResolvedStep,
+  subject: { move: string } | { pass: string },
+  kinds: ReadonlyArray<'move' | 'pass' | 'reach'> = ['move', 'pass', 'reach'],
+): Wait[] {
+  const base = stepAsBase(script, step);
+  const candidates: Wait[] = [];
+  if (kinds.includes('move')) for (const m of step.moves) candidates.push({ move: m.marker });
+  if (kinds.includes('pass')) for (const p of step.passes) candidates.push({ pass: p.id });
+  if (kinds.includes('reach')) {
+    for (const m of step.moves) m.waypoints.forEach((_, waypoint) => candidates.push({ reach: { marker: m.marker, waypoint } }));
+  }
+  const current = 'move' in subject ? step.moves.find((m) => m.marker === subject.move)?.after : step.passes.find((p) => p.id === subject.pass)?.after;
+  return candidates.filter((wait) => {
+    if (current && same(current, wait)) return false;
+    const next = applyEdit(base, 'move' in subject ? { type: 'setStartAfter', marker: subject.move, wait } : { type: 'setPassAfter', id: subject.pass, wait });
+    return typeof next !== 'string' && validate(next).ok;
+  });
 }
 
 /**

@@ -366,37 +366,53 @@ function collectPasses(passes: BallPass[], loose: ReadonlySet<string>): Set<stri
 
 /**
  * The one place a wait (a move's `after`, a pass's `after`) is read (ADR 0007).
- * A pass's `after` is the narrower `{ move }` for now; it joins the shared shape
- * with `pass` and `reach` in a later ticket, each one more branch below.
+ * A new kind of wait is one more branch in each helper below.
  */
-type WaitLike = Wait | Pick<Wait, 'move'>;
 
-/** The wait's `pass` id, if it has one; the narrow pass shape has none. */
-const waitPass = (wait: WaitLike): string | undefined => ('pass' in wait ? wait.pass : undefined);
-
-/** The graph node a wait points at (`move:<marker>` or `pass:<id>`), or none for no wait. */
-function waitNode(wait: WaitLike | undefined): string | undefined {
+/**
+ * The graph node a wait points at, or none for no wait: `move:<marker>` for a
+ * Run ending, `pass:<id>` for a catch. A reach points at the marker's `move:`
+ * node too: arriving at a waypoint needs what starting that Run needs (its own
+ * wait and any timing to a pass), which that node's edges already hold.
+ */
+function waitNode(wait: Wait | undefined): string | undefined {
   if (!wait) return undefined;
   if (wait.move !== undefined) return `move:${wait.move}`;
-  const pass = waitPass(wait);
-  return pass !== undefined ? `pass:${pass}` : undefined;
+  if (wait.pass !== undefined) return `pass:${wait.pass}`;
+  if (wait.reach !== undefined) return `move:${wait.reach.marker}`;
+  return undefined;
 }
 
 /** The nodes a wait adds to what a node needs: none, or the one it points at. */
-function waitNeeds(wait: WaitLike | undefined): string[] {
+function waitNeeds(wait: Wait | undefined): string[] {
   const node = waitNode(wait);
   return node === undefined ? [] : [node];
 }
 
 /** Checks a wait against the Step, adding an issue for each thing wrong with it. */
-function checkWait(wait: WaitLike, target: Target, state: StepState, issues: StepIssue[]) {
-  const pass = waitPass(wait);
-  if ((wait.move === undefined) === (pass === undefined)) {
-    issues.push({ target, field: 'after', message: 'give exactly one of "move" or "pass"' });
+function checkWait(wait: Wait, target: Target, state: StepState, issues: StepIssue[]) {
+  const given = [wait.move, wait.pass, wait.reach].filter((x) => x !== undefined).length;
+  if (given !== 1) {
+    // Scripts without a reach keep the long-standing wording (pinned by the example snapshot).
+    const message = wait.reach === undefined ? 'give exactly one of "move" or "pass"' : 'give exactly one of "move", "pass" or "reach"';
+    issues.push({ target, field: 'after', message });
   } else if (wait.move !== undefined && !state.moves.has(wait.move)) {
     issues.push({ target, field: 'after.move', message: `marker "${wait.move}" has no move in this Step` });
-  } else if (pass !== undefined && !state.passes.has(pass)) {
-    issues.push({ target, field: 'after.pass', message: `no pass "${pass}" in this Step` });
+  } else if (wait.pass !== undefined && !state.passes.has(wait.pass)) {
+    issues.push({ target, field: 'after.pass', message: `no pass "${wait.pass}" in this Step` });
+  } else if (wait.reach !== undefined) {
+    const { marker, waypoint } = wait.reach;
+    const move = state.moves.get(marker);
+    if (!move) {
+      issues.push({ target, field: 'after.reach', message: `marker "${marker}" has no move in this Step, so it cannot reach a waypoint` });
+    } else if (waypoint >= move.waypoints.length) {
+      const count = move.waypoints.length;
+      issues.push({
+        target,
+        field: 'after.reach',
+        message: `waypoint ${waypoint} is outside the move of "${marker}", which has ${count} waypoint${count > 1 ? 's' : ''} (${count > 1 ? `0-${count - 1}` : '0'})`,
+      });
+    }
   }
 }
 
@@ -1260,12 +1276,14 @@ function timeline(cells: Map<string, Cell>, moveList: Move[], passes: BallPass[]
   const played = new Map<string, { run: Run; start: number }>();
   const flights: PassFlight[] = [];
 
-  /** When a wait is over: its Run has ended or its pass has been caught; no wait is over at once. */
-  const waitOver = (wait: WaitLike | undefined): number => {
+  /** When a wait is over: its Run has ended, its pass has been caught or its marker has arrived; no wait is over at once. */
+  const waitOver = (wait: Wait | undefined): number => {
     if (!wait) return 0;
     if (wait.move !== undefined) return endOf(wait.move);
-    const pass = waitPass(wait);
-    return pass !== undefined ? flight(passIndex.get(pass)!).land : 0;
+    if (wait.pass !== undefined) return flight(passIndex.get(wait.pass)!).land;
+    // A reach is over on arrival, by the Run as played (slowed if it is timed to a pass).
+    if (wait.reach !== undefined) return endOf(wait.reach.marker, wait.reach.waypoint);
+    return 0;
   };
 
   /** When a Run would start if it were not timed to a pass. */

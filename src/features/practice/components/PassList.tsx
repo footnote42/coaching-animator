@@ -2,6 +2,7 @@
 
 import { ArrowRight, Trash2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { WaitPicker } from '@/features/practice/components/WaitPicker';
 import type { EditorWorkspace } from '@/features/practice/hooks/useEditorWorkspace';
 import { cn } from '@/lib/utils';
 
@@ -161,18 +162,18 @@ export function PassList({ workspace }: { workspace: EditorWorkspace }) {
                     </>
                   )}
                   <label htmlFor={field('when')}>Timing</label>
-                  <select
-                    id={field('when')}
-                    aria-label={`Timing of pass ${route}: pass when this player arrives`}
-                    value={pass.after?.move ?? ''}
-                    onChange={(e) => edit({ type: 'setPassWait', id: pass.id, move: e.target.value === '' ? null : e.target.value })}
-                    className={SELECT}
-                  >
-                    <option value="">Pass when ready</option>
-                    {step?.moves.map((m) => (
-                      <option key={m.marker} value={m.marker}>Pass when {name(m.marker)} arrives</option>
-                    ))}
-                  </select>
+                  {step && (
+                    <WaitPicker
+                      id={field('when')}
+                      ariaLabel={`Timing of pass ${route}: pass when`}
+                      script={script}
+                      step={step}
+                      subject={{ pass: pass.id }}
+                      kinds={['move', 'reach']}
+                      none="Pass when ready"
+                      onChange={(wait) => edit({ type: 'setPassAfter', id: pass.id, wait })}
+                    />
+                  )}
                   {run && run.waypoints.length > 1 && (
                     <>
                       <label htmlFor={field('catch')}>Catch</label>

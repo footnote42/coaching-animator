@@ -163,15 +163,24 @@ export const PlacementSchema = z
   .describe('Where a marker starts in the Step: a cell, or for the ball a holder or a cell to lie loose on, and whether kit is Lying.');
 
 /**
- * The one wait shape (ADR 0007): what a run waits for before it starts. A move's
- * `after` uses it today; a pass's `after` and a waypoint's hold will share it.
+ * The one wait shape (ADR 0007): what a run or a pass waits for. A move's `after`
+ * and a pass's `after` use it today; a waypoint's hold will share it.
  */
 export const WaitSchema = z
   .strictObject({
-    move: MarkerIdSchema.optional().describe('Start when the move of this marker has finished.'),
-    pass: MarkerIdSchema.optional().describe('Start when the pass with this id has been caught.'),
+    move: MarkerIdSchema.optional().describe('Wait until the move of this marker has finished.'),
+    pass: MarkerIdSchema.optional().describe('Wait until the pass with this id has been caught.'),
+    reach: z
+      .strictObject({
+        marker: MarkerIdSchema.describe('The marker whose move to watch. It needs a move in the Step.'),
+        waypoint: z.number().int().min(0).max(MAX_WAYPOINTS - 1).describe('Index (from 0) of the waypoint in that marker’s move.'),
+      })
+      .optional()
+      .describe('Wait until this marker arrives at this waypoint of its move.'),
   })
-  .describe('What a move waits for before it starts. Give exactly one of move or pass. Waits may not loop.');
+  .describe(
+    'What a move or a pass waits for. Give exactly one of move, pass or reach. Waits may not loop. Reach fires on arrival at the waypoint, so one player can trigger one action at waypoint n and another at waypoint n+k.',
+  );
 
 export const AfterSchema = WaitSchema;
 
@@ -191,12 +200,6 @@ export const MoveSchema = z
   .describe(
     'A run by one marker from its starting cell. Duration comes from distance and Pace, never typed. The ball cannot move on its own.',
   );
-
-export const PassAfterSchema = z
-  .strictObject({
-    move: MarkerIdSchema.describe('Fire when the move of this marker has finished.'),
-  })
-  .describe('A run the pass waits for, to show draw and pass: the defender run ends at the carrier, then the ball goes.');
 
 export const PassSchema = z
   .strictObject({
@@ -231,8 +234,8 @@ export const PassSchema = z
       .describe(
         "Release: index (from 0) of a waypoint in the passer's move. The ball leaves the passer's hands when they reach that waypoint (and the pass is otherwise ready), and the passer runs the rest of its move without it, in support. The receiver is timed to meet a ball released there. Leave out to pass as soon as the pass is ready, from wherever the passer is. Only for a passer with a move that does not wait on this pass.",
       ),
-    after: PassAfterSchema.optional().describe(
-      'Also wait for the move of this marker to finish before the pass fires (draw and pass). Leave out to wait for nothing extra. The marker needs a move in the Step. Waits may not loop.',
+    after: WaitSchema.optional().describe(
+      'Also wait for this before the pass fires: a move finishing (draw and pass), another pass being caught, or a marker reaching a waypoint of its move. Leave out to wait for nothing extra. Waits may not loop.',
     ),
     kick: z
       .boolean()
