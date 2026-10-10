@@ -60,10 +60,9 @@ export default function PrivacyPage() {
         </ul>
         <p className={P}>
           <strong>What we do not collect:</strong> usage analytics, behavioural tracking, or advertising cookies. We do not
-          profile you. Our security provider, Cloudflare, runs a bot check to tell people from automated traffic (see
-          section 9). It is there for security, and we do not use it to track you.
+          profile you. Our security provider, Cloudflare, protects the site from attacks and abuse (see section 9). It is
+          there for security, and we do not use it to track you.
         </p>
-        {/* MAINTAINER: issue #179. The Cloudflare JavaScript Detections script and NEL headers are still on. Either turn them off in the Cloudflare dashboard and then trim the Cloudflare wording here and in sections 5 and 9, or keep them and decide (ADR) whether they fit docs/constraints.md "no device fingerprinting". This wording calls them security only; confirm that is accurate. */}
       </section>
 
       <section className="mb-8">
@@ -151,7 +150,7 @@ export default function PrivacyPage() {
           <li><strong>Supabase</strong>: database and sign-in. Data is held in the EU</li>
           <li><strong>Vercel</strong>: hosts the website and runs our code. It handles requests, including IP addresses, and keeps short-term request logs. Vercel is a US company and may process data in the US</li>
           <li><strong>Resend</strong>: sends account emails such as confirmations and password resets. It receives your email address. Resend is a US company and may process data in the US</li>
-          <li><strong>Cloudflare</strong>: our domain, network and security layer. Requests pass through it, so it sees IP addresses and keeps short-term logs of its own. It also runs the bot check described in section 9. It operates worldwide, including in the US</li>
+          <li><strong>Cloudflare</strong>: our domain, network and security layer. Requests pass through it, so it sees IP addresses and keeps short-term logs of its own. It operates worldwide, including in the US</li>
         </ul>
         <p className={P}>
           Each processes data only to provide its service to us. Where data goes to a country without a UK adequacy
@@ -227,7 +226,7 @@ export default function PrivacyPage() {
         <h3 className={H3}>Cookies</h3>
         <ul className={UL}>
           <li><strong>Sign-in cookie.</strong> When you sign in, Supabase sets a session cookie whose name starts with <code>sb-</code>. It keeps you signed in between page loads and is removed when you sign out or it expires. It is not set for Guests.</li>
-          <li><strong>Cloudflare security.</strong> Cloudflare runs a script that checks whether a visitor is a person or a bot, and it may set its own security cookie for that. It is used for security only. Cloudflare also asks browsers to report network errors to it.</li>
+          <li><strong>Cloudflare security.</strong> If Cloudflare sees traffic that looks like an attack, it may show a security check and set its own short-lived security cookie. It is used for security only.</li>
         </ul>
         <h3 className={H3}>Storage on your device</h3>
         <p className={P}>These stay in your browser and are not sent to us. You can clear them from your browser settings.</p>
