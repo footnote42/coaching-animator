@@ -1,9 +1,9 @@
 'use client';
 
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { BrandIcon } from './BrandIcon';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 import { ThemeToggle } from './ThemeToggle';
@@ -121,7 +121,7 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               })
             }
           </div>
-          {/* Desktop Utility Links (Admin, Help, Sign Out) */}
+          {/* Desktop Utility Links (Admin, Feedback, Sign Out) */}
           <div className="hidden md:flex items-center gap-4">
             {userRole === 'admin' && (
               <Link
@@ -134,6 +134,15 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
                 Admin
               </Link>
             )}
+            <Link
+              href="/feedback"
+              className={`inline-flex items-center min-h-[44px] text-sm transition-colors ${isActive('/feedback')
+                ? 'text-white font-medium'
+                : 'text-white/70 hover:text-white'
+                }`}
+            >
+              Feedback
+            </Link>
             {user && (
               <button
                 onClick={handleSignOut}
@@ -203,6 +212,16 @@ export function Navigation({ variant = 'full', className = '' }: NavigationProps
               </Link>
             </div>
           )}
+
+          <div className="flex items-center gap-3 min-h-[44px]">
+            <div className="w-1 self-stretch bg-white/20" />
+            <Link
+              href="/feedback"
+              className={`text-sm transition-colors ${isActive('/feedback') ? 'text-white font-medium' : 'text-white/70 hover:text-white'}`}
+            >
+              Feedback
+            </Link>
+          </div>
 
           {!user && (
             <div className="flex items-center gap-3 min-h-[44px]">
