@@ -45,8 +45,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Coaching Animator',
-    description: 'Create and share animated rugby plays',
+    title: 'Coaching Animator - Rugby Play Visualisation',
+    description: 'Create and share animated rugby plays. Visualise tactics, demonstrate formations, and share with your team.',
   },
   robots: {
     index: true,
