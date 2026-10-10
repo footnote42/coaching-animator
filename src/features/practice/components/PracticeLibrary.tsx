@@ -171,7 +171,8 @@ export function PracticeDetails({
 export function SignInToSave() {
   return (
     <p className="text-sm text-text-primary">
-      <Link href="/login?redirect=/practice" className="underline">Sign in</Link> to save Practices and see My Practices.
+      {/* py-3/-my-3 and px-1/-mx-1: a 44px hit area with no change to the line's layout or the text position. */}
+      <Link href="/login?redirect=/practice" className="inline-block px-1 py-3 -mx-1 -my-3 underline">Sign in</Link> to save Practices and see My Practices.
     </p>
   );
 }
