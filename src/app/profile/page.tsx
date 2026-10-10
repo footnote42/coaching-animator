@@ -94,7 +94,7 @@ export default function ProfilePage() {
     const supabase = createSupabaseBrowserClient();
     const { error: linkError } = await supabase.auth.linkIdentity({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/profile` },
     });
     if (linkError) {
       console.error('[Profile] Link Google error:', linkError.message);

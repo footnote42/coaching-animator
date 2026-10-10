@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
                 // If no profile exists, this is a new user
                 if (!profile) {
-                    return NextResponse.redirect(`${requestUrl.origin}/practice`);
+                    return NextResponse.redirect(`${requestUrl.origin}${next}`);
                 }
             }
 
