@@ -429,7 +429,9 @@ describe('Progressions: editing inside a Step', () => {
 
   it('refuses a base edit that would break a later Step', () => {
     const script = stepEdits(addProgression(base, 'people'), 1, { type: 'moveMarker', marker: 'a2', at: at(5, 5) });
-    expect(applyStepEdit(script, 0, { type: 'removeMarker', marker: 'a2' })).toMatch(/later Step/);
+    expect(applyStepEdit(script, 0, { type: 'removeMarker', marker: 'a2' })).toMatch(
+      /^That change would make a later Step impossible — undo it or edit that Step first/,
+    );
   });
 });
 

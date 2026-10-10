@@ -986,7 +986,7 @@ function diffSteps(prev: PracticeScript, next: PracticeScript): Change[] {
 }
 
 const stepMissing = (n: number) => `There is no Step ${n}.`;
-const BREAKS_LATER_STEP = 'That would break a later Step';
+const BREAKS_LATER_STEP = 'That change would make a later Step impossible — undo it or edit that Step first';
 
 /**
  * Rewrite Progression n (Step n, n >= 1) by editing its resolved state, then
