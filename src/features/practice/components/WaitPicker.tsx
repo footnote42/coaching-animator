@@ -3,6 +3,7 @@
 import { currentWait, waitOptions, type WaitSubject } from '@/features/practice/editing';
 import type { ResolvedStep } from '@/features/practice/engine';
 import type { PracticeScript, Wait } from '@/features/practice/schema';
+import { cn } from '@/lib/utils';
 
 const SELECT =
   'h-11 w-full min-w-0 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
@@ -46,6 +47,7 @@ export function WaitPicker({
   kinds,
   none,
   onChange,
+  className,
 }: {
   id: string;
   ariaLabel: string;
@@ -56,6 +58,7 @@ export function WaitPicker({
   /** Text of the choice that waits for nothing. */
   none: string;
   onChange: (wait: Wait | null) => void;
+  className?: string;
 }) {
   const name = (marker: string) => script.markers.find((m) => m.id === marker)?.label ?? marker;
   const passName = (pass: string) => {
@@ -70,7 +73,7 @@ export function WaitPicker({
       aria-label={ariaLabel}
       value={waitKey(current)}
       onChange={(e) => onChange(parseWaitKey(e.target.value))}
-      className={SELECT}
+      className={cn(SELECT, className)}
     >
       <option value="">{none}</option>
       {options.map((wait) => (

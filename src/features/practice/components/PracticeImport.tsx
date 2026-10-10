@@ -445,7 +445,7 @@ export function PracticeImport() {
           </div>
         </div>
 
-        <SelectionPanel workspace={workspace} preview={previewTool} />
+        {!wide && <SelectionPanel workspace={workspace} preview={previewTool} />}
 
         {/* On a phone the box takes the Area's shape, so the playback controls sit right under the pitch. */}
         <div
@@ -553,10 +553,11 @@ export function PracticeImport() {
         </div>
       </section>
 
-      {/* From xl up, passing and kicking get their own column beside the canvas. */}
-      <aside aria-label="Passing and kicking" className="hidden min-h-0 w-64 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
+      {/* From xl up, the Selection panel and passing and kicking get their own column beside the canvas. */}
+      <aside aria-label="Selection, passing and kicking" className="hidden min-h-0 w-80 shrink-0 flex-col gap-2 overflow-y-auto xl:flex">
         {wide && (
           <>
+            <SelectionPanel workspace={workspace} preview={previewTool} side />
             <h2 className="flex min-h-11 items-center text-sm font-medium text-text-primary">
               Passing and kicking&nbsp;<span className="font-sans font-normal normal-case text-text-muted">{passMeta}</span>
             </h2>

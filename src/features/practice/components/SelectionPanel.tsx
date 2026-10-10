@@ -22,6 +22,16 @@ const KIND_NAMES: Record<MarkerKind, string> = {
   coach: 'Coach',
 };
 
+/**
+ * A label and its control. Above the canvas from md up they wrap as one unit; on a phone the
+ * wrapper is `contents`, so the row lays them out as before. In the side column they are the
+ * cells of a two-column grid.
+ */
+const PAIR = 'contents md:flex md:items-center md:gap-1.5';
+
+/** Above the canvas from md up, a wait picker is as wide as its longest option; on a phone it takes the row. */
+const WAIT_WIDTH = 'md:w-auto md:max-w-full';
+
 const SELECT = 'h-11 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
 
 export interface ToolHelp {
@@ -101,18 +111,21 @@ function markerName(marker: ResolvedMarker, balls: ResolvedMarker[]): string {
  * The panel between the toolbar and the canvas. Its height never changes for a
  * given state, so selecting a marker never moves the canvas under the Coach's
  * finger. On a phone it is one line (the controls scroll sideways) until the
- * Coach expands it, so the canvas starts higher. It shows, in order of priority:
- * a pick in progress (catch, Release, Collect), the selected marker's controls,
- * or the hint for the current tool.
+ * Coach expands it, so the canvas starts higher. With `side` (from xl up) it sits
+ * in the column beside the canvas instead, as tall as its controls, each label
+ * beside its control. It shows, in order of priority: a pick in progress (catch,
+ * Release, Collect), the selected marker's controls, or the hint for the current tool.
  */
 export function SelectionPanel({
   workspace,
   hint,
   preview,
+  side = false,
 }: {
   workspace: EditorWorkspace;
   hint?: string;
   preview?: string | null;
+  side?: boolean;
 }) {
   const {
     editing,
@@ -208,18 +221,29 @@ export function SelectionPanel({
             : 'Tap the player receiving.'
           : undefined;
     const waypoint = selection.waypoint !== null && selectedMove?.waypoints[selection.waypoint] ? selection.waypoint : null;
+    const pair = side ? 'contents' : PAIR;
+    // In the side column a wait picker takes the whole row under its label, so its longest option fits.
+    const fullRow = side ? 'col-span-2' : undefined;
 
     return (
       <div className={cn('flex gap-1', expanded ? 'flex-col' : 'flex-row items-center md:flex-col md:items-stretch')}>
-        <p className="flex min-w-0 shrink-0 items-baseline gap-2 text-sm md:shrink">
+        <p className={cn('flex min-w-0 shrink-0 items-baseline gap-2 text-sm md:shrink', side && 'flex-col gap-0')}>
           <span className="shrink-0 font-medium text-text-primary">
             {markerName(marker, balls)}
             {waypoint !== null && ` · point ${waypoint + 1}`}
           </span>
-          {next && <span aria-live="polite" className={cn('truncate text-xs text-text-muted', !expanded && 'hidden md:inline')} title={next}>{next}</span>}
+          {next && <span aria-live="polite" className={cn('text-xs text-text-muted', !side && 'truncate', !expanded && 'hidden md:inline')} title={next}>{next}</span>}
         </p>
-        <div className={cn('flex items-center gap-1.5 text-sm text-text-primary', expanded ? 'flex-wrap' : 'flex-nowrap md:flex-wrap [&>*]:shrink-0 md:[&>*]:shrink')}>
-          <label htmlFor="marker-label" className="sr-only">Label</label>
+        <div
+          className={cn(
+            'text-sm text-text-primary',
+            side
+              ? 'grid grid-cols-[6rem_minmax(0,1fr)] items-center gap-x-2 gap-y-1'
+              : cn('flex items-center gap-1.5', expanded ? 'flex-wrap' : 'flex-nowrap md:flex-wrap [&>*]:shrink-0 md:[&>*]:shrink [&>*>*]:shrink-0'),
+          )}
+        >
+          <span className={pair}>
+          <label htmlFor="marker-label" className={side ? undefined : 'sr-only'}>Label</label>
           <input
             id="marker-label"
             type="text"
@@ -238,8 +262,9 @@ export function SelectionPanel({
             title="Label"
             className="h-11 w-14 border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-center text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
+          </span>
           {marker.kind === 'cone' && (
-            <div role="group" aria-label="Cone colour" className="flex items-center">
+            <div role="group" aria-label="Cone colour" className={cn('flex items-center', fullRow)}>
               {CONE_COLOURS.map((colour) => {
                 const current = (marker.colour ?? 'yellow') === colour;
                 const name = `${colour[0].toUpperCase()}${colour.slice(1)} cone`;
@@ -266,7 +291,7 @@ export function SelectionPanel({
             <Button
               type="button"
               variant={marker.lying ? 'default' : 'outline'}
-              className="h-11"
+              className={cn('h-11', side && 'col-span-2 justify-self-start')}
               aria-pressed={!!marker.lying}
               title="Lay flat on the ground for this Step"
               onClick={() => edit({ type: 'setLying', marker: marker.id, lying: !marker.lying })}
@@ -276,20 +301,22 @@ export function SelectionPanel({
           )}
           {selectedMove ? (
             <>
-              <label htmlFor="run-pace" className="pl-1">Pace</label>
-              <select
-                id="run-pace"
-                value={selectedMove.pace ?? 'jog'}
-                onChange={(e) => edit({ type: 'setPace', marker: selectedMove.marker, pace: e.target.value as Pace })}
-                className={SELECT}
-              >
-                {PACES.map((pace) => (
-                  <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
-                ))}
-              </select>
+              <span className={pair}>
+                <label htmlFor="run-pace" className="pl-1">Pace</label>
+                <select
+                  id="run-pace"
+                  value={selectedMove.pace ?? 'jog'}
+                  onChange={(e) => edit({ type: 'setPace', marker: selectedMove.marker, pace: e.target.value as Pace })}
+                  className={SELECT}
+                >
+                  {PACES.map((pace) => (
+                    <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
+                  ))}
+                </select>
+              </span>
               {step && (
-                <>
-                  <label htmlFor="run-start" className="pl-1">Start when…</label>
+                <span className={pair}>
+                  <label htmlFor="run-start" className={cn('pl-1', fullRow)}>Start when…</label>
                   <WaitPicker
                     id="run-start"
                     ariaLabel="Start when"
@@ -298,34 +325,37 @@ export function SelectionPanel({
                     subject={{ move: selectedMove.marker }}
                     none="Start at the beginning"
                     onChange={(wait) => edit({ type: 'setStartAfter', marker: selectedMove.marker, wait })}
+                    className={side ? fullRow : WAIT_WIDTH}
                   />
-                </>
+                </span>
               )}
               {waypoint !== null && (
                 <>
-                  <label htmlFor="segment-pace" className="pl-1">Into point {waypoint + 1}</label>
-                  <select
-                    id="segment-pace"
-                    title="Pace of the run into this point"
-                    value={selectedMove.waypoints[waypoint].pace ?? ''}
-                    onChange={(e) =>
-                      edit({
-                        type: 'setWaypointPace',
-                        marker: selectedMove.marker,
-                        index: waypoint,
-                        pace: e.target.value === '' ? null : (e.target.value as Pace),
-                      })
-                    }
-                    className={SELECT}
-                  >
-                    <option value="">Run Pace</option>
-                    {PACES.map((pace) => (
-                      <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
-                    ))}
-                  </select>
+                  <span className={pair}>
+                    <label htmlFor="segment-pace" className="pl-1">Into point {waypoint + 1}</label>
+                    <select
+                      id="segment-pace"
+                      title="Pace of the run into this point"
+                      value={selectedMove.waypoints[waypoint].pace ?? ''}
+                      onChange={(e) =>
+                        edit({
+                          type: 'setWaypointPace',
+                          marker: selectedMove.marker,
+                          index: waypoint,
+                          pace: e.target.value === '' ? null : (e.target.value as Pace),
+                        })
+                      }
+                      className={SELECT}
+                    >
+                      <option value="">Run Pace</option>
+                      {PACES.map((pace) => (
+                        <option key={pace} value={pace}>{PACE_NAMES[pace]}</option>
+                      ))}
+                    </select>
+                  </span>
                   {step && (
-                    <>
-                      <label htmlFor="waypoint-hold" className="pl-1">Hold until…</label>
+                    <span className={pair}>
+                      <label htmlFor="waypoint-hold" className={cn('pl-1', fullRow)}>Hold until…</label>
                       <WaitPicker
                         id="waypoint-hold"
                         ariaLabel="Hold until"
@@ -334,21 +364,26 @@ export function SelectionPanel({
                         subject={{ hold: { marker: selectedMove.marker, index: waypoint } }}
                         none="No hold"
                         onChange={(hold) => edit({ type: 'setWaypointHold', marker: selectedMove.marker, index: waypoint, hold })}
+                        className={side ? fullRow : WAIT_WIDTH}
                       />
-                    </>
+                    </span>
                   )}
                 </>
               )}
-              <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMove', marker: selectedMove.marker })}>
-                Delete run
-              </Button>
             </>
           ) : marker.kind === 'ball' ? (
-            <span className="text-xs">
+            <span className={cn('text-xs', fullRow)}>
               {marker.holder ? 'Drag the player to move the ball.' : 'Lying loose. Drag it onto a player to give it to them, or use Collect to send a player to it.'}
             </span>
           ) : (
-            (BALL_CARRIER_KINDS as readonly string[]).includes(marker.kind) && <span className="text-xs">No run yet: use Draw a run.</span>
+            (BALL_CARRIER_KINDS as readonly string[]).includes(marker.kind) && <span className={cn('text-xs', fullRow)}>No run yet: use Draw a run.</span>
+          )}
+          {/* In the side column the actions share rows under the fields; elsewhere they join the row. */}
+          <div className={side ? 'col-span-2 flex flex-wrap items-center gap-1.5 pt-1' : 'contents'}>
+          {selectedMove && (
+            <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMove', marker: selectedMove.marker })}>
+              Delete run
+            </Button>
           )}
           {heldBall && (
             <Button variant="outline" className="h-11" onClick={() => edit({ type: 'removeMarker', marker: heldBall.id })}>
@@ -382,7 +417,16 @@ export function SelectionPanel({
           >
             <Trash2 /> <span className="hidden sm:inline">Delete</span>
           </Button>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  if (side) {
+    return (
+      <div role="region" aria-label="Selection" className="shrink-0 border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+        {body}
       </div>
     );
   }
