@@ -170,6 +170,7 @@ jobs:
         run: |
           npx playwright test tests/e2e/guest-coach-viewer.spec.ts --project=chromium
           npx playwright test tests/e2e/phone-canvas.spec.ts --project=chromium --project=phone
+          npx playwright test tests/e2e/legal-pages.spec.ts --project=chromium
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
