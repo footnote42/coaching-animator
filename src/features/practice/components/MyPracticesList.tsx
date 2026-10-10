@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -43,15 +43,19 @@ export function MyPracticesList({ refreshKey = 0 }: Props) {
   const [publishing, setPublishing] = useState<string | null>(null);
   const [deletingPractice, setDeletingPractice] = useState<PracticeSummary | null>(null);
 
-  const refresh = useCallback(async () => {
-    const res = await fetch('/api/practices').catch(() => null);
-    if (res?.ok) setPractices((await res.json()).practices);
-    else setPractices((list) => list ?? []);
-  }, []);
-
   useEffect(() => {
-    void refresh();
-  }, [refresh, refreshKey]);
+    let cancelled = false;
+    void (async () => {
+      const res = await fetch('/api/practices').catch(() => null);
+      const list = res?.ok ? (await res.json()).practices : null;
+      if (cancelled) return;
+      if (list) setPractices(list);
+      else setPractices((prev) => prev ?? []);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey]);
 
   const remove = async (id: string) => {
     setDeletingPractice(null);

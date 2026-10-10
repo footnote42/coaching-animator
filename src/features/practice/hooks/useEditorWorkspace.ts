@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useReducer, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -24,10 +24,10 @@ import {
   type EditorTool,
 } from '@/features/practice/editing';
 import { useGuestPractice } from '@/features/practice/hooks/useGuestPractice';
+import { useCommentaryPreference } from '@/features/practice/hooks/useCommentaryPreference';
 import { areaTemplate, defaultDirection } from '@/features/practice/area';
 import { type Area, type ConeColour, type Direction, type PracticeScript } from '@/features/practice/schema';
 
-const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
 
 export function useEditorWorkspace() {
   const router = useRouter();
@@ -59,35 +59,17 @@ export function useEditorWorkspace() {
   /** The loose ball the Coach is picking a collector for: the next tap on a player sends them to it. */
   const [pendingCollect, setPendingCollect] = useState<string | null>(null);
   const [ghost, setGhost] = useState(false);
-  // Starts shown to match the server render; the saved choice, or collapsed on phones, applies after hydration.
-  const [showCommentary, setShowCommentaryState] = useState(true);
-  useEffect(() => {
-    try {
-      const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
-      if (saved !== null) setShowCommentaryState(saved === 'true');
-      else setShowCommentaryState(!((typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768));
-    } catch {
-      // sessionStorage blocked: keep it shown
-    }
-  }, []);
-
-  const setShowCommentary = (next: boolean | ((prev: boolean) => boolean)) => {
-    setShowCommentaryState((prev) => {
-      const val = typeof next === 'function' ? next(prev) : next;
-      try {
-        window.sessionStorage.setItem(COMMENTARY_STORAGE_KEY, String(val));
-      } catch {
-        // sessionStorage failure fallback
-      }
-      return val;
-    });
-  };
+  const [showCommentary, setShowCommentary] = useCommentaryPreference();
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const lastFrame = useRef<number | null>(null);
 
   // The script box always shows the script; typing there is a draft until applied.
-  useEffect(() => setText(scriptText), [scriptText]);
+  const [textSource, setTextSource] = useState(scriptText);
+  if (textSource !== scriptText) {
+    setTextSource(scriptText);
+    setText(scriptText);
+  }
 
   const shownStep = Math.min(stepIndex, stepCount(script) - 1);
   const step = useMemo(() => {
@@ -179,9 +161,8 @@ export function useEditorWorkspace() {
     };
   }, [playing, duration]);
 
-  useEffect(() => {
-    if (playing && time >= duration) setPlaying(false);
-  }, [playing, time, duration]);
+  // Playback stops when it reaches the end (adjusted during render, not in an effect).
+  if (playing && time >= duration) setPlaying(false);
 
   const stopPlayback = () => {
     setPlaying(false);
@@ -207,7 +188,11 @@ export function useEditorWorkspace() {
   };
 
   // A Kick is for one tap: picking someone else goes back to passing.
-  useEffect(() => setPassKind('pass'), [rawSelection.marker]);
+  const [kickMarker, setKickMarker] = useState(rawSelection.marker);
+  if (kickMarker !== rawSelection.marker) {
+    setKickMarker(rawSelection.marker);
+    setPassKind('pass');
+  }
 
   const pickTool = (next: EditorTool) => {
     setTool(next);
@@ -247,8 +232,7 @@ export function useEditorWorkspace() {
   };
 
   // Keyboard: undo/redo and delete, but never while typing in a field.
-  const onKey = useRef<(e: KeyboardEvent) => void>(() => {});
-  onKey.current = (e: KeyboardEvent) => {
+  const onKey = useEffectEvent((e: KeyboardEvent) => {
     const target = e.target as HTMLElement | null;
     if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
     const mod = e.ctrlKey || e.metaKey;
@@ -266,9 +250,9 @@ export function useEditorWorkspace() {
     } else if (e.key === 'Escape') {
       setSelection(NO_SELECTION);
     }
-  };
+  });
   useEffect(() => {
-    const listener = (e: KeyboardEvent) => onKey.current(e);
+    const listener = (e: KeyboardEvent) => onKey(e);
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
   }, []);

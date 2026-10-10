@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentType } from 'react';
 import Link from 'next/link';
 import {
   ChevronLeft,
@@ -22,12 +22,12 @@ import { Button } from '@/shared/ui/button';
 import { BrandIcon } from '@/shared/components/BrandIcon';
 import { positionsAt, resolveStep, stepCount, type ResolvedStep } from '@/features/practice/engine';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
+import { useCommentaryPreference } from '@/features/practice/hooks/useCommentaryPreference';
 import { ReportPracticeDialog } from '@/features/practice/components/ReportPracticeDialog';
 import type { PracticeScript } from '@/features/practice/schema';
 
 const LEVER_NAMES = { space: 'Space', time: 'Time', equipment: 'Equipment', people: 'People' } as const;
 
-const COMMENTARY_STORAGE_KEY = 'ca_share_show_commentary';
 
 export const PLAYBACK_SPEEDS = [
   { value: 0.5, label: '½×', name: '½× speed' },
@@ -57,6 +57,27 @@ interface PracticeShareViewerProps {
   script: PracticeScript;
 }
 
+function subscribeFullscreen(onChange: () => void) {
+  document.addEventListener('fullscreenchange', onChange);
+  document.addEventListener('webkitfullscreenchange', onChange);
+  return () => {
+    document.removeEventListener('fullscreenchange', onChange);
+    document.removeEventListener('webkitfullscreenchange', onChange);
+  };
+}
+
+function readFullscreenAvailable(): boolean {
+  return Boolean(
+    document.fullscreenEnabled || (document as unknown as { webkitFullscreenEnabled?: boolean }).webkitFullscreenEnabled,
+  );
+}
+
+function readIsFullscreen(): boolean {
+  return Boolean(
+    document.fullscreenElement || (document as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement,
+  );
+}
+
 /**
  * Full-screen, no-scroll viewer for a shared Practice at /p/[id]. Opens on
  * Step 0 with previous/next Step, play/pause, "play all", speed, Commentary toggle,
@@ -72,67 +93,20 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
   const [playAll, setPlayAll] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [Canvas, setCanvas] = useState<CanvasComponent | null>(null);
-  const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  // Fullscreen API support and state; false on the server and first render.
+  const fullscreenAvailable = useSyncExternalStore(subscribeFullscreen, readFullscreenAvailable, () => false);
+  const isFullscreen = useSyncExternalStore(subscribeFullscreen, readIsFullscreen, () => false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const lastFrame = useRef<number | null>(null);
 
-  // Starts shown to match the server render; the saved choice, or collapsed on phones, applies after hydration.
-  const [showCommentary, setShowCommentary] = useState(true);
-  useEffect(() => {
-    try {
-      const saved = window.sessionStorage.getItem(COMMENTARY_STORAGE_KEY);
-      if (saved !== null) setShowCommentary(saved === 'true');
-      else setShowCommentary(!((typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 767px)').matches) || window.innerWidth < 768));
-    } catch {
-      // sessionStorage blocked: keep it shown
-    }
-  }, []);
-
-  const updateCommentary = (next: boolean | ((prev: boolean) => boolean)) => {
-    setShowCommentary((prev) => {
-      const val = typeof next === 'function' ? next(prev) : next;
-      try {
-        window.sessionStorage.setItem(COMMENTARY_STORAGE_KEY, String(val));
-      } catch {
-        // sessionStorage failure fallback
-      }
-      return val;
-    });
-  };
+  const [showCommentary, updateCommentary] = useCommentaryPreference();
 
   const step = useMemo(() => resolveStep(script, stepIndex), [script, stepIndex]);
   const duration = useMemo(() => positionsAt(step, 0).duration, [step]);
   const end = duration + (playAll && stepIndex < steps - 1 ? PLAY_ALL_HOLD_S : 0);
-
-  // Check Fullscreen API availability on mount and track fullscreen state.
-  useEffect(() => {
-    const doc = typeof document !== 'undefined' ? document : null;
-    if (!doc) return;
-
-    const hasFs = Boolean(
-      doc.fullscreenEnabled ||
-        (doc as unknown as { webkitFullscreenEnabled?: boolean }).webkitFullscreenEnabled,
-    );
-    setFullscreenAvailable(hasFs);
-
-    const onFsChange = () => {
-      const fsEl =
-        doc.fullscreenElement ||
-        (doc as unknown as { webkitFullscreenElement?: Element }).webkitFullscreenElement;
-      setIsFullscreen(Boolean(fsEl));
-    };
-
-    doc.addEventListener('fullscreenchange', onFsChange);
-    doc.addEventListener('webkitfullscreenchange', onFsChange);
-    return () => {
-      doc.removeEventListener('fullscreenchange', onFsChange);
-      doc.removeEventListener('webkitfullscreenchange', onFsChange);
-    };
-  }, []);
 
   // Close overflow menu on outside click or Escape.
   useEffect(() => {
@@ -182,8 +156,8 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
     };
   }, [playing, speed, end]);
 
-  useEffect(() => {
-    if (!playing || time < end) return;
+  // When a Step finishes, advance (play all) or stop. Adjusted during render, not in an effect.
+  if (playing && time >= end) {
     if (playAll && stepIndex < steps - 1) {
       setStepIndex(stepIndex + 1);
       setTime(0);
@@ -191,7 +165,7 @@ export function PracticeShareViewer({ practiceId, title, tags, sourceUrl, source
       setPlaying(false);
       setPlayAll(false);
     }
-  }, [playing, playAll, time, end, stepIndex, steps]);
+  }
 
   const goTo = (n: number) => {
     setStepIndex(n);

@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { positionsAt, type ResolvedStep } from '@/features/practice/engine';
 import { previewTime } from '@/features/practice/preview';
 import { PracticeThumbnail } from '@/features/practice/components/PracticeThumbnail';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+function subscribeReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
+}
 
 /**
  * The hero's Practice, taped to the page and playing on a loop. Under reduced
@@ -14,17 +20,14 @@ const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 export default function HeroPractice({ step, title }: { step: ResolvedStep; title: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const duration = useMemo(() => positionsAt(step, 0).duration, [step]);
-  const [reduced, setReduced] = useState(true);
+  // Server and first render assume reduced motion (the resting frame), then follow the real setting.
+  const reduced = useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => true,
+  );
   const [visible, setVisible] = useState(true);
-  const [time, setTime] = useState(duration);
-
-  useEffect(() => {
-    const query = window.matchMedia(REDUCED_MOTION);
-    const update = () => setReduced(query.matches);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
+  const [playTime, setPlayTime] = useState(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -35,16 +38,15 @@ export default function HeroPractice({ step, title }: { step: ResolvedStep; titl
   }, []);
 
   const active = !reduced && visible;
+  // At rest (reduced motion or off screen) show the finished frame.
+  const time = active ? playTime : duration;
   useEffect(() => {
-    if (!active) {
-      setTime(duration);
-      return;
-    }
+    if (!active) return;
     let raf = 0;
     let startedAt: number | null = null;
     const tick = (now: number) => {
       if (startedAt === null) startedAt = now;
-      setTime(previewTime((now - startedAt) / 1000, duration));
+      setPlayTime(previewTime((now - startedAt) / 1000, duration));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);

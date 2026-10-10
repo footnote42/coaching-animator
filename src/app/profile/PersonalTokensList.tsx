@@ -24,6 +24,13 @@ interface Token {
   revoked_at: string | null;
 }
 
+async function requestTokens(): Promise<Token[]> {
+  const res = await fetch('/api/user/tokens');
+  if (!res.ok) throw new Error('Failed to fetch tokens');
+  const data = await res.json();
+  return data.tokens;
+}
+
 export function PersonalTokensList() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,16 +46,9 @@ export function PersonalTokensList() {
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  useEffect(() => {
-    fetchTokens();
-  }, []);
-
   const fetchTokens = async () => {
     try {
-      const res = await fetch('/api/user/tokens');
-      if (!res.ok) throw new Error('Failed to fetch tokens');
-      const data = await res.json();
-      setTokens(data.tokens);
+      setTokens(await requestTokens());
     } catch (err) {
       console.error(err);
       setError('Could not load your AI connections.');
@@ -56,6 +56,25 @@ export function PersonalTokensList() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+    requestTokens()
+      .then((list) => {
+        if (!cancelled) setTokens(list);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error(err);
+        setError('Could not load your AI connections.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
