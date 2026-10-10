@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const rpc = vi.fn();
-vi.mock('@/lib/supabase/server', () => ({
-  createSupabaseServerClient: vi.fn(async () => ({ rpc })),
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(() => ({ rpc })),
 }));
 
 import { checkRateLimit, getRateLimitHeaders } from '../rate-limit';

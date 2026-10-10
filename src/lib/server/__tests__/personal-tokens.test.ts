@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHash } from 'node:crypto';
 
 const rpc = vi.fn();
-vi.mock('@/lib/supabase/server', () => ({
-  createSupabaseServerClient: vi.fn(async () => ({ rpc })),
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(() => ({ rpc })),
 }));
 
 import { verifyPersonalToken } from '../personal-tokens';

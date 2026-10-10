@@ -2,7 +2,7 @@
  * Supabase health check used by the /api/health uptime endpoint.
  */
 
-import { createSupabaseServerClient } from './server';
+import { createSupabaseAdminClient } from './admin';
 
 /**
  * Quick health check - only tests database connectivity.
@@ -11,7 +11,7 @@ export async function quickHealthCheck(): Promise<{ healthy: boolean; latency: n
   const startTime = Date.now();
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseAdminClient();
     const { error } = await supabase
       .from('user_profiles')
       .select('id')

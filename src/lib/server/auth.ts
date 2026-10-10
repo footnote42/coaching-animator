@@ -28,7 +28,8 @@ export async function requireAdmin() {
     );
   }
 
-  const supabase = await createSupabaseServerClient();
+  // Admin client: the role check must not depend on what the caller's own session may read (#178).
+  const supabase = createSupabaseAdminClient();
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('role')
