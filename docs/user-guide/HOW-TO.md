@@ -9,7 +9,7 @@ A browser tool for rugby coaches. You draw a Practice on an Area, animate it, bu
 ## 1. Try it, then sign in
 
 - **Create** (`/practice`) works without an account. A Guest's Practice stays on their device.
-- **Share** and **Publish** need an account. Sign in at `/login` with Google or an email and password, or sign up at `/register`. A Practice kept on the device can then be saved to your account.
+- **Share** and **Publish** need an account. Sign in at `/login` with Google or an email and password, or create an account at `/register`. A Practice kept on the device can then be saved to your account.
 
 ## 2. Draw the base Step
 

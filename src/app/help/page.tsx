@@ -74,7 +74,7 @@ export default function HelpPage() {
       <section className="mb-10">
         <h2 className="text-2xl font-heading font-bold mb-4">Signing in</h2>
         <p>
-          You can try the editor without an account; your work stays on your device. To save, share or publish, <Link href="/login" className={LINK_CLASS}>sign in</Link> with Google or an email and password, or <Link href="/register" className={LINK_CLASS}>sign up</Link>. Your device Practice can then be saved to your account.
+          You can try the editor without an account; your work stays on your device. To save, share or publish, <Link href="/login" className={LINK_CLASS}>sign in</Link> with Google or an email and password, or <Link href="/register" className={LINK_CLASS}>create an account</Link>. Your device Practice can then be saved to your account.
         </p>
       </section>
 

@@ -15,7 +15,7 @@ test.describe('Auth Flow', () => {
     await page.getByLabel('Confirm Password').fill(testPassword);
     await page.locator('input#terms').check();
     
-    await page.getByRole('button', { name: 'Create Account' }).click();
+    await page.getByRole('button', { name: 'Create account' }).click();
 
     // 3. Wait for success message
     await expect(page.locator('text=Check your email for a confirmation link')).toBeVisible();
