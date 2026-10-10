@@ -19,7 +19,6 @@ export function Footer() {
         <Link href="/feedback" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Feedback</Link>
         <Link href="/terms" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Terms</Link>
         <Link href="/privacy" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Privacy</Link>
-        <Link href="/sitemap-page" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Sitemap</Link>
         <a href="https://waynetellis.com" className="inline-flex items-center min-h-[44px] hover:text-text-primary transition-colors">Built by Wayne Ellis · waynetellis.com</a>
       </div>
     </footer>
