@@ -4,7 +4,7 @@
  * editor writes the same Practice Script an agent writes (ADR 0002), so every
  * edit keeps the script shaped by the schema and snaps positions to grid cells.
  */
-import { formatError, looseBalls, resolveStep, validate, type LooseBall, type ResolvedStep } from '@/features/practice/engine';
+import { formatError, looseBalls, positionsAt, resolveStep, stepCount, validate, type LooseBall, type ResolvedStep } from '@/features/practice/engine';
 import {
   BALL_CARRIER_KINDS,
   LYING_KINDS,
@@ -1006,15 +1006,42 @@ function waitEdit(subject: WaitSubject, wait: Wait | null): Edit {
 }
 
 /**
+ * The first Step the engine cannot work out, or undefined if every Step
+ * resolves and plays. Validation passing does not promise this (#187), so an
+ * edit must clear it too or the editor would crash to the error boundary.
+ *
+ * Every Step is checked: a base edit reaches all of them, and resolving plus a
+ * handful of samples per Step is cheap next to the validation already done.
+ * Sample times are the start, each pass's fire and land time, and the end:
+ * the instants where the engine switches between its branches.
+ */
+function firstUnplayableStep(script: PracticeScript): number | undefined {
+  for (let n = 0; n < stepCount(script); n++) {
+    try {
+      const step = resolveStep(script, n);
+      const { duration, passes } = positionsAt(step, 0);
+      const times = new Set([duration, ...passes.flatMap((f) => [f.fire, f.land])]);
+      for (const t of times) positionsAt(step, t);
+    } catch {
+      return n;
+    }
+  }
+  return undefined;
+}
+
+/**
  * Refuse an edit that turns a valid script into an invalid one (typically by
- * breaking a change in a later Progression). Emptying the script is allowed:
- * that is a fresh start, not a broken Practice.
+ * breaking a change in a later Progression), or into one the engine cannot
+ * play. Emptying the script is allowed: that is a fresh start, not a broken
+ * Practice.
  */
 function keepValid(before: PracticeScript, after: PracticeScript | string, refusal: string): PracticeScript | string {
   if (typeof after === 'string' || after === before || after.markers.length === 0) return after;
   const result = validate(after);
-  if (result.ok || !validate(before).ok) return after;
-  return `${refusal}: ${formatError(result.errors[0])}`;
+  if (!result.ok) return validate(before).ok ? `${refusal}: ${formatError(result.errors[0])}` : after;
+  const broken = firstUnplayableStep(after);
+  if (broken === undefined || firstUnplayableStep(before) !== undefined) return after;
+  return `${refusal}: Step ${broken + 1} can’t be animated with that change. Undo it or try something simpler.`;
 }
 
 /** Drop declared markers that no Step places any more (e.g. added then removed in one Progression). */
