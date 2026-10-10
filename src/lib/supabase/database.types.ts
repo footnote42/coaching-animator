@@ -23,6 +23,7 @@ export type Database = {
           name: string
           rating: string
           read_at: string | null
+          user_id: string | null
           what: string
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           name: string
           rating: string
           read_at?: string | null
+          user_id: string | null
           what: string
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           name?: string
           rating?: string
           read_at?: string | null
+          user_id?: string | null
           what?: string
         }
         Relationships: []

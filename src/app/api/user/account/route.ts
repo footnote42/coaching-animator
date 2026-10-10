@@ -22,7 +22,8 @@ export async function DELETE() {
   }
 
   // Deleting the auth user cascades (ON DELETE CASCADE) to user_profiles and
-  // practices. Reports they filed are kept with reporter_id set to null.
+  // practices. A database trigger (anonymise_deleted_user) anonymises their
+  // feedback and report text, so this holds for dashboard deletes too.
   // Always the caller's own id, never one from the request.
   try {
     const admin = createSupabaseAdminClient();

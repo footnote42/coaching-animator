@@ -59,15 +59,17 @@ describe('POST /api/feedback', () => {
     expect(res.status).toBe(201);
     expect(mocks.checkRateLimit).toHaveBeenCalledWith('ip:1.2.3.4', 'feedback');
     expect(mocks.from).toHaveBeenCalledWith('feedback');
-    expect(b.insert).toHaveBeenCalledWith({ ...valid, email: null });
+    expect(b.insert).toHaveBeenCalledWith({ ...valid, email: null, user_id: null });
     expect(mocks.requireNotBanned).not.toHaveBeenCalled();
   });
 
   it('rate limits signed-in users by user id and refuses banned accounts', async () => {
     mocks.getUser.mockResolvedValue({ id: 'user-1' });
-    mocks.from.mockReturnValue(builder({ error: null }));
+    const b = builder({ error: null });
+    mocks.from.mockReturnValue(b);
     expect((await SUBMIT(post(valid))).status).toBe(201);
     expect(mocks.checkRateLimit).toHaveBeenCalledWith('user:user-1', 'feedback');
+    expect(b.insert).toHaveBeenCalledWith(expect.objectContaining({ user_id: 'user-1' }));
 
     mocks.requireNotBanned.mockResolvedValue(NextResponse.json({ error: {} }, { status: 403 }));
     mocks.from.mockClear();

@@ -60,6 +60,8 @@ export async function POST(request: NextRequest) {
       area,
       what,
       rating,
+      // Lets account deletion anonymise this row (see migration 20261010100000).
+      user_id: user?.id ?? null,
     });
 
     if (error) {
