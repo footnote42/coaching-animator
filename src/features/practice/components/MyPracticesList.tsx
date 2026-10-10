@@ -73,6 +73,23 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
   };
 
   const share = async (p: PracticeSummary) => {
+    if (p.visibility === 'private') {
+      // One tap: make it link-shared, then copy the link (#194).
+      const res = await fetch(`/api/practices/${p.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility: 'link' }),
+      });
+      if (!res.ok) {
+        toast.error('Could not change visibility.');
+        return;
+      }
+      setPractices((list) => (list ?? []).map((item) => (item.id === p.id ? { ...item, visibility: 'link' } : item)));
+      const result = await sharePracticeLink(`${window.location.origin}/p/${p.id}`, p.title);
+      if (result === 'failed') toast.error("Made link-shared, but couldn't copy the link.");
+      else toast.success('Made link-shared and link copied.');
+      return;
+    }
     const result = await sharePracticeLink(`${window.location.origin}/p/${p.id}`, p.title);
     if (result === 'copied') toast.success('Link copied.');
     else if (result === 'failed') toast.error("Couldn't copy link.");
@@ -112,12 +129,10 @@ export function MyPracticesList({ refreshKey = 0, onOpen }: Props) {
                 <option value="link">Anyone with the link</option>
                 <option value="public">Public</option>
               </select>
-              {p.visibility !== 'private' && (
-                <Button variant="outline" size="sm" className="min-h-[44px] gap-1.5" onClick={() => share(p)} aria-label={`Share ${p.title}`}>
-                  <Share2 className="h-4 w-4" />
-                  Share
-                </Button>
-              )}
+              <Button variant="outline" size="sm" className="min-h-[44px] gap-1.5" onClick={() => share(p)} aria-label={`Share ${p.title}`}>
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
               <Button variant="outline" size="sm" onClick={() => setDeletingPractice(p)} aria-label={`Delete ${p.title}`}>
                 Delete
               </Button>

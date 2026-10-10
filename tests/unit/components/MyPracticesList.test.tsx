@@ -23,12 +23,12 @@ describe('MyPracticesList share action', () => {
     vi.clearAllMocks();
   });
 
-  it('shows Share for link and public Practices, not private', async () => {
+  it('shows Share on every Practice card', async () => {
     render(<MyPracticesList />);
-    await screen.findByText('Link drill');
+    await screen.findByText('Private drill');
+    expect(screen.getByRole('button', { name: 'Share Private drill' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Share Link drill' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Share Public drill' })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Share Private drill' })).toBeNull();
   });
 
   it('copies the share link when native share is unavailable', async () => {
@@ -79,5 +79,36 @@ describe('MyPracticesList share action', () => {
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith('/api/practices/a1', { method: 'DELETE' });
     });
+  });
+
+  it('one tap sets link-shared and copies the link on a private Practice', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+
+    const fetchMock = vi.fn().mockImplementation((_url: string, init?: RequestInit) => {
+      if (init?.method === 'PATCH') {
+        return Promise.resolve({ ok: true, json: async () => ({}) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ practices }) });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<MyPracticesList />);
+    await screen.findByText('Private drill');
+    fireEvent.click(screen.getByRole('button', { name: 'Share Private drill' }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/api/practices/a1', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility: 'link' }),
+      });
+    });
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/p/a1`));
+    expect(toast.success).toHaveBeenCalledWith('Made link-shared and link copied.');
+
+    const select = screen.getByLabelText('Visibility of Private drill') as HTMLSelectElement;
+    expect(select.value).toBe('link');
   });
 });
